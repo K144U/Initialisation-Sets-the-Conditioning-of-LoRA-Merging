@@ -1,0 +1,342 @@
+% References for "A Rate-Distortion Lower Bound for Model Merging".
+% Tracked-changes copy in paper/updates/. The only entry that changed
+% in the 2026-05-03 Garg-review revision is `tspa2025`, marked below.
+
+% =====================================================
+% LoRA foundation
+% =====================================================
+
+@inproceedings{hu2022lora,
+  title     = {{L}o{RA}: Low-Rank Adaptation of Large Language Models},
+  author    = {Hu, Edward J. and Shen, Yelong and Wallis, Phillip and
+               Allen-Zhu, Zeyuan and Li, Yuanzhi and Wang, Shean and
+               Wang, Lu and Chen, Weizhu},
+  booktitle = {International Conference on Learning Representations
+               (ICLR)},
+  year      = {2022},
+}
+
+% =====================================================
+% Model merging: empirical methods
+% =====================================================
+
+@inproceedings{ilharco2023task,
+  title     = {Editing Models with Task Arithmetic},
+  author    = {Ilharco, Gabriel and Ribeiro, Marco Tulio and
+               Wortsman, Mitchell and Schmidt, Ludwig and Hajishirzi,
+               Hannaneh and Farhadi, Ali},
+  booktitle = {International Conference on Learning Representations
+               (ICLR)},
+  year      = {2023},
+}
+
+@article{matena2022fisher,
+  title   = {Merging Models with {F}isher-Weighted Averaging},
+  author  = {Matena, Michael and Raffel, Colin},
+  journal = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year    = {2022},
+}
+
+@inproceedings{yadav2023ties,
+  title     = {{TIES}-Merging: Resolving Interference When Merging Models},
+  author    = {Yadav, Prateek and Tam, Derek and Choshen, Leshem and
+               Raffel, Colin and Bansal, Mohit},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2023},
+}
+
+@inproceedings{yu2024dare,
+  title     = {Language Models are Super {M}ario: Absorbing Abilities
+               from Homologous Models as a Free Lunch ({DARE})},
+  author    = {Yu, Le and Yu, Bowen and Yu, Haiyang and Huang, Fei and
+               Li, Yongbin},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  year      = {2024},
+}
+
+% Verified from OpenReview ICLR 2025 (forum id=67X93aZHII) and arXiv:2410.19735
+@inproceedings{stoica2025knots,
+  title         = {Model Merging with {SVD} to Tie the {KnOTS}},
+  author        = {Stoica, George and Ramesh, Pratik and Ecsedi, Boglarka and
+                   Choshen, Leshem and Hoffman, Judy},
+  booktitle     = {The Thirteenth International Conference on Learning
+                   Representations (ICLR)},
+  year          = {2025},
+  eprint        = {2410.19735},
+  archivePrefix = {arXiv},
+}
+
+% ============================================================
+% CHANGED 2026-05-03 (Garg comment C9): TSPA was {Anonymous};
+% deanonymized via OpenReview forum iE0dWuv6jU after the ICLR 2026
+% review cycle closed. Submission was withdrawn 2026-01-06.
+% The note field is wrapped in \new{...} so the rendered
+% bibliography flags the change in red.
+% ============================================================
+@misc{tspa2025,
+  title  = {Leveraging Rotation Symmetry for Efficient {LoRA} Merging
+            in Large Language Models},
+  author = {Li, Zijian and Feng, Xiachong and Ma, Weitao and Feng,
+            Xiaocheng and Qin, Bing},
+  year   = {2025},
+  note   = {\new{OpenReview submission to ICLR 2026, withdrawn;
+            forum id \texttt{iE0dWuv6jU}}},
+}
+
+% Verified arXiv:2505.15875; full 8-author list not enumerated on abs page
+% (only "Shenghe Zheng and 7 other authors" visible)
+@article{domerging2025,
+  title         = {Decouple and Orthogonalize: A Data-Free Framework for
+                   {LoRA} Merging},
+  author        = {Zheng, Shenghe and others},
+  journal       = {arXiv preprint arXiv:2505.15875},
+  year          = {2025},
+  eprint        = {2505.15875},
+  archivePrefix = {arXiv},
+}
+
+% Verified from arXiv:2602.03237 abs page (2602 prefix = Feb 2026, valid)
+@article{arm2026streaming,
+  title         = {Merging Beyond: Streaming {LLM} Updates via
+                   Activation-Guided Rotations},
+  author        = {Yao, Yuxuan and Sheng, Haonan and Lv, Qingsong and
+                   Wu, Han and Liu, Shuqi and Liu, Zehua and Liu, Zengyan
+                   and Gao, Jiahui and Tan, Haochen and Fu, Xiaojin and
+                   Bai, Haoli and So, Hing Cheung and Guo, Zhijiang and
+                   Song, Linqi},
+  journal       = {arXiv preprint arXiv:2602.03237},
+  year          = {2026},
+  eprint        = {2602.03237},
+  archivePrefix = {arXiv},
+}
+
+% Verified from arXiv:2509.17786 and NeurIPS 2025 GitHub bibtex
+@inproceedings{panariello2025core,
+  title         = {Accurate and Efficient Low-Rank Model Merging in
+                   Core Space},
+  author        = {Panariello, Aniello and Marczak, Daniel and
+                   Magistri, Simone and Porrello, Angelo and
+                   Twardowski, Bart{\l}omiej and Bagdanov, Andrew D.
+                   and Calderara, Simone and van de Weijer, Joost},
+  booktitle     = {Advances in Neural Information Processing Systems
+                   (NeurIPS)},
+  year          = {2025},
+  eprint        = {2509.17786},
+  archivePrefix = {arXiv},
+}
+
+% Verified from arXiv:2603.26299; co-authors past first not enumerated on abs
+@article{tara2025,
+  title         = {Preference-Aligned {LoRA} Merging: Preserving Subspace
+                   Coverage and Addressing Directional Anisotropy},
+  author        = {Jeong, Wooseong and others},
+  journal       = {arXiv preprint arXiv:2603.26299},
+  year          = {2026},
+  eprint        = {2603.26299},
+  archivePrefix = {arXiv},
+}
+
+% Verified from arXiv:2503.06921 and ICCV 2025 open-access proceedings
+@inproceedings{kim2025tvq,
+  title         = {Task Vector Quantization for Memory-Efficient Model
+                   Merging},
+  author        = {Kim, Youngeun and Lee, Seunghwan and Jung, Aecheon
+                   and Ryu, Bogon and Hong, Sungeun},
+  booktitle     = {Proceedings of the IEEE/CVF International Conference
+                   on Computer Vision (ICCV)},
+  year          = {2025},
+  eprint        = {2503.06921},
+  archivePrefix = {arXiv},
+}
+
+% Verified from arXiv:2502.10743
+@article{bit1merging2025,
+  title         = {1bit-Merging: Dynamic Quantized Merging for Large
+                   Language Models},
+  author        = {Liu, Shuqi and Yao, Yuxuan and He, Bowei and
+                   Liu, Zehua and Han, Xiongwei and Yuan, Mingxuan and
+                   Wu, Han and Song, Linqi},
+  journal       = {arXiv preprint arXiv:2502.10743},
+  year          = {2025},
+  eprint        = {2502.10743},
+  archivePrefix = {arXiv},
+}
+
+% =====================================================
+% Theoretical analyses of merging
+% =====================================================
+
+@inproceedings{ortizjimenez2023disentanglement,
+  title     = {Task Arithmetic in the Tangent Space: Improved Editing
+               of Pre-Trained Models},
+  author    = {Ortiz-Jimenez, Guillermo and Favero, Alessandro and
+               Frossard, Pascal},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)
+               Oral},
+  year      = {2023},
+}
+
+% Verified from arXiv:2502.01015 v4 (Oct 2025 retitle); first author is
+% actually Siqi Zeng (citation key kept for backward-compatibility)
+@article{jang2025taskvectorbases,
+  title         = {Task Vector Bases: A Unified and Scalable Framework
+                   for Compressed Task Arithmetic},
+  author        = {Zeng, Siqi and He, Yifei and Liu, Meitong and
+                   You, Weiqiu and Hao, Yifan and Tsai, Yao-Hung Hubert
+                   and Yamada, Makoto and Zhao, Han},
+  journal       = {arXiv preprint arXiv:2502.01015},
+  year          = {2025},
+  eprint        = {2502.01015},
+  archivePrefix = {arXiv},
+}
+
+% Verified from arXiv:2508.16082
+@article{gradients2025taskvectorsgradients,
+  title         = {On Task Vectors and Gradients},
+  author        = {Zhou, Luca and Solombrino, Daniele and Crisostomi, Donato
+                   and Bucarelli, Maria Sofia and D'Inverno, Giuseppe Alessio
+                   and Silvestri, Fabrizio and Rodol{\`a}, Emanuele},
+  journal       = {arXiv preprint arXiv:2508.16082},
+  year          = {2025},
+  eprint        = {2508.16082},
+  archivePrefix = {arXiv},
+}
+
+% Verified from arXiv:2411.03055 (first submitted Nov 2024)
+@article{atm2024alternating,
+  title         = {{ATM}: Improving Model Merging by Alternating Tuning
+                   and Merging},
+  author        = {Zhou, Luca and Solombrino, Daniele and Crisostomi, Donato
+                   and Bucarelli, Maria Sofia and Silvestri, Fabrizio and
+                   Rodol{\`a}, Emanuele},
+  journal       = {arXiv preprint arXiv:2411.03055},
+  year          = {2024},
+  eprint        = {2411.03055},
+  archivePrefix = {arXiv},
+}
+
+% Verified from arXiv:2511.21437
+@article{systematic2025merging,
+  title         = {A Systematic Study of Model Merging Techniques in
+                   Large Language Models},
+  author        = {Hitit, O{\u{g}}uz Ka{\u{g}}an and Girrbach, Leander
+                   and Akata, Zeynep},
+  journal       = {arXiv preprint arXiv:2511.21437},
+  year          = {2025},
+  eprint        = {2511.21437},
+  archivePrefix = {arXiv},
+}
+
+% =====================================================
+% Rate-distortion theory and rotation-for-quantization
+% =====================================================
+
+@article{shannon1959rd,
+  title   = {Coding Theorems for a Discrete Source with a Fidelity
+             Criterion},
+  author  = {Shannon, Claude E.},
+  journal = {IRE National Convention Record},
+  volume  = {7},
+  pages   = {142--163},
+  year    = {1959},
+}
+
+@book{coverthomas,
+  title     = {Elements of Information Theory},
+  author    = {Cover, Thomas M. and Thomas, Joy A.},
+  edition   = {2},
+  publisher = {Wiley-Interscience},
+  year      = {2006},
+}
+
+@inproceedings{yao1977,
+  title     = {Probabilistic Computations: Toward a Unified Measure of
+               Complexity},
+  author    = {Yao, Andrew Chi-Chih},
+  booktitle = {18th Annual Symposium on Foundations of Computer Science
+               (FOCS)},
+  pages     = {222--227},
+  year      = {1977},
+}
+
+@article{elgamalcover1982md,
+  title   = {Achievable Rates for Multiple Descriptions},
+  author  = {El Gamal, Abbas A. and Cover, Thomas M.},
+  journal = {IEEE Transactions on Information Theory},
+  volume  = {28},
+  number  = {6},
+  pages   = {851--857},
+  year    = {1982},
+}
+
+% Verified from arXiv:2504.19874 abs page
+@article{zandieh2025turboquant,
+  title         = {{TurboQuant}: Online Vector Quantization with
+                   Near-optimal Distortion Rate},
+  author        = {Zandieh, Amir and Daliri, Majid and Hadian, Majid and
+                   Mirrokni, Vahab},
+  journal       = {arXiv preprint arXiv:2504.19874},
+  year          = {2025},
+  eprint        = {2504.19874},
+  archivePrefix = {arXiv},
+}
+
+% Verified from arXiv:2402.04396 and PMLR v235 (ICML 2024)
+@inproceedings{tseng2024quip,
+  title         = {{QuIP\#}: Even Better {LLM} Quantization with Hadamard
+                   Incoherence and Lattice Codebooks},
+  author        = {Tseng, Albert and Chee, Jerry and Sun, Qingyao and
+                   Kuleshov, Volodymyr and De Sa, Christopher},
+  booktitle     = {Proceedings of the 41st International Conference on
+                   Machine Learning (ICML)},
+  series        = {Proceedings of Machine Learning Research},
+  volume        = {235},
+  pages         = {48630--48656},
+  year          = {2024},
+  eprint        = {2402.04396},
+  archivePrefix = {arXiv},
+}
+
+% Verified from arXiv:2404.00456 and NeurIPS 2024 proceedings
+@inproceedings{ashkboos2024quarot,
+  title         = {{QuaRot}: Outlier-Free 4-Bit Inference in Rotated
+                   {LLMs}},
+  author        = {Ashkboos, Saleh and Mohtashami, Amirkeivan and
+                   Croci, Maximilian L. and Li, Bo and Cameron, Pashmina
+                   and Jaggi, Martin and Alistarh, Dan and Hoefler, Torsten
+                   and Hensman, James},
+  booktitle     = {Advances in Neural Information Processing Systems
+                   (NeurIPS)},
+  year          = {2024},
+  eprint        = {2404.00456},
+  archivePrefix = {arXiv},
+}
+
+% Verified from arXiv:2405.16406 and ICLR 2025 OpenReview
+@inproceedings{liu2025spinquant,
+  title         = {{SpinQuant}: {LLM} Quantization with Learned Rotations},
+  author        = {Liu, Zechun and Zhao, Changsheng and Fedorov, Igor and
+                   Soran, Bilge and Choudhary, Dhruv and
+                   Krishnamoorthi, Raghuraman and Chandra, Vikas and
+                   Tian, Yuandong and Blankevoort, Tijmen},
+  booktitle     = {The Thirteenth International Conference on Learning
+                   Representations (ICLR)},
+  year          = {2025},
+  eprint        = {2405.16406},
+  archivePrefix = {arXiv},
+}
+
+% Verified from arXiv:2407.08044 and ACL Anthology (Findings of EMNLP 2024);
+% citation key kept; first author is actually Xijie Huang
+@inproceedings{xi2024rolora,
+  title         = {{RoLoRA}: Fine-tuning Rotated Outlier-free {LLMs} for
+                   Effective Weight-Activation Quantization},
+  author        = {Huang, Xijie and Liu, Zechun and Liu, Shih-Yang and
+                   Cheng, Kwang-Ting},
+  booktitle     = {Findings of the Association for Computational Linguistics:
+                   EMNLP 2024},
+  pages         = {7563--7576},
+  year          = {2024},
+  eprint        = {2407.08044},
+  archivePrefix = {arXiv},
+}

@@ -1,0 +1,192 @@
+The lower bound of \S\ref{sec:lower} is matched by an explicit
+algorithm in the generic regime ($V_t$ Stiefel-random,
+$Tr\leq d$, so $\deff = Tr$ a.s.\ and the floor in
+Lemma~\ref{lem:floor-general} vanishes). The algorithm is a
+direct extension of the single-source construction in
+TurboQuant~\cite{zandieh2025turboquant}, composed with a
+centroid-reduction step that uses Lemma~\ref{lem:id}.
+
+\subsection{Algorithm}\label{subsec:alg}
+
+Encoder and decoder share a pseudorandom seed indexing an
+orthogonal rotation $O\in O(\deff)$ drawn uniformly from Haar
+measure (we implement this in practice by the QR decomposition
+of a $\deff\times\deff$ matrix of iid Gaussians).
+
+\paragraph{Encoder.}
+\begin{enumerate}[leftmargin=*,topsep=2pt,itemsep=2pt]
+  \item Compute $\bar H$, $\tauH$, and an orthonormal basis $Q
+  \in\R^{d\times\deff}$ of $\range(\bar H)$ with eigenvalues
+  $w_1,\ldots,w_\deff > 0$. Form
+  $\eta := \bar H^{1/2}\tauH$, represented in the $Q$-basis as
+  the $\deff$-vector $\eta_Q = (\sqrt{w_i}\,\langle Q_i,
+  \tauH\rangle)_{i=1}^\deff$.
+  \item Apply the shared rotation: $\tilde\eta := O\eta_Q\in
+  \R^\deff$.
+  \item For each coordinate $i\in[\deff]$, uniform-scalar-quantize
+  $\tilde\eta_i$ on $[-c\sigma_{\mathrm{pc}}, c\sigma_{\mathrm{pc}}]$
+  with $b$ bits, where $\sigma_{\mathrm{pc}} := B/\sqrt{Tr}$ is
+  the per-coordinate standard deviation of $\tilde\eta$ and $c$
+  is a clipping constant (we use $c = 5$). Total rate is
+  $R = b\deff$ bits.
+  \item Transmit the quantization indices.
+\end{enumerate}
+
+\paragraph{Decoder.} Inverts each step: unquantize to
+$\tilde\eta_q$, apply $O^\top$ to get $\eta_{Q,q}$, and emit
+$w^\star := Q\,\mathrm{diag}(1/\sqrt{w_i})\,\eta_{Q,q} =
+\bar H^{+1/2}\eta_q$ (understood on $\range(\bar H)$; components
+orthogonal to $\range(\bar H)$ contribute zero to any
+$H_t$-weighted distortion, by the remark following
+Lemma~\ref{lem:id}).
+
+The algorithm has three structural features worth naming. First,
+the centroid $\tauH$ is the \emph{sufficient statistic} for the
+reconstruction problem in the floor-zero regime — we show below
+that perfect knowledge of $\tauH$ achieves zero worst-task
+distortion, so all rate goes to quantizing $\tauH$. Second, the
+$\bar H^{1/2}$ scaling whitens $\tauH$: in the $\eta = \bar H^{1/2}
+\tauH$ coordinates, the per-coordinate second moment is uniform
+($B^2/(Tr)$), making scalar quantization on a uniform grid
+optimal up to constants. Third, the random rotation $O$ is a
+discrete analog of TurboQuant's Haar-random pre-mixing: it
+breaks per-coordinate correlations in $\eta_Q$ and ensures every
+direction of quantization error contributes equally to
+$\E\|\delta\eta\|^2$.
+
+\subsection{Matching upper bound}\label{subsec:match}
+
+\begin{theorem}[Matching achievability, floor-zero Stiefel]
+\label{thm:achv}
+Under $P^\star$ with Stiefel-random $V_t$ and $Tr\leq d$, for
+any fixed positive-definite $(D_t)_{t=1}^T$, the algorithm of
+\S\ref{subsec:alg} at rate $R$ bits achieves
+\begin{equation}\label{eq:thm-ub}
+  \E_{P^\star}\bigl[\max_t(w^\star-\tau_t)^\top H_t(w^\star-
+  \tau_t)\bigr]
+  \;\leq\; C\cdot B^2 \cdot 2^{-2R/(Tr)},
+\end{equation}
+with universal constant $C = T c^2 / 3$. Combined with
+Theorem~\ref{thm:general},
+\begin{equation*}
+  \E_{P^\star}\bigl[\max_t(w^\star-\tau_t)^\top H_t(w^\star-
+  \tau_t)\bigr] \;=\; \Theta\bigl(B^2\cdot 2^{-2R/(Tr)}\bigr),
+\end{equation*}
+i.e.\ the Bayesian rate-distortion function under $P^\star$ is
+pinned down to a universal constant in this regime.
+\end{theorem}
+
+\paragraph{Proof sketch.} Five steps.
+
+\emph{Step 1 (zero-floor identity).} Under $P^\star$ with
+$Tr\leq d$, Lemma~\ref{lem:floor-general} gives
+$\E_{P^\star}[T^{-1}\sum_t(\tau_t-\tauH)^\top H_t(\tau_t-\tauH)]
+= 0$. Each summand is nonnegative, so almost surely
+$(\tau_t - \tauH)^\top H_t(\tau_t-\tauH) = 0$ for every $t$;
+equivalently, $H_t\tauH = H_t\tau_t$. In this regime $\tauH$
+captures every task exactly at infinite rate.
+
+\emph{Step 2 (distortion reduces to quantization error on
+$\eta$).} Let $\delta w := w^\star - \tauH\in\range(\bar H)$.
+Expanding,
+\begin{equation*}
+  (w^\star-\tau_t)^\top H_t(w^\star-\tau_t)
+  \;=\; (\delta w)^\top H_t(\delta w),
+\end{equation*}
+where the constant and cross terms vanish by Step~1
+($H_t(\tauH-\tau_t) = 0$ a.s.). So worst-task distortion is
+entirely driven by quantization error on $\tauH$ (equivalently on
+$\eta$, after whitening).
+
+\emph{Step 3 ($\max\leq T\cdot\mathrm{avg}$).} Summing and using
+$\sum_t H_t = T\bar H$,
+\begin{equation*}
+  \max_t (\delta w)^\top H_t(\delta w) \;\leq\;
+  \sum_t (\delta w)^\top H_t(\delta w) \;=\;
+  T(\delta w)^\top\bar H(\delta w)
+  \;=\; T\|\bar H^{1/2}\delta w\|^2 \;=\; T\|\delta\eta\|^2,
+\end{equation*}
+where $\delta\eta := \eta_q - \eta$ is the quantization error in
+$\eta$-space. This is the achievability-side analog of
+Lemma~\ref{lem:id}: max-distortion is controlled by the
+$\bar H$-weighted average, which is itself $\|\delta\eta\|^2$.
+
+\emph{Step 4 (scalar-quantization error under the random
+mixer).} After the rotation $O$, each coordinate $\tilde\eta_i$
+has second moment $\E[\tilde\eta_i^2] = \E\|\eta\|^2/\deff =
+B^2/(Tr)$ (by Lemma~\ref{lem:floor-general} and the isotropy
+induced by $O$). Uniform scalar quantization on a grid of width
+$\Delta = 2 c\sigma_{\mathrm{pc}}/2^b$ has per-coordinate MSE at
+most $\Delta^2/12 = c^2\sigma_{\mathrm{pc}}^2 2^{-2b}/3$, giving
+\begin{equation*}
+  \E\|\delta\tilde\eta\|^2 \;\leq\;
+  \deff\cdot\frac{c^2 B^2}{3Tr}\cdot 2^{-2b}
+  \;=\; \frac{c^2 B^2\deff}{3Tr}\cdot 2^{-2R/\deff}.
+\end{equation*}
+Orthogonality of $O$ preserves $\|\cdot\|^2$, so
+$\|\delta\eta\|^2 = \|\delta\tilde\eta\|^2$. In the Stiefel
+regime $\deff = Tr$, yielding $\E\|\delta\eta\|^2 \leq
+(c^2 B^2/3)\cdot 2^{-2R/(Tr)}$.
+
+\emph{Step 5 (combine).} Substituting Step~4 into Step~3,
+\begin{equation*}
+  \E_{P^\star}[\max_t(w^\star-\tau_t)^\top H_t(w^\star-
+  \tau_t)] \;\leq\; T\,\E\|\delta\eta\|^2 \;\leq\;
+  \frac{Tc^2}{3}\cdot B^2 \cdot 2^{-2R/(Tr)}.
+\end{equation*}
+This is \eqref{eq:thm-ub} with $C = Tc^2/3$. \qed
+
+\paragraph{Empirical calibration.} Monte Carlo experiments
+report $\E_{P^\star}[\max_t D_t(w^\star)]$ across
+$T\in\{2,3,4\}$, $r\in\{4,8,16\}$, $d\in\{128,512,2048\}$, and
+both isotropic and heavily-anisotropic $(D_t)$ spectra.
+Empirically, the ratio of measured distortion to the
+Theorem~\ref{thm:general} lower bound at $c_{\mathrm{TQ}} = 1$
+is $\leq 13$ across all tested configurations and rate points,
+constant within bootstrap CI. This confirms the
+$\Theta(2^{-2R/(Tr)})$ rate and that the upper-bound constant
+$C = Tc^2/3$ is tight up to the choice of clipping $c$. See
+\S\ref{sec:exp} for details.
+
+\subsection{The shared-$V$ / floor-positive regime}
+\label{subsec:sharedv}
+
+Theorem~\ref{thm:achv} covers the generic regime. When the
+$V_t$'s overlap substantially (so that $\deff < Tr$ and the
+floor is strictly positive), the algorithm above still applies
+but the proof argument of Step~1 (zero-floor identity) fails.
+In the floor-positive regime we construct a refinement that
+quantizes around the Chebyshev center of the ensemble in an
+active-set-aware null-space split, achieving excess distortion
+of order $2^{-2R/(\deff + |A| - 1)}$, where $|A|$ is the size
+of the active set at the Chebyshev center. This is strictly
+better than the naive $2^{-R/\deff}$ rate of a direct scalar
+quantization but strictly worse than the lower-bound exponent
+$2^{-2R/\deff}$ of Theorem~\ref{thm:general}; the remaining
+exponent gap is discussed in Remark~\ref{rem:sharedv-gap}. We
+have numerically validated the construction across
+$T\in\{2,3,4\}$ and the full range of anisotropy regimes
+(iso+iso, iso+geom, geom+twoscale, lin+twoscale, geom+iso); see
+\S\ref{sec:exp}.
+
+Closing the shared-$V$ exponent gap appears to require
+non-linear / random-coding encoders: a random-codebook encoder
+achieves slopes strictly steeper than our explicit linear
+construction in the shared-$V$ regime, so the true
+rate-distortion function in that regime lies strictly between
+the two bounds. A rigorous sharpening of either the lower or
+upper bound in this regime is left open.
+
+\begin{remark}[Shared-$V$ exponent gap]\label{rem:sharedv-gap}
+In the floor-positive regime, the explicit linear null-space
+split of \S\ref{subsec:sharedv} achieves excess distortion
+$\Theta(2^{-2R/(\deff+|A|-1)})$. Valid rate-$R$ random-codebook
+encoders empirically achieve strictly steeper slopes than this
+linear construction (we verify this for $T=3, r=3$, where the
+random-codebook slope is $-1.45$ versus the linear prediction
+$-1.20$). The lower bound of
+Theorem~\ref{thm:general} gives $\Omega(2^{-2R/\deff})$, which
+is also not attained by our construction when $|A| > 1$. Neither
+bound is tight; the exact rate-distortion exponent in this
+regime is open.
+\end{remark}

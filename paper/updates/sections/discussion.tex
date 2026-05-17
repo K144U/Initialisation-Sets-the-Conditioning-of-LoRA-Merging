@@ -1,0 +1,61 @@
+% ===================================================================
+% DISCUSSION AND LIMITATIONS. ~0.5–1 page. Four honest bullets.
+% Written from known open items in notes/open_questions.md and
+% target.md §4. No overclaiming.
+% ===================================================================
+
+\paragraph{Cross-entropy extension.} Theorem~\ref{thm:general}
+is proved in the quadratic-loss setting with $H_t$ a
+positive-semidefinite rank-$r$ matrix. For LLM cross-entropy
+loss, the natural $H_t$ is the Fisher information matrix, which
+is rank-$r$ PSD near a LoRA fine-tuned point but not a projector.
+Our proof uses only the per-task identity $H_tH_t^+H_t = H_t$
+and the $O(d)$-equivariance of the hard distribution, both of
+which survive verbatim under the Fisher-metric interpretation
+(the $D_t$-freeness of Step 5 is the key). A fully rigorous
+MSE-to-CE bridge via local quadratic approximation requires
+controlling the second-order remainder across the $H_t$-ball;
+we sketch this extension in the supplementary material and
+leave a quantitative version for future work.
+
+\paragraph{The shared-$V$ exponent gap.} In the floor-positive
+regime (e.g.\ shared or substantially-overlapping $V_t$), the
+explicit linear construction of \S\ref{sec:achv} achieves an
+excess distortion decay of $2^{-2R/(\deff+|A|-1)}$, slower than
+the lower bound's $2^{-2R/\deff}$. We verified numerically that
+a random-codebook (non-linear) encoder achieves slopes strictly
+steeper than the linear construction, so the truth lies
+\emph{strictly between} the two bounds. Closing this gap — either
+by sharpening the lower bound or by constructing a non-linear
+encoder that matches the $2^{-2R/\deff}$ rate — is a concrete
+open problem that we view as beyond the scope of this work.
+Remark~\ref{rem:sharedv-gap} elaborates.
+
+\paragraph{Scope of the hard distribution.} The lower bound is
+established against $P^\star$ (Stiefel-random $V_t$, arbitrary
+task-dependent spectra). Real LoRA fine-tunes exhibit structure
+not captured by iid Stiefel random sampling: tasks that share
+semantic similarity produce correlated subspaces; fine-tuning
+induces anisotropic curvature; and the full-dimensional backbone
+of the base model introduces rank-$d$ modes the bound ignores.
+Extending the lower bound to structured task distributions, or
+supplying a second construction that exploits task correlation
+to beat our generic upper bound, are natural directions. Until
+such extensions exist, the theorems of this paper should be read
+as characterizing the \emph{information-theoretic} floor for
+merging, not a tight prediction of any specific real-LLM merging
+experiment.
+
+\paragraph{Practical implications.} Two guidance points for
+practitioners follow from the theorems. (i) The floor
+$B^2(1 - \deff/(Tr))$ identifies when rate is wasted: if tasks
+share substantial subspace overlap, no merging algorithm closes
+the floor and additional bits buy little. This gives an
+operational criterion for deciding when to merge at all versus
+when to serve tasks from separate adapters. (ii) The
+compression term $B^2 (\deff/(Tr)) 2^{-2R/\deff}$ is matched by
+an explicit algorithm that runs in $O(\deff^2)$ time per merge
+(the Gaussian-QR rotation dominates). For LoRA with $\deff = Tr$
+in the thousands, this is negligible compared with the merging
+overhead of existing heuristics; deployment cost is not a
+blocker.

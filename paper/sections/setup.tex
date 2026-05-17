@@ -1,0 +1,134 @@
+\paragraph{Task vectors and per-task geometry.} Fix integers
+$T\geq 1$, $d\geq 2$, $1\leq r\leq d$, and a radius $B > 0$.
+Each of the $T$ tasks is specified by a pair $(\tau_t, H_t)\in
+\R^d\times\R^{d\times d}$ with
+\begin{equation}\label{eq:admissibility}
+  H_t \succeq 0,\quad \rank(H_t) \leq r,\quad \tau_t \in V_t :=
+  \range(H_t),\quad \tau_t^\top H_t \tau_t \leq B^2.
+\end{equation}
+Per-task loss is the quadratic $f_t(w) := \tfrac12 (w - \tau_t)^\top
+H_t (w - \tau_t)$, which attains zero at any $w$ with $P_{V_t} w
+= \tau_t$. We write $\boldsymbol\tau := (\tau_t)_{t=1}^T$ and
+$\boldsymbol H := (H_t)_{t=1}^T$ for the tuple data, and call any
+$(\boldsymbol\tau, \boldsymbol H)$ satisfying
+\eqref{eq:admissibility} \emph{admissible}.
+
+The specialization $H_t = P_{V_t}$ (the orthogonal projector onto
+$V_t$) recovers the weight-disentangled LoRA setting of
+Ortiz-Jimenez et al.~\cite{ortizjimenez2023disentanglement}; the
+general $H_t\succeq 0$ case subsumes Fisher-metric surrogates for
+cross-entropy LLM losses with heterogeneous task-specific
+curvature.
+
+\paragraph{Worst-task distortion.} A merged model $w^\star\in
+\R^d$ incurs per-task distortion $D_t(w^\star) := (w^\star-
+\tau_t)^\top H_t (w^\star - \tau_t)$. We take as figure of merit
+the \emph{worst-task} distortion
+\begin{equation}\label{eq:Delta}
+  \Delta(w^\star; \boldsymbol\tau, \boldsymbol H)
+  \;:=\; \max_{t\in[T]}\; D_t(w^\star).
+\end{equation}
+The choice of $\max$ over $\mathrm{avg}$ matters. A merged model
+that performs well on most tasks but catastrophically on one is
+not a useful deployment target; classical multi-description
+coding~\cite{elgamalcover1982md} treats average distortion and
+has a strictly weaker rate-distortion function than the one we
+establish (see Lemma~\ref{lem:id}).
+
+\paragraph{Rate-$R$ merging codes.} A rate-$R$ merging code is a
+pair $(E, D)$ with encoder $E : (\R^d)^T \to \{1,\ldots,2^R\}$
+and decoder $D : \{1,\ldots,2^R\}\to\R^d$. The encoder observes
+$\boldsymbol\tau$ (the $H_t$'s may be assumed known to the
+encoder as side information; our lower bound holds even if the
+encoder is told $\boldsymbol H$ for free). The reconstruction is
+$w^\star := D(E(\boldsymbol\tau))$. The \emph{rank-$r$
+rate-distortion function} is
+\begin{equation}\label{eq:rd-def}
+  \mathcal{D}^\star(T, d, r, B, R)
+  \;:=\; \inf_{(E, D)}\;\sup_{(\boldsymbol\tau, \boldsymbol H)
+    \text{ admissible}}\;
+  \E\bigl[\Delta(w^\star;\boldsymbol\tau, \boldsymbol H)\bigr],
+\end{equation}
+where the expectation is over any randomness the encoder and
+decoder share.
+
+With the figure of merit, admissibility constraints, and code
+class fixed, the central question of the paper is the following.
+
+\begin{problem}[Rank-$r$ rate-distortion model merging]
+\label{prob:merging}
+Determine the rank-$r$ rate-distortion function
+$\mathcal{D}^\star(T, d, r, B, R)$ defined in
+\eqref{eq:rd-def}, and exhibit an explicit encoder/decoder pair
+$(E, D)$ attaining it. Concretely:
+\begin{enumerate}[leftmargin=*,topsep=2pt,itemsep=0pt]
+  \item (\emph{Lower bound}) Find the largest $L(T, d, r, B, R)$
+  such that for every rate-$R$ merging code,
+  $\sup_{(\boldsymbol\tau,\boldsymbol H)\text{ admissible}}
+  \E[\Delta(w^\star;\boldsymbol\tau,\boldsymbol H)]\geq
+  L(T, d, r, B, R)$.
+  \item (\emph{Upper bound}) Construct a rate-$R$ merging code
+  $(E^\star, D^\star)$ achieving distortion at most
+  $U(T, d, r, B, R)$ on every admissible tuple.
+  \item (\emph{Tightness}) Establish $L = \Theta(U)$.
+\end{enumerate}
+The remainder of the paper resolves (i)
+(Theorem~\ref{thm:general}, \S\ref{sec:lower}), (ii)
+(Theorem~\ref{thm:achv}, \S\ref{sec:achv}), and (iii) up to a
+universal constant in the floor-zero Stiefel regime.
+\end{problem}
+
+\paragraph{Key derived quantities.} We will repeatedly use
+\begin{equation}\label{eq:derived}
+  \bar H := \tfrac1T\sum_{t=1}^T H_t,\qquad
+  \tauH := \bar H^+\cdot \tfrac1T\sum_{t=1}^T H_t\tau_t,\qquad
+  \deff := \rank\!\Bigl(\sum_{t=1}^T P_{V_t}\Bigr),
+\end{equation}
+where $(\cdot)^+$ denotes the Moore--Penrose pseudoinverse. The
+\emph{$H_t$-weighted centroid} $\tauH$ is the unique element of
+$\range(\bar H) = V_1 + \cdots + V_T$ satisfying $\bar H\tauH =
+T^{-1}\sum_t H_t\tau_t$; it reduces to the arithmetic mean
+$\bar\tau$ when $H_t = I_d$. The \emph{effective dimension}
+$\deff \leq \min(Tr, d)$ is the combinatorial quantity that
+controls the rate-distortion function; its meaning is the number
+of independent directions the decoder must reconstruct.
+
+\paragraph{Hard distribution $P^\star$.} Our lower bound is
+established against a specific distribution $P^\star$ on
+admissible tuples. For each task $t\in[T]$, independently:
+\begin{enumerate}[leftmargin=*,topsep=2pt,itemsep=2pt]
+  \item Sample $U_t\in\mathrm{Stiefel}(d, r)$ uniformly
+  (equivalently, take the Gram--Schmidt orthogonalization of a
+  $d\times r$ matrix of iid Gaussians); set $V_t := \range(U_t)$.
+  \item Fix a positive-definite diagonal $r\times r$ matrix
+  $D_t\succ 0$ (the task-$t$ spectrum inside $V_t$); set $H_t :=
+  U_t D_t U_t^\top$.
+  \item Sample $u_t\sim\mathrm{Unif}(S^{r-1})$ and set
+  $v_t := B\, D_t^{-1/2} u_t \in\R^r$, $\tau_t := U_t v_t$.
+\end{enumerate}
+The scale normalization $\tau_t^\top H_t\tau_t = v_t^\top D_t
+v_t = B^2\|u_t\|^2 = B^2$ holds by construction. The $D_t^{-1/2}$
+stretch makes $\tau_t$ uniform on the $H_t$-weighted unit
+ellipsoid inside $V_t$, which is what makes the second-moment
+identity $\E[H_t\tau_t\tau_t^\top H_t | U_t] = (B^2/r) H_t$ hold
+\emph{regardless of} $D_t$. This $D_t$-freeness is the feature
+that makes Theorem~\ref{thm:general} apply to arbitrary
+task-dependent spectra. For the projector special case $H_t =
+P_{V_t}$ (i.e.\ $D_t = I_r$), $P^\star$ reduces to the
+Stiefel-random LoRA distribution with $\tau_t\sim\mathrm{Unif}
+(B\cdot S^{r-1}\cap V_t)$.
+
+\paragraph{Yao's minimax bridge.} The worst-case rate-distortion
+function $\mathcal{D}^\star$ in \eqref{eq:rd-def} is at least the
+Bayesian rate-distortion function under any prior. In particular,
+taking the prior to be $P^\star$:
+\begin{equation}\label{eq:yao}
+  \mathcal{D}^\star(T,d,r,B,R)
+  \;\geq\;
+  \inf_{(E,D)}\;\E_{(\boldsymbol\tau,\boldsymbol H)\sim P^\star}
+    \bigl[\Delta(w^\star;\boldsymbol\tau,\boldsymbol H)\bigr].
+\end{equation}
+This is Yao's minimax principle~\cite{yao1977} applied to the
+randomized-code / worst-case-input game. All subsequent lower
+bounds are proved against the RHS of \eqref{eq:yao}; the LHS
+inherits them for free.

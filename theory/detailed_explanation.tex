@@ -1,0 +1,574 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{hyperref}
+\usepackage{parskip}
+\usepackage{enumitem}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\tauH}{\tau_{\!H}}
+\newcommand{\deff}{d_{\mathrm{eff}}}
+\newcommand{\Hbar}{\bar H}
+
+\title{What We Are Doing, How, and Why \\
+       \large A plain-English tour of our rate--distortion lower bound \\
+       for LoRA model merging, written for a curious high-schooler}
+\author{Sankalp Pathak}
+\date{Companion note to \texttt{theory/theorem\_v1.tex}, written 2026-04-28}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document is the friendly tour of our research project. It explains
+what problem we are solving, how our main theorem works, and why the
+theorem is true, using everyday language and simple pictures. We assume
+only high-school algebra, the Pythagorean theorem, and a tiny bit of
+probability (coin flips, averages). Every piece of math notation is
+introduced in words first. If you have read the formal scaffold in
+\texttt{theory/theorem\_v1.tex}, you can skim; if you have not, start
+here.
+\end{abstract}
+
+\tableofcontents
+
+%-----------------------------------------------------------------
+\section{The big picture}
+
+\subsection{What is a large language model?}
+
+A large language model (LLM), like ChatGPT or Claude, is -- roughly --
+a text autocomplete that got very good and very big. Internally, it is
+a giant pile of numbers called \emph{weights}. For a modern model, the
+pile has tens or hundreds of billions of numbers. When you type a
+prompt, the model runs a long sequence of multiplications and additions
+using those weights and spits out the next word. Train the weights well
+on enough text, and the ``next-word'' machine starts to look
+surprisingly smart.
+
+For this document, we only need the following abstraction: \textbf{a
+model is a very long list of numbers}. Call that list $w$. Its length
+is $d$, which you should think of as ``very big.''
+
+\subsection{What is fine-tuning?}
+
+Suppose you have a general-purpose LLM, but you want one that is really
+good at, say, answering medical questions. You take the general model,
+show it a bunch of medical-question examples, and let it \emph{nudge}
+its weights a little bit so it answers medical questions better. That
+nudge is called \textbf{fine-tuning}.
+
+Mathematically, the fine-tuned model is $w_0 + \tau$, where $w_0$ is
+the starting (general) model and $\tau$ is the \textbf{task vector}:
+the change in the weights that made it good at the new task.
+
+\subsection{What is LoRA?}
+
+Moving a list of $d$ numbers is expensive when $d$ has billions of
+entries. \textbf{LoRA} (``Low-Rank Adaptation'') is a clever trick to
+make fine-tuning cheap: instead of changing all $d$ weights, you only
+change the model in a thin $r$-dimensional slice, where $r$ is much
+smaller than $d$ (say $r = 8$ or $r = 64$). The slice is a
+low-dimensional direction inside the high-dimensional weight space.
+
+Analogy: if the full weight space is a huge warehouse, fine-tuning the
+whole thing is like repainting every wall. LoRA is like saying ``we
+only care about one corner; let's repaint just that corner.'' The
+task vector $\tau$ then lives inside a tiny $r$-dimensional room
+$V\subset\R^d$, not the whole warehouse.
+
+\subsection{What is model merging, and why do we care?}
+
+Now imagine you do LoRA fine-tuning several times, once per task:
+\begin{itemize}[nosep]
+  \item Task 1: medicine. Task vector $\tau_1$ in its slice $V_1$.
+  \item Task 2: coding. Task vector $\tau_2$ in its slice $V_2$.
+  \item Task 3: poetry. Task vector $\tau_3$ in its slice $V_3$.
+  \item $\ldots$ Task $T$. Task vector $\tau_T$ in its slice $V_T$.
+\end{itemize}
+You now have $T$ fine-tuned models. Storing and serving $T$ of them is
+expensive. So a natural question is: can you squash them into
+\emph{one} merged model $w$ that is decent at all $T$ tasks at once?
+This is called \textbf{model merging}.
+
+\subsection{The rate--distortion question (our question!)}
+
+Here is the twist. Instead of asking ``what's the best merging
+algorithm'' (many people study that), we ask the opposite: \textbf{if
+you only get $R$ bits to describe the merged model, what is the best
+you could possibly do?} That question has a classical name:
+\textbf{rate--distortion} (RD). ``Rate'' is the number of bits you
+spend. ``Distortion'' is how bad your model is. An RD lower bound says
+``no matter how clever you are, with $R$ bits you cannot do better than
+this formula.''
+
+Analogy. Rate--distortion is the same idea behind JPEG image
+compression. A small JPEG (few bits, low rate) looks blurry (high
+distortion); a big JPEG (many bits, high rate) looks sharp (low
+distortion). There is a fundamental trade-off between ``how few bits''
+and ``how good it looks,'' and the RD lower bound tells you the
+best-case curve.
+
+We prove such a lower bound, but for \emph{merged LLM task vectors}
+instead of images. \textbf{This is the central contribution of our
+paper.}
+
+%-----------------------------------------------------------------
+\section{The exact question we are answering}
+
+\subsection{Setup in one picture}
+
+You have $T$ arrows $\tau_1,\dots,\tau_T$, all starting at the origin
+of a $d$-dimensional space. Each arrow has length $B$ (we fix a common
+length for normalization; $B$ is just a constant, think $B=1$). Each
+arrow lives inside its own $r$-dimensional slice $V_t$.
+
+You must pick a single arrow $w$ (the merged model) that does the job
+of all of them. But you are only allowed to describe $w$ using $R$
+bits.
+
+\subsection{How do we measure ``did a good job''?}
+
+Two natural options.
+\begin{itemize}[nosep]
+  \item \textbf{Average error:} $\frac{1}{T}\sum_{t=1}^T \|w - \tau_t\|^2$.
+        (The average squared distance from $w$ to each arrow.)
+  \item \textbf{Worst-case error:} $\max_{t=1,\dots,T}\|w - \tau_t\|^2$.
+        (The squared distance to the arrow $w$ is farthest from.)
+\end{itemize}
+
+We use \textbf{worst-case}, because that is the honest measure of a
+merged model. If $w$ is great at 9 tasks out of 10 but terrible at the
+10th, you probably do not want to ship it: the whole point of merging
+is that it should be decent at \emph{all} tasks. Also, average error
+collapses to a boring problem (just quantize the mean arrow $\bar\tau
+= T^{-1}\sum_t \tau_t$), while worst-case error is genuinely new.
+
+\subsection{A little refinement: $H_t$-weighted error}
+
+There is one more detail. Not every direction in $\R^d$ actually
+matters for task $t$. Only directions \emph{inside the slice $V_t$}
+do -- moving $w$ perpendicular to $V_t$ cannot change task $t$'s loss,
+because LoRA only moved things in $V_t$ in the first place. Formally,
+we use the $H_t$-weighted error
+\[
+  (w - \tau_t)^\top H_t (w - \tau_t),
+\]
+where $H_t$ is an operator that ``keeps only the $V_t$ part'' of an
+arrow (the orthogonal projection onto $V_t$). Think of $H_t$ as a
+flashlight that only lights up directions task $t$ cares about. The
+error only counts what the flashlight sees.
+
+\subsection{The RD function}
+
+Putting it together, define
+\[
+  \mathcal{D}^\star(T,d,r,B,R)
+  \;=\; \text{smallest possible worst-task error},
+\]
+where the minimum is over all possible encoders and decoders (all ways
+of compressing to $R$ bits and decompressing back to a merged $w$), and
+where the task vectors $(\tau_t, V_t)$ are drawn from a specific random
+family we will describe in \S\ref{sec:setup}. We prove a
+\textbf{lower bound} on $\mathcal{D}^\star$: a formula that no merging
+scheme can beat.
+
+%-----------------------------------------------------------------
+\section{Math setup, gently}\label{sec:setup}
+
+Before stating our main theorem, we need five concepts.
+
+\subsection{$d$-dimensional space}
+
+An arrow in 2D is a pair of numbers $(x_1, x_2)$. In 3D, it is a
+triple $(x_1, x_2, x_3)$. In $d$ dimensions, it is a list of $d$
+numbers. The length (norm) of the arrow $\tau$ is
+$\|\tau\| = \sqrt{x_1^2 + x_2^2 + \cdots + x_d^2}$
+(Pythagoras, generalized). A \textbf{subspace} of dimension $r$ is a
+flat slice through the origin that looks like $\R^r$ sitting inside
+$\R^d$. In 3D, 2-dim subspaces are planes through the origin, and
+1-dim subspaces are lines through the origin.
+
+\subsection{The subspace $V_t$ of task $t$}
+
+Task $t$'s LoRA fine-tuning moves weights in an $r$-dim slice $V_t$.
+Its task vector $\tau_t$ therefore sits inside $V_t$, with length $B$.
+That is our only structural assumption. We will average over
+\emph{random} choices of $V_t$ (``Stiefel-random,'' which is math-speak
+for ``pick an $r$-dim slice uniformly at random''), independently for
+each task.
+
+\subsection{The projection $P_{V_t}$ (and why $H_t = P_{V_t}$)}
+
+$P_{V_t}$ is the flashlight. Given any arrow $x\in\R^d$, $P_{V_t}x$ is
+the part of $x$ that lies inside $V_t$. The part outside $V_t$ is
+thrown away. By construction, $P_{V_t}\tau_t = \tau_t$ (since $\tau_t$
+is already in $V_t$).
+
+We set $H_t = P_{V_t}$. Why? Because the actual task-$t$ loss, near
+$\tau_t$, looks locally like $(w - \tau_t)^\top H_t (w - \tau_t)$ where
+$H_t$ is the ``Hessian'' (curvature matrix) of the loss. For LoRA,
+this $H_t$ is exactly supported on $V_t$ (directions outside $V_t$
+don't affect the loss), and in the cleanest approximation,
+$H_t = P_{V_t}$. It is both mathematically convenient and physically
+meaningful.
+
+\subsection{The centroid $\tauH$}
+
+We need one ``summary arrow'' of the $T$ task vectors, chosen to
+minimize the $H_t$-weighted errors. Define the average of the
+flashlights:
+\[
+  \Hbar \;:=\; \frac{1}{T}\sum_{t=1}^T H_t
+  \;=\; \frac{1}{T}\sum_{t=1}^T P_{V_t}.
+\]
+Then set
+\[
+  \tauH \;:=\; \Hbar^+\cdot\Bigl(\frac{1}{T}\sum_t H_t\tau_t\Bigr),
+\]
+where $\Hbar^+$ is the Moore--Penrose pseudoinverse (the closest
+thing to $1/\Hbar$ that makes sense; you can ignore the ``pseudo'' part
+for the high-level picture). The point of $\tauH$: it is the unique
+arrow such that, when you sit at $\tauH$ and look around through each
+task's flashlight, you see a nice balance.
+
+A very useful identity: because $P_{V_t}\tau_t = \tau_t$, a short
+calculation gives
+\[
+  \Hbar\,\tauH \;=\; \bar\tau \;:=\; \tfrac{1}{T}\sum_t \tau_t.
+\]
+So $\tauH$ is, in a precise sense, the ``inverse-warped mean.''
+
+\subsection{The effective dimension $\deff$}
+
+Here is the single most important new quantity in our paper:
+\[
+  \deff \;:=\; \text{rank}\Bigl(\sum_{t=1}^T P_{V_t}\Bigr).
+\]
+In words: the total number of independent directions that \emph{at
+least one} task cares about. Two cartoons.
+\begin{itemize}[nosep]
+  \item \textbf{All tasks share the same slice} ($V_1 = V_2 = \cdots =
+        V_T$). Then the union is just that one slice, of dimension
+        $r$. So $\deff = r$.
+  \item \textbf{All tasks have fully orthogonal slices.} Then the
+        union has dimension $Tr$ (each slice contributes its own $r$
+        fresh dimensions). So $\deff = Tr$.
+\end{itemize}
+The general case is somewhere between $r$ and $Tr$ (and always at most
+$d$). Classroom analogy: if every student writes on the same wall,
+$\deff$ is the size of that wall. If every student has their own
+private wall, $\deff$ is the sum of all walls. The $\deff$ parameter
+is exactly how the theorem measures ``how much the task slices
+overlap.''
+
+%-----------------------------------------------------------------
+\section{The main result (Theorem 7), in plain words}\label{sec:thm}
+
+Here is our main theorem (Theorem~7 in \texttt{theorem\_v1.tex}):
+
+\begin{quote}
+\textbf{Main Theorem.} For merged LoRA models with $T$ tasks, each
+living in a random $r$-dim slice of $\R^d$, at rate $R$ bits, the
+worst-case $H_t$-weighted error satisfies
+\begin{equation}\label{eq:main}
+  \mathcal{D}^\star
+  \;\geq\;
+  \underbrace{B^2\!\left(1 - \frac{\deff}{Tr}\right)}_{\text{(A) the floor}}
+  \;+\;
+  \underbrace{c_{\mathrm{TQ}}\cdot\frac{B^2\deff}{Tr}\cdot 2^{-2R/\deff}}_{\text{(B) the compression term}}.
+\end{equation}
+\end{quote}
+
+There are two pieces, each with its own story.
+
+\subsection{(A) The floor: what you can't fix with more bits}
+
+The first term, $B^2(1 - \deff/(Tr))$, does not depend on $R$ at all.
+It is the error you are stuck with \emph{even if $R = \infty$}, i.e.\
+even if you are allowed infinite bits. It is a geometric fact about
+how the task vectors point: because they sit in different slices, no
+single arrow $w$ can perfectly match all of them at once. The floor
+captures that unavoidable geometric gap.
+
+Two sanity checks:
+\begin{itemize}[nosep]
+  \item \textbf{Shared subspace:} $V_t$ all the same, $\deff = r$.
+        Floor $= B^2(1 - r/(Tr)) = B^2(1 - 1/T)$. This matches the
+        classical centroid-error formula: even in the shared-slice
+        case, you cannot perfectly represent $T$ different unit arrows
+        by one arrow; the unavoidable loss is $B^2(1 - 1/T)$.
+  \item \textbf{Orthogonal subspaces:} $\deff = Tr$. Floor
+        $= B^2(1 - 1) = 0$. \textbf{Zero!} Does that make sense? Yes:
+        if the tasks live in completely non-overlapping slices, then
+        inside task $t$'s flashlight, no other task is visible, and
+        you can stitch a single $w$ that matches each $\tau_t$ exactly
+        on its own flashlight. There is no unavoidable floor.
+\end{itemize}
+(This second bullet surprised us -- we had initially expected the
+floor in the orthogonal case to be \emph{large}, not zero. See
+\S\ref{sec:numerics} for the story.)
+
+\subsection{(B) The compression term: how bits help}
+
+The second term, $c_{\mathrm{TQ}}\cdot(B^2\deff/(Tr))\cdot 2^{-2R/\deff}$,
+is the part that shrinks as you spend more bits. The factor $2^{-2R/\deff}$
+says: each extra bit per effective dimension cuts the squared error by
+a factor of 4. This is classical rate--distortion scaling. Intuition:
+quantizing an arrow in a $\deff$-dimensional space takes about $\deff$
+bits per unit of precision; at $R$ bits total you get $R/\deff$ bits
+per dimension; squared-error shrinks like $4^{-R/\deff}$. The
+$c_{\mathrm{TQ}}$ is a universal constant (the constant of the
+TurboQuant lower bound of Zandieh et al., arXiv 2504.19874), which we
+import from existing work.
+
+The multiplier in front, $B^2\deff/(Tr)$, is the ``compressible
+budget'': the amount of the total energy that can still be improved by
+more bits.
+
+\subsection{The conservation law: a pretty observation}
+
+Here is something beautiful that falls out. The floor and the
+compression-term prefactor add up:
+\[
+  \underbrace{B^2\!\left(1 - \frac{\deff}{Tr}\right)}_{\text{floor}}
+  \;+\;
+  \underbrace{B^2\frac{\deff}{Tr}}_{\text{compression prefactor}}
+  \;=\; B^2.
+\]
+So the total squared-length budget ($B^2$ per task) splits into
+``floor (cannot fix with bits)'' plus ``compression prefactor (can fix
+with enough bits),'' in a ratio controlled exactly by
+$\deff / (Tr)$. When $\deff = Tr$ (orthogonal case), the entire budget
+is compressible -- no floor. When $\deff = r$ (shared case), only a
+$1/T$ fraction is compressible -- the rest is floor. The single
+parameter $\deff / (Tr) \in [1/T, 1]$ controls the whole trade-off.
+
+\subsection{Three endpoint checks}
+
+The theorem recovers known limits at three boundaries (each is a
+one-line substitution; see \texttt{theorem\_v1.tex} \S6).
+\begin{enumerate}[nosep]
+  \item \textbf{Full rank} ($r=d$, i.e.\ LoRA's slice is the full
+        space): the bound collapses to our Phase 0 Theorem 1, which is
+        the classical multi-task result.
+  \item \textbf{Single task} ($T=1$): the bound collapses to
+        TurboQuant Theorem 3, the state-of-the-art single-task RD lower
+        bound.
+  \item \textbf{All tasks share one slice} ($V_t = V$): the bound
+        matches Phase 0 with $d \mapsto r$, exactly as you would hope.
+\end{enumerate}
+So our theorem properly generalizes three prior results, unified into
+one formula parameterized by $\deff$.
+
+%-----------------------------------------------------------------
+\section{Why the theorem is true (proof sketch in plain English)}
+
+The actual proof in \texttt{theorem\_v1.tex} \S5 is six steps. Here is
+the same skeleton, one paragraph per step, with no hairy algebra.
+
+\paragraph{Step 1 (Yao's minimax).} To prove a lower bound on
+$\mathcal{D}^\star$, we specify a \emph{hard} distribution $P$ on
+task-vector tuples and argue: no merging scheme, however cleverly
+designed, can beat a certain error against this $P$. This is Yao's
+minimax principle. Analogy: to show ``no student can ace this class,''
+we pick one extra-tough exam and show that every study strategy fails
+on it. Our exam is: each $V_t$ is a uniformly random $r$-dim slice,
+and $\tau_t$ is a uniformly random length-$B$ arrow inside it.
+
+\paragraph{Step 2 (max $\geq$ average).} The worst-case error is at
+least the $H_t$-weighted average error (obviously -- the biggest of
+several numbers is at least their average). The weighted average has
+a nice form: a floor term (\S\ref{sec:thm}-A) plus $(w - \tauH)^\top
+\Hbar (w - \tauH)$. So we have replaced the hard-to-reason-about
+$\max$ with a single quadratic error against $\tauH$, plus an additive
+floor we already computed in Lemma 6.
+
+\paragraph{Step 3 (restrict to relevant directions).} Only the part of
+$w$ inside $\range(\Hbar)$ -- the union of all task slices -- actually
+affects the error. Components of $w$ orthogonal to every $V_t$ are
+invisible to every flashlight, so WLOG we assume $w$ lives entirely in
+this $\deff$-dim subspace. Analogy: if flashlights only light up a
+wall, what's behind you is irrelevant.
+
+\paragraph{Step 4 (Euclidean change of variable).} The quadratic form
+$(w-\tauH)^\top\Hbar(w-\tauH)$ is not quite the familiar squared
+distance, because of the $\Hbar$ weighting. But we can stretch
+coordinates by $\Hbar^{1/2}$ (the square root of $\Hbar$), and in the
+stretched coordinates, the quadratic form \emph{becomes} ordinary
+squared distance. Specifically: let $\eta := \Hbar^{1/2}\tauH$ and
+$\xi := \Hbar^{1/2}(w-\tauH)$. Then our quadratic becomes $\|\xi\|^2$
+and the problem reduces to: \emph{compress $\eta$ using $R$ bits, in a
+$\deff$-dim Euclidean space.} A perfectly standard
+rate--distortion problem, just in a smaller-than-$d$ dimension.
+
+\paragraph{Step 5 (symmetry $\to$ known bound).} Now the magic.
+Because the slices $V_t$ were drawn uniformly at random, the resulting
+$\eta$ has a highly symmetric distribution: it is rotationally
+invariant inside its subspace. (Rotate the subspace any way you like,
+$\eta$ looks statistically the same.) Plugging this into a known
+rate-distortion lemma for rotationally-invariant sources (our Phase 0
+Lemma 2, which in turn builds on TurboQuant), we get
+\[
+  \text{expected squared error}
+  \;\geq\;
+  c_{\mathrm{TQ}}\cdot\E\|\eta\|^2\cdot 2^{-2R/\deff}.
+\]
+This is the $2^{-2R/\deff}$ decay in the main theorem, dropping out
+cleanly.
+
+\paragraph{Step 6 (combine).} We need $\E\|\eta\|^2$. But
+$\|\eta\|^2 = \tauH^\top\Hbar\tauH = B^2 - (\text{floor})$, by a short
+algebra step. Plugging $\E\|\eta\|^2 = B^2\deff/(Tr)$ (from Lemma 6)
+into Step 5 and combining with Step 2's floor gives exactly
+\eqref{eq:main}. Done.
+
+%-----------------------------------------------------------------
+\section{Numerical experiments: did it actually work?}\label{sec:numerics}
+
+Proofs alone are not enough -- we also write code to \emph{simulate}
+the setup and check that the empirical numbers match the formula. Two
+Python files do this:
+\texttt{code/synthetic/day8\_rank\_r\_sanity.py} and
+\texttt{code/synthetic/day9\_verify\_lemma6.py}.
+
+\subsection{What we ran}
+
+For each $(T, d, r)$ combination:
+\begin{enumerate}[nosep]
+  \item Sample random task slices $V_t$ and random task vectors
+        $\tau_t \in V_t$ of length $B$ (thousands of trials).
+  \item Compute the centroid $\tauH$, the effective dimension $\deff$,
+        and the floor.
+  \item Quantize $\tauH$ using various bit budgets $R$; measure the
+        squared error as a function of $R$.
+  \item Compare the empirical error-vs-bits curve to
+        \eqref{eq:main}.
+\end{enumerate}
+
+\subsection{Three checks we wanted to pass}
+
+\paragraph{(a) Regression at $r=d$.} At the full-rank boundary we
+should recover Phase 0. We did: empirical floor / Phase-0 floor is in
+$[0.998, 1.017]$ across all cells. Check.
+
+\paragraph{(b) Slope of log error vs bits should be $-2$.} The
+$2^{-2R/\deff}$ decay predicts that a log-log plot of excess error
+against bits should have slope $-2$ per extra bit per dim. Originally
+we measured this using the wrong metric (Euclidean squared error of
+$w - \tauH$ in the raw basis) and saw slope $-1.2$. This was initially
+alarming! After some head-scratching, we realized: the theorem
+predicts the slope on the \textbf{$\Hbar$-weighted} error, i.e.\ on
+$\|\eta\|^2$, not on the raw Euclidean error. When we switched to the
+right metric (the one Step 4 of the proof uses), the slope became
+$-2.00\pm 0.04$ across every cell we tested. Check.
+
+Lesson learned: bugs can live in measurement, not in math. The proof
+was correct; our first measurement was wrong.
+
+\paragraph{(c) $\deff$ matches the rank formula.} We can fit the
+measured $\deff$ from the error-vs-bits curve and compare to
+$\rank(\sum_t P_{V_t})$. They match within 5\% across $r \in
+\{4, 8, 16, 32\}$ at $T = 2$ with $Tr < d$. Check.
+
+\subsection{A special sanity test for Lemma 6}
+
+We also wrote \texttt{day9\_verify\_lemma6.py} that directly checks the
+closed-form floor formula $\E[\text{floor}] = B^2(1 - \E[\deff]/(Tr))$.
+Across 6 cases (shared $V$, orthogonal $V$, mixed; different $T, r$),
+the empirical floor matched the theoretical floor to relative error
+$\leq 4\times 10^{-3}$. In the orthogonal case it matched to
+$10^{-24}$, i.e.\ numerical precision.
+
+%-----------------------------------------------------------------
+\section{The bug story (honest debrief)}\label{sec:bugs}
+
+Science is not a straight line. Two real bugs that we caught during
+Day 9:
+
+\subsection{The Step-5 conditioning bug}
+
+In our first draft of the proof, Step 5 started with ``condition on
+$V_1, \dots, V_T$.'' This is wrong! If you condition on where each
+individual slice sits, you have fixed the problem and there is no
+longer any randomness in the $V_t$'s to average over -- the symmetry
+argument collapses. The correct move is to condition \emph{only} on
+the union $W = V_1 + \cdots + V_T$ (the $\deff$-dim subspace), and
+keep the $V_t$'s inside $W$ random. Under that weaker conditioning,
+rotational symmetry inside $W$ is preserved, and the argument goes
+through. We caught this by re-reading the proof carefully \emph{after}
+our numerics confirmed rotational invariance (otherwise we might have
+missed it and shipped a subtle gap).
+
+\subsection{The Marchenko--Pastur confound}
+
+When we first ran the rotational-invariance sanity test, we saw a
+spread of $1.27$ in the eigenvalues of the sample covariance of
+$\eta$, which naively suggests ``the distribution is not rotationally
+symmetric -- there's a preferred direction.'' But this was finite-
+sample noise! Random matrix theory (the Marchenko--Pastur
+distribution) predicts a spread of exactly this size even for a truly
+isotropic source at this sample size. We added an MP-based upper bound
+on the expected spread to the sanity test; the observed spread is
+below this upper bound; symmetry confirmed. The takeaway:
+\emph{statistical tests need their own theory} -- you cannot just
+``eyeball the number.''
+
+Both of these are in the daily log and discussed more in
+\texttt{notes/daily\_log.md} (Day 9 entry).
+
+%-----------------------------------------------------------------
+\section{What comes next}
+
+Our work so far covers:
+\begin{itemize}[nosep]
+  \item The closed-form floor (Lemma 6).
+  \item The full lower bound Theorem 7 for $H_t = P_{V_t}$ (the
+        LoRA-projector case).
+  \item The extension to general $H_t \succeq 0$ with arbitrary
+        per-task curvature spectra $(D_t)_{t=1}^T$
+        (Theorem 8, added Day 10--11). This is the
+        \textbf{MSE $\to$ CE bridge} -- real LLM cross-entropy
+        loss has a Fisher-information Hessian that is rank-$r$ PSD
+        but not a projector, and Theorem 8 applies to it directly.
+        The key trick was finding the ``right'' hard distribution:
+        sample $\tau_t$ uniformly on the $H_t$-ellipsoid in $V_t$
+        (not the Euclidean sphere), which makes the $H_t$-weighted
+        energy isotropic per-task regardless of the eigenvalue
+        spectrum.
+  \item Matching numerical verification for all of the above
+        (Day 8, 9, 10, 11 Python scripts).
+\end{itemize}
+
+The remaining steps on the way to ICLR 2027 (deadline 2026-09-24):
+\begin{itemize}[nosep]
+  \item \textbf{Achievability (Phase 2, starting now).} A lower
+        bound says ``no one can do better than X.'' We also want a
+        matching \emph{upper bound}: a concrete merging algorithm
+        (based on Hadamard incoherence + TurboQuant-style scalar
+        quantization of $\eta = \bar H^{1/2}\tauH$) that achieves
+        the lower bound up to constants. Then the RD function is
+        pinned down: $\mathcal{D}^\star \asymp \text{floor} +
+        B^2(\deff/Tr)\cdot 2^{-2R/\deff}$.
+  \item \textbf{Empirical validation.} On real LLM-with-LoRA data
+        (not just synthetic Stiefel-random slices), do the slopes
+        still match? This is the experimental part of the paper.
+\end{itemize}
+
+If both land by summer 2026, we have a clean story for ICLR 2027:
+a matching lower and upper bound on the fundamental compressibility
+limit of merged LoRA models, verified both on synthetic and real data.
+
+%-----------------------------------------------------------------
+\section*{A note on the audience}
+
+This document is written to be readable at about a 9th-grade level,
+but the underlying math -- despite the analogies -- is very real.
+Everything here has a rigorous version in \texttt{theorem\_v1.tex}, and
+every claim was numerically verified before being written down. We
+hope this document is useful as an on-ramp for readers who want to
+understand what the research is about before diving into the formal
+scaffold.
+
+\end{document}

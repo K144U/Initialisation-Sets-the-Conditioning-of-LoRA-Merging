@@ -1,0 +1,144 @@
+% Alignment Forum post — ready to post 2026-04-29.
+% Email drafts (TurboQuant authors) sent; Garg ping dropped.
+% Compile: pdflatex day7_externalization.tex
+
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{framed}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\cheb}{R_{\mathrm{c}}}
+
+\title{Alignment Forum research note}
+\author{Sankalp Pathak}
+\date{2026-04-29}
+
+\begin{document}
+\maketitle
+
+\begin{framed}\small
+\noindent\textbf{Title:} Rate-distortion lower bound for LoRA model merging (research note, seeking feedback) \\
+\textbf{Tags:} AI, Information Theory, Machine Learning \\
+\textbf{Post type:} Research note / Draft
+\end{framed}
+
+\medskip
+
+\noindent\textbf{TL;DR.} I'm a solo researcher working on a theoretical
+paper about LoRA merging: \emph{how many bits do you need to store a
+merged model that preserves $\epsilon$-distortion on each of $T$
+tasks?} I have a 6-page note sketching a Shannon-style lower bound
+that reduces to
+\href{https://arxiv.org/abs/2504.19874}{TurboQuant Theorem~3} via a
+deterministic $\max\geq\mathrm{avg}$ identity plus a rotationally-
+invariant rate--distortion lemma on the task-vector centroid. Looking
+for a sanity check on the reduction and on a Chebyshev-based
+tail-event argument in Lemma~2.
+
+\subsection*{Setting}
+
+$T$ task vectors $\tau_1, \dots, \tau_T \in \R^d$ with $\|\tau_t\|
+\leq B$. Per-task quadratic loss $f_t(w) = \tfrac12 \|w - \tau_t\|^2$.
+A rate-$R$ merging algorithm is an encoder--decoder pair
+$E: (\R^d)^T \to \{1, \dots, 2^R\}$, $D: \{1, \dots, 2^R\} \to \R^d$
+producing $w^\star = D(E(\boldsymbol\tau))$. Figure of merit:
+max-distortion $\Delta(w^\star; \boldsymbol\tau) = \max_t \|w^\star
+- \tau_t\|^2$.
+
+\subsection*{Result}
+
+\[
+  \mathcal{D}^\star(T, d, B, R)
+  \;\geq\;
+  B^2\!\left(1 - \tfrac{1}{T}\right)
+  \;+\; c_{\mathrm{TQ}} \cdot \tfrac{B^2}{T} \cdot 2^{-2R/d}.
+\]
+
+Two terms with distinct meanings:
+\begin{itemize}[leftmargin=1.4em,itemsep=0.15em]
+  \item $B^2(1 - 1/T)$ is a \textbf{Chebyshev-radius floor} --- the
+  irreducible multi-task incompatibility. Exactly $\E[(1/T)\sum_t
+  \|\tau_t - \bar\tau\|^2]$ under iid uniform-sphere task vectors;
+  numerically within 1--2\% of $\E[\cheb^2]$.
+  \item $c_{\mathrm{TQ}} (B^2/T) \cdot 2^{-2R/d}$ is the classical
+  Shannon decay governed by the rate--distortion function of the
+  centroid $\bar\tau$.
+\end{itemize}
+
+\subsection*{Proof in one paragraph}
+
+Yao's minimax with hard distribution $P = \mathrm{Unif}(B S^{d-1})^
+{\otimes T}$. The deterministic identity
+\[
+  \tfrac{1}{T}\sum_t \|w^\star - \tau_t\|^2
+  \;=\; \|w^\star - \bar\tau\|^2
+  \;+\; \tfrac{1}{T}\sum_t \|\tau_t - \bar\tau\|^2
+\]
+holds because the cross-term $\sum_t(\tau_t - \bar\tau) = 0$
+\textbf{identically}. Take max on the LHS and expectations:
+$\E[\max_t \|w^\star - \tau_t\|^2] \geq \E\|w^\star - \bar\tau\|^2
++ B^2(1 - 1/T)$. Now apply a rate--distortion lower bound to the
+first term: under $P$, $\bar\tau$ is rotationally invariant with
+$\E\|\bar\tau\|^2 = B^2/T$, so the scale-invariant bound
+$\E[\|\hat Y - Y\|^2 / \|Y\|^2] \geq c_{\mathrm{TQ}} \cdot 2^{-2R/d}$
+from TurboQuant Thm~3 transfers (chain rule + DPI + Jensen).
+Converting to absolute scale uses a high-probability norm-event
+$G_d$ with $\Pr(G_d^c) = O(d^{-1})$, absorbing a $(1 + o_d(1))$
+factor into the constant.
+
+\subsection*{Novelty claim}
+
+Standard multi-source rate--distortion frameworks (multiple
+descriptions, Heegard--Berger, common reconstruction) all use
+\textbf{per-source} or \textbf{average} distortion; none treat
+$\max_t D_t$ as the figure of merit. The $\max$ is precisely what
+isolates the multi-task Chebyshev floor, and the $\max\geq\mathrm{avg}$
+reduction is what separates this floor from the compression decay.
+I believe this is the first clean rate--distortion statement for
+max-distortion multi-source with a single-vector-RD reduction.
+
+\subsection*{Numerics}
+
+$T \in \{2, 4, 8\}$, $d \in \{128, 512, 2048\}$, $b = R/d \in \{1,
+2, 3, 4, 6, 8, 12\}$, 30 trials. Three checks:
+\begin{itemize}[leftmargin=1.4em,itemsep=0.15em]
+  \item \textbf{Chebyshev-floor formula $B^2(1 - 1/T)$.}
+  Empirical/theory ratio in $[0.9984, 1.0173]$ across all $(T, d)$.
+  \item \textbf{LB respected.} Valid everywhere (as it must be).
+  \item \textbf{$2^{-R/d}$ regime --- resolved NO.} A quantized-
+  Chebyshev-center merge closes the 2-regime apparent decay; the
+  $2^{-R/d}$ behavior in an earlier mean-merge experiment was a
+  sub-optimal-centering plateau, not an intrinsic RD phenomenon. The
+  rate--distortion function is $\Theta\bigl(\cheb^2 + (B^2/T)
+  \cdot 2^{-2R/d}\bigr)$.
+\end{itemize}
+
+\subsection*{What I'm asking}
+
+Two specific checks:
+\begin{enumerate}[leftmargin=1.6em,itemsep=0.15em]
+  \item \textbf{Lemma~2's tail-event substitution.} $Y = \bar\tau$
+  has no deterministic lower bound on $\|Y\|^2$ ($T=2$, $\tau_1 =
+  -\tau_2$ kills it). I use $G_d = \{\|\bar\tau\|^2 \geq
+  B^2/(T\kappa_d)\}$ with $\Pr(G_d^c)$ controlled by
+  $\mathrm{Var}(\|\bar\tau\|^2) = O(B^4/(T^2 d))$. Is there a reason
+  to prefer an EPI-based derivation that bypasses the
+  $\rho$-conditioning entirely?
+  \item \textbf{Novelty.} I checked El Gamal--Cover 1982, Steinberg
+  2009, Heegard--Berger, Wyner--Ziv; none match. Am I missing an
+  earlier treatment of max-over-$T$ distortion that I should be
+  citing?
+\end{enumerate}
+
+Any other pointers --- ``you missed reference $X$'', ``Lemma~2 is
+cleaner if you do $Y$'', ``this is subsumed by $Z$'' --- very
+welcome. Full 6-page note in comments / first reply (or DM me if
+preferred).
+
+\end{document}
