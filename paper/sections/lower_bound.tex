@@ -5,8 +5,8 @@ average-distortion problem plus an irreducible floor
 (\S\ref{subsec:id}); a closed-form evaluation of that floor under
 the hard distribution $P^\star$
 (\S\ref{subsec:floor}); and a rate-distortion lower bound on the
-remaining average-distortion subproblem via an $O(d)$-equivariance
-argument and a rotationally-invariant Shannon bound
+remaining average-distortion subproblem via a Shannon converse
+applied conditionally on the curvature data $\boldsymbol H$
 (\S\ref{subsec:main}).
 
 \subsection{The $H_t$-weighted max $\geq$ avg identity}
@@ -149,27 +149,36 @@ to emit $w^\star\in\range(\bar H)$ without loss.
 compression subproblem is rate-$R$ quantization of $\eta$ under
 squared Euclidean loss in $\R^{\deff}$.
 
-\emph{Step 5 ($O(W)$-equivariance and Shannon bound).}
-Conditioning on $W := \range(\bar H)$, the joint law of
-$(U_t, \tau_t)_{t=1}^T$ is $O(W)$-equivariant: for any $\tilde O
-\in O(W)$ extended to $O(d)$ by the identity on $W^\perp$,
-$\tau_t\mapsto O\tau_t$ and $H_t\mapsto OH_tO^\top$, leaving
-the marginal joint law unchanged. The pushforward
-$\eta\mapsto O\eta$ is therefore $O(W)$-invariant in the
-conditional law. A rotationally-invariant rate-$R$
-quantization bound — a rank-$r$ analog of TurboQuant
-Theorem~3~\cite{zandieh2025turboquant} — gives
+\emph{Step 5 (Shannon converse, conditional on $\boldsymbol H$).}
+Because both ends may use $\boldsymbol H$ as side information
+(\S\ref{sec:setup}), we bound the compression term conditional on
+the full curvature data $\boldsymbol H$ rather than on the
+subspace $W := \range(\bar H)$ alone. Given $\boldsymbol H$, the
+only remaining randomness is in the uniform directions $u_t$, so
+$\eta = \bar H^{1/2}\tauH$ is a zero-mean source on
+$\range(\bar H)\cong\R^{\deff}$. The Shannon rate-distortion
+converse for a $\deff$-dimensional source under squared-error loss
+holds for \emph{every} rate-$R$ code, including decoders and
+codebooks adapted to $\boldsymbol H$, and gives
 \begin{equation*}
-  \E\bigl[\|\bar H^{1/2}w^\star-\eta\|^2\,\bigm|\,W\bigr]
+  \E\bigl[\|\bar H^{1/2}w^\star-\eta\|^2\,\bigm|\,\boldsymbol H\bigr]
   \;\geq\;
-  c_{\mathrm{TQ}}\cdot\E\bigl[\|\eta\|^2\,\bigm|\,W\bigr]\cdot
+  c_{\mathrm{TQ}}\cdot\E\bigl[\|\eta\|^2\,\bigm|\,\boldsymbol H\bigr]\cdot
   2^{-2R/\deff}.
 \end{equation*}
-The key $D_t$-freeness of the argument survives in this step
-because $v_t = B D_t^{-1/2} u_t$ lives in $\R^r$ and is
-$O(d)$-free regardless of which $D_t$ it uses.
+Conditioning on $\boldsymbol H$ — rather than averaging over
+$O(W)$ rotations — is what makes the converse valid against an
+$\boldsymbol H$-aware decoder such as the achievability
+construction of \S\ref{sec:achv}. The constant $c_{\mathrm{TQ}}$
+now also absorbs the entropy-power-to-variance ratio of $\eta$ and
+the condition number of its conditional covariance, both $O(1)$
+under $P^\star$ because the spectra $D_t$ are fixed and
+$\tau_t^\top H_t\tau_t = B^2$ fixes the scale. The floor's
+$D_t$-freeness (Lemma~\ref{lem:floor-general}) is unaffected: for
+each fixed spectrum $v_t = B D_t^{-1/2} u_t$ is rotation-uniform
+in $\R^r$, so the constant is uniform over the admissible $D_t$.
 
-\emph{Step 6 (combine).} Taking expectation over $W$ and using
+\emph{Step 6 (combine).} Taking expectation over $\boldsymbol H$ and using
 $\E[\|\eta\|^2] = B^2\E[\deff]/(Tr)$ (from
 Lemma~\ref{lem:floor-general}), substitution into Step~2 yields
 \eqref{eq:thm-lb}. The Stiefel specialization $Tr\leq d$ gives
