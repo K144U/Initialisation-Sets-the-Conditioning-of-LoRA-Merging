@@ -14,9 +14,31 @@ and the $O(d)$-equivariance of the hard distribution, both of
 which survive verbatim under the Fisher-metric interpretation
 (the $D_t$-freeness of Step 5 is the key). A fully rigorous
 MSE-to-CE bridge via local quadratic approximation requires
-controlling the second-order remainder across the $H_t$-ball;
-we sketch this extension in the supplementary material and
-leave a quantitative version for future work.
+controlling the second-order remainder across the $H_t$-ball, and
+we can be precise about what that control needs. Writing the
+task-$t$ CE loss as $L_t(\theta_0 + w) = L_t(\theta_0 + \tau_t) +
+\tfrac12 (w-\tau_t)^\top H_t (w-\tau_t) + R_t(w)$ with $H_t$ the
+Fisher at $\tau_t$, the Taylor remainder satisfies
+$|R_t(w)| \leq \tfrac16 M_t \|w-\tau_t\|^3$, where $M_t$ bounds the
+operator norm of the third derivative of $L_t$ over the segment.
+Two facts make this remainder controllable in our regime. First,
+the rate budget forces $\|w - \tau_t\|$ small: at the rates we
+study the merged delta lies within an $O(B\,2^{-R/\deff})$ ball of
+$\tau_t$ on the active subspace, so $|R_t| = O(M_t B^3
+2^{-3R/\deff})$ is third-order in the same small quantity the
+quadratic term is second-order in, and is dominated once $R$ is
+above a model-dependent constant. Second, $M_t$ is finite for the
+softmax CE loss with bounded logits (the third derivative of
+log-sum-exp is uniformly bounded), so the bound is not vacuous.
+A fully quantitative theorem -- making $M_t$ explicit for a
+transformer LoRA and propagating it through the rate-distortion
+argument -- is the natural next step and is what would let the
+bound be quoted directly against measured CE-NLL; we give the
+remainder-bounded sketch in the supplementary material and leave
+the explicit-$M_t$ version for future work. The empirical section
+sidesteps the issue by reporting the CE excess
+$\Delta L_t$ directly rather than inferring it from the quadratic
+surrogate.
 
 \paragraph{The shared-$V$ exponent gap.} In the floor-positive
 regime (e.g.\ shared or substantially-overlapping $V_t$), the

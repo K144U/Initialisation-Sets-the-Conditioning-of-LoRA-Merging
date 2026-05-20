@@ -197,7 +197,7 @@ when subspaces overlap ($\deff < Tr$), and we measure $\deff = Tr$
 everywhere, so there is no overlap for it to exploit. Adopting a
 practical-significance threshold of $0.005$ nats, only TIES
 separates from the structure-blind cluster
-(Figure~\ref{fig:headline}, left).
+(Figure~\ref{fig:methods}).
 
 \paragraph{Finding 4: a universal ``less is more'' rate at
 $b=2$.} The TVQ rate sweep is non-monotone on every model: $2$-bit
@@ -206,26 +206,52 @@ $1.7\times$--$6.0\times$ below the adjacent $b=4$ rate (ratios:
 Yi $1.65\times$, Llama $2.09\times$, Mistral $2.33\times$, Qwen
 $5.97\times$; all with non-overlapping CIs against $b=4$), while
 $b=1$ (too coarse) and $b\geq 4$ (too fine) both regress to the
-$\approx$TA floor (Figure~\ref{fig:headline}, right). On Qwen the
+$\approx$TA floor (Figure~\ref{fig:tvq}). On Qwen the
 $b=2$ \emph{average}-task excess is negative ($-0.007$): the
 $2$-bit merge is better than the mean task adapter. The bound does
 not predict this dip -- it upper-bounds quantization-induced
 distortion and does not preclude quantization being
 \emph{beneficial} -- but the effect is robust across all four
 architectures, suggesting that coarse quantization at $b=2$ acts
-as a regularizer that suppresses cross-task interference. We
-flag the mechanism as an open question.
+as a regularizer that suppresses cross-task interference.
+
+We offer one speculative mechanism, which the paper's own
+machinery makes natural. Per-tensor uniform quantization at
+$b=2$ uses four levels with the decision boundary nearest zero
+mapping the smallest-magnitude coordinates to $0$; since merged
+task vectors are heavy-tailed with most mass near zero, this
+zeroes out roughly the half of coordinates closest to the origin.
+That is precisely the trim-then-average operation TIES performs
+explicitly -- $b=2$ TVQ is, in effect, an \emph{implicit} TIES,
+pruning the low-magnitude coordinates that carry most of the
+destructive cross-task interference while preserving the dominant
+directions. This predicts (i) the dip should track the sparsity
+of the merged delta, and (ii) $b=2$ TVQ and TIES should help on
+the same tasks -- both testable, and consistent with TIES being
+the only other method that beats Task Arithmetic here
+(Finding~3). We flag a full mechanistic account as open, but note
+the explanation is not free-floating: it is the same
+interference-pruning principle the theory and TIES already rely
+on.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{../paper_artifacts/figures/headline_with_ci.png}
-\caption{Real-LLM merging, four architectures, $95\%$ bootstrap
-CIs. \textbf{Left:} worst-task excess for the four non-TVQ
-methods; only TIES separates from the Task-Arithmetic / DARE /
-KnOTS cluster. \textbf{Right:} TVQ rate sweep; a universal
-local minimum at $b=2$ sits well below the adjacent rates on
-every model.}
-\label{fig:headline}
+\includegraphics[width=0.7\textwidth]{../paper_artifacts/figures/headline_methods_ci.png}
+\caption{Non-TVQ merging methods, four architectures, $95\%$
+bootstrap CIs. Only TIES separates from the Task-Arithmetic /
+DARE / KnOTS cluster; KnOTS and DARE are within practical noise
+of Task Arithmetic on every model.}
+\label{fig:methods}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.7\textwidth]{../paper_artifacts/figures/headline_tvq_ci.png}
+\caption{TVQ rate sweep, four architectures, $95\%$ bootstrap
+CIs. A universal local minimum at $b=2$ sits well below the
+adjacent rates on every model; $b=1$ (too coarse) and $b\geq 4$
+(too fine) regress to the $\approx$Task-Arithmetic floor.}
+\label{fig:tvq}
 \end{figure}
 
 \paragraph{What we do not claim.} (i) We do not observe the
@@ -240,8 +266,37 @@ strictly above its (zero) floor, as Finding~1 makes precise.
 (iii) Translation shows consistently negative excess (merging
 \emph{improves} it relative to the translation-only adapter),
 which we attribute to under-training of the single-task
-translation adapter ($7500$ WMT19 pairs); disentangling this from
-genuine cross-task transfer requires a longer-trained baseline
-and is left to future work. All results use a single training
-seed; the CIs above quantify evaluation uncertainty, not seed
-variance.
+translation adapter ($7500$ WMT19 pairs). We flag the
+consequence explicitly: an under-trained baseline
+$L_t(\theta_0+\tau_t)$ is artificially high, which both inflates
+the apparent ``free'' improvement on translation and could mask
+how much merging truly costs that task. This does not affect the
+headline worst-task metric -- GSM8K is the bottleneck on every
+model -- but it does mean the per-task translation row should be
+read with caution; disentangling under-training from genuine
+cross-task transfer requires a longer-trained baseline and is
+left to future work. (iv) We have not run our own achievability
+construction (\S\ref{sec:achv}) on the real adapters; doing so
+would test whether the theoretically optimal encoder closes the
+$0.10$--$0.22$ gap or whether the gap reflects the
+quadratic-loss approximation rather than algorithmic
+suboptimality. We view this as the most valuable next experiment
+and leave it to future work.
+
+\paragraph{Robustness of the qualitative findings to the single
+seed.} All adapters are trained with one seed, so the CIs above
+quantify evaluation, not training, uncertainty. We nonetheless
+expect the three structural findings to be seed-robust. The
+floor finding ($\deff = Tr$) is a \emph{rank} statement about
+$T=4$ rank-$16$ subspaces (a $64$-dimensional span) inside
+$\geq 4096$-dimensional layers: by dimension counting, independently
+trained subspaces are in general position almost surely, so
+$\deff = Tr$ is essentially certain regardless of seed -- and we
+indeed observe it in $100\%$ of layers across four independently
+pretrained models. The model ordering and the $b=2$ dip are
+large-margin effects (adjacent-model floor gaps and the
+$b{=}2$-vs-$b{=}4$ ratios all have non-overlapping $95\%$ CIs,
+\S\ref{subsec:exp-lora}), so a single re-seed would have to move
+point estimates by several CI-widths to overturn them. A
+multi-seed study would still strengthen the per-task breakdowns
+and is the natural complement to (iv) above.

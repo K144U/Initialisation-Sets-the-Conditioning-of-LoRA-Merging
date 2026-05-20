@@ -1,38 +1,26 @@
-Practitioners routinely merge many LoRA fine-tunes into a single
-deployable model, but no principled limit says how well this can
-be done at a fixed storage budget. We cast model merging as
-multi-source lossy source coding under worst-task distortion and
-prove the first rate-distortion theorem for the problem. Under a
-Stiefel-random worst-case distribution with arbitrary
-task-dependent curvatures, the achievable distortion has a
-closed-form floor $B^2(1 - \deff/(Tr))$ governed by an effective
-dimension $\deff := \mathbb{E}[\operatorname{rank}(\sum_t
-P_{V_t})]$, plus a compression term scaling as
-$\Theta(2^{-2R/\deff})$; an explicit Gaussian-QR random rotation
-followed by uniform scalar quantization matches the bound up to a
-universal constant $C = O(T)$ in the generic floor-zero regime.
-The theorem turns ``how well can we merge?'' into a measurable
-target.
+Practitioners merge many LoRA fine-tunes into one deployable
+model, but no principled limit says how well this can be done at
+a fixed storage budget. We cast merging as multi-source lossy
+source coding under worst-task distortion and prove the first
+rate-distortion theorem for it: under a Stiefel-random worst-case
+distribution, the distortion has a closed-form floor
+$B^2(1 - \deff/(Tr))$ set by an effective dimension
+$\deff := \mathbb{E}[\operatorname{rank}(\sum_t P_{V_t})]$, plus a
+compression term scaling as $\Theta(2^{-2R/\deff})$. An explicit
+Gaussian-QR rotation with uniform scalar quantization matches the
+lower bound up to a factor $C = Tc^2/3$ for fixed task count $T$
+(tightening the $T$-dependence is open).
 
-We then calibrate the bound against $16$ real LoRA adapters
-across four base models (Llama-3.1-8B, Qwen-2.5-7B, Mistral-7B,
-Yi-1.5-9B) and four tasks. Real task subspaces are linearly
-independent ($\deff = Tr$ in every layer), so the predicted floor
-is zero -- yet current merging methods leave $0.10$--$0.22$
-nats/token of worst-task error on the table, a quantitative gap
-to the information-theoretic optimum. Three findings sharpen the
-picture: (i) among standard methods only TIES improves on naive
-averaging, and only on the bottleneck task, while
-subspace-alignment (KnOTS) is statistically indistinguishable
-from it -- exactly as the theory predicts when subspaces do not
-overlap; (ii) merging difficulty is governed by the
-pretraining and instruction-tuning recipe, not attention design
--- a Llama-family model can merge more cleanly than Llama itself,
-and no subspace-overlap statistic explains the ordering; and
-(iii) a universal ``less-is-more'' regime in which $2$-bit
-task-vector quantization beats higher-bit quantization across all
-four architectures. All empirical claims carry $95\%$ bootstrap
-confidence intervals. Synthetic Monte-Carlo experiments
-additionally confirm the predicted $-2R/\deff$ slope to within
-$\pm 0.01$. The bound supplies a calibration curve against which
-present and future merging algorithms can be graded.
+Across $16$ real LoRA adapters ($4$ base models $\times$ $4$
+tasks), task subspaces are linearly \emph{independent}
+($\deff = Tr$ in every layer), so the bound's floor is zero.
+Current merging methods nonetheless leave $0.10$--$0.22$ nats/token
+of worst-task error -- a loose lower envelope on the gap to optimal,
+since real task vectors are far more benign than the worst case. The
+operative question is therefore algorithmic, not informational. Of
+standard methods only TIES beats naive averaging, via the bottleneck
+task, while subspace alignment (KnOTS) matches it -- as the theory
+predicts at zero overlap -- and a universal ``less-is-more'' regime
+appears in which $2$-bit task-vector quantization beats higher-bit
+quantization on all four architectures. All empirical claims carry
+$95\%$ bootstrap CIs.

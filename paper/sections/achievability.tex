@@ -73,8 +73,32 @@ Theorem~\ref{thm:general},
   \tau_t)\bigr] \;=\; \Theta\bigl(B^2\cdot 2^{-2R/(Tr)}\bigr),
 \end{equation*}
 i.e.\ the Bayesian rate-distortion function under $P^\star$ is
-pinned down to a universal constant in this regime.
+pinned down to a constant factor in this regime -- universal in
+$d$, $r$, $R$, and $B$, but growing linearly in $T$ (see
+Remark~\ref{rem:tgap}).
 \end{theorem}
+
+\begin{remark}[What the $\Theta$ hides; the $T$-dependence is open]
+\label{rem:tgap}
+The lower-bound constant $c_{\mathrm{TQ}}$ (inherited from
+TurboQuant) is independent of $T$, whereas the upper-bound
+constant is $C = Tc^2/3$. The $\Theta$ in the theorem therefore
+hides a multiplicative factor that is constant in $d, r, R, B$ but
+\emph{linear in $T$}: for $T$ treated as fixed (as throughout this
+paper) the bounds match up to a constant, but for $T$ growing
+(e.g.\ merging $50$--$100$ adapters) the upper--lower gap grows
+linearly. The entire $T$ factor enters at Step~3, the crude
+$\max_t (\cdot) \leq \sum_t(\cdot) = T\,\mathrm{avg}$ bound. This
+step is tight only when the per-task distortions
+$(\delta w)^\top H_t (\delta w)$ are all comparable; when one task
+dominates it is loose by up to a factor of $T$. We do not know
+whether the linear $T$-dependence is intrinsic to the
+rate-distortion function or an artifact of this analysis;
+tightening it -- by a sharper achievability step or a
+$T$-dependent lower bound -- is open. Consequently the floor-zero
+``$\Theta(B^2 2^{-2R/(Tr)})$'' conclusion should be read as
+``$\Theta$ up to factors of $T$.''
+\end{remark}
 
 \paragraph{Proof sketch.} Five steps.
 

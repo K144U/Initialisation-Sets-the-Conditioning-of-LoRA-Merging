@@ -41,8 +41,11 @@ max-distortion $\max_{t\leq T} D_t(w^\star)$ at rate $R$.
 Two features separate this problem from classical lossy
 source coding. First, the encoder observes $T$ sources rather
 than one; multi-description coding~\cite{elgamalcover1982md}
-addresses related questions but under \emph{average} distortion,
-which Lemma~\ref{lem:id} (below) shows is strictly weaker.
+addresses related questions but under \emph{average} distortion.
+Lemma~\ref{lem:id} (below) shows worst-task distortion dominates
+average distortion (max $\geq$ avg), so an average-distortion
+treatment lower-bounds, but does not capture, the worst-task
+objective we target.
 Second, the low-rank structure of $H_t$ means distortions are
 measured in task-specific rank-$r$ subspaces; the effective
 dimension is the combinatorial quantity $\deff := \E[\rank
@@ -51,8 +54,11 @@ with the bound attained almost surely when the $V_t$'s are
 drawn iid from the Stiefel manifold.
 
 \paragraph{Contributions.} We give the first rate-distortion
-theorem for model merging, matching lower and upper bounds up
-to universal constants in the generic regime.
+theorem for model merging, matching lower and upper bounds up to
+a constant factor in the generic regime -- universal in
+$d$, $r$, $R$, $B$, and linear in the number of tasks $T$, which
+we treat as fixed throughout (the $T$-dependence is discussed
+under Scope below).
 
 \begin{enumerate}[leftmargin=*,topsep=2pt,itemsep=2pt]
 \item \textbf{An algebraic identity reducing max-distortion
@@ -94,16 +100,16 @@ $O(d)$-equivariance argument that works regardless of
 task-dependent spectra.
 
 \item \textbf{An explicit algorithm that matches the lower
-bound up to a universal constant (Theorem~\ref{thm:achv}).}
+bound up to a constant factor (Theorem~\ref{thm:achv}).}
 In the floor-zero Stiefel regime ($Tr\leq d$, $V_t$ drawn iid
 from the Stiefel manifold), randomized orthogonal mixing of the
 $\bar H^{1/2}$-scaled centroid followed by uniform scalar
 quantization achieves
 $\E[\max_t D_t(w^\star)]\leq C\cdot B^2\cdot 2^{-2R/(Tr)}$
-for a universal constant $C = O(T)$. Combined with
-Theorem~\ref{thm:general},
+with $C = Tc^2/3$ (universal in $d, r, R, B$; linear in $T$).
+Combined with Theorem~\ref{thm:general},
 $\mathcal{D}^\star = \Theta\!\left(B^2\cdot 2^{-2R/(Tr)}\right)$
-in this regime. The construction reduces to
+in this regime for fixed $T$. The construction reduces to
 TurboQuant~\cite{zandieh2025turboquant} at $T=1$.
 
 \item \textbf{Numerical validation of the predicted slopes and
@@ -138,9 +144,11 @@ beats higher-bit quantization on all four architectures.
 \end{enumerate}
 
 \paragraph{What this means for practice.} The bound gives
-practitioners a calibration curve: any merging algorithm --
-existing or future -- can be graded by its gap to
-$\mathcal{D}^\star$. The theorem exposes two regimes through the
+practitioners a \emph{lower envelope}, not a tight calibration
+curve: because real task vectors are far more benign than the
+worst-case $P^\star$, the bound certifies only that no algorithm
+can do better, and any method's gap to $\mathcal{D}^\star$ is an
+upper estimate of its suboptimality rather than an exact grade. The theorem exposes two regimes through the
 floor $B^2(1 - \deff/(Tr))$. When task subspaces overlap
 substantially ($\deff \ll Tr$) the floor is irreducible and no
 amount of rate closes it; when they are independent
@@ -186,10 +194,17 @@ active set at the Chebyshev center), and we verify this
 numerically for $T\in\{2,3,4\}$; closing the exponent gap to
 the lower bound's $2^{-2R/\deff}$ appears to require
 non-linear / random-coding encoders and is left open
-(Remark~\ref{rem:sharedv-gap}). The bound is stated in the
-MSE / quadratic-loss setting; the extension to cross-entropy
-LLM loss via local Fisher-quadratic approximation is
-discussed in~\S\ref{sec:discussion}.
+(Remark~\ref{rem:sharedv-gap}). Separately, the upper-bound
+constant $C = Tc^2/3$ grows linearly in $T$ while the lower-bound
+constant $c_{\mathrm{TQ}}$ is $T$-independent, so the
+``matching up to constants'' claim holds for the number of tasks
+$T$ treated as fixed; the linear $T$-gap (whose source is the
+$\max \leq T\cdot\mathrm{avg}$ step of
+Theorem~\ref{thm:achv}, \S\ref{sec:achv}) is not known to be
+tight, and tightening the $T$-dependence is open. Finally, the
+bound is stated in the MSE / quadratic-loss setting; the
+extension to cross-entropy LLM loss via local Fisher-quadratic
+approximation is discussed in~\S\ref{sec:discussion}.
 
 \paragraph{Paper organization.}
 \S\ref{sec:setup} introduces the formal rate-distortion model
