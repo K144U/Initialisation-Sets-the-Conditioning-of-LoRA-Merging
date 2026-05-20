@@ -68,13 +68,180 @@ $-2r/(r + |A| - 1)$ and is left open
 
 \subsection{Real-LLM merging}\label{subsec:exp-lora}
 
-A calibration of Theorem~\ref{thm:general} against real LoRA
-fine-tunes (measuring worst-task distortion on merged Qwen /
-Gemma / Phi adapters for standard merging methods such as Task
-Arithmetic, TIES, DARE, KnOTS, and TVQ) is deferred to a future
-version of this paper. The aim of such experiments is to test
-whether the bound predicts the \emph{ranking} of merging methods
-across tasks of varying subspace overlap, not merely to
-reproduce theoretical slopes on idealized data. We view this as
-a substantive empirical contribution in its own right and
-separate it from the present theoretical treatment.
+We calibrate the bound against real LoRA fine-tunes across four
+instruction-tuned base models and four tasks. The aim is not to
+reproduce the idealized slopes of \S\ref{subsec:exp-synthetic} --
+real task vectors are not drawn from the worst-case distribution
+$P^\star$ -- but to test which \emph{qualitative} predictions of
+the theory survive contact with real models, and to quantify how
+far current merging methods operate from the
+information-theoretic floor.
+
+\paragraph{Setup.} We use four base models spanning distinct
+pretraining recipes and two attention designs:
+Llama-3.1-8B-Instruct (multi-head attention, MHA),
+Qwen-2.5-7B-Instruct (grouped-query attention, GQA),
+Mistral-7B-Instruct-v0.3 (MHA), and Yi-1.5-9B-Chat (MHA,
+Llama-family architecture). For each model we train $T=4$
+task-specific LoRA adapters (rank $r = 16$ on the
+$\{q,k,v,o\}$ projections of every attention block; AdamW,
+learning rate $5\times10^{-5}$, $7500$ examples $\times$ $2$
+epochs, full bf16 base) on GSM8K (math), Alpaca-cleaned
+(instruction following), Magicoder-OSS-Instruct (code), and
+WMT19 en$\to$de (translation). This yields $16$ adapters in
+total. We evaluate on $n = 1000$ held-out examples per task,
+disjoint from training, and report negative log-likelihood (NLL)
+in nats per response token. Confidence intervals are $95\%$
+percentile bootstrap over $10{,}000$ resamples of the per-example
+NLL.
+
+\paragraph{Distortion metric.} For a merged delta $w$ we measure
+the per-task \emph{excess} NLL over the task's own adapter
+$\tau_t$, $\Delta L_t(w) = L_t(\theta_0 + w) - L_t(\theta_0 +
+\tau_t)$, and the worst-task distortion $\widehat D(w) = \max_t
+\Delta L_t(w)$, the operational analogue of the
+$\max_t$ objective in \S\ref{sec:setup}. The shared frozen base
+$\theta_0$ cancels in $\Delta L_t$, so the metric is invariant
+to base-model quality and isolates the cost of merging.
+Table~\ref{tab:nll-tau} reports the per-adapter baselines
+$L_t(\theta_0 + \tau_t)$.
+
+\begin{table}[t]
+\centering
+\caption{Per-adapter baseline NLL $L_t(\theta_0+\tau_t)$ (nats/token,
+$n=1000$). Lower is better. Yi-1.5-9B is the strongest per-task
+learner on three of four tasks.}
+\label{tab:nll-tau}
+\begin{tabular}{lrrrr}
+\hline
+Model & GSM8K & Alpaca & Magicoder & Translation \\
+\hline
+Llama-3.1-8B    & 0.466 & 0.991 & 0.281 & 0.745 \\
+Qwen-2.5-7B     & 0.442 & 0.919 & 0.247 & 0.822 \\
+Mistral-7B-v0.3 & 0.449 & 0.884 & 0.283 & 0.918 \\
+Yi-1.5-9B       & 0.387 & 0.840 & 0.229 & 0.763 \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Merging methods.} We merge the four adapters with
+uniform weights using five methods: Task Arithmetic (TA;
+structure-blind averaging), TIES, DARE (both at density $0.2$),
+KnOTS (linear inner merge), and task-vector quantization (TVQ;
+uniform scalar quantization at $b \in \{1,2,4,8,16,32\}$ bits
+per parameter). This is $10$ merge configurations per model,
+$40$ in total.
+
+\paragraph{Finding 1: a non-vanishing floor on every architecture.}
+At the no-quantization rate ($b=32$), worst-task excess is
+strictly positive and bootstrap-significant for all four models:
+Llama $0.218$ $[0.213, 0.224]$, Mistral $0.146$ $[0.141, 0.151]$,
+Qwen $0.110$ $[0.106, 0.114]$, Yi $0.099$ $[0.095, 0.102]$
+(Task Arithmetic; the other structure-blind methods agree to
+within $0.003$). The bound predicts a floor of the form
+$B^2(1 - \deff/(Tr))$. Computing $\deff = \rank(\sum_t P_{V_t})$
+directly from the trained adapters, we find $\deff = Tr = 64$ in
+\emph{every} layer of \emph{every} model: the four task subspaces
+are linearly independent, so the predicted floor is exactly zero.
+Real merged adapters thus sit \emph{above} the bound's
+floor by $0.10$--$0.22$ nats/token. We read this gap as the
+suboptimality of current merging methods relative to the
+information-theoretic optimum, rather than as a violation: the
+bound is a lower envelope over the worst-case distribution
+$P^\star$, and real task vectors are more benign than $P^\star$,
+leaving headroom that better algorithms could close.
+
+\paragraph{Finding 2: merging difficulty is governed by training,
+not attention design.} The worst-task floors order the models
+\textbf{Llama $>$ Mistral $>$ Qwen $>$ Yi} (hardest to easiest;
+all adjacent gaps have non-overlapping $95\%$ CIs). This ordering
+cuts across attention design: the GQA model (Qwen) is neither the
+easiest nor the hardest, and Yi-1.5-9B -- which shares
+Llama-3.1's MHA architecture -- is $2.2\times$ easier to merge
+than Llama-3.1 itself. A natural hypothesis is that the ordering
+reflects subspace overlap. We test this with two effective-dimension
+statistics of the stacked subspace
+$M = [V_1 \mid \cdots \mid V_T]$: the hard rank $\deff$ (above,
+saturated at $Tr$ for all models) and a soft effective dimension
+$\deff^{\mathrm{soft}} = (\sum_i \sigma_i^2)^2 / \sum_i \sigma_i^4$
+(participation ratio of the singular values $\sigma_i$ of $M$).
+The soft statistic is nearly identical across architectures
+($16.4 \pm 0.1$, i.e.\ within $0.7\%$), while worst-task excess
+varies by $2.2\times$; the rank correlation between
+$\deff^{\mathrm{soft}}/(Tr)$ and worst-task excess is not
+significant ($\rho = 0.4$, $p = 0.6$). \emph{Neither
+subspace-overlap statistic explains the ordering.} We conclude
+that merging-readiness is a property of the pretraining and
+instruction-tuning recipe -- plausibly mediated by the curvature
+$H_t$ of the loss, which the bound treats as given -- and not of
+attention design or subspace geometry alone. Characterizing this
+dependence is left to future work.
+
+\paragraph{Finding 3: structure-respecting merging helps only via
+the bottleneck task.} TIES is the only method that meaningfully
+improves on Task Arithmetic: it reduces worst-task excess by
+$27\%$ (Llama), $61\%$ (Mistral), $54\%$ (Yi), and $87\%$ (Qwen),
+with non-overlapping CIs in every case. A paired bootstrap of the
+per-task differences (the shared $\tau_t$ baseline cancels) shows
+the win is concentrated on \emph{the bottleneck task}: on GSM8K,
+TIES beats TA by $0.058$--$0.106$ nats on all four models, while
+on the easier tasks it is mixed and occasionally significantly
+worse. TIES's sign-election and magnitude-pruning resolve
+destructive interference where it matters most -- on the
+worst-case task -- at a small cost elsewhere. By contrast, KnOTS
+and DARE are statistically and practically indistinguishable from
+TA (paired differences $\leq 0.002$ and $\leq 0.003$ nats
+respectively, split in both directions). This is consistent with
+the theory: KnOTS's subspace alignment is predicted to help only
+when subspaces overlap ($\deff < Tr$), and we measure $\deff = Tr$
+everywhere, so there is no overlap for it to exploit. Adopting a
+practical-significance threshold of $0.005$ nats, only TIES
+separates from the structure-blind cluster
+(Figure~\ref{fig:headline}, left).
+
+\paragraph{Finding 4: a universal ``less is more'' rate at
+$b=2$.} The TVQ rate sweep is non-monotone on every model: $2$-bit
+quantization yields a sharp local minimum in worst-task excess,
+$1.7\times$--$6.0\times$ below the adjacent $b=4$ rate (ratios:
+Yi $1.65\times$, Llama $2.09\times$, Mistral $2.33\times$, Qwen
+$5.97\times$; all with non-overlapping CIs against $b=4$), while
+$b=1$ (too coarse) and $b\geq 4$ (too fine) both regress to the
+$\approx$TA floor (Figure~\ref{fig:headline}, right). On Qwen the
+$b=2$ \emph{average}-task excess is negative ($-0.007$): the
+$2$-bit merge is better than the mean task adapter. The bound does
+not predict this dip -- it upper-bounds quantization-induced
+distortion and does not preclude quantization being
+\emph{beneficial} -- but the effect is robust across all four
+architectures, suggesting that coarse quantization at $b=2$ acts
+as a regularizer that suppresses cross-task interference. We
+flag the mechanism as an open question.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{../paper_artifacts/figures/headline_with_ci.png}
+\caption{Real-LLM merging, four architectures, $95\%$ bootstrap
+CIs. \textbf{Left:} worst-task excess for the four non-TVQ
+methods; only TIES separates from the Task-Arithmetic / DARE /
+KnOTS cluster. \textbf{Right:} TVQ rate sweep; a universal
+local minimum at $b=2$ sits well below the adjacent rates on
+every model.}
+\label{fig:headline}
+\end{figure}
+
+\paragraph{What we do not claim.} (i) We do not observe the
+predicted $2^{-2R/\deff}$ rate-decay slope at practical bit
+budgets: for $b \geq 1$ the merging-geometry error dominates the
+quantization error, leaving at most one or two TVQ points above
+the floor on any model -- too few to fit a slope. The decay term
+is real but operationally invisible above sub-bit precision in
+this regime, and we report it as such rather than forcing a fit.
+(ii) We do not claim real merges saturate the bound; they lie
+strictly above its (zero) floor, as Finding~1 makes precise.
+(iii) Translation shows consistently negative excess (merging
+\emph{improves} it relative to the translation-only adapter),
+which we attribute to under-training of the single-task
+translation adapter ($7500$ WMT19 pairs); disentangling this from
+genuine cross-task transfer requires a longer-trained baseline
+and is left to future work. All results use a single training
+seed; the CIs above quantify evaluation uncertainty, not seed
+variance.

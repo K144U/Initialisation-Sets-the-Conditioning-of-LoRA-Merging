@@ -42,6 +42,32 @@ desktop.ini
 # Claude Code / local agent state
 .claude/
 
+# Phase 3 generated artifacts (regenerable from configs + LoRA adapters)
+cache/
+logs/
+.conda/
+results/phase3/smoke/
+code/phase3/figures/
+
+# Large binaries / caches — too heavy for git (use external artifact
+# storage or git-lfs if these ever need tracking).
+# ~111 GB downloaded base models (not ours):
+models/
+# ~3.8 GB trained LoRA adapters + trainer checkpoints:
+artifacts/
+# Unsloth JIT cache:
+unsloth_compiled_cache/
+# Safety net: never commit raw weights:
+*.safetensors
+# Bulky raw per-example NLL arrays (~100 MB); their derived bootstrap CIs
+# and aggregate matrices ARE committed under results/phase3/:
+results/phase3/eval_matrix_n1k_v3_perexample/
+
+# Secrets — never commit
+.env
+.env.local
+*.token
+
 # Misc
 *.tmp
 *.bak

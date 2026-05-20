@@ -1,0 +1,40 @@
+% ===================================================================
+% REPRODUCIBILITY STATEMENT. Unnumbered, before references.
+% Points at the artifacts without breaking double-blind anonymity:
+% no author-identifying URLs, no cluster paths. A full decision log
+% accompanies the camera-ready (kept internal during review per the
+% project's transparency policy).
+% ===================================================================
+
+All theoretical claims are stated with explicit assumptions in
+\S\ref{sec:setup} and proved in \S\ref{sec:lower}--\S\ref{sec:achv}
+and the supplementary material. For the empirical results we
+release, on publication, the training and evaluation code, the
+exact per-task configuration files (base model, LoRA rank and
+target modules, optimizer, token budget, eval split sizes), the
+random seeds, and the per-example negative-log-likelihood arrays
+underlying every cell of the merge matrix.
+
+The merge matrix comprises $40$ cells ($4$ base models $\times$
+$\{$Task Arithmetic, TIES, DARE, KnOTS$\}$ plus a six-rate TVQ
+sweep). Each cell loads the shared frozen base and four
+task-specific LoRA adapters, applies one merging method with
+uniform weights, and reports worst-task excess NLL on $n=1000$
+held-out examples per task. We verified that training and
+evaluation splits are disjoint (the held-out slice is taken
+after a single shuffle of the source split, with a separate
+audit confirming zero overlap). Confidence intervals are $95\%$
+percentile bootstrap over $10{,}000$ resamples of the
+per-example NLL; method-to-method comparisons use a paired
+bootstrap in which the shared per-task baseline cancels.
+Point estimates were reproduced across two independent
+evaluation runs and agreed to within $0.001$ nats/token; we
+report the second run, which additionally logs per-example
+values. Results use a single training seed, and we are explicit
+that the reported intervals quantify evaluation uncertainty
+rather than seed variance.
+
+A chronological log of design decisions, intermediate negative
+results, and a data-handling correction made during the study
+accompanies the camera-ready version, in the interest of full
+methodological transparency.

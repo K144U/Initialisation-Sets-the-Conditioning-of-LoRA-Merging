@@ -1,0 +1,72 @@
+# Smoke test config — gates Day 1+ work.
+# Must keep wall-clock < 1 hr on a dedicated A100.
+
+base_model: meta-llama/Llama-3.2-1B-Instruct
+
+tasks:
+  gsm8k:
+    dataset: openai/gsm8k
+    config: main
+    split_train: train
+    split_eval: test
+    n_train: 100
+    n_eval: 50
+    prompt_field: question
+    answer_field: answer
+  alpaca:
+    dataset: yahma/alpaca-cleaned
+    config: null
+    split_train: train
+    split_eval: train         # alpaca has no test split; we'll take a slice
+    n_train: 100
+    n_eval: 50
+    prompt_field: instruction  # also concat 'input' if non-empty
+    answer_field: output
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj]
+
+train:
+  epochs: 1
+  lr: 5.0e-5
+  batch_size: 2
+  grad_accum: 8
+  max_seq_length: 1024     # smaller than the full 2048 to keep smoke fast
+  warmup_ratio: 0.03
+  optim: adamw_torch
+  dataset_num_proc: 2      # avoid the 64-worker network storm seen in first attempt
+
+merge:
+  method: task_arithmetic
+  weights: [0.5, 0.5]
+
+eval:
+  n_eval: 50
+  max_new_tokens: 0        # NLL only, no generation in smoke
+
+output:
+  adapter_dir_template: artifacts/lora/llama32_1b_smoke/{task}
+  results_path: results/phase3/smoke/smoke_{timestamp}.json
+
+seeds:
+  global: 20260517
+  train: 20260517
+  bootstrap: 20260517
+
+# Pass-criteria thresholds (see plan §smoke-test).
+# excess_floor is per handoff R12: smoke uses the relaxed -0.05 because
+# 100-example x 7-step training is too thin to expect strict
+# NLL_merged >= NLL_tau_t ordering — even mild negative excess is sample
+# noise, not a pipeline bug. Real-task LoRAs (Day 1+, 7.5k examples x
+# 2 epochs) will validate strict ordering.
+pass:
+  loss_decrease_ratio: 0.9
+  min_nll_nats: 0.5
+  max_nll_nats: 10.0
+  excess_floor: -0.05
+  wallclock_seconds_max: 3600
+  adapter_size_mb_min: 1
+  adapter_size_mb_max: 25

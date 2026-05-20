@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "git_sha": "6bd5af3b50e3d9a66c4411ef274b4703b68843ed",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "39421.jiit-master",
+    "wallclock_iso": "2026-05-18T03:46:09+0200",
+    "wallclock_unix": 1779068769.4076815,
+    "config_hash": "0ff4d0c573549602",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Llama-3.1-8B-Instruct",
+      "task": {
+        "name": "magicoder",
+        "dataset": "ise-uiuc/Magicoder-OSS-Instruct-75K",
+        "config": null,
+        "split_train": "train",
+        "split_eval": "train",
+        "n_train": 7500,
+        "n_eval": 200,
+        "prompt_field": "problem",
+        "answer_field": "solution"
+      },
+      "lora": {
+        "r": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ]
+      },
+      "train": {
+        "epochs": 2,
+        "lr": 5e-05,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "max_seq_length": 2048,
+        "warmup_ratio": 0.03,
+        "optim": "adamw_torch",
+        "logging_steps": 10,
+        "dataset_num_proc": 4,
+        "min_free_gb": 40
+      },
+      "output": {
+        "adapter_dir": "artifacts/lora/llama31_8b/magicoder/v1",
+        "results_path": "results/phase3/lora_train/llama31_8b_magicoder_v1.json"
+      },
+      "seeds": {
+        "global": 20260517,
+        "train": 20260517
+      }
+    }
+  },
+  "metrics": {
+    "task": "magicoder",
+    "base_model": "/home/sanjay.g/projects/rdmerge/models/Llama-3.1-8B-Instruct",
+    "train_runtime_s": 5346.649325847626,
+    "first_loss": 0.433014965057373,
+    "last_loss": 0.26999118328094485,
+    "n_log_steps": 47,
+    "loss_history": [
+      0.433014965057373,
+      0.39566836357116697,
+      0.3353809118270874,
+      0.3280584096908569,
+      0.32307090759277346,
+      0.3117497682571411,
+      0.3031738519668579,
+      0.2899430990219116,
+      0.3025976181030273,
+      0.2941286087036133,
+      0.29928576946258545,
+      0.2889137268066406,
+      0.2815352439880371,
+      0.28623361587524415,
+      0.29238622188568114,
+      0.29723429679870605,
+      0.2925236463546753,
+      0.2895409107208252,
+      0.3033843994140625,
+      0.2845285177230835,
+      0.28927152156829833,
+      0.27900407314300535,
+      0.2712895631790161,
+      0.2839395999908447,
+      0.2602379560470581,
+      0.28008184432983396,
+      0.27617740631103516,
+      0.2759112358093262,
+      0.28846495151519774,
+      0.28362550735473635,
+      0.2929302453994751,
+      0.2868640422821045,
+      0.28242757320404055,
+      0.2995786666870117,
+      0.27753896713256837,
+      0.2745392084121704,
+      0.2919894218444824,
+      0.2772436857223511,
+      0.27866668701171876,
+      0.2645197153091431,
+      0.27198214530944825,
+      0.26247539520263674,
+      0.2750452280044556,
+      0.29258294105529786,
+      0.27028961181640626,
+      0.276558518409729,
+      0.26999118328094485
+    ],
+    "adapter_size_mb": 52.03282165527344,
+    "nll_tau_on_eval": 0.2747106789323526,
+    "n_train": 7500,
+    "n_eval": 200,
+    "adapter_dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/magicoder/v1"
+  },
+  "wallclock_seconds": 5407.971363067627,
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "39421.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

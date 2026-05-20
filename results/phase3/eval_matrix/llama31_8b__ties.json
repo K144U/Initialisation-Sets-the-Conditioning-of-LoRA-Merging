@@ -1,0 +1,165 @@
+{
+  "meta": {
+    "git_sha": "6bd5af3b50e3d9a66c4411ef274b4703b68843ed",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "39445.jiit-master",
+    "wallclock_iso": "2026-05-18T05:57:03+0200",
+    "wallclock_unix": 1779076623.8574622,
+    "config_hash": "f916b6516c6cc969",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Llama-3.1-8B-Instruct",
+      "method": "ties",
+      "method_kwargs": {},
+      "max_seq_length": 1024,
+      "seed": 20260518,
+      "min_free_gb": 25,
+      "adapter_specs": [
+        {
+          "name": "gsm8k",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/gsm8k/v1",
+          "task_cfg": {
+            "name": "gsm8k",
+            "dataset": "openai/gsm8k",
+            "config": "main",
+            "split_train": "train",
+            "split_eval": "test",
+            "n_train": 7500,
+            "n_eval": 200,
+            "prompt_field": "question",
+            "answer_field": "answer"
+          }
+        },
+        {
+          "name": "alpaca",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/alpaca/v1",
+          "task_cfg": {
+            "name": "alpaca",
+            "dataset": "yahma/alpaca-cleaned",
+            "config": null,
+            "split_train": "train",
+            "split_eval": "train",
+            "n_train": 7500,
+            "n_eval": 200,
+            "prompt_field": "instruction",
+            "answer_field": "output"
+          }
+        },
+        {
+          "name": "magicoder",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/magicoder/v1",
+          "task_cfg": {
+            "name": "magicoder",
+            "dataset": "ise-uiuc/Magicoder-OSS-Instruct-75K",
+            "config": null,
+            "split_train": "train",
+            "split_eval": "train",
+            "n_train": 7500,
+            "n_eval": 200,
+            "prompt_field": "problem",
+            "answer_field": "solution"
+          }
+        },
+        {
+          "name": "translation",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/flores/v1",
+          "task_cfg": {
+            "name": "translation",
+            "dataset": "wmt/wmt19",
+            "config": "de-en",
+            "split_train": "train",
+            "split_eval": "validation",
+            "n_train": 7500,
+            "n_eval": 200,
+            "src_lang": "en",
+            "tgt_lang": "de",
+            "streaming": true
+          }
+        }
+      ],
+      "output_path": "results/phase3/eval_matrix/llama31_8b__ties.json"
+    }
+  },
+  "method": "ties",
+  "method_kwargs": {
+    "density": 0.2,
+    "majority_sign_method": "total"
+  },
+  "weights": [
+    0.25,
+    0.25,
+    0.25,
+    0.25
+  ],
+  "base_model": "/home/sanjay.g/projects/rdmerge/models/Llama-3.1-8B-Instruct",
+  "adapter_dirs": [
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/gsm8k/v1",
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/alpaca/v1",
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/magicoder/v1",
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/flores/v1"
+  ],
+  "task_names": [
+    "gsm8k",
+    "alpaca",
+    "magicoder",
+    "translation"
+  ],
+  "nll_tau": {
+    "base": {
+      "gsm8k": 1.1719492976094226,
+      "alpaca": 1.1647816176599932,
+      "magicoder": 0.46275571082256234,
+      "translation": 0.6817952912182152
+    },
+    "gsm8k": {
+      "gsm8k": 0.469578810013776,
+      "alpaca": 1.0225904446578684,
+      "magicoder": 0.39464287638800244,
+      "translation": 0.5950823069588794
+    },
+    "alpaca": {
+      "gsm8k": 0.8998006646644807,
+      "alpaca": 0.92442343776113,
+      "magicoder": 0.38476695262428307,
+      "translation": 0.610326031231195
+    },
+    "magicoder": {
+      "gsm8k": 0.8959239283021913,
+      "alpaca": 1.0565747763305107,
+      "magicoder": 0.28837944056802756,
+      "translation": 0.6250835922709215
+    },
+    "translation": {
+      "gsm8k": 0.8243528700676407,
+      "alpaca": 1.0187592454538248,
+      "magicoder": 0.4020481956385439,
+      "translation": 0.7196918323759888
+    }
+  },
+  "nll_merged": {
+    "gsm8k": 0.6332498774318649,
+    "alpaca": 0.946548039314463,
+    "magicoder": 0.31478179358623504,
+    "translation": 0.6146180735926796
+  },
+  "excess_per_task": {
+    "gsm8k": 0.1636710674180889,
+    "alpaca": 0.022124601553332957,
+    "magicoder": 0.02640235301820748,
+    "translation": -0.10507375878330916
+  },
+  "worst_task_excess": 0.1636710674180889,
+  "avg_task_excess": 0.026781065801580045,
+  "n_eval_per_task": {
+    "gsm8k": 200,
+    "alpaca": 200,
+    "magicoder": 200,
+    "translation": 200
+  },
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "39445.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

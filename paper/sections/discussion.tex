@@ -46,6 +46,25 @@ as characterizing the \emph{information-theoretic} floor for
 merging, not a tight prediction of any specific real-LLM merging
 experiment.
 
+\paragraph{What the real-LLM experiments add.} Section~\ref{sec:exp}
+makes the scope caveat above concrete. We measure $\deff = Tr$ in
+every layer of all four base models -- the task subspaces are
+linearly independent, so the predicted floor is exactly zero --
+yet real merged adapters incur $0.10$--$0.22$ nats/token of
+worst-task excess. The gap is therefore not floor-driven; it is
+the slack between current heuristics and the rate-distortion
+optimum, and it is what a better merging algorithm could close.
+The cross-model ordering of this slack is \emph{not} explained by
+subspace overlap: a soft effective-dimension (participation ratio
+of the stacked subspace) is uniform to within $0.7\%$ across
+architectures that differ in merging difficulty by $2.2\times$,
+and a Llama-family model (Yi-1.5-9B) merges more cleanly than
+Llama-3.1 itself. This points to the loss curvature $H_t$ -- which
+the bound takes as given -- and the pretraining/instruction-tuning
+recipe that shapes it, as the operative quantities, and motivates
+extending the theory to predict $H_t$ from training rather than
+treating it as input.
+
 \paragraph{Practical implications.} Two guidance points for
 practitioners follow from the theorems. (i) The floor
 $B^2(1 - \deff/(Tr))$ identifies when rate is wasted: if tasks

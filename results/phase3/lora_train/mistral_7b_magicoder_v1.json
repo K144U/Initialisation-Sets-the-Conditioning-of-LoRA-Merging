@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "git_sha": "6bd5af3b50e3d9a66c4411ef274b4703b68843ed",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "3",
+    "pbs_jobid": "39687.jiit-master",
+    "wallclock_iso": "2026-05-19T04:57:24+0200",
+    "wallclock_unix": 1779159444.3417473,
+    "config_hash": "60675e1e3deb2781",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Mistral-7B-Instruct-v0.3",
+      "task": {
+        "name": "magicoder",
+        "dataset": "ise-uiuc/Magicoder-OSS-Instruct-75K",
+        "config": null,
+        "split_train": "train",
+        "split_eval": "train",
+        "n_train": 7500,
+        "n_eval": 200,
+        "prompt_field": "problem",
+        "answer_field": "solution"
+      },
+      "lora": {
+        "r": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ]
+      },
+      "train": {
+        "epochs": 2,
+        "lr": 5e-05,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "max_seq_length": 2048,
+        "warmup_ratio": 0.03,
+        "optim": "adamw_torch",
+        "logging_steps": 10,
+        "dataset_num_proc": 4,
+        "min_free_gb": 30
+      },
+      "output": {
+        "adapter_dir": "artifacts/lora/mistral_7b/magicoder/v1",
+        "results_path": "results/phase3/lora_train/mistral_7b_magicoder_v1.json"
+      },
+      "seeds": {
+        "global": 20260519,
+        "train": 20260519
+      }
+    }
+  },
+  "metrics": {
+    "task": "magicoder",
+    "base_model": "/home/sanjay.g/projects/rdmerge/models/Mistral-7B-Instruct-v0.3",
+    "train_runtime_s": 9707.99498295784,
+    "first_loss": 0.45239791870117185,
+    "last_loss": 0.2256417989730835,
+    "n_log_steps": 47,
+    "loss_history": [
+      0.45239791870117185,
+      0.34659976959228517,
+      0.3248840570449829,
+      0.26877355575561523,
+      0.2765186786651611,
+      0.2737367391586304,
+      0.2749616622924805,
+      0.27083625793457033,
+      0.26055915355682374,
+      0.2567282199859619,
+      0.26020810604095457,
+      0.25638105869293215,
+      0.26544036865234377,
+      0.2463972806930542,
+      0.25908722877502444,
+      0.25650479793548586,
+      0.2515880107879639,
+      0.2502387285232544,
+      0.2452702760696411,
+      0.2797128438949585,
+      0.2554631233215332,
+      0.25948903560638426,
+      0.24184374809265136,
+      0.23725991249084472,
+      0.24002370834350586,
+      0.23194591999053954,
+      0.2501447916030884,
+      0.24388456344604492,
+      0.22405760288238524,
+      0.22540087699890138,
+      0.2382201910018921,
+      0.2352426528930664,
+      0.22594144344329833,
+      0.23116302490234375,
+      0.23318982124328613,
+      0.22647979259490966,
+      0.23907575607299805,
+      0.2192978858947754,
+      0.23775992393493653,
+      0.2564219951629639,
+      0.23488860130310057,
+      0.238523530960083,
+      0.23388633728027344,
+      0.24213829040527343,
+      0.23855016231536866,
+      0.2496035575866699,
+      0.2256417989730835
+    ],
+    "adapter_size_mb": 52.03282165527344,
+    "nll_tau_on_eval": 0.29769505611920666,
+    "n_train": 7500,
+    "n_eval": 200,
+    "adapter_dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/mistral_7b/magicoder/v1"
+  },
+  "wallclock_seconds": 9781.591709136963,
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "3",
+    "pbs_jobid": "39687.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

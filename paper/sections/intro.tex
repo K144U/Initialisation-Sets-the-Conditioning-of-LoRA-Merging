@@ -114,39 +114,67 @@ predicted slope $-2R/\deff$ on $\log_2\E[\text{excess}]$ to
 within bootstrap 95\% CI $\pm 0.01$ across 1000 trials per
 configuration. The achievability constant $C$ is empirically
 $\approx 11$--$13$, matching the analytical bound $Tc^2/3$.
+
+\item \textbf{A real-LLM calibration that turns the bound into a
+measured gap (\S\ref{sec:exp}).} We train $16$ LoRA adapters
+across four base models (Llama-3.1-8B, Qwen-2.5-7B, Mistral-7B,
+Yi-1.5-9B) and four tasks, and evaluate five standard merging
+methods under worst-task NLL with bootstrap confidence intervals.
+We find that real task subspaces are linearly \emph{independent}
+($\deff = Tr$ in every layer of every model), so the bound's
+floor is zero -- yet current methods leave $0.10$--$0.22$
+nats/token of worst-task error on the table. The gap is the
+suboptimality of today's heuristics, not an irreducible floor.
+Three further findings: (i) only TIES improves on naive
+averaging, and only on the bottleneck task, while
+subspace-alignment (KnOTS) is statistically indistinguishable
+from it -- precisely the theory's prediction at $\deff = Tr$,
+where there is no overlap for a subspace method to exploit;
+(ii) merging difficulty tracks the pretraining/instruction-tuning
+recipe rather than attention design, and is \emph{not} predicted
+by any subspace-overlap statistic; (iii) a universal
+``less-is-more'' regime in which $2$-bit task-vector quantization
+beats higher-bit quantization on all four architectures.
 \end{enumerate}
 
 \paragraph{What this means for practice.} The bound gives
-practitioners a calibration curve. Any merging algorithm —
-existing or future — can be graded by its gap to
-$\mathcal{D}^\star$. Two qualitative implications are already
-visible from the theorem statement. (i) The floor
-$B^2(1 - \deff/(Tr))$ is irreducible: when $V_t$'s overlap
-substantially ($\deff\ll Tr$), no amount of rate closes it.
-This recovers and explains the recent large-scale empirical
-finding of~\cite{systematic2025merging} that subspace-based
-merging methods fail at LLM scale — random LoRA checkpoints
-have substantial subspace overlap, so the floor is bounded
-away from zero. (ii) Additional rate helps at the
-$2^{-2R/\deff}$ rate, matching what TurboQuant achieves in
-the single-source case. A practitioner storing a merged
-model at 4 bits per coordinate operates roughly
-$4\deff$-bits-below the infinite-rate floor; doubling to
-8 bits gains an $\approx 16\times$ reduction in compression
-excess.
+practitioners a calibration curve: any merging algorithm --
+existing or future -- can be graded by its gap to
+$\mathcal{D}^\star$. The theorem exposes two regimes through the
+floor $B^2(1 - \deff/(Tr))$. When task subspaces overlap
+substantially ($\deff \ll Tr$) the floor is irreducible and no
+amount of rate closes it; when they are independent
+($\deff = Tr$) the floor vanishes and quality is rate- and
+algorithm-limited. \emph{Which regime do real LoRA merges live
+in?} Our experiments answer this directly (\S\ref{sec:exp}):
+across all four base models and every layer we measure
+$\deff = Tr$ -- the independent, floor-zero regime. The
+implication is sharper than a generic ``it depends'': for the
+task sets practitioners actually merge, the irreducible floor is
+\emph{not} the binding constraint, and the $0.10$--$0.22$
+nats/token of worst-task error we observe is headroom that a
+better algorithm could in principle recover. Consistent with
+this, subspace-alignment merging (KnOTS) gives no improvement
+over naive averaging in our measurements -- there is no subspace
+overlap for it to exploit -- whereas TIES, which attacks
+sign-level interference rather than subspace overlap, does help.
+A merging method should therefore be judged on how much of the
+floor-zero gap it closes, not on subspace alignment alone.
 
-\emph{A worked example.} Consider a Llama-3-8B base model with
-$T=4$ task-specific LoRAs at rank $r=16$. The per-layer
-effective dimension satisfies $\deff\leq Tr = 64$. When the
-four task subspaces $V_t$ are mutually orthogonal, the floor
-vanishes and quality is rate-limited; when they fully overlap
-($\deff = 16$), the floor jumps to $\approx 0.75 B^2$, a
-ceiling no merging algorithm can break through. The two
-regimes call for opposite operational responses: rate-limited
-deployment benefits from spending the bit budget on
-quantization precision, while overlap-limited deployment
-benefits from serving tasks from separate adapters rather than
-merging at all. The theorem identifies the crossover.
+\emph{A worked example.} Consider a Llama-3.1-8B base with $T=4$
+rank-$16$ LoRAs, so $\deff \leq Tr = 64$ per layer. The
+theory's two regimes are the orthogonal case ($\deff = 64$,
+floor $0$, rate-/algorithm-limited) and the fully-overlapping
+case ($\deff = 16$, floor $\approx 0.75\,B^2$, a ceiling no
+merger can break). Empirically all four models we test sit at
+$\deff = 64$ in every layer -- the floor-zero corner -- so the
+operative question is algorithmic, not informational: the
+measured worst-task excess ($0.22$ for this model) is distance
+from optimal, not an unavoidable floor. The overlap-limited
+corner, where the right response is to serve tasks from separate
+adapters rather than merge, did not arise for any task set we
+tried; identifying real task families that induce it is itself
+a useful direction the theorem makes precise.
 
 \paragraph{Scope and limitations.} The matching upper bound
 in Theorem~\ref{thm:achv} is proved under the generic
@@ -170,8 +198,11 @@ for merging and the admissible hard distributions.
 (Theorem~\ref{thm:general}), with the max-$\geq$-avg identity
 and closed-form floor as the central tools. \S\ref{sec:achv}
 gives the matching achievability construction and analyses.
-\S\ref{sec:exp} reports synthetic experiments on rank-$r$
-LoRA-like ensembles validating the theoretical slopes and
-constants. \S\ref{sec:discussion} discusses extensions to
-cross-entropy loss, the open shared-$V$ exponent gap, and
-implications for practical merging algorithm design.
+\S\ref{sec:exp} reports experiments in two parts: synthetic
+rank-$r$ ensembles validating the theoretical slopes and
+constants, and a real-LLM calibration across four base models
+and four tasks that measures the gap between current merging
+methods and the bound. \S\ref{sec:discussion} discusses
+extensions to cross-entropy loss, the open shared-$V$ exponent
+gap, what the real-LLM measurements add, and implications for
+practical merging-algorithm design.

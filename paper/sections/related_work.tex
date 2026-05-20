@@ -79,12 +79,23 @@ Our Theorem~\ref{thm:general} is a \emph{lower bound} on every
 algorithm — it says that whatever the best merging procedure is,
 it cannot beat $B^2 f_{\mathrm{floor}} + c_{\mathrm{TQ}}
 (B^2 \deff / (Tr)) \cdot 2^{-2R/\deff}$. The negative result and
-our lower bound are compatible and, in fact, mutually
-reinforcing: the lower bound explains \emph{why} generic
-subspace alignment is insufficient when the floor term is
-bounded away from zero (irreducible multi-task tension), and
-identifies the floor-zero regime in which constructive methods
-(ours, and potentially refined versions of TVQ or KnOTS) can
-approach the fundamental limit. Fully characterizing the
-floor-positive regime remains open
+our lower bound are compatible and mutually reinforcing, and our
+own measurements (\S\ref{sec:exp}) pin down the mechanism. We
+find that real LoRA task subspaces are linearly
+\emph{independent} ($\deff = Tr$ in every layer of all four base
+models we test), i.e.\ the floor-zero regime. In that regime a
+subspace-alignment method has no overlap to exploit, so it cannot
+improve on naive averaging — and indeed we measure KnOTS to be
+statistically indistinguishable from Task Arithmetic, while only
+TIES (which resolves sign-level interference rather than subspace
+overlap) helps. This explains the
+\cite{systematic2025merging} negative result not by an
+irreducible floor but by its opposite: with no subspace overlap,
+the floor is zero and the entire merging gap is algorithmic
+slack above a beatable target. The lower bound's
+\emph{floor-positive} regime — substantial subspace overlap, no
+amount of rate sufficient — is theoretically characterized here
+but did not arise empirically for the task families we tried;
+identifying real task sets that induce it, and fully
+characterizing achievability there, remain open
 (Remark~\ref{rem:sharedv-gap}).

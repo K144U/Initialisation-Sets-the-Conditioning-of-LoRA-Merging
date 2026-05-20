@@ -1,0 +1,124 @@
+{
+  "meta": {
+    "git_sha": "6bd5af3b50e3d9a66c4411ef274b4703b68843ed",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "3",
+    "pbs_jobid": "39683.jiit-master",
+    "wallclock_iso": "2026-05-19T02:13:17+0200",
+    "wallclock_unix": 1779149597.2076938,
+    "config_hash": "5c9f2681d5c47cde",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Mistral-7B-Instruct-v0.3",
+      "task": {
+        "name": "gsm8k",
+        "dataset": "openai/gsm8k",
+        "config": "main",
+        "split_train": "train",
+        "split_eval": "test",
+        "n_train": 7500,
+        "n_eval": 200,
+        "prompt_field": "question",
+        "answer_field": "answer"
+      },
+      "lora": {
+        "r": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ]
+      },
+      "train": {
+        "epochs": 2,
+        "lr": 5e-05,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "max_seq_length": 2048,
+        "warmup_ratio": 0.03,
+        "optim": "adamw_torch",
+        "logging_steps": 10,
+        "dataset_num_proc": 4,
+        "min_free_gb": 30
+      },
+      "output": {
+        "adapter_dir": "artifacts/lora/mistral_7b/gsm8k/v1",
+        "results_path": "results/phase3/lora_train/mistral_7b_gsm8k_v1.json"
+      },
+      "seeds": {
+        "global": 20260519,
+        "train": 20260519
+      }
+    }
+  },
+  "metrics": {
+    "task": "gsm8k",
+    "base_model": "/home/sanjay.g/projects/rdmerge/models/Mistral-7B-Instruct-v0.3",
+    "train_runtime_s": 3352.986515045166,
+    "first_loss": 1.2328957557678222,
+    "last_loss": 0.379358696937561,
+    "n_log_steps": 46,
+    "loss_history": [
+      1.2328957557678222,
+      0.6863292217254638,
+      0.5044355869293213,
+      0.4468355655670166,
+      0.4379730701446533,
+      0.4511885166168213,
+      0.42093625068664553,
+      0.41318793296813966,
+      0.4177104949951172,
+      0.4296048641204834,
+      0.40762982368469236,
+      0.39997401237487795,
+      0.4071514129638672,
+      0.39919252395629884,
+      0.39875853061676025,
+      0.3827308893203735,
+      0.4019758224487305,
+      0.39214885234832764,
+      0.3993392467498779,
+      0.4044935703277588,
+      0.39424192905426025,
+      0.37236828804016114,
+      0.4191306114196777,
+      0.37793917655944825,
+      0.3588489294052124,
+      0.3715019702911377,
+      0.35960187911987307,
+      0.37988007068634033,
+      0.3742388725280762,
+      0.37398061752319334,
+      0.3604011535644531,
+      0.3729276657104492,
+      0.3542574405670166,
+      0.38722312450408936,
+      0.35411782264709474,
+      0.3750704288482666,
+      0.37496557235717776,
+      0.33729281425476076,
+      0.35155339241027833,
+      0.36992483139038085,
+      0.3810060262680054,
+      0.3818744421005249,
+      0.37136073112487794,
+      0.36546940803527833,
+      0.3735960960388184,
+      0.379358696937561
+    ],
+    "adapter_size_mb": 52.03282165527344,
+    "nll_tau_on_eval": 0.44418496149328196,
+    "n_train": 7473,
+    "n_eval": 200,
+    "adapter_dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/mistral_7b/gsm8k/v1"
+  },
+  "wallclock_seconds": 3435.605708837509,
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "3",
+    "pbs_jobid": "39683.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

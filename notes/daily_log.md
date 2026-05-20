@@ -1359,3 +1359,880 @@ actual LoRA fine-tunes of real LLMs.
 **Blockers:** none. No email reply (8 days).
 
 
+
+---
+
+### Days 17–18 — 2026-05-17 → 2026-05-18 (Phase 3 bootstrap + first full eval matrix)
+
+**Context.** New Claude Code instance picked up the project on the JIIT HPC cluster after the handoff (`handoff.md`). Inherited theory phases closed (Days 0–16); zero Phase-3 code on disk; 8× A100-SXM4-80GB available on `jiit-gpu01` via the PBS `gpu` queue (3-concurrent-job cap, no GPU resource tracking — must pin via `CUDA_VISIBLE_DEVICES`). HPC is on `jiit-master`; download bandwidth to HuggingFace ~1.4 MB/s (cluster-wide cap, both login and compute nodes).
+
+**Model track decision (§4.3 of handoff).** Hardware lands us in Branch B (multi-GPU node with plenty of VRAM). User picked **Option B**: Llama-3.1-8B-Instruct + Qwen-2.5-7B-Instruct, full bf16, no nf4. Unsloth as the training stack to keep `apply_qkv` patching consistent across train/eval.
+
+**Day 0 — bootstrap (smoke green).**
+- Built conda env at `/home/sanjay.g/projects/rdmerge/.conda/envs/rdmerge` (Python 3.11). Pip-installed torch 2.5.1+cu121 first; Unsloth's transitive deps subsequently upgraded torch→2.10.0+cu128, transformers→5.5.0, peft→0.19.1, trl→0.24.0, accelerate→1.13.0, datasets→4.3.0. Flash-attn wheel build failed (no CUDA_HOME); SDPA fallback per plan.
+- Downloaded Llama-3.2-1B-Instruct for smoke (48 min for 2.5 GB at ~0.9 MB/s).
+- Smoke required three fixes during code authoring:
+  1. **TRL 0.24 dropped `DataCollatorForCompletionOnlyLM`**. Replaced with `SFTConfig(completion_only_loss=True)` + `{prompt, completion}` dataset format.
+  2. **Unsloth monkey-patches `LlamaForCausalLM.forward` at import time**, and the patched forward calls `apply_qkv` (an attribute set by `FastLanguageModel.get_peft_model`). After training+adapter save, reloading the base via `AutoModelForCausalLM.from_pretrained` for eval crashes with `AttributeError: 'LlamaAttention' object has no attribute 'apply_qkv'`. Fix: reload via `FastLanguageModel.from_pretrained(adapter_dir)` in the eval phase so `apply_qkv` is set up.
+  3. **TRL's tokenizer multiprocessing storms the network** — `num_proc=64` workers each try to re-download the Unsloth tokenizer mirror, all blocking on the slow cluster bandwidth. Fix: `SFTConfig(dataset_num_proc=2)`.
+- Smoke green: 132 sec wall-clock, all 9 pass criteria.
+
+**Day 1 — Llama-3.1-8B + Qwen-2.5-7B downloads + first real LoRA.**
+- HF Xet protocol self-throttled to ~30 KB/s on this cluster (saw it in `xet/logs/*.log`). Killed `snapshot_download`, switched to plain `wget --continue` against the standard `huggingface.co/{repo}/resolve/main/{file}` URLs — got the full cluster ceiling of ~1.4 MB/s.
+- 30 GB total (15 GB Llama-3.1-8B + 14 GB Qwen-2.5-7B) downloaded in ~2 h 50 min (better than the 6 hr estimate due to a couple of bursts).
+- Wrote `train_lora.py` + flat-script repo layout under `code/phase3/`. Per-task configs at `configs/lora/{model}_{task}.yaml`. First real training: Llama-3.1-8B + GSM8K (job 39412), 34.9 min wall-clock, training loss 1.x → 0.41, NLL_τ on held-out 200 = 0.446.
+
+**Day 2 — full 8-LoRA matrix.**
+- Launched the remaining 7 (model, task) configs via `submit_all_lora.sh` (3-concurrent cap). Final NLL_τ on 200 held-out examples per task:
+
+```
+                  GSM8K    Alpaca    Magicoder    Translation
+Llama-3.1-8B      0.446    1.018     0.275        0.719
+Qwen-2.5-7B       0.418    0.946     0.238        0.794
+```
+
+- Two mid-run failures fixed:
+  1. **Magicoder dataset race condition** — preload script + training process both fetching simultaneously caused `FileNotFoundError` on `.incomplete` blobs. Fix: wait for preload then retry.
+  2. **`facebook/flores` dataset removed in `datasets` 4.x** (uses legacy `flores.py` script). Switched to `wmt/wmt19` config `de-en` with `streaming=True` to avoid downloading the full 38M-pair train set.
+
+**Day 3 — 5 merging baselines + unit tests.**
+- Wrote 5 method modules under `code/phase3/merging/`, all sharing a single `FakePeftModel`-like interface (no PEFT dependency in the merge logic — one tested code path for both unit tests and the real eval pipeline).
+- **Task Arithmetic, TIES, DARE**: written from scratch (not via `LoraModel.add_weighted_adapter`) to keep test+prod identical.
+- **KnOTS**: implemented from arXiv:2410.19735 §3 directly (~80 lines). Skipped the port attempt from `github.com/gstoica27/KnOTS` — paper algorithm was tight enough.
+- **TVQ**: uniform-scalar quantization at `b ∈ {1, 2, 4, 8, 16, 32}` bits per layer; `b=32` is a no-op (acts as Task Arithmetic). Residual-quantization variant from the paper deferred to v2.
+- **17 CPU unit tests (5 methods × 3 properties + 2 TVQ extras): all green in <2 sec.** Properties: zero-idempotence, identity-collapse, rank-r preservation.
+- GPU smoke for merging: initial 8B attempt died at walltime — `add_weighted_adapter` + per-layer full-SVD on 4096-dim took 873 sec for one method. Switched smoke to 1B (correctness-only, not perf benchmark), bumped production code to use `torch.svd_lowrank` for matrices with `dim > 256` (the test fixtures still use full SVD for determinism).
+
+**Day 4 — eval pipeline + first 20-cell matrix.**
+- Wrote `eval/run_eval_cell.py` + `PeftModelView` (~150 lines) — translates a real PEFT model to the FakePeftModel-like interface our merge methods consume. Per-cell flow: load base + 4 task adapters via Unsloth, pre-eval each individual τ on each task (to compute excess), apply merge method (writes to `__merged__` adapter slot), eval merged on each of 4 task held-outs, write JSON.
+- First real eval cell (Llama + Task Arithmetic, all 4 tasks, uniform 1/4-1/4-1/4-1/4): **10:08 wall-clock, worst_task_excess = 0.2252 nats/token.**
+- Full 20-cell matrix (4 methods × 2 models + TVQ × 6 rates × 2 models, minus the 1 already done): launcher (`launch_eval_matrix.py`) respecting the 3-concurrent cap. **All 20 cells complete in ~75 min wall-clock.**
+- See `notes/phase3_findings.md` for the per-cell numerical results and qualitative analysis.
+
+**Phase B validation criteria (per `phase3_design.md` §6):**
+1. **Floor exists at b=32: PASS** — Llama worst_excess = 0.225, Qwen = 0.108. Both clearly non-zero.
+2. **TVQ slope ≈ -2: SKIPPED** — at the bit budgets we tested (b ∈ {1,2,4,8}), `worst_task_excess - floor` is ≤ 0 for almost every cell. Quantization isn't the dominant source of excess in our setup; merging geometry is. The rate-decay regime would require sub-bit precision to become visible.
+3. **KnOTS beats Task Arithmetic per task: PASS** — Llama 4/4 tasks, Qwen 1/4 tasks; **overall 5/8 (model, task) cells** favor KnOTS. The worst-task excess ties (gsm8k dominates) but per-task KnOTS is consistently slightly better.
+
+**Decision-gate outcome:** C1 + C3 hold → **ICLR 2027 target remains viable** per the plan's gate criterion.
+
+**Models pre-cached for future experiments (in `models/`):** Llama-3.1-8B-Instruct, Qwen-2.5-7B-Instruct, Llama-3.2-1B-Instruct (smoke). Began downloading Mistral-7B-v0.3, Yi-1.5-9B-Chat, gemma-3-12b-it, Qwen-2.5-14B-Instruct (~84 GB total, ~17 hr) for an optional robustness panel; killed mid-Mistral (~5.4 GB done) to free the gpu-queue slot for the eval matrix. To restart, resubmit `pbs_dl_extras.sh` (wget `--continue` resumes partial files).
+
+**Artifacts:**
+- 8 LoRA adapters at `artifacts/lora/{model}/{task}/v1/`
+- 20 eval-cell JSONs at `results/phase3/eval_matrix/`
+- Headline figures: `code/phase3/figures/headline_rd.png`, `code/phase3/figures/method_compare.png`
+- Phase B summary JSON: `results/phase3/phase_b_summary.json`
+- All Phase 3 code under `code/phase3/`
+
+**Blockers:** none.
+
+---
+
+### Day 18 — 2026-05-18 (venue decision)
+
+**Decision (user):** No arXiv preprint. Direct submission to ICLR 2027.
+Skipping the preprint removes the endorsement-wait blocker and frees up
+the time that would have gone to BibTeX polish + abstract writing for
+arXiv-specific formatting. Backups remain AISTATS 2027 and TMLR rolling.
+
+**Implications:**
+- `arxiv_checklist.md`, `ARXIV_TODO.md`, and `preprint_repo/` are now
+  historical-reference only. Do not work on them for this submission.
+  (Don't delete; a v2 preprint may use them later.)
+- Day 5/6 in the plan no longer interleaves BibTeX in background. All
+  attention stays on the ICLR experimental story.
+- The PDF that goes to ICLR uses the ICLR 2027 template (not the arXiv
+  default). Will set up after the call for papers releases the .sty.
+
+Updated:
+- `log.md` §10 (submission mechanics)
+- Memory `project_phase_status.md`
+- Plan file decision table
+
+---
+
+### Day 18 — 2026-05-18 (afternoon: TVQ b=2 dip CONFIRMED REAL at n=1k)
+
+**Finding (n=1k rerun, partial — 12/20 cells done):** Llama TVQ b=2
+`worst_excess` is **0.104 at n=1k** vs the n=200 value of 0.107 — Δ = -0.003,
+within rounding noise. The b ∈ {4, 8, 16} cells all sit at ~0.217. So the
+b=2 minimum is **2× smaller** than adjacent rates AND survives 5× more
+eval data unchanged. **The dip is structural, not sample noise.**
+
+avg_excess shows the same pattern: b=2 is 0.019 (n=1k) vs b ∈ {4,8,16}
+all at ~0.049.
+
+**Implication:** the rate-distortion curve for Llama TVQ has a real local
+minimum at 2 bits per parameter. This contradicts the naive "more bits =
+better merge" intuition.
+
+Three candidate mechanisms (in `log.md` §5.5 and `notes/phase3_findings.md`
+F7): quantization-as-regularization, stochastic-resonance, implicit
+coarse-projection. None confirmed yet.
+
+**Pending:** Qwen TVQ b=2 (cell 39621 still running). If Qwen also dips, the
+effect is model-agnostic and HEADLINE-worthy. If Qwen doesn't, it's
+Llama-specific and we need more investigation.
+
+**Documented in:** `log.md` (F7 update, §5.5 expansion, §6.1 lead-with addition),
+`notes/phase3_findings.md` (F7 rewrite), `notes/open_questions.md` (O17.1
+resolved → new mechanism question).
+
+**Blockers:** none. Waiting on Qwen TVQ b=2.
+
+---
+
+### Day 18 — 2026-05-18 (evening: Tier 1 work committed)
+
+After the venue decision (no arXiv, ICLR direct) and the TVQ b=2 dip
+confirmation, surfaced a "what would make the paper stronger" question
+and committed to Tier 1 strengthening:
+
+**T1.A — empirical d_eff + floor-formula validation.** Script
+`code/phase3/eval/deff_analysis.py` written and syntax-clean (~330 lines).
+Runs on existing 8 LoRA adapters, no new compute. Loads per-layer LoRA
+factors, computes V_t = top-r right-singular subspace of B_t @ A_t,
+d_eff = rank(Σ_t P_{V_t}) per layer, predicted floor = B²(1 - d_eff/(Tr)).
+Outputs scatter plot of predicted vs observed worst_excess. Running in
+background on login-node CPU as of evening; ETA ~10 min (256 SVDs across
+both models).
+
+**T1.B — synthetic Stiefel-random control panel.** Script
+`code/phase3/eval/stiefel_control.py` written and syntax-clean (~260 lines).
+Generates fake LoRAs with controlled subspace overlap α ∈ {0, 0.1, ..., 1.0},
+runs all 5 merging methods, plots predicted-vs-observed and tightness ratio.
+Pure CPU + FakePeftModel; ready to run when needed.
+
+**T1.C/D — 3 more model families.** Extras download resumed on workq
+(job 39627, 24-hr walltime). Targets: Mistral-7B-v0.3 (resume from 5.9 GB
+partial), Yi-1.5-9B-Chat, gemma-3-12b-it, Qwen-2.5-14B-Instruct. Total
+~84 GB at ~1.4 MB/s ≈ 17 hr. On workq so doesn't compete with gpu queue.
+After downloads: train 4 LoRAs × 3 new families = 12 LoRAs (~3 hr at
+3-concurrent), then extend eval matrix by 33 cells (~9 hr at 3-concurrent).
+Total ~25 hr added wall-clock; will run overnight.
+
+**T1.E — regen Phase B with full data.** After T1.A/B/D complete, update
+the headline figure set to include 5 model families + predicted-vs-observed
+scatter + Stiefel-tightness panel.
+
+**Documented in:** `log.md` §6.6 (v2 items list trimmed) + new §6.7 (T1.A–E
+plan), this daily log entry. Memory `project_phase_status.md` updated below.
+
+**Parallel state:** n=1k eval matrix 15/20 cells done; 3 running, 2 to go;
+launcher PID 94600 still alive. Watcher armed for ALL_EVAL_CELLS_DONE.
+
+**Blockers:** none.
+
+---
+
+### Day 18 — 2026-05-18 (late evening: dataset audit + train/eval overlap bug)
+
+User asked to confirm datasets are reliable. Audited all 4 LoRA training
+datasets:
+- `openai/gsm8k` main: 7473 train + 1319 test, canonical math benchmark.
+- `yahma/alpaca-cleaned`: 51760 (train only), widely-used instruction dataset.
+- `ise-uiuc/Magicoder-OSS-Instruct-75K`: 75197 (train only), standard code dataset.
+- `wmt/wmt19` de-en: ~38M train + 2998 val, official WMT benchmark.
+
+All real, public, third-party. **No synthetic data used in Phase 3 LoRA
+training.** (Synthetic data is reserved for theory validation in
+`code/synthetic/` and the upcoming Stiefel control panel in
+`code/phase3/eval/stiefel_control.py` — both clearly labeled.)
+
+**Bug found and fixed:** `data_loaders.py` used two INDEPENDENT shuffle
+seeds for train and eval when both came from the same split (alpaca,
+magicoder). Result: 26/200 (13%) overlap on alpaca and 14/200 (7%) on
+magicoder. The LoRA training was fine (used proper 7500-example slice),
+but the "held-out" eval contained items the model had already seen.
+
+**Fix applied (`code/phase3/training/data_loaders.py`):** when
+`eval_split == train_split`, use ONE shuffle then slice disjointly.
+Post-fix verification: 0/200 overlap on both alpaca and magicoder.
+
+**Impact assessment:**
+- LoRA adapters: NOT affected (training data was fine).
+- NLL_τ for alpaca/magicoder cells: biased ~5-10% downward in existing
+  n=200 and n=1k matrices (model saw some "held-out" during training).
+- worst_task_excess: largely unaffected (gsm8k dominates, gsm8k uses
+  separate train/test splits).
+- All headline findings (TIES > TA, Qwen ≪ Llama, b=2 dip): robust to
+  this bias.
+
+**Action:** rerun the 20-cell n=1k matrix after the current one finishes,
+write to `eval_matrix_n1k_v2/`. About 5 hr more compute. T1.C training
+will use the fixed loader from the start so no rework needed there.
+
+**Documented in:** `log.md` (new F8 + §4.3 expansion), this entry,
+`notes/open_questions.md` (new resolved item).
+
+**Blockers:** none.
+
+---
+
+### Day 18 — 2026-05-18 (night: Qwen confirms model-agnostic b=2 dip)
+
+n=1k matrix finished. **Qwen TVQ b=2 also dips sharply:** worst_excess = 0.020
+vs ~0.110 at b ∈ {4,8,16}. **5× smaller than adjacent rates** — even more
+dramatic than Llama's 2× dip. Qwen avg_excess at b=2 is NEGATIVE (-0.006),
+meaning the merged model is slightly BETTER than the average task LoRA.
+
+**The b=2 local minimum is model-agnostic** (Llama + Qwen, GQA + MHA both
+show it). This is structural — not a model artifact. Now the strongest
+empirical finding in the paper, alongside TIES > TA.
+
+19/20 cells completed; llama_knots was killed at walltime 7285s (just over
+2-hr limit). KnOTS's extra SVD on the T-stacked concat matrix is slower
+than other methods. For the v2 rerun, walltime bumped to 3 hr.
+
+**Documented in:** `log.md` F7 promoted to model-agnostic + §5.5 updated +
+this entry.
+
+**Next:** kick off v2 rerun of the full 20-cell matrix with the fixed
+data_loaders (eval_matrix_n1k_v2/) + 3-hr walltime.
+
+---
+
+### Day 18 — 2026-05-18 (late night: d_eff analysis lands, MAJOR paper finding)
+
+T1.A `deff_analysis.py` completed in 200 seconds (after rewrite to use
+top-r truncated SVD + svdvals on stacked V rather than eigvalsh on full
+in_dim × in_dim P_total). Result:
+
+**d_eff = Tr = 64 in EVERY layer of BOTH models.**
+- Llama-3.1-8B: 128/128 layers, d_eff = 64
+- Qwen-2.5-7B: 112/112 layers, d_eff = 64
+
+**Implication:** the bound's floor formula B²(1 - d_eff/(Tr)) = 0 in
+this regime. But observed worst_task_excess = 0.10 (Qwen) to 0.22 (Llama)
+at b=32. **The 0.10-0.22 gap is the slack between current merging
+algorithms and the information-theoretic optimum.**
+
+This is the strongest paper finding so far. Reframes the contribution from
+"we proved a bound and showed it qualitatively holds" to "we proved a
+bound that real LoRA merging WELL exceeds, quantifying how much room
+there is for better algorithms." Lead sentence rewritten in log.md §6.1.
+
+Three candidate interpretations of the d_eff = Tr finding (documented in
+log.md §5.6):
+- (a) Bound is for worst-case Stiefel-random; real LoRAs aren't worst-case. Slack = method suboptimality. **Recommended framing.**
+- (b) Hard-rank d_eff is too coarse. A soft variant (participation ratio of singular values of stacked V) might give a tighter empirical prediction. Worth implementing as a "Figure 5" diagnostic.
+- (c) Unmodeled H_t-curvature term. Less likely.
+
+Figure delivered: `code/phase3/figures/deff_vs_floor.png`.
+
+**Documented in:** `log.md` F9, §5.6, §6.1 rewritten; this entry.
+
+**Blockers:** none.
+
+---
+
+### Day 19 — 2026-05-19 (T1.B parked, T1.C trimmed to 8 LoRAs, framing tightened)
+
+Picked up HPC session ~03:30 IST 2026-05-19. v2 eval matrix was at 5/20
+when session began; reached 16/20 by ~03:50.
+
+**T1.B Stiefel control panel — ran but uninformative (parked).**
+Executed `code/phase3/eval/stiefel_control.py` (5 min CPU). The mixing
+construction `V_t = sqrt(1-α) V_indep + sqrt(α) V_shared` keeps the
+stacked subspaces `[V_1 | ... | V_T]` generically linearly independent
+for **every α < 1**, so `d_eff = Tr = 16` across α ∈ {0.0, ..., 0.9}
+and only collapses to `d_eff = r = 4` at α = 1.0. Predicted floor
+`B²(1 − d_eff/(Tr))` is therefore 0 for the entire sweep except the
+last point, making the "observed / predicted" ratio explode to ~10¹².
+Outputs at `results/phase3/stiefel_control.json` +
+`code/phase3/figures/stiefel_control.png`; **not promoted to
+paper_artifacts** (reference only).
+
+Actually a meaningful negative result: hard-rank `d_eff` saturates
+generically whenever subspaces are merely close-in-angle rather than
+literally rank-deficient — same phenomenon F9 already showed on real
+LoRAs. Two paths forward, decision deferred to after v2 lands:
+(i) redesign T1.B with an explicit partial-shared-basis construction
+(share r' < r exact basis directions, keep r − r' independent per
+task, sweep r' → d_eff = r' + T(r − r')); or (ii) pivot to T1.A2 soft
+d_eff (participation ratio of stacked-V singular values) which subsumes
+(i)'s purpose with a continuous metric. Recommend (ii) when we resume.
+
+**Re-framing pass after user pushed back on confident claims.**
+User flagged correctly that I was treating the buggy n=200 / old n=1k
+numbers as if they were settled. Re-separated the evidence:
+
+- **Solid (clean of the bug, independent of v2 status):** all theory
+  (Thm 7, 8, 9, Lemma 6), Phase 2 synthetic slope $-1.60 \pm 0.10$,
+  Phase 2.5 general-T Chebyshev, LB-sharpening ruled out, the 8 trained
+  LoRAs themselves (training pool was clean), and the d_eff = Tr
+  structural finding (computed from B@A factors, NOT eval data).
+- **Tentative (rests on the buggy matrix, supersession in flight via
+  v2):** F1–F7 magnitudes, the "0.10–0.22 nats/token gap" number, all
+  20-cell worst_excess values. *Directions* of F1/F2/F7 likely robust
+  (worst_excess is gsm8k-bottlenecked, gsm8k uses separate splits),
+  but *magnitudes* must be quoted only from v2.
+
+**ICLR 2027 status unchanged.** Decision-gate outcome from `log.md`
+§10 (C1 pass, C3 pass, C2 honestly skipped) still holds. Today's T1.B
+issue is a re-framing moment for one analysis script, not a
+paper-altering event. No arXiv preprint either way per the 2026-05-18
+decision.
+
+**T1.C training pipeline — scoped at 16 LoRAs, trimmed to 8.**
+
+Initial scope: 4 robustness models × 4 tasks = 16 LoRAs. Models considered:
+Mistral-7B-Instruct-v0.3, Yi-1.5-9B-Chat, gemma-3-12b-it,
+Qwen-2.5-14B-Instruct. Generated 16 YAML configs via
+`code/phase3/scripts/gen_t1c_configs.py` and a launcher
+`code/phase3/scripts/submit_t1c_lora.sh` that yields to v2 by counting
+both `rdm_eval` and `rdm_train` against the 3-cap.
+
+Two issues surfaced before any T1.C job was submitted:
+
+1. **gemma-3-12b-it has architecture `Gemma3ForConditionalGeneration`**
+   (multimodal head, not pure causal LM). Unsloth's
+   `FastLanguageModel.from_pretrained` is built for causal-LM heads;
+   may fail outright, silently grab only the text decoder, or produce
+   a partially-broken adapter. Not gambled on.
+
+2. **GPU share-load reality vs my inflated `min_free_gb` thresholds.**
+   PBS doesn't track GPUs (`naccelerators=0`); the 8× A100-80GB on
+   `jiit-gpu01` are shared informally with ~18 other STDIN users. Recent
+   picker snapshot: free GBs across the 8 GPUs were
+   `[20.7, 28.6, 30.0, 34.7, 30.2, 46.6, 37.8, 14.6]` — peak free
+   46.6 GB. My initial `min_free_gb` of 40 / 50 / 65 / 75 GB (for 7B /
+   9B / 12B / 14B) would have made the 12B and 14B jobs **always**
+   fail the picker on that snapshot.
+
+   Honest peak VRAM for full-bf16 LoRA training with Unsloth + gradient
+   checkpointing is `base_size + ~9–13 GB` (base = N × 2 bytes, plus
+   ~1–4 GB LoRA + Adam fp32 for LoRA, ~2–4 GB activations at bs=8 /
+   seq=2048, ~3–5 GB working buffers). Realistic peaks: Mistral-7B
+   ~23 GB, Yi-9B ~27 GB, gemma-12B ~35 GB, Qwen-14B ~41 GB. The
+   original `llama31_8b_*.yaml` `min_free_gb: 40` was already
+   conservative for an actual ~25–30 GB peak; I scaled linearly from
+   a padded starting point and produced unworkable numbers.
+
+User decision: drop 12B and 14B. **Final T1.C scope: 2 models × 4
+tasks = 8 LoRAs.**
+
+| Model | min_free_gb (revised) | Realistic peak |
+|---|---:|---:|
+| mistral_7b (Mistral-7B-Instruct-v0.3) | 30 | ~23 GB |
+| yi15_9b (Yi-1.5-9B-Chat) | 35 | ~27 GB |
+
+Note: `pbs_train.sh` still hard-codes `gpu_picker --min-free-gb 40`.
+For the trimmed set, both honest thresholds (30, 35) sit below the
+picker's 40 — picker is the binding check, `assert_env` always passes
+after picker success, no model-load time wasted. No need to plumb
+config-derived `min_free_gb` into `pbs_train.sh` for this set.
+
+Launcher is live and polling at 60s intervals; will submit
+`mistral_7b_gsm8k` as soon as the first v2 cell frees a slot.
+Submission order is by-task batches across both models (mistral+yi
+gsm8k → mistral+yi alpaca → mistral+yi magicoder → mistral+yi flores)
+so model-specific failures surface early on the model axis.
+
+**Reviewer story preserved:** 4 architecture families (Llama 3.1 8B +
+Qwen 2.5 7B + Mistral 7B v0.3 + Yi 1.5 9B Chat) in the ~7–9B band.
+Lose gemma-3 (multimodal-arch risk) and Qwen-14B (shared-GPU
+slot-finding risk) — within-family Qwen scaling probe is gone, but the
+n=4 architecture comparison is the headline that survives.
+
+**Files written / changed this session:**
+
+- `code/phase3/eval/stiefel_control.py` — ran; outputs at
+  `results/phase3/stiefel_control.json` +
+  `code/phase3/figures/stiefel_control.png` (NOT promoted).
+- `code/phase3/scripts/gen_t1c_configs.py` — new; generates the 8 T1.C
+  LoRA configs with honest `min_free_gb`. Header notes which 2 models
+  were dropped and why.
+- `code/phase3/scripts/submit_t1c_lora.sh` — new; 8-config launcher
+  yielding to v2 via combined `rdm_(eval|train)` counter.
+- `code/phase3/configs/lora/{mistral_7b,yi15_9b}_{gsm8k,alpaca,magicoder,flores}.yaml`
+  — 8 new training configs, hyperparams mirror existing
+  `llama31_8b_*.yaml`.
+
+**v2 progress at time of this entry:** 16/20 cells done (all 8 non-TVQ
+across both models + all 6 Llama TVQ + Qwen TVQ b1/b2). Currently
+running: Qwen TVQ b4, b8 (third slot just rolled). Pending submission:
+Qwen TVQ b16, b32. ETA to ALL_EVAL_CELLS_DONE: ~1–2 hr.
+
+**Next actions when v2 lands:**
+1. Run `code/phase3/eval/phase_b_analysis.py` against v2 data;
+   regenerate headline figures; check whether F1/F2/F7 magnitudes
+   shift materially. Quote only v2 numbers going forward.
+2. Update `log.md` §3 / `notes/phase3_findings.md` with the clean
+   numbers; supersede the n=200 / old-n=1k tables.
+3. T1.C will be running in background (~3–4 hr after first slot
+   opens).
+4. Decision on T1.B redesign vs T1.A2 (soft d_eff). Pending Sankalp.
+
+**Blockers:** none.
+
+---
+
+### Day 19 — 2026-05-19 close (v2 lands clean, T1.C complete, paper_artifacts updated)
+
+Continuation of the morning session entry above. End-of-day state:
+
+**v2 eval matrix — DONE.** `ALL_EVAL_CELLS_DONE` at 05:40:36 IST. All
+20/20 cells in `results/phase3/eval_matrix_n1k_v2/`. Ran
+`phase_b_analysis.py` against v2 after refactoring it to take a CLI
+`--eval-dir` flag (preserving backward-compat default). Output at
+`code/phase3/figures/v2/{headline_rd,method_compare}.png` +
+`results/phase3/phase_b_summary_v2.json`.
+
+**All 3 headline findings confirmed on clean v2 data:**
+
+| Finding | Buggy n=1k | v2 clean | Direction |
+|---|---:|---:|---|
+| F1 — Qwen TIES vs TA | 7.5× smaller | **8.0× smaller** | confirmed (sharper) |
+| F1 — Llama TIES vs TA | 27% smaller | 27% smaller | unchanged |
+| F2 — Qwen/Llama TA ratio | 0.48 (2.09×) | **0.50 (1.98×)** | confirmed |
+| F7 — Llama TVQ b=2 dip | 2.0× smaller | **2.1× smaller** | confirmed (slightly sharper) |
+| F7 — Qwen TVQ b=2 dip | 5.0× smaller | **6.0× smaller** | confirmed (clearly sharper) |
+| F7 — Qwen avg_excess at b=2 | −0.006 | **−0.0066** | still negative |
+| F4 — KnOTS per-task wins | 5/8 | **6/8** | confirmed (sharper) |
+| C1 floor pass | PASS | PASS | unchanged |
+| C2 slope SKIP | SKIP | SKIP (confirmed not artifact) | unchanged |
+| C3 KnOTS pass | PASS | PASS | unchanged |
+
+**F9 (d_eff = Tr) unchanged** — computed from factors, not eval data.
+
+**Paper artifacts promoted (2026-05-19 ~08:50 IST):**
+
+- `paper_artifacts/figures/headline_rd.png` ← v2 (prior moved to `headline_rd_old.png`)
+- `paper_artifacts/figures/method_compare.png` ← v2 (prior moved to `*_old.png`)
+- `paper_artifacts/data/phase_b_summary.json` ← v2 (prior moved to `*_old.json`)
+
+**T1.C training — COMPLETE.** `T1C_ALL_TRAINING_DONE` at 08:34:22 IST.
+All 8 LoRAs in `artifacts/lora/{mistral_7b,yi15_9b}/<task>/v1/`. Per-LoRA
+metrics in `results/phase3/lora_train/{mistral_7b,yi15_9b}_*_v1.json`.
+
+NLL_τ table for the new 8 LoRAs (n=200 held-out, fixed loader):
+
+|                | GSM8K | Alpaca | Magicoder | Translation |
+|----------------|------:|-------:|----------:|------------:|
+| Mistral-7B-v0.3 | 0.4442 | 0.8372 | 0.2977 | 0.8959 |
+| Yi-1.5-9B-Chat  | **0.3848** | 0.7820 | 0.2435 | 0.7405 |
+
+Yi-1.5-9B is the lowest math NLL_τ of the 4 models we've trained so
+far (0.385 vs Qwen 0.418, Llama 0.446). Mistral translation is the
+worst of all 4 (0.896). Wallclock per LoRA: 35–162 min; Magicoder is
+the long pole (134–162 min on the 7–9B class, matching the existing
+~3× factor for code examples).
+
+**Docs updated this evening:**
+
+- `notes/phase3_findings.md` — new §2v (v2 tables, criteria, paper-artifacts pointer); original §2 preserved as HISTORICAL.
+- `log.md` — top-of-file SOLID/TENTATIVE callout flipped to post-v2 framing; §3.3 tables replaced with v2; F1/F2/F4/F7 updated with v2 magnitudes; §3.5 criteria refreshed; "Last updated" header bumped.
+- `code/phase3/eval/phase_b_analysis.py` — argparse refactor (added `--eval-dir`, `--fig-dir`, `--summary`; default behavior unchanged).
+
+**Next (Part 2 of tonight's session):** T1.D eval matrix extension.
+Add `mistral_7b` and `yi15_9b` to `code/phase3/scripts/launch_eval_matrix.py`,
+re-launch — the existing 20 v2 cells will be skipped via the
+"skip-if-JSON-exists" guard; only the 20 new cells (Mistral×10 + Yi×10)
+will be submitted to the gpu queue. Output dir stays
+`results/phase3/eval_matrix_n1k_v2/` for cohesion. At 3-concurrent
+gpu cap, eval cells run ~1h45m each → roughly 4–6 hr wallclock for
+the 20 new cells. Will likely finish overnight / morning.
+
+After T1.D lands, `phase_b_analysis.py` needs another refactor pass
+to support 4 models in the headline plot (currently hardcoded
+`MODELS = ["llama31_8b", "qwen25_7b"]` and a 1×2 subplot grid). Plus
+soft-d_eff (T1.A2) decision still pending.
+
+**Blockers:** none.
+
+---
+
+### Day 19 — 2026-05-19 evening (T1.D done, 4-model Phase B regenerated)
+
+Closure of the second half of today's work.
+
+**T1.D eval matrix extension — COMPLETE.** `ALL_EVAL_CELLS_DONE` at
+2026-05-19 **18:29:11 IST**. All 20 new cells (Mistral-7B × 10 + Yi-1.5-9B
+× 10) landed cleanly. Combined with the morning's v2 rerun, the directory
+`results/phase3/eval_matrix_n1k_v2/` now holds **40 cells (4 models × 10
+cells each)** — a full 4-architecture comparison.
+
+T1.D wallclock: 09:10:01 → 18:29:11 = **9h19m**, basically matching v2's
+9h35m on the same 20-cell mix. Earlier intra-day ETAs ("12:00–12:30",
+"15:00–17:00") were biased by the Mistral-TVQ tail finishing fast; Yi
+TVQ cells then ran at ~1.5–2 hr each (Yi-1.5-9B is 18 GB base vs Mistral's
+14 GB), reverting wallclock to the v2 baseline. Lesson logged:
+**TVQ wallclock scales with base-model size, not categorically faster
+than non-TVQ.**
+
+**Phase B regenerated on 4-model data.**
+
+Refactored `code/phase3/eval/phase_b_analysis.py`:
+- Added `--models` CLI flag (default: auto-detect from eval_dir by
+  scanning `{model}__*.json` patterns).
+- `discover_models()` walks the eval dir and returns a stable ordering
+  via `PREFERRED_MODEL_ORDER = ["llama31_8b", "qwen25_7b", "mistral_7b",
+  "yi15_9b"]` (extras at end alphabetically).
+- `_subplot_grid(n)` returns dynamic (rows, cols, figsize): 1×N for
+  N ≤ 3 (with N=1 special-cased to 7×5), 2×2 for N=4, 2×ceil(N/2) for N>4.
+- `headline_plot()`, `method_compare_plot()`, `check_criterion_{1,2,3}()`
+  all take an explicit `models: list[str]` parameter now.
+- Backward-compat preserved: running with no args reproduces the prior
+  2-model behavior on `results/phase3/eval_matrix/`.
+
+Run on the 40-cell dir:
+```
+[phase_b] loaded 40 cells across 4 models
+models = ['llama31_8b', 'qwen25_7b', 'mistral_7b', 'yi15_9b']
+```
+
+Outputs:
+- `code/phase3/figures/v2_4model/{headline_rd,method_compare}.png`
+- `results/phase3/phase_b_summary_v2_4model.json`
+
+**4-model headline tables (worst_excess, n=1k):**
+
+Non-TVQ at b=32 implicit:
+
+|                                  | Llama-3.1-8B | Qwen-2.5-7B | Mistral-7B | Yi-1.5-9B |
+|----------------------------------|-------------:|------------:|-----------:|----------:|
+| Task Arithmetic                  | 0.2179       | 0.1095      | 0.1452     | 0.0987    |
+| TIES                             | **0.1597**   | **0.0137**  | **0.0569** | **0.0458**|
+| DARE                             | 0.2183       | 0.1119      | 0.1466     | 0.1022    |
+| KnOTS                            | 0.2178       | 0.1098      | 0.1453     | 0.0988    |
+
+TVQ rate sweep:
+
+| b  | Llama  | Qwen   | Mistral | Yi |
+|----|-------:|-------:|--------:|---:|
+| 1  | 0.2336 | 0.1375 | 0.3474  | 0.3044 |
+| **2** | **0.1042** | **0.0184** | **0.0626** | **0.0599** |
+| 4  | 0.2179 | 0.1098 | 0.1456  | 0.0987 |
+| 8  | 0.2189 | 0.1099 | 0.1452  | 0.0989 |
+| 16 | 0.2188 | 0.1094 | 0.1459  | 0.0989 |
+| 32 | 0.2178 | 0.1098 | 0.1456  | 0.0990 |
+
+**Three findings worth flagging:**
+
+1. **F1 (TIES dominance) is universal across 4 architectures.**
+   TIES vs TA reductions: Llama **27%**, Mistral **61%**, Yi **54%**,
+   Qwen **87%**. Qwen's margin is extreme (~8× smaller); other three
+   cluster 27–61%. Wins on every model + every architecture family
+   tested. No exceptions.
+2. **F7 (b=2 TVQ dip) is universal across 4 architectures.**
+   b=4/b=2 ratios: Llama 2.09×, Mistral 2.33×, Qwen 5.97×, Yi 1.65×.
+   All 4 models show a clean local minimum at b=2. Reviewers cannot
+   dismiss as Qwen-specific or GQA-specific. Strong structural claim.
+3. **F2 must be reframed.** Original 2-model finding "Qwen ~2× easier
+   than Llama; conjecture: GQA reduces inter-task interference" does
+   not survive on 4 models. TA-floor ordering hardest → easiest:
+   **Llama-3.1-8B (0.218) > Mistral-7B (0.145) > Qwen-2.5-7B (0.110)
+   > Yi-1.5-9B (0.099).** Yi-1.5-9B is *Llama-architecture* (same MHA,
+   not GQA) but is **2.2× easier to merge than Llama-3.1**. So GQA-vs-MHA
+   is not the explanation; pretraining distribution + instruction-tuning
+   recipe materially affect merging-readiness. Probably the strongest
+   "training matters more than architecture" empirical signal we have.
+
+**Phase B criteria (4-model):**
+- C1 floor at b=32: **PASS (4/4).** All non-zero.
+- C2 TVQ slope ≈ −2: **SKIPPED (4/4).** Universal — only 1–2 points
+  above floor in every model; rate-decay regime not visible at b ≥ 1
+  for any architecture. Confirmed NOT a 2-model artifact.
+- C3 KnOTS > TA per-task: **PASS (11/16 cells).** Llama 4/4, Mistral
+  3/4, Qwen 2/4, Yi 2/4.
+
+**Paper artifacts promotion (2026-05-19 ~18:45 IST):**
+
+- `paper_artifacts/figures/headline_rd.png` ← 4-model (2-model
+  previous version preserved as `headline_rd_v2_2model.png`)
+- `paper_artifacts/figures/method_compare.png` ← 4-model (prior →
+  `method_compare_v2_2model.png`)
+- `paper_artifacts/data/phase_b_summary.json` ← 4-model summary
+  (prior → `phase_b_summary_v2_2model.json`)
+- Versioning trail: `*_old.*` (Day-4 buggy) → `*_v2_2model.*`
+  (intermediate v2) → (no suffix, canonical 4-model).
+
+**Docs updated:**
+
+- `log.md` — top-of-file SOLID/TENTATIVE callout flipped to post-T1.D
+  framing; §3.3 tables replaced with 4-model; F1/F2/F4/F7 updated;
+  §3.5 criteria refreshed; "Last updated" header bumped.
+- `notes/phase3_findings.md` — new §2v4 (4-model authoritative tables,
+  TIES/TA ratios, b=2 dip ratios, merge-difficulty ordering); §2v
+  marked HISTORICAL as the intermediate 2-model snapshot; §2 still
+  HISTORICAL as the original n=200 buggy.
+- `code/phase3/eval/phase_b_analysis.py` — auto-detect models,
+  dynamic subplot grid; backward-compatible.
+
+**Open work after today:**
+
+1. **T1.A2 (soft d_eff)** still pending decision. Now has independent
+   motivation from the T1.B parking issue + 4-model data (could
+   compare hard vs soft d_eff across 4 architectures).
+2. **d_eff analysis (T1.A) on the new Mistral + Yi LoRAs.** The
+   existing `deff_analysis.json` covers only Llama + Qwen. Quick
+   CPU run (~200 sec) to extend to 4 models. Would let us check
+   whether the F9 d_eff=Tr saturation holds across architectures.
+3. **F2 reframing** in the paper draft. Replace the
+   GQA-reduces-interference conjecture with the
+   pretraining-matters-more-than-architecture finding from the
+   Yi-1.5 result. Sankalp probably wants to see this before drafting.
+4. **Translation retrain** at 15k×3ep — would resolve F3
+   (negative excess = under-training or real cross-task benefit?).
+5. **DARE density ablation** — F5 still open (DARE ≈ TA at
+   density=0.2 across 4 models; needs density sweep).
+
+**Blockers:** none.
+
+---
+
+### Day 19 — 2026-05-19 night (Tier 1 closeout: 4-model d_eff + soft d_eff + per-example re-eval kicked off)
+
+After T1.D + 4-model Phase B done, the user said "we don't lie, we don't
+hide anything, we don't shy away from extra resources" — committed to
+full transparency + full compute use for Tier 1 closeout.
+
+**T1.A extended to Mistral + Yi (F9 universal).** Patched
+`code/phase3/eval/deff_analysis.py` to add the 2 new models. Ran for
+~6 min CPU. Result: **hard d_eff = 64 = Tr in every layer of every model
+across all 4 architectures** (Llama-3.1-8B 128 layers, Qwen-2.5-7B 112
+layers, Mistral-7B 128 layers, Yi-1.5-9B 192 layers). F9 generalizes
+universally.
+
+**T1.A2 soft d_eff (F10 — negative finding, very important).** Added the
+participation-ratio metric to the same script — soft d_eff =
+(Σ σ_i²)²/Σ σ_i⁴ over the singular values of M = [V_1 | … | V_T].
+Mean per architecture:
+
+| Model | soft d_eff | soft d_eff/(Tr) | observed TA worst_excess |
+|---|---:|---:|---:|
+| Llama-3.1-8B | 16.48 | 0.258 | 0.2179 |
+| Qwen-2.5-7B  | 16.45 | 0.257 | 0.1095 |
+| Mistral-7B   | 16.37 | 0.256 | 0.1452 |
+| Yi-1.5-9B    | 16.41 | 0.256 | 0.0987 |
+
+Soft d_eff varies <0.7% across architectures, but observed TA worst_excess
+varies 2.2×. Pearson r = +0.53 (p = 0.47), Spearman r = +0.40 (p = 0.60) —
+**not significant**.
+
+**Implication:** the original `log.md` §5.6 candidate-(b) hypothesis
+("soft d_eff fixes the gap that hard d_eff misses") is empirically
+**falsified**. Both hard and soft d_eff are uniform across architectures
+but merging difficulty isn't. F2 is NOT a subspace-overlap phenomenon.
+The remaining mechanism candidates point to curvature ($H_t$), pretraining
+recipe (the Yi-arch-but-easier signature), and $B^2$ scale.
+
+This is a *cleaner* paper story than "soft d_eff explains it" would have
+been: F9 says real LoRAs lie above the floor universally; F10 honestly
+closes the door on the d_eff-as-explanation hypothesis and points readers
+to curvature / training-recipe as the open mechanism.
+
+**4-model d_eff figure promoted** to `paper_artifacts/figures/deff_vs_floor.png`
+(4 panels: per-layer hard hist + per-layer soft hist + soft-d_eff-vs-observed
+scatter + per-model soft d_eff bars). Prior 2-model version preserved as
+`deff_vs_floor_v2_2model.png`. JSON: `paper_artifacts/data/deff_analysis.json`
+(prior → `deff_analysis_v2_2model.json`).
+
+**Tier 1 #3 (bootstrap CI) — full re-eval kicked off.** v2 cell JSONs only
+saved aggregate NLLs (means over n=1000), not per-example arrays. Bootstrap
+needs per-example values. Options surfaced to user: (1) skip + document
+limitation, (2) selective re-eval (8 hr GPU), (3) full re-eval (~16 hr
+wallclock). User chose: don't skip, use the resources.
+
+Implementation 2026-05-19 ~19:35 IST:
+
+- Patched `code/phase3/eval/run_eval_cell.py` `compute_nll()` to return
+  `(mean_nll, per_example_list)` where per_example_list is
+  `[{"nll": float|None, "n_answer": int, "skipped": bool, "reason"?: str}, ...]`.
+  No additional compute cost — we just stop discarding what HF's loss
+  already gave us per example.
+- Saved as new cell-JSON fields: `per_example_nll_tau` (nested by state
+  then task) and `per_example_nll_merged` (by task).
+- Parametrized `launch_eval_matrix.py` to read `RDMERGE_EVAL_RESULTS_DIR`,
+  `RDMERGE_EVAL_CONFIGS_DIR`, `RDMERGE_EVAL_LAUNCH_LOG` from env vars.
+  Backward-compatible defaults preserve v2 behavior.
+- Launched 40-cell re-eval to a fresh dir
+  `results/phase3/eval_matrix_n1k_v3_perexample/` via env-var overrides.
+  PBS job IDs starting at 39795 (first 3 jobs: llama TA/TIES/DARE).
+- Output: per-example NLL arrays. Once landed, bootstrap CIs go on every
+  worst_task_excess number. ~16 hr wallclock estimate at 3-concurrent cap.
+
+**Task #18 (stale Llama+Qwen NLL_τ cleanup) resolved-by-v3.** The v3
+re-eval recomputes nll_tau for all 4 models with the fixed loader, so
+the §1 NLL_τ table in `notes/phase3_findings.md` will auto-update with
+consistent numbers once v3 lands. No separate run needed.
+
+**Phase status after this:** Tier 1 fully in flight (will be DONE when v3
+lands). Then Tier 3 paper drafting per the user's chosen order
+(T1 → T3 → T2 → T4).
+
+**Open after v3 lands:**
+- Compute bootstrap CI on every worst_task_excess + per-task excess
+- Re-promote phase_b figures with error bars
+- Update `notes/phase3_findings.md` §1 NLL_τ table with clean Llama+Qwen
+  numbers from v3
+- Start Tier 3 (paper drafting)
+
+**Blockers:** none. v3 re-eval running; ~16 hr ETA.
+
+---
+
+### Day 20 — 2026-05-20 (v3 lands, bootstrap CIs, and a major honest correction: F4 was noise)
+
+**v3 per-example re-eval COMPLETE.** `ALL_EVAL_CELLS_DONE` 09:32:05 IST.
+40/40 cells in `eval_matrix_n1k_v3_perexample/`, each with per-example NLL
+arrays. v3 point estimates match v2 within ~0.001 (GPU non-determinism) —
+nothing in the headline numbers shifted; we just gained the ability to put
+CIs on them.
+
+**Bootstrap CIs (`bootstrap_ci_v3.py`, 10k resamples/cell → `bootstrap_ci_v3.json`).**
+Every headline finding is statistically significant:
+- F1 TIES: worst_excess CIs separated from TA on all 4 models.
+- F7 b=2 dip: b=2 vs b=4 CIs non-overlapping on all 4 models.
+- F2 ordering Llama>Mistral>Qwen>Yi: every adjacent pair non-overlapping,
+  including the tightest (Qwen 0.110 [0.106,0.114] vs Yi 0.099 [0.095,0.102]).
+
+**MAJOR CORRECTION — F4 (KnOTS > TA) was NOISE.** When phase_b re-ran on v3,
+the KnOTS per-task win count came out 7/16 vs the 11/16 from the v2-4model
+run — same data, GPU non-determinism. That swing flagged the per-task gaps
+as within noise. Wrote `method_diff_ci.py` (paired bootstrap; for two methods
+on the same task the shared τ baseline cancels, so the test is on the
+merged-NLL difference). Results:
+- **KnOTS vs TA: only 5/16 cells significant, split both directions
+  (3 KnOTS, 2 TA), all magnitudes ≤ 0.0019 nats.** KnOTS ≈ TA, full stop.
+- **DARE vs TA: 13/16 "significant" at n=1000 but all ≤ 0.0030 nats, mostly
+  slightly favoring TA.** DARE ≈ TA (marginally worse), confirmed not a bug.
+- **TIES vs TA: 14/16 significant, LARGE.** gsm8k (bottleneck) wins big on all
+  4 models (−0.058 to −0.106); non-bottleneck tasks mixed (TIES sometimes
+  significantly worse). TIES trades off — big win on the hard task, small
+  cost on easy tasks; net worst-task win because worst = gsm8k.
+
+**Practical-vs-statistical threshold.** At n=1000, ~0.0002-nat differences
+become "significant." For the paper we use |Δ| > 0.005 nats AND CI excludes 0.
+**By that standard, only TIES meaningfully differs from TA.** KnOTS and DARE
+never cross it.
+
+**Why F4 failing is GOOD (theory-consistent).** The original C3 hypothesis
+(handoff §12) predicted KnOTS's subspace-aware advantage *vanishes as
+d_eff → Tr*. We measure d_eff = Tr saturated everywhere (F9). So KnOTS ≈ TA
+is exactly the theory's prediction in this regime — F4 "failing" closes a
+loop with F9 rather than weakening the paper. The "structure-respecting >
+naive" result that C3 was meant to capture is carried, robustly, by TIES.
+
+**Decision-gate (honest restatement):** ICLR viable. C1 robust (floors
+significant, 4/4). C2 skipped (universal). C3-as-literally-stated (KnOTS>TA)
+FAILS but is theory-consistent at d_eff=Tr, and TIES carries the
+structure-respecting result with large bootstrap-significant margins. **We do
+NOT claim KnOTS beats TA in the paper.**
+
+**§1 NLL_τ table refreshed** with clean v3 numbers for all 4 models (n=1000,
+fixed loader). Supersedes the stale Day-4 training-time n=200 buggy Llama+Qwen
+values. Yi-1.5-9B has the lowest NLL_τ on 3/4 tasks (strongest per-task
+learner AND easiest to merge).
+
+**v3 is now CANONICAL.** Promoted to `paper_artifacts/`:
+- `figures/headline_rd.png`, `method_compare.png` (v3 4-model)
+- `figures/headline_with_ci.png` (NEW — error-bar headline: non-TVQ methods
+  with CI showing only TIES separates + TVQ sweep with CI showing universal
+  b=2 dip)
+- `data/phase_b_summary.json` (v3), `data/bootstrap_ci_v3.json`,
+  `data/method_diff_ci_{knots,ties,dare}_vs_ta.json`
+
+**Scripts added this session:** `code/phase3/eval/bootstrap_ci.py`,
+`code/phase3/eval/method_diff_ci.py`, `code/phase3/figures/make_ci_figure.py`.
+`run_eval_cell.py` patched for per-example logging; `launch_eval_matrix.py`
+parametrized via `RDMERGE_EVAL_*` env vars.
+
+**Docs corrected:** `log.md` (F1 refined, F4 corrected, F5 confirmed, §3.5
+criteria reframed, top callout updated), `notes/phase3_findings.md` (F1/F4/F5
+corrected, §2v4.5 + new §2v4.5b bootstrap section, §1 table refreshed),
+this entry, `memory/project_phase_status.md`.
+
+**TIER 1 NOW COMPLETE.** Next per user-chosen order: **Tier 3 — paper
+drafting.**
+
+**Blockers:** none.
+
+---
+
+### Day 20 — 2026-05-20 (Tier 3: full draft assembled with gap-first framing)
+
+User chose to rebuild the paper with the strongest framing. Agreed split:
+**reframe the narrative from scratch (high value); preserve + re-verify the
+proofs (rewriting verified math from memory is the N2 failure mode).**
+Locked spine: **gap-first, theory as backbone** — "prove the floor, measure
+how far real merges sit above it, identify what closes the gap."
+
+**Sections drafted/rewritten:**
+- `experiments.tex` — real-LLM subsection (4 findings, Table 1, headline_with_ci figure, honest non-claims). Replaced the old "deferred to future version" placeholder (which also named the wrong models, Qwen/Gemma/Phi).
+- `abstract.tex` — full rewrite to gap-first.
+- `intro.tex` — added 6th contribution bullet (empirical); rewrote "what this means for practice" + worked example; updated org paragraph.
+- `related_work.tex` — corrected the [systematic2025merging] mechanism.
+- `discussion.tex` — added empirical-bridge paragraph.
+- `reproducibility.tex` — NEW section (code/seeds/configs/per-example arrays released on publication; decision log accompanies camera-ready; anonymized for review; per the transparency policy [[project-transparency-log-policy]]).
+
+**MAJOR CONSISTENCY FIX surfaced by the reframe.** The original intro AND
+related_work both claimed real LoRAs have "substantial subspace overlap" so
+"the floor is bounded away from zero," and that this explains why subspace
+methods fail. **This is the exact opposite of F9** (we measure d_eff = Tr,
+floor = 0). Left in, the paper would contradict its own §6. Both corrected:
+the gap is beatable algorithmic slack above a *zero* floor; KnOTS≈TA is
+explained by *no overlap to exploit*, not *too much overlap*. The corrected
+story is also stronger and matches theory_v1.tex line 303-304 ("Stiefel-random
+Tr≤d: a.s. d_eff=Tr, f_floor=0") — the theory predicted the floor-zero regime;
+the experiments confirm real LoRAs live in it.
+
+**Verification passes (Rule N2, statement/formula level):**
+- Cross-refs: 31 labels defined, 0 broken `\ref`.
+- Citations: 27 bib entries, all cited, 0 broken `\cite`, 0 orphans.
+- Theorem formulas consistent across setup / lower_bound / achievability /
+  `theory/theorem_v1.tex`: floor B²(1−E[d_eff]/Tr), compression
+  c_TQ·(B²E[d_eff]/Tr)·2^{−2R/d_eff}, achievability Θ(B²·2^{−2R/(Tr)}),
+  d_eff=rank(Σ P_{V_t})≤min(Tr,d). All match.
+- Brace/environment balance OK on all edited files.
+- No TODO/placeholder/stale-deferral language remains.
+
+**Section sizes:** abstract 308w, intro 1434w, related_work 705w, setup 769w,
+lower_bound 961w, achievability 1044w, experiments 1777w, discussion 614w,
+reproducibility 287w (~7.9k words total).
+
+**Cannot compile on cluster** — no pdflatex/latexmk/tex module. PDF build is
+off-cluster (fits Rule N3: PDF built on Sankalp's box, source stays internal).
+Cross-ref/citation integrity verified statically instead.
+
+**Still owed before submission (NOT done this session):**
+1. Off-cluster compile + visual proof-read of the rendered PDF.
+2. **Deep Rule-N2 proof re-derivation** — I verified theorem *statements* and
+   *formulas* are consistent; a line-by-line re-derivation of the Fano/packing
+   and achievability proofs is Sankalp's pass before externalizing.
+3. Sankalp's final read (he asked to read the full assembled version).
+4. Then Tier 2 (send PDF to Garg) → Tier 4 (ablations: translation retrain,
+   DARE density sweep, 3-seed reruns, b=2 mechanism, F2 H_t/Fisher probe).
+
+**Blockers:** none. Tier 3 v1 draft assembled; awaiting compile + read.
+
+---
+
+### Day 20 — 2026-05-20 (review package: `final review/final v1/` + critical-sections guide)
+
+Built a self-contained review package for Sankalp's read + Garg
+conversation:
+- `final review/final v1/` — full compilable paper (main.tex + 9 sections
+  + references.bib + bundled figure at `figures/headline_with_ci.png`,
+  local relative path so the folder compiles anywhere off-cluster).
+- Review markup added to the COPY only (`paper/` originals stay clean,
+  verified): `\cflag{Cn}` red navigation flags (C1–C14) + `\critical{}`
+  red text on the most important passages. Macros + `\usepackage{xcolor}`
+  live in the copy's `main.tex`; delete for the clean build.
+- 14 critical flags, grouped: A framing (C1–C2), B corrected/reversed
+  claims from the F9 fix (C3 intro-practice, C4 worked-example, C5
+  related-work mechanism), C theory needing N2 re-derivation (C6 setup
+  d_eff, C7 LB theorem, C8 closed-form floor, C9 achievability+constant),
+  D empirical (C10 the gap, C11 KnOTS≈TA correction, C12 what-we-don't-
+  claim), E discussion (C13) + reproducibility (C14).
+- `final review/CRITICAL_SECTIONS_GUIDE.md` — per-flag explainer (what it
+  claims, why flagged, what changed for the corrected ones), a
+  fastest-path order (C7/C9 → C3/C5 → C10/C11 → C12), and a "four things
+  to land with Garg" section.
+
+Markup verified: 14/14 cflags present, braces balanced in all files,
+figure path local, `paper/` originals contain zero red markup.
+
+**Blockers:** none. Awaiting off-cluster compile + Sankalp's read.

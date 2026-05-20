@@ -1,0 +1,166 @@
+{
+  "params": {
+    "eval_dir": "/home/sanjay.g/projects/rdmerge/results/phase3/eval_matrix_n1k_v3_perexample",
+    "method_a": "ties",
+    "method_b": "task_arithmetic",
+    "out": "results/phase3/method_diff_ci_ties_v3.json",
+    "n_boot": "10000",
+    "seed": "20260520"
+  },
+  "results": {
+    "llama31_8b": {
+      "gsm8k": {
+        "point_diff": -0.05827357644766795,
+        "ci95": [
+          -0.05994085116852809,
+          -0.056611088225108575
+        ],
+        "significant": true,
+        "better": "ties"
+      },
+      "alpaca": {
+        "point_diff": -0.023546556606166336,
+        "ci95": [
+          -0.0250381250507934,
+          -0.022104753269753336
+        ],
+        "significant": true,
+        "better": "ties"
+      },
+      "magicoder": {
+        "point_diff": -0.027686334918335664,
+        "ci95": [
+          -0.02895592381644518,
+          -0.026482508413863487
+        ],
+        "significant": true,
+        "better": "ties"
+      },
+      "translation": {
+        "point_diff": 0.01619985963337034,
+        "ci95": [
+          0.013731569640170633,
+          0.018690726242498006
+        ],
+        "significant": true,
+        "better": "task_arithmetic"
+      }
+    },
+    "qwen25_7b": {
+      "gsm8k": {
+        "point_diff": -0.10596566847138822,
+        "ci95": [
+          -0.10929383035629295,
+          -0.10281640910138369
+        ],
+        "significant": true,
+        "better": "ties"
+      },
+      "alpaca": {
+        "point_diff": -0.010263097738919091,
+        "ci95": [
+          -0.01129935009414618,
+          -0.009302938846041784
+        ],
+        "significant": true,
+        "better": "ties"
+      },
+      "magicoder": {
+        "point_diff": -0.005061435428823147,
+        "ci95": [
+          -0.005619451730117996,
+          -0.00451583389359673
+        ],
+        "significant": true,
+        "better": "ties"
+      },
+      "translation": {
+        "point_diff": 0.0007608568756223288,
+        "ci95": [
+          -0.0033591476244780373,
+          0.004817446502961047
+        ],
+        "significant": false,
+        "better": "tie"
+      }
+    },
+    "mistral_7b": {
+      "gsm8k": {
+        "point_diff": -0.0890744481899507,
+        "ci95": [
+          -0.09180995701087062,
+          -0.08645570598996125
+        ],
+        "significant": true,
+        "better": "ties"
+      },
+      "alpaca": {
+        "point_diff": 0.011665896035721768,
+        "ci95": [
+          0.009062985240488214,
+          0.014394784460491292
+        ],
+        "significant": true,
+        "better": "task_arithmetic"
+      },
+      "magicoder": {
+        "point_diff": 0.005101778686767422,
+        "ci95": [
+          0.003916724583788433,
+          0.0062783530318338285
+        ],
+        "significant": true,
+        "better": "task_arithmetic"
+      },
+      "translation": {
+        "point_diff": 0.07462695592881241,
+        "ci95": [
+          0.07051093815329898,
+          0.07892383165309062
+        ],
+        "significant": true,
+        "better": "task_arithmetic"
+      }
+    },
+    "yi15_9b": {
+      "gsm8k": {
+        "point_diff": -0.0713713110617647,
+        "ci95": [
+          -0.07357380852851902,
+          -0.06924142614290756
+        ],
+        "significant": true,
+        "better": "ties"
+      },
+      "alpaca": {
+        "point_diff": 0.029531966426524003,
+        "ci95": [
+          0.027957009924926397,
+          0.031210208162238944
+        ],
+        "significant": true,
+        "better": "task_arithmetic"
+      },
+      "magicoder": {
+        "point_diff": 0.011066046747968628,
+        "ci95": [
+          0.010410683027678103,
+          0.011719471764704436
+        ],
+        "significant": true,
+        "better": "task_arithmetic"
+      },
+      "translation": {
+        "point_diff": 0.0028757101239952343,
+        "ci95": [
+          -0.0010676798420815564,
+          0.00686223482653562
+        ],
+        "significant": false,
+        "better": "tie"
+      }
+    }
+  },
+  "n_significant": 14,
+  "n_total": 16
+}

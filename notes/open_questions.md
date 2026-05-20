@@ -252,3 +252,404 @@ surface, close with a date and a one-line answer when resolved.
   support of $H_t$. *Day-8 update:* the $H_t$-weighted max $\geq$ avg
   identity (Lemma 1 of `theorem_v1.tex`) is exactly the tool needed;
   extends cleanly once the $H_t = P_{V_t}$ case closes.
+
+---
+
+## Phase 3 Day 17–18 open items (2026-05-18, after first full eval matrix)
+
+Following the 20-cell eval matrix and Phase B criteria check (see
+`notes/phase3_findings.md` for full results), these are the next-action
+questions in roughly the order I'd hit them.
+
+### O17.1 — TVQ b=2 dip — RESOLVED (real, not noise). New question: WHY?
+
+**Resolved 2026-05-18 via n=1k rerun:** Llama TVQ b=2 dip is REAL — worst_excess
+0.104 at n=1k (vs 0.107 at n=200) against b=4 worst_excess = 0.217. 5× more
+eval data; dip magnitude unchanged. Not sample variance; structural.
+
+Now the open question is the MECHANISM. Three candidates (none confirmed):
+- (a) **Quantization-as-regularization at b=2** — destroys destructive
+      interference patterns between task vectors that finer rates preserve.
+- (b) **Stochastic-resonance-like effect** — b=2 noise pushes merged delta
+      toward a region of the loss landscape that is better for gsm8k.
+- (c) **Implicit coarse-projection** — 4 levels per layer aligns with the
+      dominant LoRA-rank-16 structure.
+
+**Pending Qwen confirmation** (TVQ b=2 cell still running as of 2026-05-18
+afternoon). Whether Qwen shows the same dip will inform whether the effect
+is structural (both models → mechanism (a) or (c)) or model-specific (Llama
+only → mechanism (b) or Llama-specific weight distribution).
+
+**Action items for the paper:**
+1. Wait for Qwen TVQ b=2 cell to finish.
+2. Map out the dip's shape: TVQ at b ∈ {1.5, 2.5, 3} via Lloyd-Max with
+   non-power-of-2 levels.
+3. Per-task excess breakdown — is the b=2 win on gsm8k (the bottleneck), or
+   across all 4 tasks?
+4. Repeat on a different 4-task subset to rule out cross-task-overlap artifacts.
+
+**Potentially a paper-headline contribution.** The bound we proved doesn't
+preclude this (it's an upper bound on quantization-induced distortion;
+nothing says quantization can't HELP). Possible framing: "the bound
+characterizes worst-case distortion; we observe an empirical regime where
+quantization improves the merge — consistent with the bound but not predicted
+by it."
+
+### O17.2 — Why is Qwen-2.5-7B ~2× easier to merge than Llama-3.1-8B?
+
+Task Arithmetic worst_excess: Llama 0.225 vs Qwen 0.107. Same gap across
+all non-TVQ methods. Both models trained on the same 4 tasks with identical
+LoRA configs.
+
+The theory says floor scales like $B^2 (1 - d_{\mathrm{eff}}/(Tr))$. If Qwen's
+task vectors carve cleaner orthogonal subspaces, $d_{\mathrm{eff}}/(Tr)$ is
+closer to 1 (smaller floor). Action: compute empirical
+$d_{\mathrm{eff}} = \mathrm{rank}(\sum_t P_{V_t})$ per layer for both models;
+plot floor vs $d_{\mathrm{eff}}/(Tr)$ across the 2-model × 4-method × 4-task
+grid. If the bound's floor formula explains the gap, that's a strong
+paper-worthy finding.
+
+### O17.3 — KnOTS ties TA on worst_excess but beats it 5/8 per-task. Real or noise?
+
+Possible the "tie on worst" is because gsm8k always dominates worst_excess
+and the noise floor on a single task with n=200 is ~0.01 — within which TA
+and KnOTS are indistinguishable. The per-task wins on the other 3 tasks
+might be real signal.
+
+Action: include per-task error bars (bootstrap CI on the NLL_merged - NLL_τ
+difference) in the headline figure. If KnOTS's wins are outside the CI
+on multiple tasks, it's a real effect.
+
+### O17.4 — DARE = TA exactly. Implementation bug or hyperparameter?
+
+To 3 decimal places, DARE at density=0.2 produces identical worst_excess
+to TA on both models. Either:
+- The expected drop-rescale recovers TA in expectation, and our seed gave
+  near-zero variance from the mean → DARE ≈ TA empirically.
+- Our DARE implementation is buggy (e.g., applying the rescale wrong).
+- Density=0.2 is the wrong knob — DARE papers usually report density in
+  {0.5, 0.7, 0.9}.
+
+Action: ablation. Run DARE at density ∈ {0.1, 0.3, 0.5, 0.7, 0.9, 1.0}.
+At density=1.0 it MUST equal TA exactly (no drop). At density=0.5, should
+differ from TA. If it doesn't, suspect the implementation.
+
+### O17.5 — Negative translation excess: under-trained LoRA or real cross-task benefit?
+
+Every cell, both models: NLL_merged(translation) < NLL_τ_translation(translation).
+The merge IMPROVES translation. Magnitude: -0.06 to -0.13 nats.
+
+This is theoretically possible — task vectors might share useful structure
+(grammar, vocabulary) that translation alone didn't learn fully from 7500
+wmt19 examples. But it's also a red flag that the translation LoRA is
+under-trained.
+
+Action: retrain translation LoRA on 15000 examples × 3 epochs and re-eval.
+If excess still negative → real cross-task benefit (paper finding). If
+excess goes positive → original LoRA was just weak; report retrained
+numbers.
+
+### O17.6 — Rate-decay slope not testable at practical bit budgets
+
+The bound predicts $\mathcal{D}(R) \geq \text{floor} + C \cdot 2^{-2R/d_{\mathrm{eff}}}$.
+At b ∈ {1, 2, 4, 8, 16, 32} bits per parameter, the decay term is too small
+to dominate worst_excess. The empirical slope is not -2; it's essentially 0.
+
+This is OK for the paper (the floor part of the bound is what we validate),
+but it would be nice to have something to say about the slope. Options:
+- Find a sub-bit quantization scheme. 1bit-Merging exists but is concurrent.
+- Look at the linear regime: maybe at b=0.5 (e.g., 1-bit per 2 parameters
+  via product quantization) the slope becomes visible.
+- Argue from the data that the floor-only regime is the physically relevant
+  one for LoRA merging.
+
+This is a paper-narrative question more than an experimental one. Surface
+to Garg for discussion.
+
+---
+
+## Phase 3 Day 18 evening — Tier 1 strengthening committed
+
+After the "what would make the paper stronger" discussion, three items were
+committed to the pipeline. Numbering continues from T1.A onward.
+
+### T1.A — Validate floor formula B²(1−d_eff/(Tr)) empirically
+
+Script `code/phase3/eval/deff_analysis.py` (~330 lines) loads each of the 8
+LoRA adapters, extracts V_t = top-r right-singular subspace per layer,
+computes d_eff = rank(Σ_t P_{V_t}) per layer, predicts floor, compares to
+observed worst_excess from the eval matrix. **Running as of 2026-05-18
+evening on login-node CPU.** Reuses existing artifacts; no new compute.
+
+Expected outcomes:
+- **Perfect match** → headline figure: predicted-vs-observed-floor scatter
+  validates the theorem quantitatively.
+- **Match up to a multiplicative constant** → theorem structurally right;
+  constant needs tightening (already a v2 item).
+- **No match** → opens a substantial theoretical question (the qualitative
+  shape still holds, but the formula doesn't).
+
+### T1.B — Stiefel-random synthetic control panel
+
+Script `code/phase3/eval/stiefel_control.py` (~260 lines) generates fake
+LoRAs with controlled subspace overlap α ∈ {0, 0.1, ..., 1.0}, runs all
+5 merging methods, plots:
+- observed worst-excess vs predicted floor (line + y=x reference)
+- bound-tightness ratio (observed / predicted) vs d_eff/(Tr)
+
+Demonstrates the bound is TIGHT on adversarial Stiefel-random data and
+LOOSE on real LoRAs (with the gap being the "real LoRAs are not worst-case"
+slack). Standard for RD-bound papers. **Ready to run; CPU-only, ~5 min.**
+
+### T1.C / T1.D — 3 more model families (Mistral-7B, Yi-9B, gemma-3-12b)
+
+Downloads in flight on workq (job 39627, 24-hr walltime, doesn't compete
+with gpu queue). After downloads complete:
+- T1.C: train 4 LoRAs × 3 new models = 12 LoRAs (~3 hr at 3-concurrent gpu)
+- T1.D: extend eval matrix by 15 non-TVQ + 18 TVQ rate cells = 33 cells
+  (~9 hr at 3-concurrent gpu)
+
+Converts the "Qwen vs Llama" (n=2 architecture) finding into a comparison
+across 5 architecture families. Strengthens any model-specific claim.
+
+### T1.E — regen Phase B with full data
+
+After T1.A/B/D complete, update `code/phase3/eval/phase_b_analysis.py` to
+include the new model families + d_eff predicted-floor scatter + Stiefel
+tightness panel. New headline figure set goes into the paper.
+
+---
+
+These do NOT supersede the existing O17.1–O17.6 questions (those are still
+open and tracked above). Tier 1 work targets paper strengthening; the
+mechanism questions (e.g., b=2 dip) remain.
+
+### T1.audit — Dataset reliability check + train/eval overlap bug — RESOLVED 2026-05-18
+
+User asked to confirm Phase 3 datasets are reliable. **All 4 LoRA training
+datasets verified real and authoritative**: openai/gsm8k (Cobbe+'21),
+yahma/alpaca-cleaned, ise-uiuc/Magicoder-OSS-Instruct-75K, wmt/wmt19.
+No synthetic data used in Phase 3 LoRA training. (Synthetic data is reserved
+for theory validation in `code/synthetic/` and the Stiefel control panel in
+`code/phase3/eval/stiefel_control.py` — both clearly labeled as synthetic.)
+
+**Bug found during audit and fixed.** `data_loaders.py` used two independent
+shuffle seeds for train vs eval when both came from the same split (alpaca,
+magicoder). Resulted in 13% (alpaca) / 7% (magicoder) overlap between train
+and eval. Fix: one shuffle, disjoint slices. Verified 0% overlap post-fix.
+
+**Action item (for the v2 rerun):** rerun the 20-cell n=1k matrix with
+fixed loader to `eval_matrix_n1k_v2/`. ~5 hr compute. Schedule after the
+current n=1k matrix finishes.
+
+---
+
+## Phase 3 Day 19 — 2026-05-19 status & scope changes
+
+### T1.B — Stiefel control panel — PARKED (uninformative as designed)
+
+Ran 2026-05-19 (`results/phase3/stiefel_control.json` +
+`code/phase3/figures/stiefel_control.png`). The mixing construction
+`V_t = sqrt(1-α) V_indep + sqrt(α) V_shared` leaves the stacked subspaces
+`[V_1 | ... | V_T]` generically linearly independent for **every α < 1**,
+so `d_eff = Tr = 16` everywhere except α = 1.0 (where it collapses to
+`d_eff = r = 4`). Predicted floor is 0 across the sweep; "observed /
+predicted" ratio explodes to ~10¹². Outputs NOT promoted to
+`paper_artifacts/`. Two paths forward (decision deferred to after v2):
+
+(i) Redesign T1.B with explicit partial-shared-basis construction (share
+    r' < r exact basis directions, keep r − r' independent per task,
+    sweep r' → d_eff = r' + T(r − r')). Produces a real
+    `predicted ∈ (0, Tr)` axis.
+(ii) Pivot to T1.A2 soft d_eff (participation ratio of stacked-V
+     singular values). Subsumes (i)'s purpose with a continuous metric
+     that should correlate with the real-LoRA observed gap (F9).
+
+**Recommendation:** (ii). Aligns with `log.md` §5.6 candidate (b) and
+gives us a usable Stiefel panel via the soft metric in one move.
+
+### T1.C — Trimmed from 16 LoRAs to 8 (2 models × 4 tasks)
+
+**Dropped 2026-05-19:**
+
+- **gemma-3-12b-it** — architecture is `Gemma3ForConditionalGeneration`
+  (multimodal head). Unsloth's `FastLanguageModel.from_pretrained`
+  is built for causal-LM heads; risk of load failure or partially-broken
+  adapter not worth taking with shared-GPU contention.
+- **Qwen-2.5-14B-Instruct** — realistic peak VRAM ~41 GB. With shared
+  GPUs typically showing 14–46 GB free per device (and ~18 other STDIN
+  sessions competing), 14B slot-finding is unreliable. Worth revisiting
+  in a quieter window or with reservation rights.
+
+**Retained:**
+
+| Model | min_free_gb (revised) |
+|---|---:|
+| mistral_7b (Mistral-7B-Instruct-v0.3) | 30 |
+| yi15_9b (Yi-1.5-9B-Chat) | 35 |
+
+Final scope: **8 LoRAs** (4 tasks × 2 models). Reviewer story still
+shows n=4 architecture families across the original 2 + new 2.
+
+### T1.A2 (soft d_eff) — DEFERRED until v2 lands and Sankalp signs off
+
+Per `log.md` §5.6 candidate (b). Now has independent motivation from
+the T1.B finding above. Pure CPU, ~5–10 min when we run it.
+
+### Standing rule: quote only v2 numbers going forward
+
+For F1, F2, F7 magnitudes and any "0.10–0.22 nats/token" style number,
+wait for `results/phase3/eval_matrix_n1k_v2/` to complete and re-run
+`code/phase3/eval/phase_b_analysis.py` against it. *Directions* of
+F1/F2/F7 are likely robust because `worst_task_excess` is
+gsm8k-bottlenecked (gsm8k uses separate train/test splits, no bug
+exposure). The 8 trained LoRAs and the d_eff = Tr structural finding
+are clean of the data-loader bug.
+
+---
+
+## Model-class scope — out-of-scope families for the current paper
+
+These were raised on 2026-05-19; logged here so reviewer-anticipated
+"why didn't you test X" questions have a canonical answer.
+
+### Q-SCOPE-1 — Reasoning-tuned models (R1-Distill, QwQ, Qwen2.5-Math, etc.)
+
+**Status:** EXCLUDED from the 4-task comparison. Per `handoff.md` §6
+don't-list and `notes/phase3_design.md`.
+
+**Why exclude:**
+
+1. **Output-length / CoT inflation.** Reasoning models emit
+   `<think>...</think>` blocks or long CoT prefixes before the answer.
+   Our `_compute_nll` in `code/phase3/training/train_lora.py` masks
+   prompt tokens with `-100` and scores NLL over the answer region;
+   with CoT, the "answer" region balloons with reasoning chains.
+   Nats-per-token is no longer directly comparable across model
+   families or even within-family pre/post LoRA.
+2. **Pretraining-distribution overlap.** R1-Distill, QwQ, Qwen2.5-Math
+   have been distilled on math benchmarks that include GSM8K-like
+   problems. A 7500-example LoRA's marginal effect is drowned by the
+   base's existing competence; the task-vector becomes tiny or noisy.
+3. **Preference-tuning side effects.** RLHF / DPO patterns produce
+   refusals or over-elaboration depending on prompt template; eval
+   becomes template-sensitive in ways our 4 tasks aren't designed for.
+4. **Scope drift.** The paper's thesis is about the rate-distortion
+   structure of LoRA merging across architecture families with a
+   shared frozen base. Adding reasoning models shifts the research
+   question to "does the bound apply to reasoning models," which is a
+   bigger methodology surface (separate NLL-stripping path, separate
+   prompt templates, sample-efficiency re-check).
+
+**Status decision for current paper:** keep excluded; add the
+reviewer-anticipated paragraph to `paper/sections/experiments.tex` §
+limitations:
+
+> "Empirical validation focuses on instruction-tuned base models with
+> standard causal-LM heads; reasoning-tuned variants (R1-Distill,
+> QwQ family) are deferred because chain-of-thought outputs inflate
+> the answer-token NLL metric and pretraining distributions overlap
+> heavily with GSM8K. The theoretical bound is metric-agnostic over
+> local-quadratic loss surfaces; future work could extend the
+> empirical validation with a CoT-stripped per-token NLL or with
+> answer-conditional cross-entropy."
+
+**Future-work hook (out of scope for ICLR 2027 v1):** a follow-up
+paper or v2 appendix could include 1–2 reasoning models with a
+modified eval pipeline (CoT prefix detection + masking, longer
+context window, separate template per family).
+
+### Q-SCOPE-2 — Multimodal models (vision-language, audio-language)
+
+**Status:** EXCLUDED from the current paper. Came up indirectly on
+2026-05-19 when we discovered `gemma-3-12b-it` is
+`Gemma3ForConditionalGeneration` (multimodal head) and dropped it
+from T1.C for architecture-class risk.
+
+**Why exclude:**
+
+1. **Our 4 tasks are text-only** (GSM8K, Alpaca, Magicoder, wmt19
+   en→de). No vision-language task in the matrix; adding multimodal
+   models without multimodal tasks wastes their capability.
+2. **Multiple LoRA-target conventions.** Multimodal architectures
+   (LLaVA-style adapters, Qwen-VL, gemma-3-vision) have a vision
+   encoder + language decoder + sometimes a projector. There's no
+   canonical "where do you put the LoRA" — each paper picks
+   differently (LM only, projector only, both). Our theory applies
+   to any choice, but the experimental comparison needs a fixed
+   convention which doesn't exist yet in the merging literature.
+3. **NLL metric ambiguity.** Per-token NLL is well-defined for text
+   tokens but ambiguous for vision-token embeddings (which aren't
+   sampled from a discrete vocab in the same way). The metric our
+   theorems use ($\widehat D(w) = \max_t \Delta L_t(w)$) needs
+   re-derivation for the mixed-modality case.
+4. **Different rate-distortion geometry.** The $d_{\mathrm{eff}}$
+   structure for vision-attention layers may differ qualitatively
+   from text-attention; an early scoping experiment could show this
+   either way but requires multimodal tasks to test.
+
+**Status decision for current paper:** keep excluded; add a
+reviewer-anticipated paragraph similar to Q-SCOPE-1, framing
+multimodal as a natural extension that requires its own
+methodology pass.
+
+**Future-work hook:** a dedicated multimodal-merging paper using the
+same RD framework, with tasks like VQA + image-captioning +
+visual-instruction + image-classification, and the choice of which
+component(s) to LoRA-merge spelled out explicitly. The theory carries
+over; the experimental design needs fresh thought.
+
+### Standing reviewer-response template
+
+For any "why didn't you test {family X}" question, the structure is:
+
+1. State which family is excluded.
+2. Cite the methodological reason (eval metric breaks, task overlap,
+   scope drift, etc.) — not "we didn't have time."
+3. Affirm the bound is family-agnostic in theory (the math doesn't
+   care about reasoning vs not, or modality, beyond local-quadratic
+   loss assumption).
+4. Hook to future work.
+
+This pattern goes in `paper/sections/experiments.tex` § limitations
+and in the response-to-reviewers if invited.
+
+---
+
+## STANDING DECISION (2026-05-20) — Public transparency / decision log: build now, publish ONLY after double-blind review
+
+**Decision:** We will maintain a public-facing "Reproducibility & Decision Log"
+documenting all events and decisions (the data-loader bug + fix, model-track
+choices and the gemma-3 / Qwen-14B drops with reasons, the v2 → v3 re-eval
+lineage, honest negative findings like F10 soft-d_eff, the C2-SKIPPED admission,
+etc.) for full transparency and research ethics. **BUT it must NOT be published
+publicly until after the ICLR 2027 double-blind review concludes.**
+
+**Why the timing guardrail:**
+- The 2026-05-18 venue decision (`log.md` §10) is "NO arXiv preprint; work stays
+  confidential through review." A public transparency doc describing this exact
+  paper, attributable to Sankalp, would functionally act like a preprint.
+- **ICLR 2027 is double-blind.** A public, attributable document during the
+  review window risks de-anonymization (reviewers can search) and contradicts
+  the confidentiality decision.
+
+**The contemporaneous record already exists** and is the backing material:
+`notes/daily_log.md` (timestamped, append-only), `notes/open_questions.md`,
+`log.md`. No reconstruction needed — distill these into the public version
+at the right time. Contemporaneous > reconstructed for credibility.
+
+**Before ANY public release (camera-ready companion / post-decision):**
+- Scrub `kittuwastaken@gmail.com` (HF/system email — never public). Paper
+  contact is `pathaksankalp04@gmail.com`.
+- Scrub HPC absolute paths (`/home/sanjay.g/...`) and cluster node names.
+- Scrub author identity for the double-blind window.
+- PDF only, never `.tex` / `.md` source (Rule N3).
+
+**Form:** plan it as a "Reproducibility & Decision Log" appendix to the paper,
+or a companion PDF released at camera-ready. Add a short "Reproducibility
+statement" section during Tier 3 drafting that points at this log as the
+backing record.
+
+**Action gate:** do NOT publish, push to a public repo, post to AF/Reddit, or
+attach to any external-facing channel until Sankalp confirms the double-blind
+review window has closed. If in doubt, ask first.

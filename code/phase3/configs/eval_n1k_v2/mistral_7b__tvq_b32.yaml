@@ -1,0 +1,58 @@
+base_model: /home/sanjay.g/projects/rdmerge/models/Mistral-7B-Instruct-v0.3
+method: tvq
+method_kwargs:
+  rate_bits: 32
+max_seq_length: 1024
+seed: 20260518
+min_free_gb: 25
+adapter_specs:
+- name: gsm8k
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/mistral_7b/gsm8k/v1
+  task_cfg:
+    name: gsm8k
+    dataset: openai/gsm8k
+    config: main
+    split_train: train
+    split_eval: test
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: question
+    answer_field: answer
+- name: alpaca
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/mistral_7b/alpaca/v1
+  task_cfg:
+    name: alpaca
+    dataset: yahma/alpaca-cleaned
+    config: null
+    split_train: train
+    split_eval: train
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: instruction
+    answer_field: output
+- name: magicoder
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/mistral_7b/magicoder/v1
+  task_cfg:
+    name: magicoder
+    dataset: ise-uiuc/Magicoder-OSS-Instruct-75K
+    config: null
+    split_train: train
+    split_eval: train
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: problem
+    answer_field: solution
+- name: translation
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/mistral_7b/flores/v1
+  task_cfg:
+    name: translation
+    dataset: wmt/wmt19
+    config: de-en
+    split_train: train
+    split_eval: validation
+    n_train: 7500
+    n_eval: 1000
+    src_lang: en
+    tgt_lang: de
+    streaming: true
+output_path: results/phase3/eval_matrix_n1k_v2/mistral_7b__tvq_b32.json
