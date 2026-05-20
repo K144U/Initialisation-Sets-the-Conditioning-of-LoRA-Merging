@@ -30,7 +30,13 @@ quadratic term is second-order in, and is dominated once $R$ is
 above a model-dependent constant. Second, $M_t$ is finite for the
 softmax CE loss with bounded logits (the third derivative of
 log-sum-exp is uniformly bounded), so the bound is not vacuous.
-A fully quantitative theorem -- making $M_t$ explicit for a
+This third derivative does not grow with the ambient dimension
+$d$: for a single attention head with logits bounded by $L$, the
+softmax-CE third derivative decomposes per token and per output
+coordinate, giving $M_t \leq \mathrm{poly}(L)$ independent of $d$,
+so the remainder $O(M_t B^3 2^{-3R/\deff})$ stays genuinely
+third-order even at the $d \sim 4096$ scales of interest. We state
+this as an informal estimate; a fully quantitative theorem -- making $M_t$ explicit for a
 transformer LoRA and propagating it through the rate-distortion
 argument -- is the natural next step and is what would let the
 bound be quoted directly against measured CE-NLL; we give the

@@ -197,7 +197,10 @@ when subspaces overlap ($\deff < Tr$), and we measure $\deff = Tr$
 everywhere, so there is no overlap for it to exploit. Adopting a
 practical-significance threshold of $0.005$ nats, only TIES
 separates from the structure-blind cluster
-(Figure~\ref{fig:methods}).
+(Figure~\ref{fig:methods}). A separate empirical study of
+code-analysis adapter merging reports a consistent pattern, with
+sparsification-based merges (TIES, DARE) trading off interference
+unevenly across tasks~\cite{pathak2026merging}.
 
 \paragraph{Finding 4: a universal ``less is more'' rate at
 $b=2$.} The TVQ rate sweep is non-monotone on every model: $2$-bit
@@ -275,8 +278,10 @@ headline worst-task metric -- GSM8K is the bottleneck on every
 model -- but it does mean the per-task translation row should be
 read with caution; disentangling under-training from genuine
 cross-task transfer requires a longer-trained baseline and is
-left to future work. (iv) We have not run our own achievability
-construction (\S\ref{sec:achv}) on the real adapters; doing so
+left to future work.
+
+\paragraph{A natural next experiment.} We have not run our own
+achievability construction (\S\ref{sec:achv}) on the real adapters; doing so
 would test whether the theoretically optimal encoder closes the
 $0.10$--$0.22$ gap or whether the gap reflects the
 quadratic-loss approximation rather than algorithmic

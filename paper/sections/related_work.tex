@@ -13,8 +13,10 @@ interference between task vectors before averaging. A parallel
 line quantizes task vectors at merge time to shrink the storage
 footprint: Task-Vector Quantization (TVQ)~\cite{kim2025tvq} and
 1-bit-Merging~\cite{bit1merging2025} achieve competitive accuracy
-at one to four bits per coordinate. What unifies these methods is
-that they are \emph{constructions}: each proposes a particular
+at one to four bits per coordinate. A complementary empirical study
+examines linear-combination merging and cross-task interference for
+code-analysis adapters~\cite{pathak2026merging}. What unifies these
+methods is that they are \emph{constructions}: each proposes a particular
 encoder and evaluates it empirically. None establishes a
 \emph{fundamental limit} on merging quality at a given storage or
 rate budget. This paper supplies that limit, and — in the generic
@@ -31,12 +33,13 @@ generally $H_t = U_t D_t U_t^\top$) formalism we adopt in
 \S\ref{sec:setup}, but does not give rate-distortion bounds.
 \emph{Task-Vector Bases}~\cite{jang2025taskvectorbases} posits
 that fine-tuned weights lie in a thin Gaussian shell — a
-geometric assumption, not information-theoretic. \emph{On Task
-Vectors and Gradients}~\cite{gradients2025taskvectorsgradients}
-interprets task vectors as single-step gradient updates and
-provides a second-order Taylor-expansion bound on task
-arithmetic error. ATM~\cite{atm2024alternating} takes the
-noisy-GD interpretation further. None of these works frame
+geometric assumption, not information-theoretic. From the same
+group, ATM~\cite{atm2024alternating} (2024) reads task vectors as
+noisy single-step gradient updates and improves merging by
+alternating tuning and merging; its later \emph{On Task Vectors
+and Gradients}~\cite{gradients2025taskvectorsgradients} (2025)
+develops this into a second-order Taylor-expansion bound on
+task-arithmetic error. None of these works frame
 merging as lossy source coding or derive Shannon-style limits.
 Our work is the first to pose merging as a multi-source
 rate-distortion problem with worst-task distortion as the figure

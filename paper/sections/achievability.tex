@@ -91,11 +91,25 @@ linearly. The entire $T$ factor enters at Step~3, the crude
 $\max_t (\cdot) \leq \sum_t(\cdot) = T\,\mathrm{avg}$ bound. This
 step is tight only when the per-task distortions
 $(\delta w)^\top H_t (\delta w)$ are all comparable; when one task
-dominates it is loose by up to a factor of $T$. We do not know
-whether the linear $T$-dependence is intrinsic to the
-rate-distortion function or an artifact of this analysis;
-tightening it -- by a sharper achievability step or a
-$T$-dependent lower bound -- is open. Consequently the floor-zero
+dominates it is loose by up to a factor of $T$. In the floor-zero
+regime this worst case is atypical: Step~1 gives
+$H_t(\tauH - \tau_t) = 0$ almost surely, so
+$(\delta w)^\top H_t(\delta w)$ depends only on $\delta w$
+projected into $V_t$, and for Stiefel-random $V_t$ with $\delta w$
+isotropic in $\range(\bar H)$ the $T$ per-task projections are
+equal in expectation. The $\max_t \leq T\,\mathrm{avg}$ step thus
+loses the full factor $T$ only when one task's projection
+dominates, and $\approx 1$ in the typical, concentrated case. The
+synthetic measurements fit this benign reading: the achievability
+constant stays flat at $11$--$13$ across $T \in \{2,3\}$
+(\S\ref{subsec:exp-synthetic}) rather than growing $\sim\!1.5\times$
+as a strictly linear-$T$ constant would. We therefore do not
+settle whether the linear $T$-dependence is intrinsic to the
+rate-distortion function or an artifact of this analysis -- the
+flat empirical constant hints at the latter, and a measurement at
+$T \in \{4,8\}$ would decide it; tightening the bound -- by a
+sharper achievability step or a $T$-dependent lower bound -- is
+open. Consequently the floor-zero
 ``$\Theta(B^2 2^{-2R/(Tr)})$'' conclusion should be read as
 ``$\Theta$ up to factors of $T$.''
 \end{remark}

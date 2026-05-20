@@ -37,11 +37,15 @@ establish (see Lemma~\ref{lem:id}).
 
 \paragraph{Rate-$R$ merging codes.} A rate-$R$ merging code is a
 pair $(E, D)$ with encoder $E : (\R^d)^T \to \{1,\ldots,2^R\}$
-and decoder $D : \{1,\ldots,2^R\}\to\R^d$. The encoder observes
-$\boldsymbol\tau$ (the $H_t$'s may be assumed known to the
-encoder as side information; our lower bound holds even if the
-encoder is told $\boldsymbol H$ for free). The reconstruction is
-$w^\star := D(E(\boldsymbol\tau))$. The \emph{rank-$r$
+and decoder $D : \{1,\ldots,2^R\}\to\R^d$, both of which may
+depend on $\boldsymbol H$ as shared side information: in any real
+deployment $\boldsymbol H$ is determined by the LoRA factors
+$U_t$ (with a curvature or Fisher surrogate for the spectra),
+which both ends already hold, so only the $R$ bits describing
+$\boldsymbol\tau$ are charged to the rate. The encoder observes
+$\boldsymbol\tau$; the reconstruction is $w^\star :=
+D(E(\boldsymbol\tau))$. Our lower bound holds even when
+$\boldsymbol H$ is revealed for free to both ends. The \emph{rank-$r$
 rate-distortion function} is
 \begin{equation}\label{eq:rd-def}
   \mathcal{D}^\star(T, d, r, B, R)
