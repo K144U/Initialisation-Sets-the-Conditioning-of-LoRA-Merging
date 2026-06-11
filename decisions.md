@@ -91,3 +91,15 @@ E1 queue: 28 cells (4 models x b in {1,2,3,4,8,16,32}), configs in
 configs/eval_e1/, e1_manifest.json; pbs_orchestrator.sh now defaults to
 all_manifest.json (E2+E1) so post-E2 requeues flow into E1 automatically.
 Fisher-diagonal H variant = second pass after projector results.
+
+## 2026-06-11 — I0 GATE CLOSED: kill-and-resume test PASS
+Live test on the running E2 campaign: with 1 cell complete
+(llama31_8b_flores_seed1) and 5 trainings mid-flight, job 41481 was
+qdel-killed. Keeper detected and resubmitted in 12 minutes (job 41484);
+the resumed orchestrator reported "59 pending, 1 already done" — the
+completed cell was skipped, the killed in-flight cells requeued from
+scratch, and the new job is already on all_manifest.json (E2+E1 = 60
+cells), confirming manifest chaining. Per master_plan Part IV this was
+the blocking criterion for Tier 2; I0 is now CLOSED (remaining nicety:
+env hash recording). Recovery semantics on record: cell-level
+idempotency, worst-case keeper latency 30 min, measured 12.
