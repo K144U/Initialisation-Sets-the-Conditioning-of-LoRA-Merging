@@ -358,5 +358,557 @@
   "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/yi15_9b__rd_b32.yaml",
   "done": "results/phase3/eval_e1/yi15_9b__rd_b32.json",
   "min_free_gb": 25.0
+ },
+ {
+  "name": "e1fr_llama31_8b_rd_b2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1_fullrank/llama31_8b__rdfr_b2.yaml",
+  "done": "results/phase3/eval_e1_fullrank/llama31_8b__rdfr_b2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1fr_llama31_8b_rd_b4",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1_fullrank/llama31_8b__rdfr_b4.yaml",
+  "done": "results/phase3/eval_e1_fullrank/llama31_8b__rdfr_b4.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1fr_llama31_8b_rd_b32",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1_fullrank/llama31_8b__rdfr_b32.yaml",
+  "done": "results/phase3/eval_e1_fullrank/llama31_8b__rdfr_b32.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1fr_qwen25_7b_rd_b2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1_fullrank/qwen25_7b__rdfr_b2.yaml",
+  "done": "results/phase3/eval_e1_fullrank/qwen25_7b__rdfr_b2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1fr_qwen25_7b_rd_b4",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1_fullrank/qwen25_7b__rdfr_b4.yaml",
+  "done": "results/phase3/eval_e1_fullrank/qwen25_7b__rdfr_b4.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1fr_qwen25_7b_rd_b32",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1_fullrank/qwen25_7b__rdfr_b32.yaml",
+  "done": "results/phase3/eval_e1_fullrank/qwen25_7b__rdfr_b32.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1fr_mistral_7b_rd_b2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1_fullrank/mistral_7b__rdfr_b2.yaml",
+  "done": "results/phase3/eval_e1_fullrank/mistral_7b__rdfr_b2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1fr_mistral_7b_rd_b4",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1_fullrank/mistral_7b__rdfr_b4.yaml",
+  "done": "results/phase3/eval_e1_fullrank/mistral_7b__rdfr_b4.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1fr_mistral_7b_rd_b32",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1_fullrank/mistral_7b__rdfr_b32.yaml",
+  "done": "results/phase3/eval_e1_fullrank/mistral_7b__rdfr_b32.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1fr_yi15_9b_rd_b2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1_fullrank/yi15_9b__rdfr_b2.yaml",
+  "done": "results/phase3/eval_e1_fullrank/yi15_9b__rdfr_b2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1fr_yi15_9b_rd_b4",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1_fullrank/yi15_9b__rdfr_b4.yaml",
+  "done": "results/phase3/eval_e1_fullrank/yi15_9b__rdfr_b4.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1fr_yi15_9b_rd_b32",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1_fullrank/yi15_9b__rdfr_b32.yaml",
+  "done": "results/phase3/eval_e1_fullrank/yi15_9b__rdfr_b32.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__dare_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__dare__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__dare__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__dare_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__dare__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__dare__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__knots_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__knots__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__knots__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__knots_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__knots__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__knots__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__task_arithmetic_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__task_arithmetic__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__task_arithmetic__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__task_arithmetic_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__task_arithmetic__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__task_arithmetic__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__ties_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__ties__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__ties__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__ties_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__ties__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__ties__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__tvq_b1_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__tvq_b1__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__tvq_b1__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__tvq_b1_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__tvq_b1__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__tvq_b1__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__tvq_b16_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__tvq_b16__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__tvq_b16__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__tvq_b16_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__tvq_b16__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__tvq_b16__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__tvq_b2_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__tvq_b2__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__tvq_b2__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__tvq_b2_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__tvq_b2__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__tvq_b2__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__tvq_b32_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__tvq_b32__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__tvq_b32__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__tvq_b32_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__tvq_b32__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__tvq_b32__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__tvq_b4_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__tvq_b4__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__tvq_b4__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__tvq_b4_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__tvq_b4__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__tvq_b4__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__tvq_b8_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__tvq_b8__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__tvq_b8__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_llama31_8b__tvq_b8_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__tvq_b8__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/llama31_8b__tvq_b8__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__dare_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__dare__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__dare__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__dare_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__dare__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__dare__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__knots_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__knots__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__knots__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__knots_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__knots__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__knots__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__task_arithmetic_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__task_arithmetic__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__task_arithmetic__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__task_arithmetic_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__task_arithmetic__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__task_arithmetic__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__ties_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__ties__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__ties__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__ties_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__ties__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__ties__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__tvq_b1_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__tvq_b1__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__tvq_b1__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__tvq_b1_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__tvq_b1__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__tvq_b1__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__tvq_b16_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__tvq_b16__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__tvq_b16__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__tvq_b16_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__tvq_b16__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__tvq_b16__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__tvq_b2_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__tvq_b2__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__tvq_b2__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__tvq_b2_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__tvq_b2__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__tvq_b2__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__tvq_b32_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__tvq_b32__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__tvq_b32__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__tvq_b32_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__tvq_b32__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__tvq_b32__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__tvq_b4_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__tvq_b4__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__tvq_b4__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__tvq_b4_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__tvq_b4__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__tvq_b4__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__tvq_b8_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__tvq_b8__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__tvq_b8__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_mistral_7b__tvq_b8_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__tvq_b8__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/mistral_7b__tvq_b8__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__dare_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__dare__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__dare__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__dare_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__dare__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__dare__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__knots_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__knots__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__knots__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__knots_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__knots__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__knots__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__task_arithmetic_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__task_arithmetic__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__task_arithmetic__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__task_arithmetic_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__task_arithmetic__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__task_arithmetic__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__ties_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__ties__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__ties__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__ties_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__ties__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__ties__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__tvq_b1_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__tvq_b1__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__tvq_b1__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__tvq_b1_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__tvq_b1__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__tvq_b1__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__tvq_b16_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__tvq_b16__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__tvq_b16__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__tvq_b16_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__tvq_b16__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__tvq_b16__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__tvq_b2_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__tvq_b2__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__tvq_b2__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__tvq_b2_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__tvq_b2__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__tvq_b2__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__tvq_b32_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__tvq_b32__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__tvq_b32__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__tvq_b32_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__tvq_b32__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__tvq_b32__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__tvq_b4_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__tvq_b4__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__tvq_b4__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__tvq_b4_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__tvq_b4__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__tvq_b4__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__tvq_b8_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__tvq_b8__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__tvq_b8__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_qwen25_7b__tvq_b8_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__tvq_b8__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/qwen25_7b__tvq_b8__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__dare_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__dare__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__dare__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__dare_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__dare__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__dare__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__knots_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__knots__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__knots__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__knots_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__knots__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__knots__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__task_arithmetic_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__task_arithmetic__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__task_arithmetic__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__task_arithmetic_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__task_arithmetic__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__task_arithmetic__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__ties_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__ties__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__ties__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__ties_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__ties__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__ties__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__tvq_b1_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__tvq_b1__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__tvq_b1__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__tvq_b1_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__tvq_b1__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__tvq_b1__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__tvq_b16_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__tvq_b16__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__tvq_b16__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__tvq_b16_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__tvq_b16__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__tvq_b16__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__tvq_b2_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__tvq_b2__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__tvq_b2__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__tvq_b2_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__tvq_b2__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__tvq_b2__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__tvq_b32_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__tvq_b32__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__tvq_b32__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__tvq_b32_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__tvq_b32__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__tvq_b32__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__tvq_b4_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__tvq_b4__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__tvq_b4__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__tvq_b4_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__tvq_b4__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__tvq_b4__seed2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__tvq_b8_seed1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__tvq_b8__seed1.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__tvq_b8__seed1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e2m_yi15_9b__tvq_b8_seed2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__tvq_b8__seed2.yaml",
+  "done": "results/phase3/eval_matrix_seeds/yi15_9b__tvq_b8__seed2.json",
+  "min_free_gb": 25.0
  }
 ]

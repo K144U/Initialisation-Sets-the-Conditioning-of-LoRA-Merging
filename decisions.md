@@ -103,3 +103,21 @@ cells), confirming manifest chaining. Per master_plan Part IV this was
 the blocking criterion for Tier 2; I0 is now CLOSED (remaining nicety:
 env hash recording). Recovery semantics on record: cell-level
 idempotency, worst-case keeper latency 30 min, measured 12.
+
+## 2026-06-12 — E2 COMPLETE; E1 v1 llama curve in; rank-truncation rule FIRED
+E2: 32/32 multi-seed trainings done, zero failures (llama/mistral/qwen/yi
+all 8/8). E1 v1 (rank-16-truncated encoder) full llama bit-curve measured:
+b=inf worst-task excess 0.497 vs task arithmetic 0.219 and TIES 0.161 —
+the encoder LOSES to plain averaging under the v1 constraint. NOT yet
+interpretable: measured trunc_mass ~0.297 mean (d_eff=64 everywhere =
+independence confirmed), i.e. the rank-16 adapter slot discards ~30% of
+the decoded solution, 3x the pre-registered 0.1 threshold. RULE FIRED ->
+built v2 full_rank_patch (residual of W* beyond rank-16 added to base
+weights; realized model = W* exactly; CPU test passes; v1 tests intact).
+Also noted: non-monotonicity in v1 curve (b=3 beats b=32), echoing the
+b=2 "less-is-more" finding; revisit after v2.
+QUEUED (+92 cells, manifest now 152): 12 e1fr cells (4 models x b in
+{2,4,32} full-rank) + 80 e2m cells (full v3 merge matrix on seed-1/2
+adapters, per master plan E2). Bridge watcher armed: when the running
+job drains its 60-cell snapshot and writes _QUEUE_COMPLETE, it is
+cleared and the orchestrator+keeper relaunch on the 152-cell manifest.

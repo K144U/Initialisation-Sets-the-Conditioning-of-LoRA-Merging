@@ -119,10 +119,21 @@ def merge_rd_encoder(
     c: float = 5.0,
     seed: int = 20260611,
     eig_rel_floor: float = 1e-6,
+    full_rank_patch: bool = False,
     **_kwargs,
 ) -> None:
     """The paper's encoder as a registry merge method. bits >= 32 = no
-    quantization (the b=infinity centroid cell)."""
+    quantization (the b=infinity centroid cell).
+
+    full_rank_patch (v2, decision rule of 2026-06-12): the decoded W* has
+    rank up to d_eff (64) but PEFT adapter slots are rank r (16); the v1
+    SVD truncation discards ~30% of solution mass on real adapters
+    (measured trunc_mass ~0.297). With full_rank_patch=True the residual
+    (W* minus its rank-r truncation) is added directly to the BASE weights
+    so the active merged model realizes W* exactly. Only valid in
+    single-cell eval processes (the base stays patched for the process
+    lifetime); requires the real PeftModelView (modules with .base_layer),
+    not the test fake."""
     assert len(adapter_names) == len(weights)
     wsum = float(sum(weights))
     w = [float(x) / wsum for x in weights]
@@ -153,8 +164,9 @@ def merge_rd_encoder(
         W_star = (eta @ torch.diag(S.rsqrt())) @ Q.T         # (out x in)
 
         A_new, B_new = svd_truncate_to_rank(W_star, r)
+        truncated = B_new.to(torch.float32) @ A_new.to(torch.float32)
         total = float((W_star ** 2).sum())
-        kept = float(((B_new.to(torch.float32) @ A_new.to(torch.float32)) ** 2).sum())
+        kept = float((truncated ** 2).sum())
         diag[layer] = {
             "d_eff": int(S.numel()),
             "Tr": r * len(adapter_names),
@@ -162,6 +174,11 @@ def merge_rd_encoder(
             "rate_bits": (float(bits) * _next_pow2(eta.numel())
                           if bits < 32 else None),
         }
+        if full_rank_patch:
+            residual = (W_star - truncated)
+            base_w = model.base_weight(layer)
+            base_w.data.add_(residual.to(dtype=base_w.dtype,
+                                         device=base_w.device))
         new_factors[layer] = FakeLoraLayer(A=A_new, B=B_new, scaling=1.0)
 
     model.add_adapter(merged_adapter_name, new_factors)

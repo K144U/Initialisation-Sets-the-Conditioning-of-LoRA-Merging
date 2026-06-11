@@ -53,6 +53,17 @@ class FakePeftModel:
     def layer_names(self) -> List[str]:
         return list(self.layer_topology.keys())
 
+    def base_weight(self, layer: str) -> torch.Tensor:
+        """Zero-initialized base weight per layer (lazily created), so
+        rd_encoder's full_rank_patch path is testable on the fake: after a
+        patched merge, base_weight + merged delta == the full-rank W*."""
+        if not hasattr(self, "_base_weights"):
+            self._base_weights = {}
+        if layer not in self._base_weights:
+            out_dim, in_dim, _r = self.layer_topology[layer]
+            self._base_weights[layer] = torch.zeros(out_dim, in_dim)
+        return self._base_weights[layer]
+
 
 def make_random_fake_model(
     layer_specs: Dict[str, tuple],   # name -> (out_dim, in_dim, rank)

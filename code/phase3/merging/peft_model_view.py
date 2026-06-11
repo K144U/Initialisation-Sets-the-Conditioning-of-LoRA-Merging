@@ -55,6 +55,14 @@ class PeftModelView:
     def layer_names(self) -> List[str]:
         return list(self._layers.keys())
 
+    def base_weight(self, layer: str) -> torch.Tensor:
+        """The frozen base weight tensor under the LoRA layer (for the
+        rd_encoder full-rank residual patch). PEFT >= 0.7 wraps it in
+        .base_layer; older versions expose .weight on the module itself."""
+        mod = self._layers[layer]
+        base = getattr(mod, "base_layer", mod)
+        return base.weight
+
     def get_delta(self, adapter: str, layer: str) -> torch.Tensor:
         """Full (out_dim x in_dim) materialized delta on the same device as PEFT stores it."""
         mod = self._layers[layer]
