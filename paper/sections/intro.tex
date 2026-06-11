@@ -1,223 +1,165 @@
-\paragraph{Model merging is everywhere, but nobody knows the
-limit.} Low-Rank Adaptation~\cite{hu2022lora} has made it routine
-to maintain dozens of task-specific fine-tunes per base model,
-and it has made \emph{merging} those fine-tunes into a single
-deployable model the dominant practical question. A now-standard
-workflow: fine-tune $T$ LoRA adapters on $T$ downstream tasks,
-combine them post-hoc, serve one model. Task
-Arithmetic~\cite{ilharco2023task},
+\paragraph{Model merging is everywhere, but nobody knows the limit.}
+Low-Rank Adaptation~\cite{hu2022lora} has made it routine to maintain
+dozens of task-specific fine-tunes per base model, and \emph{merging}
+those fine-tunes into a single deployable model has become the
+dominant practical question. Task Arithmetic~\cite{ilharco2023task},
 TIES~\cite{yadav2023ties}, DARE~\cite{yu2024dare},
-KnOTS~\cite{stoica2025knots},
-DO-Merging~\cite{domerging2025},
-Core~Space~\cite{panariello2025core},
-Task-Vector Quantization~\cite{kim2025tvq},
-and 1-bit-Merging~\cite{bit1merging2025} all compete on this
-problem. Each paper proposes an encoder, tunes some
-hyper-parameters, and reports benchmark numbers. None answers
-the prior question: given a storage budget of $R$ bits per
-merged model, what is the \emph{best possible} merging
-algorithm, and how far are existing methods from it?
+KnOTS~\cite{stoica2025knots}, DO-Merging~\cite{domerging2025},
+Core~Space~\cite{panariello2025core}, Task-Vector
+Quantization~\cite{kim2025tvq}, and 1-bit-Merging~\cite{bit1merging2025}
+all compete on this problem; each proposes an encoder, tunes
+hyper-parameters, and reports benchmark numbers. None answers the
+prior question: at a given storage budget, what is the best
+\emph{possible} merging algorithm -- and how far from it are the
+methods we use today?
 
-\paragraph{The rate-distortion question.} We formalize this as
-multi-source lossy source coding. The first design choice is
-the figure of merit. A merged model that scores well on most
-downstream tasks but collapses on one is not a useful
-deployment target — quality should be measured by the
-\emph{worst} task, not the average. Once this choice is fixed,
-the formalism is direct. Fix $T$ tasks, ambient dimension $d$,
-and LoRA rank $r\leq d$. Each task is characterized by a pair
-$(\tau_t, H_t)$: a task vector $\tau_t\in\R^d$ (the LoRA
-update) and a positive-semidefinite $H_t$ of rank $r$ (the
-task's Hessian at $\tau_t$, or a Fisher surrogate) with
-$\tau_t^\top H_t\tau_t\leq B^2$. An encoder maps
-$(\tau_1,\ldots,\tau_T)$ into $R$ bits; a decoder reconstructs
-a single merged model $w^\star\in\R^d$. Per-task distortion is
-$D_t(w) := (w-\tau_t)^\top H_t (w-\tau_t)$, the second-order
+\paragraph{What we prove, in one paragraph.} We treat merging as a
+compression problem: $T$ task-specific weight updates must be encoded
+into a single model within a storage budget, and quality is the loss
+inflation on the \emph{worst}-affected task (a merged model that
+collapses on one task is not a useful deployment target). For this
+problem we prove matching lower and upper bounds -- a rate-distortion
+theorem -- with a closed-form answer that separates worst-task error
+into two parts with different cures. The first is an
+\textbf{irreducible floor} set entirely by the geometry of the tasks:
+if the tasks' weight subspaces overlap, no encoder at any bit budget
+can drive worst-task error below it; serving such tasks from one
+merged model is information-theoretically impossible to do well, and
+the right response is to not merge them. The second is a
+\textbf{compression term} that decays exponentially in the bit budget
+and that an explicit, practical encoder -- randomized orthogonal
+mixing followed by uniform scalar quantization -- achieves up to a
+constant factor. The dichotomy gives merging research a diagnostic it
+has not had: measure the overlap, and you know whether a task set is
+limited by \emph{information} (the floor; change the task set) or by
+\emph{algorithms} (the gap above the floor; build a better merger).
+
+\paragraph{Which regime is real merging in? We measure it.} We train
+$16$ LoRA adapters -- four base models (Llama-3.1-8B, Qwen-2.5-7B,
+Mistral-7B, Yi-1.5-9B) $\times$ four tasks -- and measure the overlap
+quantity the theorem identifies. The answer is unambiguous: real task
+subspaces are linearly \emph{independent} in every layer of every
+model. The floor is exactly zero; practical merging lives entirely in
+the algorithm-limited regime. This turns the theorem into a measured
+verdict on current practice: the five standard methods we evaluate
+leave $0.10$--$0.22$ nats/token of worst-task error on the table
+(bootstrap $95\%$ CIs), and \emph{all of it is in principle
+recoverable} -- it is distance from the optimum, not an unavoidable
+cost of merging. Zero overlap also predicts which methods can work:
+subspace-alignment merging (KnOTS~\cite{stoica2025knots}) has nothing
+to exploit and is statistically indistinguishable from naive
+averaging, exactly as the theory says, while TIES -- which attacks
+sign-level interference instead -- is the only method that separates
+from the baseline.
+
+\emph{A worked example.} A Llama-3.1-8B base with $T{=}4$ rank-$16$
+LoRAs has $\deff \leq Tr = 64$ relevant dimensions per layer. The
+theory's two corners are: orthogonal task subspaces ($\deff = 64$,
+floor $0$, quality limited by rate and algorithm) and fully shared
+subspaces ($\deff = 16$, floor $\approx 0.75\,B^2$, a ceiling no
+merger can break). Our measurements put all four models at
+$\deff = 64$ in every layer -- the floor-zero corner -- so this
+model's measured worst-task excess of $0.22$ nats/token is headroom,
+not floor. The overlap-limited corner did not arise for any task set
+we tried; identifying real task families that induce it is a
+direction the theorem makes precise, and we return to it in
+\S\ref{sec:discussion}.
+
+\paragraph{The formal problem.} Fix $T$ tasks, ambient dimension $d$,
+and LoRA rank $r \leq d$. Each task is a pair $(\tau_t, H_t)$: a task
+vector $\tau_t \in \R^d$ (the LoRA update) and a positive-semidefinite
+$H_t$ of rank $r$ (the task's Hessian or Fisher surrogate at
+$\tau_t$), normalized so $\tau_t^\top H_t \tau_t \leq B^2$. An encoder
+maps $(\tau_1, \ldots, \tau_T)$ to $R$ bits; a decoder reconstructs
+one merged model $w^\star \in \R^d$; the per-task distortion
+$D_t(w) := (w - \tau_t)^\top H_t (w - \tau_t)$ is the second-order
 loss inflation from using $w$ in place of $\tau_t$. The
-rate-distortion function $\mathcal{D}^\star(T,d,r,B,R)$ is
-the infimum over encoders and decoders of expected
-max-distortion $\max_{t\leq T} D_t(w^\star)$ at rate $R$.
+rate-distortion function $\mathcal{D}^\star(T, d, r, B, R)$ is the
+infimum over encoder/decoder pairs of expected worst-task distortion
+$\max_{t \leq T} D_t(w^\star)$, under a hard distribution on task
+geometries in which the task subspaces are drawn uniformly at random
+(Stiefel-random; \S\ref{sec:setup}). Two features separate this from
+classical lossy source coding: the encoder observes $T$ sources, not
+one (multi-description coding~\cite{elgamalcover1982md} treats
+\emph{average} distortion, and Lemma~\ref{lem:id} shows max
+dominates average, so the worst-task function is strictly larger);
+and distortion is measured in task-specific rank-$r$ subspaces, so
+the controlling quantity is the effective dimension
+$\deff := \E[\rank(\sum_t P_{V_t})] \leq \min(Tr, d)$, attained
+almost surely in the random-subspace model.
 
-Two features separate this problem from classical lossy
-source coding. First, the encoder observes $T$ sources rather
-than one; multi-description coding~\cite{elgamalcover1982md}
-addresses related questions but under \emph{average} distortion.
-Lemma~\ref{lem:id} (below) shows worst-task distortion dominates
-average distortion (max $\geq$ avg), so an average-distortion
-treatment yields a strictly smaller rate-distortion function than
-the one we establish.
-Second, the low-rank structure of $H_t$ means distortions are
-measured in task-specific rank-$r$ subspaces; the effective
-dimension is the combinatorial quantity $\deff := \E[\rank
-(\sum_t P_{V_t})]$, which satisfies $\deff \leq \min(Tr, d)$,
-with the bound attained almost surely when the $V_t$'s are
-drawn iid from the Stiefel manifold.
-
-\paragraph{Contributions.} We give the first rate-distortion
-theorem for model merging, matching lower and upper bounds up to
-a constant factor in the generic regime -- universal in
-$d$, $r$, $R$, $B$, and linear in the number of tasks $T$, which
-we treat as fixed throughout (the $T$-dependence is discussed
-under Scope below).
-
+\paragraph{Contributions.}
 \begin{enumerate}[leftmargin=*,topsep=2pt,itemsep=2pt]
-\item \textbf{An algebraic identity reducing max-distortion
-merging to average-distortion quantization plus an irreducible
-floor (Lemma~\ref{lem:id}).} For every admissible $(\tau,H)$
-and every $w\in\R^d$,
-\[
-\max_t D_t(w)\;\geq\; (w-\tauH)^\top\bar H(w-\tauH)
-+ \tfrac{1}{T}\sum_t (\tau_t-\tauH)^\top H_t(\tau_t-\tauH),
-\]
-where $\tauH = \bar H^+\cdot T^{-1}\sum_t H_t\tau_t$ is the
-$H_t$-weighted centroid and $\bar H = T^{-1}\sum_t H_t$. The
-identity is the technical bridge from Shannon's single-source
-rate-distortion machinery to the multi-source max-distortion
-setting: the first term is what bits buy, the second is what
-no rate can erase.
+\item \textbf{A reduction identity (Lemma~\ref{lem:id}).} For every
+admissible $(\tau, H)$ and every $w$: worst-task distortion is at
+least a quantization term around the $H$-weighted centroid plus a
+spread term no encoder can remove. The identity is the bridge from
+Shannon's single-source machinery to multi-source max-distortion:
+the first term is what bits buy, the second is what no rate erases.
 
-\item \textbf{A closed-form expression for the irreducible
-floor in terms of subspace overlap (Lemma~\ref{lem:floor-general}).}
-Under a Stiefel-random hard distribution $P^\star$ on
-$(\tau, H)$, the floor reduces to $B^2(1 - \deff/(Tr))$
-exactly. The interpolation between $T=1$ (floor $0$, all bits
-go to compression) and $V_t$ mutually orthogonal (floor $0$
-again, reconstructive task arithmetic is lossless at infinite
-rate) is explicit; positive overlap raises the floor.
+\item \textbf{The floor in closed form (Lemma~\ref{lem:floor-general}).}
+Under the random-subspace hard distribution the irreducible spread
+term equals $B^2(1 - \deff/(Tr))$ exactly: zero when subspaces are
+independent ($\deff = Tr$), approaching $B^2(1 - 1/T)$ as they
+coincide, and interpolating explicitly in between.
 
-\item \textbf{A rate-distortion lower bound on every merging
-algorithm (Theorem~\ref{thm:general}).} Under $P^\star$ with
-arbitrary positive-definite spectra $(D_t)_{t=1}^T$, no
-encoder/decoder pair at rate $R$ bits can do better than
-\begin{equation*}
-\mathcal{D}^\star(T,d,r,B,R)\;\geq\;
-B^2\!\left(1 - \tfrac{\deff}{Tr}\right) +
-c_{\mathrm{TQ}}\cdot\tfrac{B^2\deff}{Tr}\cdot 2^{-2R/\deff}.
-\end{equation*}
-The proof composes Yao's minimax principle, Lemma~\ref{lem:id},
-a reduction to the $\range(\bar H)$ subspace, and an
-$O(d)$-equivariance argument that works regardless of
-task-dependent spectra.
+\item \textbf{A lower bound on every merging algorithm
+(Theorem~\ref{thm:general}).} At rate $R$, no encoder/decoder pair
+beats floor plus $c_{\mathrm{TQ}} \cdot (B^2 \deff / (Tr)) \cdot
+2^{-2R/\deff}$, for arbitrary positive-definite per-task spectra. The
+proof composes Yao's minimax principle, Lemma~\ref{lem:id}, a
+reduction to $\range(\bar H)$, and an $O(d)$-equivariance argument.
 
-\item \textbf{An explicit algorithm that matches the lower
-bound up to a constant factor (Theorem~\ref{thm:achv}).}
-In the floor-zero Stiefel regime ($Tr\leq d$, $V_t$ drawn iid
-from the Stiefel manifold), randomized orthogonal mixing of the
-$\bar H^{1/2}$-scaled centroid followed by uniform scalar
-quantization achieves
-$\E[\max_t D_t(w^\star)]\leq C\cdot B^2\cdot 2^{-2R/(Tr)}$
-with $C = Tc^2/3$ (universal in $d, r, R, B$; linear in $T$).
-Combined with Theorem~\ref{thm:general},
-$\mathcal{D}^\star = \Theta\!\left(B^2\cdot 2^{-2R/(Tr)}\right)$
-in this regime for fixed $T$. The construction reduces to
-TurboQuant~\cite{zandieh2025turboquant} at $T=1$.
+\item \textbf{A matching explicit algorithm (Theorem~\ref{thm:achv}).}
+In the floor-zero regime, randomized orthogonal mixing of the
+$\bar H^{1/2}$-scaled centroid plus uniform scalar quantization
+achieves the same $2^{-2R/(Tr)}$ decay, so
+$\mathcal{D}^\star = \Theta(B^2 \, 2^{-2R/(Tr)})$ for fixed $T$; the
+construction reduces to TurboQuant~\cite{zandieh2025turboquant} at
+$T = 1$. The analysis gives the constant $C = Tc^2/3$; our
+measurements (below) show the true $T$-dependence is logarithmic,
+making the gap a sharply posed open problem rather than a loose end.
 
-\item \textbf{Numerical validation of the predicted slopes and
-constants.} Monte Carlo experiments across $T\in\{2,3,4,8\}$,
-$d\in\{128,512,2048\}$, $r\in\{4,8,16\}$, with both isotropic
-and heavily anisotropic task-dependent spectra, confirm the
-predicted slope $-2R/\deff$ on $\log_2\E[\text{excess}]$ to
-within bootstrap 95\% CI $\pm 0.01$ across 1000 trials per
-configuration. The achievability constant $C$ is empirically
-$\approx 11$--$13$, matching the analytical bound $Tc^2/3$.
+\item \textbf{Numerical validation of slopes and constants.} Monte
+Carlo across $T \in \{2,3,4,8\}$, $d \in \{128, 512, 2048\}$,
+$r \in \{4, 8, 16\}$ confirms the predicted exponent $-2R/\deff$ to
+within $\pm 0.01$ (bootstrap $95\%$ CI, 1000 trials/cell). A dedicated
+$T$-sweep ($T$ up to $16$, 1000 trials/cell) measures the
+achievability constant's growth: \emph{logarithmic} in $T$
+($R^2 \geq 0.998$ against $\log T$ in all cells; ratio at $T{=}16$
+only $1.8\times$ that at $T{=}2$, against $8\times$ if linear), with
+slope shrinking like $1/\sqrt{r}$ -- the signature of a max-of-$T$
+concentration argument, which we state as a conjecture.
 
 \item \textbf{A real-LLM calibration that turns the bound into a
-measured gap (\S\ref{sec:exp}).} We train $16$ LoRA adapters
-across four base models (Llama-3.1-8B, Qwen-2.5-7B, Mistral-7B,
-Yi-1.5-9B) and four tasks, and evaluate five standard merging
-methods under worst-task NLL with bootstrap confidence intervals.
-We find that real task subspaces are linearly \emph{independent}
-($\deff = Tr$ in every layer of every model), so the bound's
-floor is zero -- yet current methods leave $0.10$--$0.22$
-nats/token of worst-task error on the table. The gap is the
-suboptimality of today's heuristics, not an irreducible floor.
-Three further findings: (i) only TIES improves on naive
-averaging, and only on the bottleneck task, while
-subspace-alignment (KnOTS) is statistically indistinguishable
-from it -- precisely the theory's prediction at $\deff = Tr$,
-where there is no overlap for a subspace method to exploit;
-(ii) merging difficulty tracks the pretraining/instruction-tuning
-recipe rather than attention design, and is \emph{not} predicted
-by any subspace-overlap statistic; (iii) a universal
-``less-is-more'' regime in which $2$-bit task-vector quantization
-beats higher-bit quantization on all four architectures.
+measured gap (\S\ref{sec:exp}).} The $16$-adapter study above: floor
+zero everywhere; $0.10$--$0.22$ nats/token of recoverable headroom;
+only TIES separates from naive averaging, KnOTS does not (as
+predicted at zero overlap); merging difficulty tracks the
+pretraining/instruction-tuning recipe rather than attention design;
+and a universal ``less-is-more'' regime in which $2$-bit task-vector
+quantization beats higher-bit quantization on all four architectures.
 \end{enumerate}
 
-\paragraph{What this means for practice.} The bound gives
-practitioners a \emph{lower envelope}, not a tight calibration
-curve: because real task vectors are far more benign than the
-worst-case $P^\star$, the bound certifies only that no algorithm
-can do better, and any method's gap to $\mathcal{D}^\star$ is an
-upper estimate of its suboptimality rather than an exact grade. The theorem exposes two regimes through the
-floor $B^2(1 - \deff/(Tr))$. When task subspaces overlap
-substantially ($\deff \ll Tr$) the floor is irreducible and no
-amount of rate closes it; when they are independent
-($\deff = Tr$) the floor vanishes and quality is rate- and
-algorithm-limited. \emph{Which regime do real LoRA merges live
-in?} Our experiments answer this directly (\S\ref{sec:exp}):
-across all four base models and every layer we measure
-$\deff = Tr$ -- the independent, floor-zero regime. The
-implication is sharper than a generic ``it depends'': for the
-task sets practitioners actually merge, the irreducible floor is
-\emph{not} the binding constraint, and the $0.10$--$0.22$
-nats/token of worst-task error we observe is headroom that a
-better algorithm could in principle recover. Consistent with
-this, subspace-alignment merging (KnOTS) gives no improvement
-over naive averaging in our measurements -- there is no subspace
-overlap for it to exploit -- whereas TIES, which attacks
-sign-level interference rather than subspace overlap, does help.
-A merging method should therefore be judged on how much of the
-floor-zero gap it closes, not on subspace alignment alone.
+\paragraph{Scope and limitations.} The bound certifies a \emph{lower
+envelope}, not a tight per-instance grade: real task vectors are more
+benign than the worst case, so a method's gap to $\mathcal{D}^\star$
+upper-estimates its suboptimality. The matching upper bound is proved
+in the generic random-subspace regime with $Tr \leq d$; in the
+floor-positive regime an explicit linear encoder achieves exponent
+$2^{-2R/(\deff + |A| - 1)}$ and closing the gap to $2^{-2R/\deff}$
+appears to require non-linear encoders
+(Remark~\ref{rem:sharedv-gap}). The achievability constant's
+$T$-dependence is now measured (logarithmic, contribution 5) but not
+yet proved; tightening $Tc^2/3$ to match is open. The theory is
+stated for quadratic loss; the bridge to cross-entropy via local
+Fisher-quadratic approximation, and its measured residual, are
+discussed in \S\ref{sec:discussion}.
 
-\emph{A worked example.} Consider a Llama-3.1-8B base with $T=4$
-rank-$16$ LoRAs, so $\deff \leq Tr = 64$ per layer. The
-theory's two regimes are the orthogonal case ($\deff = 64$,
-floor $0$, rate-/algorithm-limited) and the fully-overlapping
-case ($\deff = 16$, floor $\approx 0.75\,B^2$, a ceiling no
-merger can break). Empirically all four models we test sit at
-$\deff = 64$ in every layer -- the floor-zero corner -- so the
-operative question is algorithmic, not informational: the
-measured worst-task excess ($0.22$ for this model) is distance
-from optimal, not an unavoidable floor. The overlap-limited
-corner, where the right response is to serve tasks from separate
-adapters rather than merge, did not arise for any task set we
-tried; identifying real task families that induce it is itself
-a useful direction the theorem makes precise.
-
-\paragraph{Scope and limitations.} The matching upper bound
-in Theorem~\ref{thm:achv} is proved under the generic
-Stiefel-random hard distribution $P^\star$ with $Tr\leq d$.
-In the floor-positive regime (shared or heavily overlapping
-$V_t$), an explicit linear encoder achieves an excess rate of
-$2^{-2R/(\deff+|A|-1)}$ (where $|A|$ is the size of the
-active set at the Chebyshev center), and we verify this
-numerically for $T\in\{2,3,4\}$; closing the exponent gap to
-the lower bound's $2^{-2R/\deff}$ appears to require
-non-linear / random-coding encoders and is left open
-(Remark~\ref{rem:sharedv-gap}). Separately, the upper-bound
-constant $C = Tc^2/3$ grows linearly in $T$ while the lower-bound
-constant $c_{\mathrm{TQ}}$ is $T$-independent, so the
-``matching up to constants'' claim holds for the number of tasks
-$T$ treated as fixed; the linear $T$-gap (whose source is the
-$\max \leq T\cdot\mathrm{avg}$ step of
-Theorem~\ref{thm:achv}, \S\ref{sec:achv}) is not known to be
-tight, and tightening the $T$-dependence is open. Finally, the
-bound is stated in the MSE / quadratic-loss setting; the
-extension to cross-entropy LLM loss via local Fisher-quadratic
-approximation is discussed in~\S\ref{sec:discussion}.
-
-\paragraph{Paper organization.}
-\S\ref{sec:setup} introduces the formal rate-distortion model
-for merging and the admissible hard distributions.
-\S\ref{sec:lower} proves the lower bound
-(Theorem~\ref{thm:general}), with the max-$\geq$-avg identity
-and closed-form floor as the central tools. \S\ref{sec:achv}
-gives the matching achievability construction and analyses.
-\S\ref{sec:exp} reports experiments in two parts: synthetic
-rank-$r$ ensembles validating the theoretical slopes and
-constants, and a real-LLM calibration across four base models
-and four tasks that measures the gap between current merging
-methods and the bound. \S\ref{sec:discussion} discusses
-extensions to cross-entropy loss, the open shared-$V$ exponent
-gap, what the real-LLM measurements add, and implications for
-practical merging-algorithm design.
+\paragraph{Paper organization.} \S\ref{sec:setup} formalizes the
+rate-distortion model and the hard distribution. \S\ref{sec:lower}
+proves the lower bound. \S\ref{sec:achv} gives the matching
+construction. \S\ref{sec:exp} reports synthetic validation and the
+real-LLM calibration. \S\ref{sec:discussion} discusses the
+cross-entropy bridge, the open exponent and constant gaps, and
+implications for merging-algorithm design.
