@@ -46,3 +46,28 @@ ACTION: T1 (theory week with Prof. Garg) is ON — target a
 C = O(c^2 (1 + f(log T, r))) bound; Remark 5 to be rewritten around this
 measurement either way. T=3 excluded from sweep (Hadamard-padding rate-
 accounting artifact, documented in e4_t_sweep.py).
+
+## 2026-06-11 — I0: orchestrator built; root cause of "all PBS jobs failed" FOUND
+Multi-GPU orchestrator (LMCA pattern: one PBS job, worker-per-GPU, done-file
+idempotent cells, VRAM gate per cell, login-node keeper) deployed at
+code/phase3/scripts/{orchestrator.py, gen_e2_manifest.py,
+pbs_orchestrator.sh, orchestrator_keeper.sh}. First payload: E2 (32
+multi-seed trainings, seeds 1+2), GPUs 0,1,2,3,5 (4/6/7 reserved for the
+MOOLoRa pilot on the other account; flip _ORCH_GPUS + requeue to expand).
+
+Two environment failures diagnosed on launch, BOTH now fixed:
+1. unsloth_zoo introspects torch._inductor.config (lazy submodule) at
+   import -> AttributeError. Fix: explicit import shim in train_lora.py.
+2. THE BIG ONE — the mystery behind the master plan's "past PBS/Torque
+   jobs on the JIIT cluster all failed": ~/.local/lib/python3.11/
+   site-packages contains torch 2.4.1+cu121 pip-installed --user by the
+   LMCA project (same account, late May) which SHADOWS the rdmerge conda
+   env's torch 2.10.0+cu128 -> torchvision::nms operator errors and
+   version chaos in every job since ~May 20. The May 17-19 trainings
+   predate the contamination, which is why they worked. Fix:
+   PYTHONNOUSERSITE=1 exported in pbs_orchestrator.sh (hermetic env).
+   Rule going forward: every rdmerge job wrapper must set it.
+
+E2 running as job 41481 (keeper pid in logs/orch_keeper.pid).
+I0 remaining: kill-and-resume test once first cells are DONE; env hash
+recording. E1 implementation next (encoder on real adapters).

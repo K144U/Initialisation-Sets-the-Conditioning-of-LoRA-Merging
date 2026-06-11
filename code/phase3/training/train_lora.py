@@ -7,6 +7,10 @@ Reads YAML config, loads base model via Unsloth at full bf16, trains
 a LoRA on the configured task, saves the adapter + a JSON metrics blob.
 """
 
+# unsloth_zoo (>=2026-06 env) introspects torch._inductor.config at import
+# time, which is lazy in this torch build — import it explicitly first.
+import torch._inductor.config  # noqa: F401
+
 # Unsloth must import before transformers.
 import unsloth  # noqa: F401  pylint: disable=unused-import
 

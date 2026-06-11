@@ -1,0 +1,38 @@
+base_model: /home/sanjay.g/projects/rdmerge/models/Yi-1.5-9B-Chat
+task:
+  name: translation
+  dataset: wmt/wmt19
+  config: de-en
+  split_train: train
+  split_eval: validation
+  n_train: 7500
+  n_eval: 200
+  src_lang: en
+  tgt_lang: de
+  streaming: true
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+train:
+  epochs: 2
+  lr: 5.0e-05
+  batch_size: 8
+  grad_accum: 4
+  max_seq_length: 2048
+  warmup_ratio: 0.03
+  optim: adamw_torch
+  logging_steps: 10
+  dataset_num_proc: 1
+  min_free_gb: 35
+output:
+  adapter_dir: artifacts/lora/yi15_9b/flores/seed1
+  results_path: results/phase3/lora_train/yi15_9b_flores_v1_seed1.json
+seeds:
+  global: 1
+  train: 1
