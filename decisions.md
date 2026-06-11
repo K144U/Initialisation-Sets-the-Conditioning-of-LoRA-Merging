@@ -71,3 +71,23 @@ Two environment failures diagnosed on launch, BOTH now fixed:
 E2 running as job 41481 (keeper pid in logs/orch_keeper.pid).
 I0 remaining: kill-and-resume test once first cells are DONE; env hash
 recording. E1 implementation next (encoder on real adapters).
+
+## 2026-06-11 — E1 implemented (projector variant); design notes
+rd_encoder merge method (code/phase3/merging/rd_encoder.py, registered):
+the paper's achievability construction on real adapters. H_t = P_{V_t}
+projector surrogate (deff_analysis geometry); H-weighted centroid via the
+(Tr x Tr) Gram trick; randomized-Hadamard + uniform scalar quantization
+(NOT the spec's Gaussian-QR — dense QR infeasible at out*d_eff ~ 2^18;
+Hadamard is the standard structured substitute and matches the synthetic
+validation). bits>=32 = b-infinity centroid cell. 5 CPU tests pass incl.
+b-inf == analytic centroid.
+DESIGN CONSTRAINT: PeftModelView adapters are rank r=16, so the decoded
+W* is SVD-truncated to r — the same deployment constraint every baseline
+method carries (apples-to-apples). Per-layer truncated-mass fraction is
+logged; on random tensors it is ~0.38 (worst case). DECISION RULE: if real
+adapters show trunc_mass > ~0.1 at b=inf, build the full-rank base-patch
+path (v2) before interpreting the b-inf cell as pure centroid error.
+E1 queue: 28 cells (4 models x b in {1,2,3,4,8,16,32}), configs in
+configs/eval_e1/, e1_manifest.json; pbs_orchestrator.sh now defaults to
+all_manifest.json (E2+E1) so post-E2 requeues flow into E1 automatically.
+Fisher-diagonal H variant = second pass after projector results.

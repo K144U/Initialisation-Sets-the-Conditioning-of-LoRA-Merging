@@ -21,7 +21,7 @@ module load anaconda3/anaconda cuda12.2/toolkit/12.2.2 cudnn/9.14
 source activate $PROJECT_ROOT/.conda/envs/rdmerge
 export PYTHONNOUSERSITE=1   # LMCA user-site torch 2.4.1 shadows the conda stack
 
-MANIFEST="${MANIFEST:-code/phase3/configs/e2_manifest.json}"
+MANIFEST="${MANIFEST:-code/phase3/configs/all_manifest.json}"
 if [ -f "$PROJECT_ROOT/_ORCH_GPUS" ]; then
     export GPUS=$(cat "$PROJECT_ROOT/_ORCH_GPUS" | tr -d '[:space:]')
 else

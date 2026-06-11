@@ -1,0 +1,170 @@
+[
+ {
+  "name": "e1_llama31_8b_rd_b1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/llama31_8b__rd_b1.yaml",
+  "done": "results/phase3/eval_e1/llama31_8b__rd_b1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_llama31_8b_rd_b2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/llama31_8b__rd_b2.yaml",
+  "done": "results/phase3/eval_e1/llama31_8b__rd_b2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_llama31_8b_rd_b3",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/llama31_8b__rd_b3.yaml",
+  "done": "results/phase3/eval_e1/llama31_8b__rd_b3.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_llama31_8b_rd_b4",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/llama31_8b__rd_b4.yaml",
+  "done": "results/phase3/eval_e1/llama31_8b__rd_b4.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_llama31_8b_rd_b8",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/llama31_8b__rd_b8.yaml",
+  "done": "results/phase3/eval_e1/llama31_8b__rd_b8.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_llama31_8b_rd_b16",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/llama31_8b__rd_b16.yaml",
+  "done": "results/phase3/eval_e1/llama31_8b__rd_b16.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_llama31_8b_rd_b32",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/llama31_8b__rd_b32.yaml",
+  "done": "results/phase3/eval_e1/llama31_8b__rd_b32.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_qwen25_7b_rd_b1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/qwen25_7b__rd_b1.yaml",
+  "done": "results/phase3/eval_e1/qwen25_7b__rd_b1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_qwen25_7b_rd_b2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/qwen25_7b__rd_b2.yaml",
+  "done": "results/phase3/eval_e1/qwen25_7b__rd_b2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_qwen25_7b_rd_b3",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/qwen25_7b__rd_b3.yaml",
+  "done": "results/phase3/eval_e1/qwen25_7b__rd_b3.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_qwen25_7b_rd_b4",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/qwen25_7b__rd_b4.yaml",
+  "done": "results/phase3/eval_e1/qwen25_7b__rd_b4.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_qwen25_7b_rd_b8",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/qwen25_7b__rd_b8.yaml",
+  "done": "results/phase3/eval_e1/qwen25_7b__rd_b8.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_qwen25_7b_rd_b16",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/qwen25_7b__rd_b16.yaml",
+  "done": "results/phase3/eval_e1/qwen25_7b__rd_b16.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_qwen25_7b_rd_b32",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/qwen25_7b__rd_b32.yaml",
+  "done": "results/phase3/eval_e1/qwen25_7b__rd_b32.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_mistral_7b_rd_b1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/mistral_7b__rd_b1.yaml",
+  "done": "results/phase3/eval_e1/mistral_7b__rd_b1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_mistral_7b_rd_b2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/mistral_7b__rd_b2.yaml",
+  "done": "results/phase3/eval_e1/mistral_7b__rd_b2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_mistral_7b_rd_b3",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/mistral_7b__rd_b3.yaml",
+  "done": "results/phase3/eval_e1/mistral_7b__rd_b3.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_mistral_7b_rd_b4",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/mistral_7b__rd_b4.yaml",
+  "done": "results/phase3/eval_e1/mistral_7b__rd_b4.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_mistral_7b_rd_b8",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/mistral_7b__rd_b8.yaml",
+  "done": "results/phase3/eval_e1/mistral_7b__rd_b8.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_mistral_7b_rd_b16",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/mistral_7b__rd_b16.yaml",
+  "done": "results/phase3/eval_e1/mistral_7b__rd_b16.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_mistral_7b_rd_b32",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/mistral_7b__rd_b32.yaml",
+  "done": "results/phase3/eval_e1/mistral_7b__rd_b32.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_yi15_9b_rd_b1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/yi15_9b__rd_b1.yaml",
+  "done": "results/phase3/eval_e1/yi15_9b__rd_b1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_yi15_9b_rd_b2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/yi15_9b__rd_b2.yaml",
+  "done": "results/phase3/eval_e1/yi15_9b__rd_b2.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_yi15_9b_rd_b3",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/yi15_9b__rd_b3.yaml",
+  "done": "results/phase3/eval_e1/yi15_9b__rd_b3.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_yi15_9b_rd_b4",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/yi15_9b__rd_b4.yaml",
+  "done": "results/phase3/eval_e1/yi15_9b__rd_b4.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_yi15_9b_rd_b8",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/yi15_9b__rd_b8.yaml",
+  "done": "results/phase3/eval_e1/yi15_9b__rd_b8.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_yi15_9b_rd_b16",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/yi15_9b__rd_b16.yaml",
+  "done": "results/phase3/eval_e1/yi15_9b__rd_b16.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e1_yi15_9b_rd_b32",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1/yi15_9b__rd_b32.yaml",
+  "done": "results/phase3/eval_e1/yi15_9b__rd_b32.json",
+  "min_free_gb": 25.0
+ }
+]

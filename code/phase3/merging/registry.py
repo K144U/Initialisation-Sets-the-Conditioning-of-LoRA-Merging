@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from .dare import merge_dare
 from .knots import merge_knots
+from .rd_encoder import merge_rd_encoder
 from .task_arithmetic import merge_task_arithmetic
 from .ties import merge_ties
 from .tvq import merge_tvq
@@ -28,6 +29,7 @@ REGISTRY = {
     "dare": merge_dare,
     "knots": merge_knots,
     "tvq": merge_tvq,
+    "rd_encoder": merge_rd_encoder,
 }
 
 
@@ -38,4 +40,5 @@ DEFAULT_KWARGS = {
     "dare": {"density": 0.2, "seed": 20260518},
     "knots": {"inner_combination": "linear"},
     "tvq": {"rate_bits": 32},
+    "rd_encoder": {"bits": 32, "c": 5.0, "seed": 20260611},
 }
