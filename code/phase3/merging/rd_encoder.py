@@ -121,6 +121,7 @@ def merge_rd_encoder(
     eig_rel_floor: float = 1e-6,
     full_rank_patch: bool = False,
     realize: str = "rank_r",
+    ridge_lambda: float = 0.0,
     **_kwargs,
 ) -> None:
     """The paper's encoder as a registry merge method. bits >= 32 = no
@@ -134,6 +135,11 @@ def merge_rd_encoder(
                   its natural factorization B = eta_q (out x d_eff),
                   A = Lambda^{-1/2} Q^T (d_eff x in) -- no SVD, no
                   truncation, standard adapter forward path.
+    ridge_lambda: Tikhonov regularization of the centroid, replacing
+    Lambda^{-1} with (Lambda + lambda)^{-1} throughout (encode/decode/
+    factors). lambda=0 is the raw theory centroid, which on real adapters
+    blows up 25x to 94x (degenerate Hbar spectrum, see decisions.md
+    2026-06-12); moderate lambda interpolates toward task arithmetic.
     full_rank_patch (v2) is RETIRED: mutating base weights does not
     propagate coherently through unsloth-patched forward paths (measured
     +10 nats, 2026-06-12); kept only for the fake-model unit test."""
@@ -157,16 +163,17 @@ def merge_rd_encoder(
         keep = S > eig_rel_floor * S.max()
         S, U = S[keep], U[:, keep]
         Q = M_w @ U @ torch.diag(S.rsqrt())                  # (in x d_eff)
+        S_eff = S + float(ridge_lambda)
 
         N = deltas[0] * w[0]
         for wt, d in zip(w[1:], deltas[1:]):
             N = N + wt * d
-        eta = (N @ Q) @ torch.diag(S.rsqrt())                # (out x d_eff)
+        eta = (N @ Q) @ torch.diag(S_eff.rsqrt())            # (out x d_eff)
 
         if bits < 32:
             eta = _quantize_rotated(eta, bits, c, _layer_seed(seed, layer))
 
-        W_star = (eta @ torch.diag(S.rsqrt())) @ Q.T         # (out x in)
+        W_star = (eta @ torch.diag(S_eff.rsqrt())) @ Q.T     # (out x in)
 
         A_new, B_new = svd_truncate_to_rank(W_star, r)
         truncated = B_new.to(torch.float32) @ A_new.to(torch.float32)
@@ -186,7 +193,7 @@ def merge_rd_encoder(
                                          device=base_w.device))
         if realize == "rank_deff":
             # exact factorization of W*: B64 @ A64 == eta_q Lambda^{-1/2} Q^T
-            A64 = torch.diag(S.rsqrt()) @ Q.T          # (d_eff x in)
+            A64 = torch.diag(S_eff.rsqrt()) @ Q.T      # (d_eff x in)
             B64 = eta                                   # (out x d_eff)
             deff_factors[layer] = FakeLoraLayer(A=A64, B=B64, scaling=1.0)
             max_deff = max(max_deff, int(S.numel()))

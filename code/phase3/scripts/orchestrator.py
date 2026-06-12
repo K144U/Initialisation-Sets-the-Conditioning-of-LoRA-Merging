@@ -150,8 +150,9 @@ class Orchestrator:
         for t in threads:
             t.join()
         self.write_state()
+        sentinel = os.environ.get("ORCH_SENTINEL", "_QUEUE_COMPLETE")
         if not self.failed:
-            (ROOT / "_QUEUE_COMPLETE").write_text(time.strftime("%F %T\n"))
+            (ROOT / sentinel).write_text(time.strftime("%F %T\n"))
             print("[orch] queue complete", flush=True)
         else:
             (ROOT / "_QUEUE_FAILED").write_text("\n".join(self.failed) + "\n")

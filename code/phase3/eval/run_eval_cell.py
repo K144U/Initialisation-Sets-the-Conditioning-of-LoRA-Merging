@@ -95,17 +95,34 @@ def main() -> int:
     method_kwargs = dict(DEFAULT_KWARGS.get(method, {}))
     method_kwargs.update(cfg.get("method_kwargs", {}))
 
-    # 1. Load base + the first task adapter via Unsloth (sets up apply_qkv etc.)
-    print(f"[eval_cell] loading base+{cfg['adapter_specs'][0]['name']} via Unsloth from "
-          f"{cfg['adapter_specs'][0]['dir']}", flush=True)
+    # 1. Load base + the first task adapter. Default: Unsloth fast path.
+    # loader: plain -> vanilla transformers+PEFT (REQUIRED for mixed-rank
+    # adapters, e.g. rd_encoder realize=rank_deff: unsloth forward only
+    # supports uniform-rank adapters; validated by smoke 2026-06-12).
     t_load = time.time()
-    model, tokenizer = FastLanguageModel.from_pretrained(
-        model_name=cfg["adapter_specs"][0]["dir"],
-        max_seq_length=cfg.get("max_seq_length", 1024),
-        dtype=torch.bfloat16,
-        load_in_4bit=False,
-    )
-    FastLanguageModel.for_inference(model)
+    if cfg.get("loader") == "plain":
+        from peft import PeftModel
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+        print(f"[eval_cell] loading base+{cfg['adapter_specs'][0]['name']} via plain "
+              f"transformers+PEFT from {cfg['adapter_specs'][0]['dir']}", flush=True)
+        tokenizer = AutoTokenizer.from_pretrained(cfg["base_model"])
+        model = AutoModelForCausalLM.from_pretrained(
+            cfg["base_model"], torch_dtype=torch.bfloat16,
+            device_map="cuda:0", attn_implementation="sdpa",
+            low_cpu_mem_usage=True)
+        model = PeftModel.from_pretrained(
+            model, cfg["adapter_specs"][0]["dir"], adapter_name="default")
+        model.eval()
+    else:
+        print(f"[eval_cell] loading base+{cfg['adapter_specs'][0]['name']} via Unsloth from "
+              f"{cfg['adapter_specs'][0]['dir']}", flush=True)
+        model, tokenizer = FastLanguageModel.from_pretrained(
+            model_name=cfg["adapter_specs"][0]["dir"],
+            max_seq_length=cfg.get("max_seq_length", 1024),
+            dtype=torch.bfloat16,
+            load_in_4bit=False,
+        )
+        FastLanguageModel.for_inference(model)
     print(f"  loaded in {time.time()-t_load:.1f}s", flush=True)
 
     # First adapter is "default" inside PEFT; rename via load_adapter for clarity

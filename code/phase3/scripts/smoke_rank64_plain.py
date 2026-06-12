@@ -46,13 +46,20 @@ def main():
 
     view = PeftModelView(model)
     names = ["default"] + [s["name"] for s in cfg["adapter_specs"][1:]]
+    lam = float(os.environ.get("RIDGE_LAMBDA", "0.0"))
+    print(f"[smoke3b] ridge_lambda = {lam}", flush=True)
     REGISTRY["rd_encoder"](view, names, [0.25] * 4, "rd64",
-                           bits=32, realize="rank_deff", seed=20260611)
+                           bits=32, realize="rank_deff", seed=20260611,
+                           ridge_lambda=lam)
 
-    # Check 1: stored weights realize W* (spot-check 3 layers)
+    # Check 1: stored weights realize W* (spot-check 3 layers).
+    # Only valid at lambda=0 (the reference below is the raw centroid).
     import math
-    layers = view.layer_names()
-    spot = [layers[0], layers[len(layers) // 2], layers[-1]]
+    if lam > 0:
+        spot = []
+    else:
+        layers = view.layer_names()
+        spot = [layers[0], layers[len(layers) // 2], layers[-1]]
     for ly in spot:
         deltas = [view.get_delta(n, ly).to(torch.float32) for n in names]
         Vs = []
