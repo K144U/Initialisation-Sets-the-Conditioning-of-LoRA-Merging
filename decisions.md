@@ -188,3 +188,13 @@ has no `ORCH_SENTINEL` so it remains the trap source until it ends.
 LESSON: raise matrix cells' `min_free_gb` margin, or have the
 orchestrator treat an rc=87 (gate) exit as a no-charge requeue like its
 own poll, so a boundary GPU can never burn a cell's attempt budget.
+
+ADDENDUM 2026-06-12 ~16:15: all three LESSON items closed same day —
+(1) rc=87 no-charge requeue implemented in orchestrator.py (`719466d`);
+(2) keeper v2 verifies `_QUEUE_COMPLETE` against manifest done-files
+before honoring it (`daa8648`) — sentinel trap durably defused, no longer
+session-dependent; (3) per-job `ORCH_STATE`/`ORCH_SENTINEL` exports added
+to the ridge wrapper (state-file clobbering ends with future jobs). Also
+deconflicted GPUs: P4 MOOLoRa seeds moved off our matrix cards 4/6 to 1/3
+(P4 was confirmed alive via cput≈walltime + resume lines in spool; it was
+contention, not a hang).

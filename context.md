@@ -39,23 +39,33 @@ centroid salvage sweep running now; 80-cell seed merge matrix ~12/80.
   (resumes from 71 done-files, attempts reset). No safe swap GPU (live
   nvidia-smi: gpu0 222MiB free under another user's ~80GB job; gpu1/3/5/7
   all <25GB free for our ~55GB cells) -> running 3-wide. 71 done/66 pending
-  at resume.
+  at resume. **rc=87 gate exits are now NO-CHARGE requeues (commit
+  `719466d`)** — effective from the next requeue; 41533 itself still runs
+  the old code (moot: GPU0 is out of the pool).
 - **`41521` rdm_ridge** — 5-cell ridge λ-sweep (llama, b=∞, rank_deff,
   plain loader, GPU6, serial ~1.2h/cell). Results land in
   `results/phase3/eval_ridge/`. λ=0.001 done: worst 4.46 (expected bad,
   anchors raw end). λ ∈ {0.01, 0.1, 0.3, 1.0} pending. **λ=0.1 smoke was
   PROMISING: NLL 0.615 on gsm8k probe vs v1's 0.761.**
-- **Keeper** (login node, pid `logs/orch_keeper.pid`) requeues rdm_orch on
-  walltime; stops on `_QUEUE_COMPLETE` or `_KEEPER_STOP`.
-- **⚠️ SENTINEL TRAP:** ridge job 41521 predates the ORCH_SENTINEL patch —
-  when it completes it writes the SHARED `_QUEUE_COMPLETE`, which would
-  kill the keeper while the matrix is unfinished. A session monitor
-  ("sentinel guard v2") auto-clears it; **if the session cleared, manually
-  check: if `_QUEUE_COMPLETE` exists while matrix cells are pending, `rm`
-  it and ensure the keeper is alive** (`nohup bash
-  code/phase3/scripts/orchestrator_keeper.sh & disown`). Future
-  orchestrators: sentinel name comes from env `ORCH_SENTINEL` (patched in
-  orchestrator.py; ridge wrapper exports `_RIDGE_COMPLETE` on requeue).
+- **Keeper v2** (login node, pid `logs/orch_keeper.pid`) requeues rdm_orch
+  on walltime; stops on `_KEEPER_STOP`, or on `_QUEUE_COMPLETE` ONLY after
+  verifying done-files == manifest total (`all_manifest.json`). A stray
+  sentinel is removed + logged and the keeper continues.
+- **✅ SENTINEL TRAP DEFUSED (2026-06-12 afternoon, commit `daa8648`):**
+  keeper v2 no longer trusts the shared `_QUEUE_COMPLETE` blindly, so ridge
+  41521 finishing can no longer kill the keeper mid-matrix (a session
+  monitor still clears the stray file as a redundant layer). Also
+  future-proofed: orchestrator.py STATE is `ORCH_STATE`-overridable and
+  pbs_orchestrator_ridge.sh exports `ORCH_SENTINEL=_RIDGE_COMPLETE` +
+  `ORCH_STATE=orchestrator_state_ridge.json`, so concurrent orchestrators
+  stop clobbering each other's state file. Until ridge 41521 ends,
+  `logs/orchestrator_state.json` may show RIDGE cells — judge matrix
+  progress by done-file counts, not that file.
+- **P4 deconflict (2026-06-12 ~16:10):** MOOLoRa pilot seeds were stacked
+  on OUR matrix GPUs (seed1 gpu4, seed2 gpu6 — gpu6 also carries ridge).
+  Moved to gpu1/gpu3 (jobs 41535/41536; P4 keeper gpu map updated on
+  STUDENT-ACCOUNT). Matrix now has 2,4 to itself; 6 shared only with ridge
+  until 41521 ends.
 
 ## 2. Results so far (all committed; decisions.md has full detail)
 
