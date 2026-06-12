@@ -120,25 +120,30 @@ def merge_rd_encoder(
     seed: int = 20260611,
     eig_rel_floor: float = 1e-6,
     full_rank_patch: bool = False,
+    realize: str = "rank_r",
     **_kwargs,
 ) -> None:
     """The paper's encoder as a registry merge method. bits >= 32 = no
     quantization (the b=infinity centroid cell).
 
-    full_rank_patch (v2, decision rule of 2026-06-12): the decoded W* has
-    rank up to d_eff (64) but PEFT adapter slots are rank r (16); the v1
-    SVD truncation discards ~30% of solution mass on real adapters
-    (measured trunc_mass ~0.297). With full_rank_patch=True the residual
-    (W* minus its rank-r truncation) is added directly to the BASE weights
-    so the active merged model realizes W* exactly. Only valid in
-    single-cell eval processes (the base stays patched for the process
-    lifetime); requires the real PeftModelView (modules with .base_layer),
-    not the test fake."""
+    realize:
+      "rank_r"    (v1) SVD-truncate W* to the adapter rank r. Same
+                  deployment constraint as every baseline method; discards
+                  ~30% of solution mass on real adapters (trunc_mass diag).
+      "rank_deff" (v3) inject a rank-d_eff adapter carrying W* EXACTLY via
+                  its natural factorization B = eta_q (out x d_eff),
+                  A = Lambda^{-1/2} Q^T (d_eff x in) -- no SVD, no
+                  truncation, standard adapter forward path.
+    full_rank_patch (v2) is RETIRED: mutating base weights does not
+    propagate coherently through unsloth-patched forward paths (measured
+    +10 nats, 2026-06-12); kept only for the fake-model unit test."""
     assert len(adapter_names) == len(weights)
     wsum = float(sum(weights))
     w = [float(x) / wsum for x in weights]
 
     new_factors: dict[str, FakeLoraLayer] = {}
+    deff_factors: dict[str, FakeLoraLayer] = {}
+    max_deff = 0
     diag: dict[str, dict] = {}
     for layer in model.layer_names():
         _, _, r = model.layer_topology[layer]
@@ -179,9 +184,19 @@ def merge_rd_encoder(
             base_w = model.base_weight(layer)
             base_w.data.add_(residual.to(dtype=base_w.dtype,
                                          device=base_w.device))
+        if realize == "rank_deff":
+            # exact factorization of W*: B64 @ A64 == eta_q Lambda^{-1/2} Q^T
+            A64 = torch.diag(S.rsqrt()) @ Q.T          # (d_eff x in)
+            B64 = eta                                   # (out x d_eff)
+            deff_factors[layer] = FakeLoraLayer(A=A64, B=B64, scaling=1.0)
+            max_deff = max(max_deff, int(S.numel()))
         new_factors[layer] = FakeLoraLayer(A=A_new, B=B_new, scaling=1.0)
 
-    model.add_adapter(merged_adapter_name, new_factors)
+    if realize == "rank_deff":
+        model.add_adapter_rank(merged_adapter_name, deff_factors,
+                               rank=max_deff)
+    else:
+        model.add_adapter(merged_adapter_name, new_factors)
 
     fracs = [v["trunc_mass_frac"] for v in diag.values()]
     deffs = [v["d_eff"] for v in diag.values()]

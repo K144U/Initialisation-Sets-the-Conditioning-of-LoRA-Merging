@@ -58,10 +58,45 @@ class PeftModelView:
     def base_weight(self, layer: str) -> torch.Tensor:
         """The frozen base weight tensor under the LoRA layer (for the
         rd_encoder full-rank residual patch). PEFT >= 0.7 wraps it in
-        .base_layer; older versions expose .weight on the module itself."""
+        .base_layer; older versions expose .weight on the module itself.
+        WARNING (2026-06-12): mutating this tensor does NOT propagate
+        coherently through unsloth-patched forward paths; use
+        add_adapter_rank instead."""
         mod = self._layers[layer]
         base = getattr(mod, "base_layer", mod)
         return base.weight
+
+    def add_adapter_rank(self, name: str, factors: Dict[str, FakeLoraLayer],
+                         rank: int) -> None:
+        """Inject a NEW adapter of arbitrary rank (e.g. d_eff=64 for the
+        rd_encoder exact full-rank realization). Unlike add_adapter (which
+        scaffolds via add_weighted_adapter and inherits rank r), this
+        injects a fresh LoraConfig with the requested rank, then overwrites
+        the allocated A/B. Factors smaller than `rank` are zero-padded."""
+        import dataclasses
+
+        if name in self.pmodel.peft_config:
+            self.pmodel.delete_adapter(name)
+        base_cfg = next(iter(self.pmodel.peft_config.values()))
+        cfg = dataclasses.replace(
+            base_cfg, r=rank, lora_alpha=rank,  # alpha=r -> scaling 1.0
+            lora_dropout=0.0, init_lora_weights=False,
+        )
+        self.pmodel.add_adapter(name, cfg)
+        for layer_name, mod in self._layers.items():
+            f = factors[layer_name]
+            tgt_A = mod.lora_A[name].weight     # (rank, in_dim)
+            tgt_B = mod.lora_B[name].weight     # (out_dim, rank)
+            with torch.no_grad():
+                tgt_A.data.zero_()
+                tgt_B.data.zero_()
+                kA = f.A.shape[0]
+                tgt_A.data[:kA].copy_(
+                    f.A.to(dtype=tgt_A.dtype, device=tgt_A.device))
+                kB = f.B.shape[1]
+                tgt_B.data[:, :kB].copy_(
+                    f.B.to(dtype=tgt_B.dtype, device=tgt_B.device))
+            mod.scaling[name] = 1.0
 
     def get_delta(self, adapter: str, layer: str) -> torch.Tensor:
         """Full (out_dim x in_dim) materialized delta on the same device as PEFT stores it."""

@@ -137,3 +137,30 @@ factors of W_star (d_eff=64 so rank-64 is exact), same forward path every
 working method uses; smoke-test on one cheap cell before re-queueing 12.
 The v1 (rank-16) E1 results remain valid as the constrained-deployment
 comparison.
+
+## 2026-06-12 — E1 b=inf RESOLVED: the exact centroid is the problem (branch 2)
+Smoke v3b (plain transformers+PEFT, no unsloth): stored rank-64 factors
+realize W* exactly (rel 5e-3 to 2e-2, bf16 tolerance) yet NLL = 3.62 vs
+3.54 under unsloth -> BOTH stacks were faithful; the H-weighted centroid
+ITSELF is catastrophic. v3a "unsloth forward" hypothesis WITHDRAWN (v2
+base-patch remains separately broken/retired). Mechanism CONFIRMED by
+centroid_diag.py on llama adapters: Hbar nonzero-eig spectrum is nearly
+degenerate (median eig ~0.002, min ~1e-5) although rank is full (d_eff=64
+everywhere -> the paper hard-deff/floor-zero measurement stands). Real
+task subspaces are independent but nearly collinear in dominant
+directions; Hbar^+ divides by sliver eigenvalues -> ||tau_H|| is 25x to
+94x (median 32x) the TA merge norm -> far outside the quadratic
+surrogate validity region. THIS IS THE MASTER PLAN E1 BRANCH 2 OUTCOME,
+sharpened: the gap to the bound is NOT encoder slack closable by the
+paper construction; the projector-surrogate/quadratic bridge is the
+binding failure, with a precise spectral mechanism. Redirects paper Sec 7
+and elevates the explicit-Mt / curvature-aware-H question from future
+work to the central open problem, exactly as pre-written.
+NEXT probes (cheap, high-value): (1) ridge centroid (Hbar + lambda I)^-1,
+lambda sweep — interpolates TA <-> raw centroid, tests whether a tamed
+centroid beats TA (the salvageable form of the achievability claim);
+(2) Fisher-diagonal H_t (planned variant b) which downweights sliver
+directions by actual curvature; (3) connect to the paper soft-vs-hard
+d_eff distinction — soft d_eff is tiny where hard d_eff is full, and the
+centroid blowup is the OPERATIONAL consequence. The v1 (rank-16) E1
+results stand as the deployment-constrained comparison.

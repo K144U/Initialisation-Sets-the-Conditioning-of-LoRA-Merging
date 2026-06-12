@@ -64,6 +64,12 @@ class FakePeftModel:
             self._base_weights[layer] = torch.zeros(out_dim, in_dim)
         return self._base_weights[layer]
 
+    def add_adapter_rank(self, name: str, factors: Dict[str, "FakeLoraLayer"],
+                         rank: int) -> None:
+        """Arbitrary-rank adapter injection (mirrors PeftModelView)."""
+        del rank  # the fake stores factors as-is
+        self.add_adapter(name, factors)
+
 
 def make_random_fake_model(
     layer_specs: Dict[str, tuple],   # name -> (out_dim, in_dim, rank)
