@@ -122,6 +122,8 @@ def merge_rd_encoder(
     full_rank_patch: bool = False,
     realize: str = "rank_r",
     ridge_lambda: float = 0.0,
+    h_t_mode: str = "projector",
+    fisher_data: dict | None = None,
     **_kwargs,
 ) -> None:
     """The paper's encoder as a registry merge method. bits >= 32 = no
@@ -134,16 +136,38 @@ def merge_rd_encoder(
       "rank_deff" (v3) inject a rank-d_eff adapter carrying W* EXACTLY via
                   its natural factorization B = eta_q (out x d_eff),
                   A = Lambda^{-1/2} Q^T (d_eff x in) -- no SVD, no
-                  truncation, standard adapter forward path.
+                  truncation, standard adapter forward path. Projector
+                  H_t only (Fisher mode has d_eff=in_dim).
     ridge_lambda: Tikhonov regularization of the centroid, replacing
     Lambda^{-1} with (Lambda + lambda)^{-1} throughout (encode/decode/
     factors). lambda=0 is the raw theory centroid, which on real adapters
     blows up 25x to 94x (degenerate Hbar spectrum, see decisions.md
     2026-06-12); moderate lambda interpolates toward task arithmetic.
+    h_t_mode:
+      "projector" (default) H_t = V_t V_t^T as above.
+      "fisher_diag" H_t = diag(d_t) with d_t the per-task input-activation
+                  second-moment (empirical Fisher diagonal of the linear
+                  sublayer; standard Fisher-weighted-averaging surrogate).
+                  Requires fisher_data[adapter][layer] -> Tensor (in_dim,).
+                  Hbar is diagonal full-rank in_dim, so Q=I, Lambda=d_bar;
+                  the encoder reduces to per-column Fisher-weighted task
+                  arithmetic with ridge floor. bits<32 quantization with
+                  this mode is not yet supported (would inflate rate by
+                  in_dim/d_eff vs projector); enforced via assertion.
     full_rank_patch (v2) is RETIRED: mutating base weights does not
     propagate coherently through unsloth-patched forward paths (measured
     +10 nats, 2026-06-12); kept only for the fake-model unit test."""
     assert len(adapter_names) == len(weights)
+    if h_t_mode not in ("projector", "fisher_diag"):
+        raise ValueError(f"unknown h_t_mode {h_t_mode!r}")
+    if h_t_mode == "fisher_diag":
+        if fisher_data is None:
+            raise ValueError("h_t_mode='fisher_diag' requires fisher_data")
+        assert bits >= 32, ("fisher_diag mode supports bits>=32 only "
+                            "(finite-b quantization needs separate rate design)")
+        assert realize == "rank_r", ("fisher_diag mode supports realize='rank_r' "
+                                     "only (rank_deff path would need rank=in_dim)")
+        assert not full_rank_patch, "fisher_diag mode incompatible with full_rank_patch"
     wsum = float(sum(weights))
     w = [float(x) / wsum for x in weights]
 
@@ -152,47 +176,67 @@ def merge_rd_encoder(
     max_deff = 0
     diag: dict[str, dict] = {}
     for layer in model.layer_names():
-        _, _, r = model.layer_topology[layer]
+        _, in_dim, r = model.layer_topology[layer]
         deltas = [model.get_delta(ad, layer).to(torch.float32)
                   for ad in adapter_names]
 
-        bases = [_right_basis(d, r) for d in deltas]
-        M_w = torch.cat([math.sqrt(wt) * V for wt, V in zip(w, bases)], dim=1)
-        G = M_w.T @ M_w                                      # (Tr x Tr)
-        S, U = torch.linalg.eigh(G)
-        keep = S > eig_rel_floor * S.max()
-        S, U = S[keep], U[:, keep]
-        Q = M_w @ U @ torch.diag(S.rsqrt())                  # (in x d_eff)
-        S_eff = S + float(ridge_lambda)
+        if h_t_mode == "fisher_diag":
+            # H_t = diag(d_t), Hbar = diag(d_bar) with d_bar = sum_t w_t d_t.
+            # tau_H = (sum_t w_t Δ_t d_t[col]) / (d_bar[col] + lambda) per column.
+            dev = deltas[0].device
+            d_ts = [fisher_data[ad][layer].to(dev).to(torch.float32)
+                    for ad in adapter_names]
+            d_bar = sum(wt * d for wt, d in zip(w, d_ts))            # (in_dim,)
+            denom = d_bar + float(ridge_lambda)
+            # broadcast: d_ts[t] has shape (in_dim,), deltas[t] has (out, in)
+            N = sum(wt * d_t.unsqueeze(0) * delt
+                    for wt, d_t, delt in zip(w, d_ts, deltas))         # (out, in)
+            W_star = N / denom.unsqueeze(0)                            # (out, in)
+            d_eff_layer = in_dim
+            rate_layer = None
+            # spectral diag analog: condition number of denom
+            denom_cond = float(denom.max() / denom.min().clamp_min(1e-30))
+        else:
+            bases = [_right_basis(d, r) for d in deltas]
+            M_w = torch.cat([math.sqrt(wt) * V for wt, V in zip(w, bases)], dim=1)
+            G = M_w.T @ M_w                                      # (Tr x Tr)
+            S, U = torch.linalg.eigh(G)
+            keep = S > eig_rel_floor * S.max()
+            S, U = S[keep], U[:, keep]
+            Q = M_w @ U @ torch.diag(S.rsqrt())                  # (in x d_eff)
+            S_eff = S + float(ridge_lambda)
 
-        N = deltas[0] * w[0]
-        for wt, d in zip(w[1:], deltas[1:]):
-            N = N + wt * d
-        eta = (N @ Q) @ torch.diag(S_eff.rsqrt())            # (out x d_eff)
+            N = deltas[0] * w[0]
+            for wt, d in zip(w[1:], deltas[1:]):
+                N = N + wt * d
+            eta = (N @ Q) @ torch.diag(S_eff.rsqrt())            # (out x d_eff)
 
-        if bits < 32:
-            eta = _quantize_rotated(eta, bits, c, _layer_seed(seed, layer))
+            if bits < 32:
+                eta = _quantize_rotated(eta, bits, c, _layer_seed(seed, layer))
 
-        W_star = (eta @ torch.diag(S_eff.rsqrt())) @ Q.T     # (out x in)
+            W_star = (eta @ torch.diag(S_eff.rsqrt())) @ Q.T     # (out x in)
+            d_eff_layer = int(S.numel())
+            rate_layer = (float(bits) * _next_pow2(eta.numel())
+                          if bits < 32 else None)
+            denom_cond = float(S_eff.max() / S_eff.min().clamp_min(1e-30))
 
         A_new, B_new = svd_truncate_to_rank(W_star, r)
         truncated = B_new.to(torch.float32) @ A_new.to(torch.float32)
         total = float((W_star ** 2).sum())
         kept = float((truncated ** 2).sum())
         diag[layer] = {
-            "d_eff": int(S.numel()),
+            "d_eff": d_eff_layer,
             "Tr": r * len(adapter_names),
             "trunc_mass_frac": max(0.0, 1.0 - kept / total) if total > 0 else 0.0,
-            "rate_bits": (float(bits) * _next_pow2(eta.numel())
-                          if bits < 32 else None),
+            "rate_bits": rate_layer,
+            "denom_cond": denom_cond,
         }
         if full_rank_patch:
             residual = (W_star - truncated)
             base_w = model.base_weight(layer)
             base_w.data.add_(residual.to(dtype=base_w.dtype,
                                          device=base_w.device))
-        if realize == "rank_deff":
-            # exact factorization of W*: B64 @ A64 == eta_q Lambda^{-1/2} Q^T
+        if realize == "rank_deff" and h_t_mode == "projector":
             A64 = torch.diag(S_eff.rsqrt()) @ Q.T      # (d_eff x in)
             B64 = eta                                   # (out x d_eff)
             deff_factors[layer] = FakeLoraLayer(A=A64, B=B64, scaling=1.0)
@@ -207,10 +251,13 @@ def merge_rd_encoder(
 
     fracs = [v["trunc_mass_frac"] for v in diag.values()]
     deffs = [v["d_eff"] for v in diag.values()]
-    print(f"[rd_encoder] bits={bits} layers={len(diag)} "
+    conds = [v["denom_cond"] for v in diag.values()]
+    print(f"[rd_encoder] h_t_mode={h_t_mode} bits={bits} "
+          f"ridge_lambda={ridge_lambda} layers={len(diag)} "
           f"d_eff min/max={min(deffs)}/{max(deffs)} "
           f"trunc_mass mean={sum(fracs)/len(fracs):.4f} "
-          f"max={max(fracs):.4f}", flush=True)
+          f"max={max(fracs):.4f} "
+          f"denom_cond med={sorted(conds)[len(conds)//2]:.2e}", flush=True)
     diag_dir = os.environ.get("RDMERGE_DIAG_DIR")
     if diag_dir:
         os.makedirs(diag_dir, exist_ok=True)

@@ -29,6 +29,56 @@ from utils.io_helpers import write_result
 from utils.pbs_env import assert_env
 
 
+def compute_input_fisher_diag(model, peft_view, adapter_name: str,
+                              tokenizer, train_data: list[dict],
+                              max_len: int, n_samples: int) -> dict[str, "torch.Tensor"]:
+    """Per-layer input-activation second-moment diagonal under task adapter.
+
+    Switch model to adapter_name; forward-prop the first n_samples train
+    examples; capture each LoRA layer's input x via forward pre-hooks;
+    accumulate sum(x**2) per input feature, normalize by total tokens.
+    Returns dict[layer_name -> Tensor (in_dim,)] (the empirical Fisher
+    diagonal surrogate for rd_encoder h_t_mode='fisher_diag').
+    """
+    device = next(model.parameters()).device
+    model.set_adapter(adapter_name)
+    model.eval()
+    acc = {name: torch.zeros(peft_view.layer_topology[name][1],
+                             dtype=torch.float64, device=device)
+           for name in peft_view.layer_names()}
+    counts = {name: 0 for name in peft_view.layer_names()}
+
+    def make_hook(name):
+        def hook(module, inputs):
+            x = inputs[0]
+            x_flat = x.reshape(-1, x.shape[-1]).to(torch.float32)
+            acc[name].add_((x_flat ** 2).sum(dim=0).to(torch.float64))
+            counts[name] += x_flat.shape[0]
+        return hook
+
+    handles = [mod.register_forward_pre_hook(make_hook(name))
+               for name, mod in peft_view._layers.items()]
+    try:
+        with torch.no_grad():
+            for ex in train_data[:n_samples]:
+                user_msgs = [{"role": "user", "content": ex["prompt"]}]
+                full_msgs = user_msgs + [{"role": "assistant", "content": ex["answer"]}]
+                full_text = tokenizer.apply_chat_template(
+                    full_msgs, tokenize=False, add_generation_prompt=False)
+                ids = tokenizer(
+                    full_text, return_tensors="pt", truncation=True,
+                    max_length=max_len, add_special_tokens=False,
+                ).input_ids.to(device)
+                if ids.shape[1] < 2:
+                    continue
+                model(input_ids=ids)
+    finally:
+        for h in handles:
+            h.remove()
+    return {name: (acc[name] / max(counts[name], 1)).to(torch.float32).cpu()
+            for name in acc}
+
+
 def compute_nll(model, tokenizer, eval_data: list[dict], max_len: int) -> tuple[float, list[dict]]:
     """Mean NLL nats per assistant-response token. Template-agnostic.
 
@@ -168,13 +218,37 @@ def main() -> int:
                 print(f"  {state:<12} on {task_name:<14} nll={v:.4f}", flush=True)
 
     # 4. Apply the merging method
-    print(f"[eval_cell] merging via {method} kwargs={method_kwargs}", flush=True)
     view = PeftModelView(model)
     # Use PEFT's internal adapter names: first task is "default", rest are by spec name
     adapter_names = ["default"] + [s["name"] for s in cfg["adapter_specs"][1:]]
     n_tasks = len(adapter_names)
     weights = cfg.get("weights", [1.0 / n_tasks] * n_tasks)
     merged_name = "__merged__"
+
+    # 4a. If rd_encoder is in fisher_diag mode, precompute per-task H_t = diag(E[x^2])
+    # by forward-propagating training data through each task adapter and capturing
+    # input activations at every LoRA layer. n_fisher_samples is consumed here and
+    # not forwarded into the merge kwargs.
+    if method == "rd_encoder" and method_kwargs.get("h_t_mode") == "fisher_diag":
+        n_fisher = int(method_kwargs.pop("n_fisher_samples", 512))
+        print(f"[eval_cell] computing fisher_diag on {n_fisher} train samples per task",
+              flush=True)
+        fisher_data: dict[str, dict[str, "torch.Tensor"]] = {}
+        for spec, peft_name in zip(cfg["adapter_specs"], adapter_names):
+            train_split, _ = load_task_split(
+                spec["task_cfg"], seed=cfg.get("seed", 20260518))
+            t0 = time.time()
+            fisher_data[peft_name] = compute_input_fisher_diag(
+                model, view, peft_name, tokenizer,
+                train_split, max_len, n_fisher)
+            n_used = min(n_fisher, len(train_split))
+            print(f"  fisher for {spec['name']:<14}: {time.time()-t0:.1f}s "
+                  f"({n_used} train samples)", flush=True)
+        method_kwargs["fisher_data"] = fisher_data
+
+    print(f"[eval_cell] merging via {method} kwargs="
+          f"{ {k:v for k,v in method_kwargs.items() if k!='fisher_data'} }",
+          flush=True)
     t_merge = time.time()
     REGISTRY[method](view, adapter_names, weights, merged_name, **method_kwargs)
     print(f"  merge done in {time.time()-t_merge:.1f}s", flush=True)

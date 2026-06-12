@@ -1,0 +1,14 @@
+[
+ {
+  "name": "fisher_llama_l0p0",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_fisher/llama31_8b__fisher_l0p0.yaml",
+  "done": "results/phase3/eval_fisher/llama31_8b__fisher_l0p0.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "fisher_llama_l0p1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_fisher/llama31_8b__fisher_l0p1.yaml",
+  "done": "results/phase3/eval_fisher/llama31_8b__fisher_l0p1.json",
+  "min_free_gb": 25.0
+ }
+]

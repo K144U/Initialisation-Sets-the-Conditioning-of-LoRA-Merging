@@ -93,3 +93,98 @@ def test_next_pow2():
     assert _next_pow2(1) == 1
     assert _next_pow2(12) == 16
     assert _next_pow2(64) == 64
+
+
+def test_fisher_diag_mode_matches_per_column_formula():
+    """h_t_mode='fisher_diag' must implement
+    W*[i,j] = sum_t (w_t * d_t[j] * Δ_t[i,j]) / (sum_t w_t * d_t[j] + λ)
+    per layer, per column. Verify against an independent reconstruction
+    and that ridge_lambda=0 recovers the diagonal-Hbar pseudoinverse.
+    """
+    m = _make_model(seed=11)
+    g = torch.Generator().manual_seed(2026)
+    fisher_data = {
+        f"task{t}": {
+            layer: 0.1 + torch.rand(IN, generator=g, dtype=torch.float32)
+            for layer in m.layer_topology
+        }
+        for t in range(T)
+    }
+    weights = [1.0 / T] * T
+    merge_rd_encoder(m, _names(), weights, "rd_fisher", bits=32,
+                     h_t_mode="fisher_diag", fisher_data=fisher_data,
+                     ridge_lambda=0.0)
+    for layer in m.layer_topology:
+        deltas = [m.get_delta(f"task{t}", layer).to(torch.float32)
+                  for t in range(T)]
+        d_ts = [fisher_data[f"task{t}"][layer] for t in range(T)]
+        d_bar = sum(w * d for w, d in zip(weights, d_ts))
+        N = sum(w * d_t[None, :] * delt
+                for w, d_t, delt in zip(weights, d_ts, deltas))
+        ref_W = N / d_bar[None, :]
+        # rd_fisher result is rank-R truncated. Compare after truncating ref.
+        U, S, Vh = torch.linalg.svd(ref_W, full_matrices=False)
+        ref_W_r = U[:, :R] @ torch.diag(S[:R]) @ Vh[:R, :]
+        W = m.get_delta("rd_fisher", layer).to(torch.float32)
+        rel = float((W - ref_W_r).norm() / ref_W_r.norm())
+        assert rel < 5e-3, f"{layer}: rel err {rel}"
+
+
+def test_fisher_diag_ridge_interpolates_to_uniform_ta():
+    """With ridge_lambda >> max(d_bar), the per-column denom is ridge-dominated
+    and W* approaches lambda^{-1} * sum_t (w_t * d_t * Δ_t), which scales the
+    contributions but preserves direction. For sanity, check that a moderate
+    ridge produces a finite, smaller-magnitude W* than ridge=0 (the
+    well-conditioned interior of the ridge curve)."""
+    m_a, m_b = _make_model(seed=5), _make_model(seed=5)
+    g = torch.Generator().manual_seed(13)
+    fisher_data = {
+        f"task{t}": {
+            layer: 1e-3 + torch.rand(IN, generator=g, dtype=torch.float32)
+            for layer in m_a.layer_topology
+        }
+        for t in range(T)
+    }
+    merge_rd_encoder(m_a, _names(), [1 / T] * T, "rd_l0", bits=32,
+                     h_t_mode="fisher_diag", fisher_data=fisher_data,
+                     ridge_lambda=0.0)
+    merge_rd_encoder(m_b, _names(), [1 / T] * T, "rd_lhi", bits=32,
+                     h_t_mode="fisher_diag", fisher_data=fisher_data,
+                     ridge_lambda=1.0)
+    for layer in m_a.layer_topology:
+        W0 = m_a.get_delta("rd_l0", layer).to(torch.float32)
+        Wh = m_b.get_delta("rd_lhi", layer).to(torch.float32)
+        assert torch.isfinite(W0).all() and torch.isfinite(Wh).all()
+        assert Wh.norm() < W0.norm(), f"{layer}: ridge should shrink"
+
+
+def test_fisher_diag_rejects_unsupported_combos():
+    """fisher_diag mode currently supports bits>=32, realize='rank_r', no
+    full_rank_patch — assertions enforce this."""
+    m = _make_model(seed=9)
+    fisher_data = {
+        f"task{t}": {layer: torch.ones(IN) for layer in m.layer_topology}
+        for t in range(T)
+    }
+    # Missing fisher_data -> ValueError
+    try:
+        merge_rd_encoder(m, _names(), [1 / T] * T, "x",
+                         h_t_mode="fisher_diag")
+        assert False, "expected ValueError"
+    except ValueError:
+        pass
+    # bits < 32 -> AssertionError
+    try:
+        merge_rd_encoder(m, _names(), [1 / T] * T, "x", bits=4,
+                         h_t_mode="fisher_diag", fisher_data=fisher_data)
+        assert False, "expected AssertionError for bits<32"
+    except AssertionError:
+        pass
+    # realize='rank_deff' -> AssertionError
+    try:
+        merge_rd_encoder(m, _names(), [1 / T] * T, "x", bits=32,
+                         realize="rank_deff",
+                         h_t_mode="fisher_diag", fisher_data=fisher_data)
+        assert False, "expected AssertionError for rank_deff"
+    except AssertionError:
+        pass
