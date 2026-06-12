@@ -35,7 +35,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 LOGDIR = ROOT / "logs" / "orch"
-STATE = ROOT / "logs" / "orchestrator_state.json"
+STATE = ROOT / "logs" / os.environ.get("ORCH_STATE", "orchestrator_state.json")
 BACKOFF_S = 600
 VRAM_POLL_TRIES = 3
 

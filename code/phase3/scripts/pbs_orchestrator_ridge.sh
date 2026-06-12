@@ -20,6 +20,8 @@ source $PROJECT_ROOT/code/phase3/scripts/setup_env.sh
 module load anaconda3/anaconda cuda12.2/toolkit/12.2.2 cudnn/9.14
 source activate $PROJECT_ROOT/.conda/envs/rdmerge
 export PYTHONNOUSERSITE=1   # LMCA user-site torch 2.4.1 shadows the conda stack
+export ORCH_SENTINEL=_RIDGE_COMPLETE   # never clobber the matrix sentinel
+export ORCH_STATE=orchestrator_state_ridge.json  # never clobber the matrix state file
 
 MANIFEST="${MANIFEST:-code/phase3/configs/ridge_manifest.json}"
 if [ -f "$PROJECT_ROOT/_ORCH_GPUS" ]; then
