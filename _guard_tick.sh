@@ -1,17 +1,21 @@
 #!/bin/bash
-# Sentinel guard + status tick for matrix job 41533 (re-keyed after 41524 qdel).
-# Removes a STRAY _QUEUE_COMPLETE (written by the pre-patch ridge job 41521)
-# while the matrix still has pending cells, so the keeper is not tricked into
-# exiting. A legit matrix completion has pending==0 -> sentinel is preserved.
+# Sentinel guard + status for the rdmerge seed matrix.
+# Matrix job is named rdm_orch; ridge job (rdm_ridge) SHARES
+# logs/orchestrator_state.json AND writes the default _QUEUE_COMPLETE, so we
+# judge matrix completeness ONLY by all_manifest done-files (ridge-proof) and
+# grep job presence by name (job-agnostic across keeper requeues).
 cd /home/sanjay.g/projects/rdmerge || exit 0
-ST=logs/orchestrator_state.json
-PEND=$(python3 -c "import json;print(json.load(open(\"$ST\"))[\"pending\"])" 2>/dev/null)
-DONE=$(python3 -c "import json;print(len(json.load(open(\"$ST\"))[\"done\"]))" 2>/dev/null)
-FAILED=$(python3 -c "import json;print(\",\".join(json.load(open(\"$ST\"))[\"failed\"]))" 2>/dev/null)
+CNT=$(python3 -c 'import json,os; c=json.load(open("code/phase3/configs/all_manifest.json")); print(sum(1 for x in c if os.path.exists(x["done"])), len(c))' 2>/dev/null)
+MDONE=${CNT% *}; MTOT=${CNT#* }
 ORCH=$(/opt/pbs/bin/qstat -u sanjay.g 2>/dev/null | grep -c rdm_orch)
 RIDGE=$(/opt/pbs/bin/qstat -u sanjay.g 2>/dev/null | grep -c rdm_ridge)
 GUARD=none
 if [ -f _QUEUE_COMPLETE ]; then
-  if [ "$PEND" != "0" ] && [ -n "$PEND" ]; then rm -f _QUEUE_COMPLETE; GUARD=removed; else GUARD=legit; fi
+  if [ -n "$MDONE" ] && [ "$MDONE" -lt "$MTOT" ] 2>/dev/null; then
+    rm -f _QUEUE_COMPLETE; GUARD=removed
+  else
+    GUARD=legit
+  fi
 fi
-echo "PEND=${PEND:-NA} DONE=${DONE:-NA} ORCH=$ORCH RIDGE=$RIDGE GUARD=$GUARD FAILED=[$FAILED]"
+QF=no; [ -f _QUEUE_FAILED ] && QF=yes
+echo "MDONE=${MDONE:-NA} MTOT=${MTOT:-NA} ORCH=$ORCH RIDGE=$RIDGE GUARD=$GUARD QF=$QF"
