@@ -121,3 +121,19 @@ QUEUED (+92 cells, manifest now 152): 12 e1fr cells (4 models x b in
 adapters, per master plan E2). Bridge watcher armed: when the running
 job drains its 60-cell snapshot and writes _QUEUE_COMPLETE, it is
 cleared and the orchestrator+keeper relaunch on the 152-cell manifest.
+
+## 2026-06-12 — E1 v2 base-patch path BROKEN on unsloth; rolled back
+First two full-rank cells produced worst-task excess ~10.3 nats (vs 0.50
+v1, 0.22 TA), quantization-independent (b=4 == b=32) -> the merged model
+is destroyed by the base-weight mutation itself, not by encoding. Prime
+suspect: unsloth-patched modules do not consume base_layer.weight the way
+plain PEFT does (cached/fused weights), so the residual add corrupts or
+never reaches the forward path coherently. ACTION: qdel 41509, deleted
+the 2 invalid result JSONs, stripped the 10 remaining e1fr cells from the
+manifest (now 140 cells), resubmitted as 41510 (queue = 80 e2m matrix
+cells). v3 plan: realize W* INSIDE the adapter mechanism instead — inject
+a rank-64 LoraConfig (lora_alpha=64 so scaling=1), write exact (A,B)
+factors of W_star (d_eff=64 so rank-64 is exact), same forward path every
+working method uses; smoke-test on one cheap cell before re-queueing 12.
+The v1 (rank-16) E1 results remain valid as the constrained-deployment
+comparison.
