@@ -164,3 +164,27 @@ directions by actual curvature; (3) connect to the paper soft-vs-hard
 d_eff distinction — soft d_eff is tiny where hard d_eff is full, and the
 centroid blowup is the OPERATIONAL consequence. The v1 (rank-16) E1
 results stand as the deployment-constrained comparison.
+
+
+## 2026-06-12 (ops) — GPU0 dropped from seed matrix; 41524 -> 41533
+The "GPU0 parks harmlessly" assumption was FALSE and was silently
+corrupting the matrix. GPU0 hovered at the 24-25GB free boundary; the
+orchestrator `free_gb(gpu)` poll occasionally read >=25 and LAUNCHED a
+cell on GPU0, after which `pbs_eval_cell.sh`'s 25GB admission check read
+24.6 and `exit 87` in 0 min. Unlike the orchestrator's own VRAM-poll
+requeue (no attempt charged), the rc!=0 cell path increments
+`self.attempts`; at n>=2 the cell is PARKED into `self.failed`, and a
+non-empty `failed` makes the run emit `_QUEUE_FAILED` instead of
+`_QUEUE_COMPLETE`. Notification showed ~9 cells at rc=87(0min) retry;
+caught while `failed=[]` (no permanent loss). FIX: `_ORCH_GPUS`
+0,2,4,6 -> 2,4,6; `qdel 41524`; resubmitted `41533` (done-file resume,
+attempts reset). No safe swap: live nvidia-smi had gpu0=222MiB free
+(other user ~80GB), gpu1/3/5/7 all <25GB free vs our ~55GB cells, so
+3-wide. SIDE EFFECT: qdel 41524 ended the two monitors keyed to it
+(incl. the ridge sentinel guard); re-armed a guard keyed to 41533
+(`_guard_tick.sh` + local monitor: removes a stray `_QUEUE_COMPLETE`
+while matrix pending>0, every 120s << keeper 1800s). Ridge 41521 still
+has no `ORCH_SENTINEL` so it remains the trap source until it ends.
+LESSON: raise matrix cells' `min_free_gb` margin, or have the
+orchestrator treat an rc=87 (gate) exit as a no-charge requeue like its
+own poll, so a boundary GPU can never burn a cell's attempt budget.

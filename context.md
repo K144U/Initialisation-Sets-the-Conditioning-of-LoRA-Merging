@@ -4,8 +4,9 @@
 Achievability via Hadamard Incoherence
 **Author:** Sankalp Pathak (solo), Prof. Sanjay Garg reviewing/advising
 **Target venue: ICLR 2027** (deadline ~late Sep 2026)
-**Last updated: 2026-06-12 mid-day** (campaign day 2; ridge sweep + seed
-matrix in flight). Strategy: `master_plan_iclr2027.md`. Dated gate/branch
+**Last updated: 2026-06-12 afternoon** (campaign day 2; ridge sweep + seed
+matrix in flight; matrix re-pinned to gpus 2,4,6 after GPU0 corruption, job
+41524 -> 41533; sentinel guard re-armed via `_guard_tick.sh`). Strategy: `master_plan_iclr2027.md`. Dated gate/branch
 record: `decisions.md` (8 entries — READ IT, it is the scientific log).
 
 ---
@@ -25,13 +26,20 @@ centroid salvage sweep running now; 80-cell seed merge matrix ~12/80.
 
 ## 1. RUNNING RIGHT NOW (jobs on sanjay.g; check `qstat -u sanjay.g`)
 
-- **`41524` rdm_orch** — 80-cell seed-1/2 merge matrix (E2 analysis wave),
-  GPUs from `_ORCH_GPUS` file = `0,2,4,6` (re-pinned mid-wave 2026-06-12:
-  neighbors squeezed 1/3/5 below the 25GB gate; GPU0 worker parks itself
-  via VRAM-gate backoff until that card frees — HARMLESS, ignore the
-  backoff log lines). Resumed with 67 done/73 pending. One transient
-  `CUDA driver error` FAIL (ties_seed1, retry queued — orchestrator
-  retries once then parks).
+- **`41533` rdm_orch** — 80-cell seed-1/2 merge matrix (E2 analysis wave),
+  GPUs from `_ORCH_GPUS` = `2,4,6`. **GPU0 DROPPED 2026-06-12 — the earlier
+  "GPU0 worker parks harmlessly" note was WRONG.** At the 24-25GB boundary
+  the orchestrator `free_gb` poll intermittently ADMITTED a cell to GPU0,
+  then `pbs_eval_cell.sh`'s own 25GB gate exited 87 in 0 min. That `rc!=0`
+  branch INCREMENTS `self.attempts` (unlike the orchestrator's own VRAM-poll
+  requeue, which does not) -> a cell bouncing onto GPU0 twice is PARKED
+  permanently into `self.failed`, and any parked cell makes the run write
+  `_QUEUE_FAILED` not `_QUEUE_COMPLETE`. Caught at `failed=[]` (no loss).
+  Fix: `_ORCH_GPUS` 0,2,4,6 -> 2,4,6; `qdel 41524`; resubmitted as `41533`
+  (resumes from 71 done-files, attempts reset). No safe swap GPU (live
+  nvidia-smi: gpu0 222MiB free under another user's ~80GB job; gpu1/3/5/7
+  all <25GB free for our ~55GB cells) -> running 3-wide. 71 done/66 pending
+  at resume.
 - **`41521` rdm_ridge** — 5-cell ridge λ-sweep (llama, b=∞, rank_deff,
   plain loader, GPU6, serial ~1.2h/cell). Results land in
   `results/phase3/eval_ridge/`. λ=0.001 done: worst 4.46 (expected bad,
