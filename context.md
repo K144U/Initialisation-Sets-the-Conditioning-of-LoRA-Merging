@@ -4,10 +4,11 @@
 Achievability via Hadamard Incoherence
 **Author:** Sankalp Pathak (solo), Prof. Sanjay Garg reviewing/advising
 **Target venue: ICLR 2027** (deadline ~late Sep 2026)
-**Last updated: 2026-06-12 afternoon** (campaign day 2; ridge sweep + seed
-matrix in flight; matrix re-pinned to gpus 2,4,6 after GPU0 corruption, job
-41524 -> 41533; sentinel guard re-armed via `_guard_tick.sh`). Strategy: `master_plan_iclr2027.md`. Dated gate/branch
-record: `decisions.md` (8 entries — READ IT, it is the scientific log).
+**Last updated: 2026-06-12 evening** (campaign day 2; **ridge sweep DONE:
+λ=0.1 worst-excess 0.112 BEATS TA 0.219** — achievability salvageable;
+fine-sweep job 41537 in flight at λ∈{0.05, 0.07, 0.13, 0.17, 0.2}; seed
+matrix 86/140). Strategy: `master_plan_iclr2027.md`. Dated gate/branch
+record: `decisions.md` (9 entries — READ IT, it is the scientific log).
 
 ---
 
@@ -38,15 +39,21 @@ centroid salvage sweep running now; 80-cell seed merge matrix ~12/80.
   Fix: `_ORCH_GPUS` 0,2,4,6 -> 2,4,6; `qdel 41524`; resubmitted as `41533`
   (resumes from 71 done-files, attempts reset). No safe swap GPU (live
   nvidia-smi: gpu0 222MiB free under another user's ~80GB job; gpu1/3/5/7
-  all <25GB free for our ~55GB cells) -> running 3-wide. 71 done/66 pending
-  at resume. **rc=87 gate exits are now NO-CHARGE requeues (commit
-  `719466d`)** — effective from the next requeue; 41533 itself still runs
-  the old code (moot: GPU0 is out of the pool).
-- **`41521` rdm_ridge** — 5-cell ridge λ-sweep (llama, b=∞, rank_deff,
-  plain loader, GPU6, serial ~1.2h/cell). Results land in
-  `results/phase3/eval_ridge/`. λ=0.001 done: worst 4.46 (expected bad,
-  anchors raw end). λ ∈ {0.01, 0.1, 0.3, 1.0} pending. **λ=0.1 smoke was
-  PROMISING: NLL 0.615 on gsm8k probe vs v1's 0.761.**
+  all <25GB free for our ~55GB cells) -> running 3-wide. **As of 2026-06-12
+  ~21:14: 86 done / 54 pending.** **rc=87 gate exits are now NO-CHARGE
+  requeues (commit `719466d`)** — effective from the next requeue; 41533
+  itself still runs the old code (moot: GPU0 is out of the pool).
+- **`41521` rdm_ridge — DONE 2026-06-12 ~20:02** (5 cells, llama b=∞
+  rank_deff, GPU6, ~7h serial). Worst-task excess across λ:
+  0.001→4.463 / 0.01→0.346 / **0.1→0.112** / 0.3→0.189 / 1.0→0.286
+  (clean U-shape; TA 0.219). **λ=0.1 BEATS TA by ~49%** — achievability
+  salvageable with regularization. See decisions.md entry "Ridge sweep
+  VERDICT" (2026-06-12 eve).
+- **`41537` rdm_ridge — fine sweep, launched 2026-06-12 ~21:14**
+  (5 cells, llama b=∞ rank_deff, λ ∈ {0.05, 0.07, 0.13, 0.17, 0.2},
+  manifest = `ridge_fine_manifest.json`, GPU6, ~6h serial).
+  Decides true minimum before cross-model generalization sweep.
+  Results land in `results/phase3/eval_ridge/llama31_8b__ridge_l*.json`.
 - **Keeper v2** (login node, pid `logs/orch_keeper.pid`) requeues rdm_orch
   on walltime; stops on `_KEEPER_STOP`, or on `_QUEUE_COMPLETE` ONLY after
   verifying done-files == manifest total (`all_manifest.json`). A stray
@@ -91,9 +98,13 @@ centroid salvage sweep running now; 80-cell seed merge matrix ~12/80.
   the central open problem; gives the paper's soft-vs-hard d_eff
   distinction an operational consequence. Paper's floor-zero hard-d_eff
   claim UNAFFECTED.
-- **Ridge salvage** (`ridge_lambda` kwarg: Λ⁻¹ → (Λ+λ)⁻¹): the live sweep
-  asks whether a tamed centroid beats TA — decides whether achievability
-  survives with a regularization caveat or branch 2 stands in full.
+- **Ridge salvage ✅ DONE 2026-06-12 eve** (`ridge_lambda` kwarg:
+  Λ⁻¹ → (Λ+λ)⁻¹): clean U-shape, **λ=0.1 worst-excess 0.112 BEATS TA
+  0.219 by ~49%**. Achievability claim SURVIVES with a regularization
+  caveat — Sec 6/7 reframes to "exact construction loses (spectral
+  mechanism); regularized variant restores SOTA". Fine sweep (λ ∈
+  {0.05, 0.07, 0.13, 0.17, 0.2}) running as job 41537 to nail the true
+  minimum before cross-model generalization (mistral/qwen/yi).
 
 ## 3. Hard-won operational rules (do not rediscover)
 
@@ -114,9 +125,11 @@ centroid salvage sweep running now; 80-cell seed merge matrix ~12/80.
 
 ## 4. Next steps (priority)
 
-1. **Ridge sweep verdict** (tonight): if some λ beats TA → achievability
-   salvageable with regularization (big for paper); else branch 2 full.
-   Either way: extend winning recipe to 4 models / write E1 §6.2.
+1. **Ridge fine-sweep verdict** (job 41537, ~6h): pick true-minimum λ
+   from {0.05, 0.07, 0.1, 0.13, 0.17, 0.2, 0.3}. Then extend winning λ
+   to mistral/qwen/yi (12 cells) = cross-model generalization (the
+   load-bearing claim that "the bound is matched", not just for llama).
+   Then write E1 §6.2 with the salvage framing.
 2. **Matrix wave completes** (~1-2 days under contention) → E2 analysis:
    mean ± seed-range tables for every method claim; verify b=2 dip + Ll>Mi>Qw>Yi
    ordering across seeds.

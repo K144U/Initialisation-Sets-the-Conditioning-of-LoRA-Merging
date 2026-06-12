@@ -198,3 +198,42 @@ to the ridge wrapper (state-file clobbering ends with future jobs). Also
 deconflicted GPUs: P4 MOOLoRa seeds moved off our matrix cards 4/6 to 1/3
 (P4 was confirmed alive via cput≈walltime + resume lines in spool; it was
 contention, not a hang).
+
+
+## 2026-06-12 (eve) — Ridge sweep VERDICT: tamed centroid BEATS TA; achievability salvageable
+Ridge centroid (Hbar + lambda*I_d)^-1 sweep (5 cells, llama b=inf
+rank_deff, seed 20260518, plain loader, GPU6, ~1.2h/cell, job 41521).
+Worst-task excess = max_t (nll_merged[t] - nll_solo[t][t]):
+  lambda=0.001 -> 4.463  (translation +4.46; anchors raw-centroid end)
+  lambda=0.01  -> 0.346
+  lambda=0.1   -> 0.112  <- BEST
+  lambda=0.3   -> 0.189
+  lambda=1.0   -> 0.286
+Clean U-shape. TA reference = 0.219 (E2 seed-stable across 0/1/2).
+**lambda=0.1 BEATS TA by ~49% on worst-task excess.** Translation
+per-task excess goes NEGATIVE at lambda>=0.1 (merged < translation-solo);
+gsm8k is the binding task throughout (0.286 -> 0.346 -> 0.112 -> 0.189
+-> 0.286 across the sweep).
+INTERPRETATION: the exact H-weighted centroid blowup (E1 branch 2,
+spectral mechanism: H̄ nonzero-eig median ~0.002, min ~1e-5 -> H̄^+
+amplifies tau_H 25-94x) is REGULARIZABLE. Adding sliver-floor damping
+collapses the amplification path, and the construction recovers a
+TA-beating recipe at the resolved lambda.
+CONSEQUENCE FOR PAPER: achievability claim SURVIVES with a regularization
+caveat. Sec 6/7 reframes from "branch 2: encoder construction loses to
+plain averaging" to "branch 2: exact construction loses with identified
+spectral mechanism; regularized variant restores SOTA on the deployed
+slice." Salvage form: (Hbar + lambda*I_d)^-1 H_t with the same
+Hadamard-quantize-decode scheme; lambda becomes a method hyperparameter
+(single-model 4-task sweep — must hold across mistral/qwen/yi to claim
+the bound is matched, not just for llama).
+MINIMUM IS at the INTERIOR boundary of the sweep (between 0.01 and 0.3,
+two-decade gap). FINE SWEEP LAUNCHED 2026-06-12 ~21:14: 5 cells
+lambda in {0.05, 0.07, 0.13, 0.17, 0.2} (job 41537,
+ridge_fine_manifest.json, GPU6 shared with matrix 41533, ~6h serial).
+Decides the true minimum before extending to other models.
+NEXT after fine-sweep verdict: (1) extend winning lambda to mistral /
+qwen / yi = 12 cells (cross-model generalization is the load-bearing
+claim); (2) Fisher-diagonal H_t variant (E1 spec variant b) — does
+curvature-aware H beat ridge's blunt sliver-floor? (3) write E1 §6.2
+with the salvage framing for the paper rewrite.
