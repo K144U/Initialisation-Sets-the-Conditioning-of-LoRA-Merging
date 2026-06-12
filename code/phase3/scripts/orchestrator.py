@@ -123,12 +123,22 @@ class Orchestrator:
                         cell["cmd"], shell=True, cwd=ROOT, env=env,
                         stdout=lf, stderr=subprocess.STDOUT).returncode
             dt = (time.time() - t0) / 60
+            gate_backoff = False
             with self.lock:
                 self.running.pop(name, None)
                 if rc == 0 and (Path(cell["done"]).exists()
                                 or (ROOT / cell["done"]).exists() or self.dry):
                     self.done.append(name)
                     print(f"[gpu{gpu}] DONE {name} ({dt:.0f} min)", flush=True)
+                elif rc == 87:
+                    # Inner VRAM gate refused this GPU (boundary flicker on a
+                    # shared card) — not the cell's fault. Requeue WITHOUT
+                    # charging an attempt, then back off like the poll path, so
+                    # a borderline GPU can never burn a cell's retry budget.
+                    print(f"[gpu{gpu}] GATE {name} rc=87 ({dt:.0f} min) "
+                          f"— no-charge requeue + backoff", flush=True)
+                    self.q.put(cell)
+                    gate_backoff = True
                 else:
                     n = self.attempts.get(name, 0) + 1
                     self.attempts[name] = n
@@ -141,6 +151,8 @@ class Orchestrator:
                         print(f"[gpu{gpu}] FAIL {name} rc={rc} — parked",
                               flush=True)
             self.write_state()
+            if gate_backoff:
+                time.sleep(BACKOFF_S)
 
     def run(self):
         threads = [threading.Thread(target=self.worker, args=(g,), daemon=True)
