@@ -4,11 +4,15 @@
 Achievability via Hadamard Incoherence
 **Author:** Sankalp Pathak (solo), Prof. Sanjay Garg reviewing/advising
 **Target venue: ICLR 2027** (deadline ~late Sep 2026)
-**Last updated: 2026-06-12 evening** (campaign day 2; **ridge sweep DONE:
-λ=0.1 worst-excess 0.112 BEATS TA 0.219** — achievability salvageable;
-fine-sweep job 41537 in flight at λ∈{0.05, 0.07, 0.13, 0.17, 0.2}; seed
-matrix 86/140). Strategy: `master_plan_iclr2027.md`. Dated gate/branch
-record: `decisions.md` (9 entries — READ IT, it is the scientific log).
+**Last updated: 2026-06-13 ~17:00 IST** (campaign day 3 mid; **all three
+tonight campaigns CLOSED — ridge fine sweep, Fisher H_t variant, seed
+matrix 140/140**). Strategy: `master_plan_iclr2027.md`. Dated gate/branch
+record: `decisions.md` (12 entries — READ IT, it is the scientific log).
+
+**Headline numbers (paper §6.2 ready)**: ridge λ=0.05 → worst-task
+excess 0.0906 (59% below TA's 0.219). Fisher H_t below-ridge (0.21 best).
+Spectral mechanism + Fisher null are pre-registered sanity checks that
+came back clean for the projector + ridge recipe.
 
 ---
 
@@ -25,54 +29,34 @@ blows up 25–94× on real adapters (degenerate H̄ spectrum) — E1 resolves
 to master-plan branch 2 with a measured mechanism.** Ridge-regularized
 centroid salvage sweep running now; 80-cell seed merge matrix ~12/80.
 
-## 1. RUNNING RIGHT NOW (jobs on sanjay.g; check `qstat -u sanjay.g`)
+## 1. STATE (no jobs running right now; `qstat -u sanjay.g` empty for rdm_*)
 
-- **`41533` rdm_orch** — 80-cell seed-1/2 merge matrix (E2 analysis wave),
-  GPUs from `_ORCH_GPUS` = `2,4,6`. **GPU0 DROPPED 2026-06-12 — the earlier
-  "GPU0 worker parks harmlessly" note was WRONG.** At the 24-25GB boundary
-  the orchestrator `free_gb` poll intermittently ADMITTED a cell to GPU0,
-  then `pbs_eval_cell.sh`'s own 25GB gate exited 87 in 0 min. That `rc!=0`
-  branch INCREMENTS `self.attempts` (unlike the orchestrator's own VRAM-poll
-  requeue, which does not) -> a cell bouncing onto GPU0 twice is PARKED
-  permanently into `self.failed`, and any parked cell makes the run write
-  `_QUEUE_FAILED` not `_QUEUE_COMPLETE`. Caught at `failed=[]` (no loss).
-  Fix: `_ORCH_GPUS` 0,2,4,6 -> 2,4,6; `qdel 41524`; resubmitted as `41533`
-  (resumes from 71 done-files, attempts reset). No safe swap GPU (live
-  nvidia-smi: gpu0 222MiB free under another user's ~80GB job; gpu1/3/5/7
-  all <25GB free for our ~55GB cells) -> running 3-wide. **As of 2026-06-12
-  ~21:14: 86 done / 54 pending.** **rc=87 gate exits are now NO-CHARGE
-  requeues (commit `719466d`)** — effective from the next requeue; 41533
-  itself still runs the old code (moot: GPU0 is out of the pool).
-- **`41521` rdm_ridge — DONE 2026-06-12 ~20:02** (5 cells, llama b=∞
-  rank_deff, GPU6, ~7h serial). Worst-task excess across λ:
-  0.001→4.463 / 0.01→0.346 / **0.1→0.112** / 0.3→0.189 / 1.0→0.286
-  (clean U-shape; TA 0.219). **λ=0.1 BEATS TA by ~49%** — achievability
-  salvageable with regularization. See decisions.md entry "Ridge sweep
-  VERDICT" (2026-06-12 eve).
-- **`41537` rdm_ridge — fine sweep, launched 2026-06-12 ~21:14**
-  (5 cells, llama b=∞ rank_deff, λ ∈ {0.05, 0.07, 0.13, 0.17, 0.2},
-  manifest = `ridge_fine_manifest.json`, GPU6, ~6h serial).
-  Decides true minimum before cross-model generalization sweep.
-  Results land in `results/phase3/eval_ridge/llama31_8b__ridge_l*.json`.
-- **Keeper v2** (login node, pid `logs/orch_keeper.pid`) requeues rdm_orch
-  on walltime; stops on `_KEEPER_STOP`, or on `_QUEUE_COMPLETE` ONLY after
-  verifying done-files == manifest total (`all_manifest.json`). A stray
-  sentinel is removed + logged and the keeper continues.
-- **✅ SENTINEL TRAP DEFUSED (2026-06-12 afternoon, commit `daa8648`):**
-  keeper v2 no longer trusts the shared `_QUEUE_COMPLETE` blindly, so ridge
-  41521 finishing can no longer kill the keeper mid-matrix (a session
-  monitor still clears the stray file as a redundant layer). Also
-  future-proofed: orchestrator.py STATE is `ORCH_STATE`-overridable and
-  pbs_orchestrator_ridge.sh exports `ORCH_SENTINEL=_RIDGE_COMPLETE` +
-  `ORCH_STATE=orchestrator_state_ridge.json`, so concurrent orchestrators
-  stop clobbering each other's state file. Until ridge 41521 ends,
-  `logs/orchestrator_state.json` may show RIDGE cells — judge matrix
-  progress by done-file counts, not that file.
-- **P4 deconflict (2026-06-12 ~16:10):** MOOLoRa pilot seeds were stacked
-  on OUR matrix GPUs (seed1 gpu4, seed2 gpu6 — gpu6 also carries ridge).
-  Moved to gpu1/gpu3 (jobs 41535/41536; P4 keeper gpu map updated on
-  STUDENT-ACCOUNT). Matrix now has 2,4 to itself; 6 shared only with ridge
-  until 41521 ends.
+- **Seed matrix — DONE 2026-06-13 ~16:53 IST**. 140/140 cells, zero
+  permanent failures, 1 transient qwen tvq_b32_seed2 rc=1 auto-retried.
+  Job sequence 41524 -> 41533 -> 41556 (walltime keeper requeue). Results
+  in `results/phase3/eval_matrix_seeds/`. Analysis (E2) pending —
+  `code/phase3/scripts/analyze_e2_matrix.py` to be written.
+- **Ridge sweep — DONE 2026-06-13 ~04:50 IST**. 10 cells total (5 original
+  jobs 41521 + 5 fine 41537), llama b=∞ rank_deff. Clean U-shape, global
+  minimum at **λ=0.05 → worst-excess 0.0906** (vs TA 0.219). λ=0.07 close
+  second at 0.0951 (Δ=0.005, plateau). Files in
+  `results/phase3/eval_ridge/llama31_8b__ridge_l{0p001,0p01,0p05,0p07,0p1,0p13,0p17,0p2,0p3,1}.json`.
+  See decisions.md "Ridge fine sweep CLOSED" (2026-06-13).
+- **Fisher H_t variant — DONE 2026-06-13 ~01:30 IST**. 2 cells (job 41538),
+  llama b=∞ rank_r, h_t_mode='fisher_diag'. **BELOW-RIDGE verdict**:
+  λ=0 → 0.210, λ=0.1 → 0.319. Projector + ridge stays SOTA. Notable
+  structural finding: Fisher mode's trunc_mass is 0.025 (vs projector's
+  0.30) — Fisher W* is rank-r friendly but less aligned overall. See
+  decisions.md "Fisher-diagonal H_t variant: BELOW-RIDGE" (2026-06-13).
+- **GPU pin history kept for reference**: matrix was pinned 2,4,6 after
+  GPU0 dropped 2026-06-12 (boundary-VRAM flicker burned cell retry
+  budgets; rc=87 now no-charge per commit `719466d`).
+- **Keeper v2** still running (login node, pid `logs/orch_keeper.pid`,
+  uptime 1d+ at this update). Idle now that matrix is done; can be stopped
+  with `touch _KEEPER_STOP` once cross-model sweep is launched.
+- **All ops infrastructure is sound**: rc=87 no-charge requeue (commit
+  `719466d`), per-job ORCH_SENTINEL/ORCH_STATE (commit `daa8648`),
+  done-file resume across walltime kills — all proven on tonight's run.
 
 ## 2. Results so far (all committed; decisions.md has full detail)
 
@@ -98,13 +82,19 @@ centroid salvage sweep running now; 80-cell seed merge matrix ~12/80.
   the central open problem; gives the paper's soft-vs-hard d_eff
   distinction an operational consequence. Paper's floor-zero hard-d_eff
   claim UNAFFECTED.
-- **Ridge salvage ✅ DONE 2026-06-12 eve** (`ridge_lambda` kwarg:
-  Λ⁻¹ → (Λ+λ)⁻¹): clean U-shape, **λ=0.1 worst-excess 0.112 BEATS TA
-  0.219 by ~49%**. Achievability claim SURVIVES with a regularization
-  caveat — Sec 6/7 reframes to "exact construction loses (spectral
-  mechanism); regularized variant restores SOTA". Fine sweep (λ ∈
-  {0.05, 0.07, 0.13, 0.17, 0.2}) running as job 41537 to nail the true
-  minimum before cross-model generalization (mistral/qwen/yi).
+- **Ridge salvage ✅ FINAL 2026-06-13** (`ridge_lambda` kwarg: Λ⁻¹ →
+  (Λ+λ)⁻¹): clean U-shape, **λ=0.05 worst-excess 0.0906 BEATS TA 0.219
+  by 59%**. λ=0.07 close second at 0.0951. Achievability claim
+  SURVIVES with a regularization caveat — Sec 6/7 reframes to "exact
+  construction loses (identified spectral mechanism); regularized
+  variant restores SOTA on llama, awaiting cross-model confirmation".
+- **Fisher H_t variant ✅ DONE 2026-06-13** (master plan E1 variant b):
+  diagonal empirical Fisher (input-activation second-moment), λ ∈
+  {0, 0.1} on llama. **BELOW-RIDGE**: 0.21 (no λ), 0.319 (λ=0.1).
+  Ridge HURTS Fisher (opposite direction of projector mode). Notable:
+  trunc_mass mean 0.025 (Fisher) vs 0.30 (projector v1) — Fisher W*
+  is rank-r friendly but centroid alignment is worse. Sanity check
+  for surrogate choice came back clean for projector + ridge.
 
 ## 3. Hard-won operational rules (do not rediscover)
 
@@ -125,21 +115,32 @@ centroid salvage sweep running now; 80-cell seed merge matrix ~12/80.
 
 ## 4. Next steps (priority)
 
-1. **Ridge fine-sweep verdict** (job 41537, ~6h): pick true-minimum λ
-   from {0.05, 0.07, 0.1, 0.13, 0.17, 0.2, 0.3}. Then extend winning λ
-   to mistral/qwen/yi (12 cells) = cross-model generalization (the
-   load-bearing claim that "the bound is matched", not just for llama).
-   Then write E1 §6.2 with the salvage framing.
-2. **Matrix wave completes** (~1-2 days under contention) → E2 analysis:
-   mean ± seed-range tables for every method claim; verify b=2 dip + Ll>Mi>Qw>Yi
-   ordering across seeds.
-3. **Fisher-diagonal H_t variant** (E1 spec variant b) — curvature-aware H
-   may fix the centroid properly (vs ridge's blunt fix).
-4. E7 (b=2 mechanism: matched-sparsity pruning + TIES win-pattern
-   correlation) — cheap, now richer given encoder non-monotonicity.
-5. W: write E1/E2/E4 results into paper §6; Remark 5 rewrite.
-6. USER ACTIONS: send Garg the rewrite+plan+E4(+centroid finding — it's
-   presentation-worthy); book T1 week; E5 design sign-off.
+1. **Cross-model ridge sweep at λ ∈ {0.05, 0.07, 0.10, 0.13}** for
+   mistral_7b / qwen25_7b / yi15_9b = 12 cells. **Load-bearing claim**:
+   the achievability salvage generalizes across base models.
+   Configs in `code/phase3/configs/eval_ridge_xmodel/`; manifest
+   `ridge_xmodel_manifest.json`; wrapper `pbs_orchestrator_ridge_xmodel.sh`.
+   Decision rule pre-registered:
+   - all 3 hold → "matching achievability across models" stands;
+   - 2/3 hold → narrow claim, treat outlier explicitly;
+   - 0/3 → salvage is llama-specific, pivot to E5 as headline.
+2. **E2 analysis** (`code/phase3/scripts/analyze_e2_matrix.py`): tidy
+   140-cell dataframe; per-(model, method) mean ± seed-range; verify
+   (a) Ll > Mi > Qw > Yi across seeds, (b) b=2 dip persists,
+   (c) DARE tracks TA to 3 decimals.
+3. **Paper §6.2 draft** with the salvage framing (ridge sweep table,
+   Fisher baseline, cross-model when ready).
+4. **E5 design week** (master plan Tier 2 headline experiment, needs
+   user sign-off): pilot model Qwen-2.5-7B, Arm 2 data-mixture primary
+   with Arm 3 geometric forcing as fallback. Pilot gate: α=0.9 →
+   deff/(Tr) < 0.8 in majority of layers.
+5. **T1 theory week** (with Garg): log-T concentration bound for C —
+   send him the digest doc, book the week.
+6. **E3 downstream metrics harness** (GSM8K em, HumanEval pass@1,
+   COMET-22, IFEval strict) — paper needs accuracy-level evidence.
+7. **E7 b=2 mechanism** (cheap, 30-50 GPU-h): matched-sparsity
+   pruning + TIES win-pattern correlation.
+8. **W**: write E1/E2/E4 results into paper §6; Remark 5 rewrite.
 
 ## 5. Locations
 

@@ -1,0 +1,74 @@
+[
+ {
+  "name": "ridge_xmodel_mistral_7b_l0p05",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_xmodel/mistral_7b__ridge_l0p05.yaml",
+  "done": "results/phase3/eval_ridge_xmodel/mistral_7b__ridge_l0p05.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "ridge_xmodel_mistral_7b_l0p07",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_xmodel/mistral_7b__ridge_l0p07.yaml",
+  "done": "results/phase3/eval_ridge_xmodel/mistral_7b__ridge_l0p07.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "ridge_xmodel_mistral_7b_l0p1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_xmodel/mistral_7b__ridge_l0p1.yaml",
+  "done": "results/phase3/eval_ridge_xmodel/mistral_7b__ridge_l0p1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "ridge_xmodel_mistral_7b_l0p13",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_xmodel/mistral_7b__ridge_l0p13.yaml",
+  "done": "results/phase3/eval_ridge_xmodel/mistral_7b__ridge_l0p13.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "ridge_xmodel_qwen25_7b_l0p05",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_xmodel/qwen25_7b__ridge_l0p05.yaml",
+  "done": "results/phase3/eval_ridge_xmodel/qwen25_7b__ridge_l0p05.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "ridge_xmodel_qwen25_7b_l0p07",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_xmodel/qwen25_7b__ridge_l0p07.yaml",
+  "done": "results/phase3/eval_ridge_xmodel/qwen25_7b__ridge_l0p07.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "ridge_xmodel_qwen25_7b_l0p1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_xmodel/qwen25_7b__ridge_l0p1.yaml",
+  "done": "results/phase3/eval_ridge_xmodel/qwen25_7b__ridge_l0p1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "ridge_xmodel_qwen25_7b_l0p13",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_xmodel/qwen25_7b__ridge_l0p13.yaml",
+  "done": "results/phase3/eval_ridge_xmodel/qwen25_7b__ridge_l0p13.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "ridge_xmodel_yi15_9b_l0p05",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_xmodel/yi15_9b__ridge_l0p05.yaml",
+  "done": "results/phase3/eval_ridge_xmodel/yi15_9b__ridge_l0p05.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "ridge_xmodel_yi15_9b_l0p07",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_xmodel/yi15_9b__ridge_l0p07.yaml",
+  "done": "results/phase3/eval_ridge_xmodel/yi15_9b__ridge_l0p07.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "ridge_xmodel_yi15_9b_l0p1",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_xmodel/yi15_9b__ridge_l0p1.yaml",
+  "done": "results/phase3/eval_ridge_xmodel/yi15_9b__ridge_l0p1.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "ridge_xmodel_yi15_9b_l0p13",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_xmodel/yi15_9b__ridge_l0p13.yaml",
+  "done": "results/phase3/eval_ridge_xmodel/yi15_9b__ridge_l0p13.json",
+  "min_free_gb": 25.0
+ }
+]

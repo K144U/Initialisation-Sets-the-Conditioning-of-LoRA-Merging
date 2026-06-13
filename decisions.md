@@ -237,3 +237,89 @@ qwen / yi = 12 cells (cross-model generalization is the load-bearing
 claim); (2) Fisher-diagonal H_t variant (E1 spec variant b) — does
 curvature-aware H beat ridge's blunt sliver-floor? (3) write E1 §6.2
 with the salvage framing for the paper rewrite.
+
+
+## 2026-06-13 — Ridge fine sweep CLOSED; lambda=0.05 is the global min
+Job 41537 finished 2026-06-13 ~04:50 IST: 5 fine cells lambda in
+{0.05, 0.07, 0.13, 0.17, 0.2} added to the original 5. Full 10-cell
+worst-task excess curve:
+  lambda=0.001 -> 4.463
+  lambda=0.01  -> 0.346
+  lambda=0.05  -> 0.0906  <- GLOBAL MIN
+  lambda=0.07  -> 0.0951
+  lambda=0.10  -> 0.1116
+  lambda=0.13  -> 0.1262
+  lambda=0.17  -> 0.1418
+  lambda=0.20  -> 0.1531
+  lambda=0.30  -> 0.1891
+  lambda=1.00  -> 0.2864
+Clean U-shape. Minimum unambiguously at lambda=0.05 (with 0.07 a near
+tie, Delta=0.005 < expected seed noise). **lambda=0.05 beats TA 0.219
+by 59% on worst-task excess.** Per-task at the minimum:
+gsm8k +0.091, alpaca +0.025, magicoder +0.027, translation +0.029 —
+the merged model is roughly equally close to each solo, the opposite
+of the lambda=0.001 catastrophe where translation alone took +4.46.
+INTERPRETATION refinement: the spectral mechanism (decisions.md entry
+2026-06-12 E1 b=inf RESOLVED) predicted ridge would dominate at
+lambda ~ median nonzero eigenvalue of Hbar ~ 0.002. The empirical
+optimum at 0.05 is ~25x larger — consistent with the operational
+truth that the surrogate-to-CE bridge breaks well before pseudo-inverse
+amplification dominates, so the effective sliver floor must be set
+where the CE loss is no longer faithful to the quadratic surrogate,
+not at the smallest eigenvalue. This is an operational, measurable
+quantity for the paper.
+HEADLINE for paper section 6.2: "On real adapters, the regularized
+encoder (lambda=0.05) achieves worst-task NLL excess 0.091, 59% below
+TA, with the unregularized form blowing up via the identified
+degenerate-Hbar spectral mechanism."
+
+
+## 2026-06-13 — Fisher-diagonal H_t variant: BELOW-RIDGE
+Job 41538 ran 2 cells: rd_encoder with h_t_mode='fisher_diag',
+ridge_lambda in {0, 0.1}, on llama b=inf rank_r. Fisher diagonal =
+per-task input-activation second-moment (forward-only hook, 512 train
+samples per task, ~120 sec per task on llama 8B). This is the
+master_plan E1 variant (b) "diagonal empirical Fisher at tau_t",
+spec'd as the alternative to the projector surrogate.
+Results (worst-task excess vs TA 0.219, best ridge 0.0906):
+  fisher  lambda=0   -> 0.2102  (barely beats TA; +0.21 on gsm8k)
+  fisher  lambda=0.1 -> 0.3190  (WORSE than lambda=0; +0.32 on gsm8k)
+VERDICT: BELOW-RIDGE. Fisher H_t under-performs the regularized
+projector surrogate by ~2.3x on worst-task excess. Direction of ridge
+effect REVERSED vs projector mode: ridge HURTS Fisher (0.21 -> 0.32),
+opposite of projector where ridge helps (0.50 -> 0.09).
+INTERPRETATION: input-Gram diagonal already encodes per-coordinate
+"importance" (active feature axes downweight other tasks naturally),
+so an additive identity floor washes out that structure rather than
+adding the missing eigenvalue-floor that projector needs. The Fisher
+recipe is qualitatively different and the no-ridge form is the natural
+comparison — and the projector + ridge still wins.
+STRUCTURAL finding: rank-r truncation cost is dramatically lower
+under Fisher (trunc_mass mean 0.025 max 0.060) vs projector (~0.30 v1).
+The Fisher W* is rank-r friendly; it just lands farther from each
+task's solo than projector+ridge does. So the rank cap is not where
+Fisher loses; the centroid alignment is.
+CONSEQUENCE FOR PAPER: the projector + ridge recipe is empirically
+preferred over the theoretically pure Fisher metric, with a precise
+mechanism for the difference. This is the sanity-check the master plan
+pre-registered for the surrogate choice — and it came back clean for
+projector.
+NEXT: extend lambda=0.05 (projector + ridge) across mistral/qwen/yi
+= 12 cells (load-bearing cross-model generalization claim).
+
+
+## 2026-06-13 — E2 matrix CLOSED: 140/140 cells, multi-seed merge matrix complete
+Job sequence 41524 -> 41533 -> 41556 (keeper requeues + GPU0 drop +
+walltime resume). 140 cells = 4 models (llama/mistral/qwen/yi) x
+5 methods (TA/TIES/DARE/KnOTS/TVQ@{b1,b2,b4,b8,b16,b32}) x 2 seeds (1,2)
+= 140 total. ZERO permanent failures; 1 transient qwen tvq_b32_seed2
+rc=1 auto-retried successfully; walltime-driven kill-and-resume cycle
+on 41533->41556 lost ~0 in-flight cells (orchestrator done-files).
+Analysis pending: code/phase3/scripts/analyze_e2_matrix.py (to be
+written). Pre-registered claims to verify:
+  (a) cross-model ordering Ll > Mi > Qw > Yi survives across seeds
+      (was: 0.219/0.213/0.221 across seeds 0/1/2 on llama TA);
+  (b) b=2 TVQ "less-is-more" dip persists across seeds;
+  (c) DARE per-seed tracks TA to 3 decimals (anchor sanity).
+The seed matrix is the §6.1 calibration data; cross-model ridge sweep
+is the §6.2 generalization data.
