@@ -1,0 +1,50 @@
+[
+ {
+  "name": "e7p_llama31_8b_magprune_d050",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e7_prune/llama31_8b__magprune_d050.yaml",
+  "done": "results/phase3/eval_e7_prune/llama31_8b__magprune_d050.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e7p_llama31_8b_magprune_d013",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e7_prune/llama31_8b__magprune_d013.yaml",
+  "done": "results/phase3/eval_e7_prune/llama31_8b__magprune_d013.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e7p_mistral_7b_magprune_d050",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e7_prune/mistral_7b__magprune_d050.yaml",
+  "done": "results/phase3/eval_e7_prune/mistral_7b__magprune_d050.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e7p_mistral_7b_magprune_d013",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e7_prune/mistral_7b__magprune_d013.yaml",
+  "done": "results/phase3/eval_e7_prune/mistral_7b__magprune_d013.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e7p_qwen25_7b_magprune_d050",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e7_prune/qwen25_7b__magprune_d050.yaml",
+  "done": "results/phase3/eval_e7_prune/qwen25_7b__magprune_d050.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e7p_qwen25_7b_magprune_d013",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e7_prune/qwen25_7b__magprune_d013.yaml",
+  "done": "results/phase3/eval_e7_prune/qwen25_7b__magprune_d013.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e7p_yi15_9b_magprune_d050",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e7_prune/yi15_9b__magprune_d050.yaml",
+  "done": "results/phase3/eval_e7_prune/yi15_9b__magprune_d050.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e7p_yi15_9b_magprune_d013",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e7_prune/yi15_9b__magprune_d013.yaml",
+  "done": "results/phase3/eval_e7_prune/yi15_9b__magprune_d013.json",
+  "min_free_gb": 25.0
+ }
+]

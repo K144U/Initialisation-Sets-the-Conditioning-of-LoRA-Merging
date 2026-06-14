@@ -1,0 +1,36 @@
+{
+  "bits": 2,
+  "per_model": {
+    "llama31_8b": {
+      "A_zero_bucket": 0.49873513693455607,
+      "B_small_post_quant": 4.267692565917969e-05,
+      "C_quant_lost_signal": 0.8861502537038177,
+      "mean_dip": 0.02950620839685098
+    },
+    "mistral_7b": {
+      "A_zero_bucket": 0.49133299966342747,
+      "B_small_post_quant": 6.060185842216015e-05,
+      "C_quant_lost_signal": 0.8648917314130813,
+      "mean_dip": 0.005109813212383997
+    },
+    "qwen25_7b": {
+      "A_zero_bucket": 0.4987816673736753,
+      "B_small_post_quant": 7.904531655712952e-05,
+      "C_quant_lost_signal": 0.8606015635388238,
+      "mean_dip": 0.026298116831301302
+    },
+    "yi15_9b": {
+      "A_zero_bucket": 0.5106663377179455,
+      "B_small_post_quant": 6.764351079861323e-05,
+      "C_quant_lost_signal": 0.8851866700376073,
+      "mean_dip": -0.006916006034336397
+    }
+  },
+  "pearson_A_vs_dip": -0.4335084009943641,
+  "pearson_B_vs_dip": -0.24479999455374535,
+  "pearson_C_vs_dip": -0.18509821627947307,
+  "decision_rule": {
+    "threshold": 0.7,
+    "best_metric": "A"
+  }
+}
