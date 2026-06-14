@@ -1,0 +1,74 @@
+[
+ {
+  "name": "e5p_qwen_gsm8k_a00",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_pilot/qwen25_7b_gsm8k_alpha00.yaml",
+  "done": "results/phase3/lora_train/qwen25_7b_e5pilot_gsm8k_alpha00.json",
+  "min_free_gb": 40.0
+ },
+ {
+  "name": "e5p_qwen_gsm8k_a50",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_pilot/qwen25_7b_gsm8k_alpha50.yaml",
+  "done": "results/phase3/lora_train/qwen25_7b_e5pilot_gsm8k_alpha50.json",
+  "min_free_gb": 40.0
+ },
+ {
+  "name": "e5p_qwen_gsm8k_a90",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_pilot/qwen25_7b_gsm8k_alpha90.yaml",
+  "done": "results/phase3/lora_train/qwen25_7b_e5pilot_gsm8k_alpha90.json",
+  "min_free_gb": 40.0
+ },
+ {
+  "name": "e5p_qwen_alpaca_a00",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_pilot/qwen25_7b_alpaca_alpha00.yaml",
+  "done": "results/phase3/lora_train/qwen25_7b_e5pilot_alpaca_alpha00.json",
+  "min_free_gb": 40.0
+ },
+ {
+  "name": "e5p_qwen_alpaca_a50",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_pilot/qwen25_7b_alpaca_alpha50.yaml",
+  "done": "results/phase3/lora_train/qwen25_7b_e5pilot_alpaca_alpha50.json",
+  "min_free_gb": 40.0
+ },
+ {
+  "name": "e5p_qwen_alpaca_a90",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_pilot/qwen25_7b_alpaca_alpha90.yaml",
+  "done": "results/phase3/lora_train/qwen25_7b_e5pilot_alpaca_alpha90.json",
+  "min_free_gb": 40.0
+ },
+ {
+  "name": "e5p_qwen_magicoder_a00",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_pilot/qwen25_7b_magicoder_alpha00.yaml",
+  "done": "results/phase3/lora_train/qwen25_7b_e5pilot_magicoder_alpha00.json",
+  "min_free_gb": 40.0
+ },
+ {
+  "name": "e5p_qwen_magicoder_a50",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_pilot/qwen25_7b_magicoder_alpha50.yaml",
+  "done": "results/phase3/lora_train/qwen25_7b_e5pilot_magicoder_alpha50.json",
+  "min_free_gb": 40.0
+ },
+ {
+  "name": "e5p_qwen_magicoder_a90",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_pilot/qwen25_7b_magicoder_alpha90.yaml",
+  "done": "results/phase3/lora_train/qwen25_7b_e5pilot_magicoder_alpha90.json",
+  "min_free_gb": 40.0
+ },
+ {
+  "name": "e5p_qwen_translation_a00",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_pilot/qwen25_7b_translation_alpha00.yaml",
+  "done": "results/phase3/lora_train/qwen25_7b_e5pilot_translation_alpha00.json",
+  "min_free_gb": 40.0
+ },
+ {
+  "name": "e5p_qwen_translation_a50",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_pilot/qwen25_7b_translation_alpha50.yaml",
+  "done": "results/phase3/lora_train/qwen25_7b_e5pilot_translation_alpha50.json",
+  "min_free_gb": 40.0
+ },
+ {
+  "name": "e5p_qwen_translation_a90",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_pilot/qwen25_7b_translation_alpha90.yaml",
+  "done": "results/phase3/lora_train/qwen25_7b_e5pilot_translation_alpha90.json",
+  "min_free_gb": 40.0
+ }
+]

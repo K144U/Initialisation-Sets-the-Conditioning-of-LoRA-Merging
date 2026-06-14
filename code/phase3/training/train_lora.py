@@ -78,8 +78,20 @@ def train_one_lora(cfg: dict, project_root: Path) -> dict:
         random_state=cfg["seeds"]["train"],
     )
 
-    print(f"[train:{task_name}] loading {task['dataset']} ({task.get('config') or '-'})", flush=True)
-    train_data, eval_data = load_task_split(task, seed=cfg["seeds"]["global"])
+    # E5 hook: if task.train_jsonl is set, load mixed training data from disk
+    # (built by gen_e5_pilot_datasets.py). Eval ALWAYS comes from
+    # load_task_split so all alphas share the same target-task held-out set.
+    train_jsonl = task.get("train_jsonl")
+    if train_jsonl:
+        import json
+        from pathlib import Path as _P
+        jp = _P(str(project_root) + "/" + train_jsonl) if not _P(train_jsonl).is_absolute() else _P(train_jsonl)
+        print(f"[train:{task_name}] loading TRAIN from JSONL: {jp}", flush=True)
+        train_data = [json.loads(line) for line in open(jp) if line.strip()]
+        _, eval_data = load_task_split(task, seed=cfg["seeds"]["global"])
+    else:
+        print(f"[train:{task_name}] loading {task['dataset']} ({task.get('config') or '-'})", flush=True)
+        train_data, eval_data = load_task_split(task, seed=cfg["seeds"]["global"])
     print(f"[train:{task_name}] train={len(train_data)}  eval={len(eval_data)}", flush=True)
 
     ds_train = _build_sft_dataset(train_data, tokenizer)
