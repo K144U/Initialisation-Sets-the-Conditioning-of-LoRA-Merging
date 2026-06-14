@@ -25,8 +25,12 @@ export ORCH_SENTINEL=_E5_PILOT_COMPLETE
 export ORCH_STATE=orchestrator_state_e5_pilot.json
 
 MANIFEST="${MANIFEST:-code/phase3/configs/e5_pilot_manifest.json}"
+# Prefer the dynamic GPU set (auto-expanded by gpu_opportunity.py via cron),
+# then the user-pinned override, then the safe default.
 if [ -f "$PROJECT_ROOT/_ORCH_GPUS_E5" ]; then
     export GPUS=$(cat $PROJECT_ROOT/_ORCH_GPUS_E5)
+elif [ -f "$PROJECT_ROOT/_ORCH_GPUS_DYN" ]; then
+    export GPUS=$(cat $PROJECT_ROOT/_ORCH_GPUS_DYN)
 else
     export GPUS=2,4,6
 fi
