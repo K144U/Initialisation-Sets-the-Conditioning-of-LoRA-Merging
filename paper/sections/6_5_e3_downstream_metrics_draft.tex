@@ -1,0 +1,131 @@
+% DRAFT: paper §6.5 — E3 downstream accuracy verification (GSM8K).
+% Written 2026-06-15 ~03:30 IST off the partial sweep (15/20 cells).
+% Yi-1.5-9B row TODO when last 5 cells land (~04:30 IST).
+% Main finding visible already: NLL→accuracy correspondence is
+% MODEL-DEPENDENT, with llama-3.1-8B showing rank inversion.
+
+\subsection{Do NLL conclusions hold on task accuracy?}
+\label{subsec:exp-downstream-gsm8k}
+
+The negative-log-likelihood per response token of
+\S\ref{subsec:exp-lora}--\S\ref{subsec:exp-rd-encoder} is fast to
+compute and seed-stable, but it is not the metric a practitioner
+deploys against. We verify here that the NLL-based method
+comparisons (Section~\S\ref{subsec:exp-lora}, $b=2$ TVQ dip,
+ridge-encoder ordering) survive on an accuracy metric. We focus on
+GSM8K exact-match (\textsc{em}) as the cleanest first cut --- the
+gold answer is a single number, extraction is unambiguous, and the
+seed-0 NLL ranking on GSM8K matches the worst-task ordering across
+methods.
+
+\paragraph{Setup.} For each of the four base models, we re-merged
+the four task adapters of \S\ref{subsec:exp-lora} using the five
+methods that span the matrix structure: Task Arithmetic (TA), TIES,
+DARE, KnOTS, and TVQ at $b=2$ (the dip champion). Each merged
+checkpoint generated answers to the first $n=500$ GSM8K test prompts
+with greedy decoding (max $256$ new tokens, $0$-shot CoT prompt
+matching the per-task training format), and we extracted the final
+numeric answer via a four-pattern regex (\verb|#### N|, ``answer is
+$N$'', trailing equation, or last number) that succeeded in $95\%$
+of generations in a $n=100$ pilot. \textsc{em} score is the fraction
+of extracted predictions matching the gold value to floating-point
+equality.
+
+\paragraph{Result: model-dependent NLL$\to$accuracy correspondence.}
+Table~\ref{tab:e3-gsm8k} reports the $4 \times 5$ accuracy matrix
+alongside the matching worst-task NLL excess from
+Table~\ref{tab:exp-lora-full}. The pattern that emerges is sharper
+and more interesting than the pre-registered ``NLL holds on
+accuracy'' confirmation we expected.
+
+\begin{table}[t]
+\centering
+\caption{GSM8K \textsc{em} accuracy ($n=500$, greedy CoT) per
+$(\text{model}, \text{method})$ alongside the worst-task NLL excess
+from \S\ref{subsec:exp-multiseed} (seed-1). \emph{Mistral and Qwen
+show strong Spearman agreement between accuracy ranking and
+$-\text{NLL excess}$ ranking ($\rho = +0.90$ each), confirming
+the NLL methodology for those models. Llama shows
+$\rho = -0.60$, an outright rank inversion --- on the strongest
+GSM8K base, the methods that minimize NLL excess (TIES and TVQ
+$b=2$) are the methods that hurt accuracy most.}}
+\label{tab:e3-gsm8k}
+\begin{tabular}{lrrrrr|r}
+\hline
+\multicolumn{6}{c|}{GSM8K \textsc{em} accuracy} & Spearman \\
+Model & TA & TIES & DARE & KnOTS & TVQ $b=2$ & vs.\ NLL \\
+\hline
+Llama-3.1-8B   & $0.324$ & $0.250$ & $0.330$ & $\mathbf{0.346}$ & $0.280$ & $-0.60$ \\
+Mistral-7B-v0.3 & $0.094$ & $\mathbf{0.410}$ & $0.082$ & $0.090$ & $0.398$ & $+0.90$ \\
+Qwen-2.5-7B    & $0.212$ & $\mathbf{0.714}$ & $0.210$ & $0.216$ & $0.680$ & $+0.90$ \\
+Yi-1.5-9B      & \textsc{TODO} & \textsc{TODO} & \textsc{TODO} & \textsc{TODO} & \textsc{TODO} & \textsc{TODO} \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{The llama-3.1 inversion.}
+On Llama-3.1-8B, the NLL methodology of
+\S\ref{subsec:exp-multiseed} ranks the methods as
+$\text{TVQ}_{b=2}~(0.101) < \text{TIES}~(0.147) < \{\text{TA},
+\text{DARE}, \text{KnOTS}\}~(0.213)$ on worst-task excess. On
+\textsc{em} accuracy, the ranking is
+$\text{KnOTS}~(0.346) > \text{DARE}~(0.330) > \text{TA}~(0.324) >
+\text{TVQ}_{b=2}~(0.280) > \text{TIES}~(0.250)$: the two methods
+that minimize NLL on llama are the two that hurt accuracy the most.
+Mistral and Qwen do not show this: there TIES is best on both
+metrics.
+
+\paragraph{Interpretation.}
+We offer the following hypothesis, which we cannot yet test
+rigorously: Llama-3.1-8B has the highest GSM8K solo capacity
+of the four base models tested ($\tau_{\text{gsm8k}}$ NLL $0.466$
+vs.\ Mistral $0.449$, Qwen $0.442$, Yi $0.387$, but on
+\textsc{em} accuracy llama-solo dominates; see
+Table~\ref{tab:nll-tau-em}). When the per-task adapter encodes a
+substantial reasoning capability, methods that aggressively compress
+the merge --- TIES's sign election with threshold trimming, TVQ
+quantization to three buckets per layer --- discard
+adapter-specific information that NLL on a $1{,}000$-token slice
+fails to register but greedy generation does. KnOTS and DARE
+preserve more of the underlying adapter signal and thus more of
+the reasoning trace. On weaker GSM8K bases the merge is
+information-limited by the adapter itself, so the compression
+penalty does not surface and NLL-best $=$ accuracy-best as the
+methodology assumes.
+
+This is consistent with three other patterns in our data: (i)
+the cross-model ordering Llama $>$ Mistral $>$ Qwen $>$ Yi on TA
+worst-excess (\S\ref{subsec:exp-lora}) is exactly the order of
+GSM8K-solo accuracy, suggesting the strongest models are hardest
+to merge cleanly; (ii) the $b=2$ TVQ dip is real on NLL
+(\S\ref{subsec:exp-b2-mechanism}) but accuracy on llama tells the
+opposite story, so the dip is doing something that helps with
+NLL but hurts with discrete-answer extraction; (iii) TIES is
+the matrix-NLL leader on three of four bases, but its sign election
+is precisely the step that throws away small per-task disagreements
+that may carry useful reasoning bits.
+
+\paragraph{Consequence for the paper's claims.} Section
+\S\ref{subsec:exp-rd-encoder}'s headline ``ridge-encoder beats TA''
+result is reported on NLL excess; we have not yet tested it on
+accuracy. \emph{Until that test is run, claims of the form ``method
+X beats method Y under our regularized achievability'' should be
+qualified with ``in NLL terms; for downstream accuracy on
+high-reasoning tasks like GSM8K, model-specific re-evaluation is
+warranted.''} The lower-bound theorem and floor-formula results
+(\S\ref{sec:lower_bound}, \S\ref{subsec:exp-e5-null}) are
+metric-agnostic --- they apply to any well-defined per-task loss ---
+and are unaffected.
+
+\paragraph{What we do not claim.} We do not claim NLL is wrong as
+a methodology. On mistral and qwen the NLL ranking predicts the
+accuracy ranking with high reliability ($\rho = +0.90$), and
+practitioners selecting a merge method by NLL on those bases will
+make the right choice. On llama, the practitioner should
+\emph{measure accuracy directly} and not trust NLL as a proxy. The
+empirical question of which side of this boundary other base models
+fall on is exactly the question E3 is meant to answer; expanding
+the sweep to additional task metrics (HumanEval pass@1, COMET-22,
+IFEval strict) is the natural next step.
+
+%%% END DRAFT --- yi row pending; revise once last 5 cells land %%%
