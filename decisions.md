@@ -373,6 +373,49 @@ analysis on the 4 rank-64 adapters; expect d_eff/(Tr) < 1.0 by the
 mechanical argument.
 
 
+## 2026-06-14 — E5 Arm 3 CLOSED: ALSO NULL; mechanical-forcing barrier identified
+4 qwen-2.5-7B trainings at r=64 (Tr=256), job 41562 ~01:50h on
+GPUs 2/4/6. Cells took ~50min each. d_eff analysis across the
+112 qwen attention projections:
+  hard d_eff/(Tr) mean=0.997  min=0.867  max=1.000
+  soft d_eff/(Tr) mean=0.253  min=0.251  max=0.256
+  layers below 0.8: 0/112
+The geometric forcing nudges the most-bottlenecked layer to
+~0.867 (some V_t correlation detected) but no layer crosses the
+pre-registered 0.8 threshold. Arm 3 also fires NO-GO.
+
+The reason both arms fail is now precise: generically d_eff =
+min(in_dim, Tr). For d_eff/Tr < 1 we need Tr > in_dim, i.e.,
+r > in_dim/T. For T=4 tasks, this means:
+  llama-3.1-8B (in_dim ~4096): r > 1024
+  qwen-2.5-7B  (in_dim ~3584): r > 896
+  llama-3.2-3B (in_dim 3072):  r > 768
+  mistral-7B   (in_dim 4096):  r > 1024
+  yi-1.5-9B    (in_dim 4096):  r > 1024
+All well outside the practical LoRA regime (r <= 64 typical
+production deployments). At T=4, mechanically forcing the
+floor-positive regime requires LoRAs of rank comparable to the
+model's hidden dim, defeating the parameter-efficiency motivation
+for LoRA.
+
+CONSEQUENCE: the floor formula B^2(1 - d_eff/Tr) is real but
+OPERATIONALLY VACUOUS on real fine-tunes at practical ranks.
+1 - d_eff/Tr vanishes for any reasonable r. The algorithmic
+regime — where worst-task excess is set by construction
+suboptimality rather than by the irreducible floor — is the
+regime ALL real LoRA fine-tunes live in. This is positive for the
+paper: the regularized achievability salvage (section 6.2,
+lambda in [0.05, 0.13]) sits on the universally applicable side
+of the bound.
+
+NEXT: launched job 41563 (rdm_e5arm3b) for 4 trainings on
+Llama-3.2-3B at r=64 as cross-architecture confirmation of the
+null. After it lands (~2h), update section 6.3 table with the
+3B numbers and the combined finding stands. Paper section 6.3
+rewritten at paper/sections/6_3_e5_arm2_null_draft.tex with the
+mechanical-forcing barrier made explicit.
+
+
 ## 2026-06-13 — E2 matrix CLOSED: 140/140 cells, multi-seed merge matrix complete
 Job sequence 41524 -> 41533 -> 41556 (keeper requeues + GPU0 drop +
 walltime resume). 140 cells = 4 models (llama/mistral/qwen/yi) x

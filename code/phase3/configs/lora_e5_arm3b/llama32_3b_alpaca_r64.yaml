@@ -1,0 +1,43 @@
+# Llama-3.2-3B + alpaca @ rank=64 — E5 Arm 3 cross-model confirmation.
+# Smaller base, same r=64. Layer dim 3072 so Tr=256 << 3072: mechanical
+# forcing not triggered (would need r > 768 for that). Tests whether the
+# Arm 3 null on qwen-7B replicates on a different architecture/size.
+
+base_model: /home/sanjay.g/projects/rdmerge/models/Llama-3.2-3B-Instruct
+
+task:
+  name: alpaca
+  dataset: yahma/alpaca-cleaned
+  config: null
+  split_train: train
+  split_eval: train
+  n_train: 7500
+  n_eval: 1000
+  prompt_field: instruction
+  answer_field: output
+
+lora:
+  r: 64
+  alpha: 128
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj]
+
+train:
+  epochs: 2
+  lr: 5.0e-5
+  batch_size: 8
+  grad_accum: 4
+  max_seq_length: 2048
+  warmup_ratio: 0.03
+  optim: adamw_torch
+  logging_steps: 10
+  dataset_num_proc: 4
+  min_free_gb: 25
+
+output:
+  adapter_dir: artifacts/lora/llama32_3b/e5_arm3/alpaca__r64/v1
+  results_path: results/phase3/lora_train/llama32_3b_e5arm3_alpaca_r64.json
+
+seeds:
+  global: 20260614
+  train: 20260614

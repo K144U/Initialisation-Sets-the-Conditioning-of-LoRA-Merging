@@ -4,11 +4,14 @@
 Achievability via Hadamard Incoherence
 **Author:** Sankalp Pathak (solo), Prof. Sanjay Garg reviewing/advising
 **Target venue: ICLR 2027** (deadline ~late Sep 2026)
-**Last updated: 2026-06-14 ~11:00 IST** (campaign day 4; **cross-model
-ridge sweep CLOSED ALL-3-HOLD, E5 Arm 2 pilot CLOSED NO-GO (predicted
-null), Arm 3 geometric forcing launched as job 41562**). Strategy:
-`master_plan_iclr2027.md`. Dated gate/branch record: `decisions.md`
-(14 entries — READ IT, it is the scientific log).
+**Last updated: 2026-06-14 ~13:30 IST** (campaign day 4; **cross-model
+ridge sweep CLOSED ALL-3-HOLD, E5 Arm 2 + Arm 3 both NULL, Arm 3b
+cross-arch confirmation launched as job 41563**). Mechanical-forcing
+barrier identified: forcing $d_{\text{eff}} < Tr$ requires $r > $
+in_dim$/T$ (e.g., r > 896 on qwen-7B). This is outside the practical
+LoRA regime. Floor formula is operationally vacuous at any reasonable
+LoRA rank. Strategy: `master_plan_iclr2027.md`. Dated gate/branch
+record: `decisions.md` (15 entries — READ IT, it is the scientific log).
 
 **Headline numbers (paper §6.2 + §6.3 ready)**: ridge λ=0.05 →
 worst-task excess 0.0906 on llama (59% below TA 0.219). Cross-model:

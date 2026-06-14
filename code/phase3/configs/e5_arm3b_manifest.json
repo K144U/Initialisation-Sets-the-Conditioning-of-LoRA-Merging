@@ -1,0 +1,26 @@
+[
+ {
+  "name": "e5a3b_llama32_gsm8k_r64",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_arm3b/llama32_3b_gsm8k_r64.yaml",
+  "done": "results/phase3/lora_train/llama32_3b_e5arm3_gsm8k_r64.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e5a3b_llama32_alpaca_r64",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_arm3b/llama32_3b_alpaca_r64.yaml",
+  "done": "results/phase3/lora_train/llama32_3b_e5arm3_alpaca_r64.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e5a3b_llama32_magicoder_r64",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_arm3b/llama32_3b_magicoder_r64.yaml",
+  "done": "results/phase3/lora_train/llama32_3b_e5arm3_magicoder_r64.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e5a3b_llama32_translation_r64",
+  "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e5_arm3b/llama32_3b_translation_r64.yaml",
+  "done": "results/phase3/lora_train/llama32_3b_e5arm3_translation_r64.json",
+  "min_free_gb": 25.0
+ }
+]
