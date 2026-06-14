@@ -308,6 +308,71 @@ NEXT: extend lambda=0.05 (projector + ridge) across mistral/qwen/yi
 = 12 cells (load-bearing cross-model generalization claim).
 
 
+## 2026-06-14 — Cross-model ridge sweep CLOSED: ALL-3-HOLD
+12 cells (3 models x 4 lambda: mistral_7b, qwen25_7b, yi15_9b at
+lambda in {0.05, 0.07, 0.10, 0.13}), b=inf rank_deff, plain loader,
+job 41557 ~05:00h on GPUs 2/4/6. Worst-task excess at the optimum
+per model:
+  llama31_8b: lambda=0.05 -> 0.0906  (-59% vs TA 0.219, reference)
+  mistral_7b: lambda=0.13 -> 0.0383  (-72% vs TA 0.138)
+  qwen25_7b:  lambda=0.13 -> 0.0099  (-91% vs TA 0.105)
+  yi15_9b:    lambda=0.13 -> 0.0336  (-66% vs TA 0.099)
+VERDICT: ALL-3-HOLD — every non-llama model has worst-task excess
+< 0.05 at the optimum, well below the pre-registered 0.15 threshold.
+The achievability salvage GENERALIZES ACROSS MODELS; the paper's
+section 6.2 headline now stands without a model-specific caveat.
+STRUCTURAL FINDING: the optimal lambda shifts from 0.05 (llama) to
+0.13 (mistral/qwen/yi). The 7-9B non-llama models have a different
+Hbar spectral conditioning than llama; the surrogate-validity
+threshold sits higher. This is a measurable architecture-dependent
+quantity worth a paragraph in section 6.2.
+CAVEAT: for mistral/qwen/yi the minimum sits at the boundary of the
+sweep (lambda=0.13 is the largest tested). True minimum may sit at
+lambda in [0.13, 0.20]; a 9-cell upward-sweep would tighten the
+numbers but cannot change the verdict. Optional follow-up.
+NEXT: E5 design week (data-mixture overlap pilot on qwen) starts now;
+write up cross-model result as paper section 6.2 paragraph.
+
+
+## 2026-06-14 — E5 Arm 2 pilot CLOSED: NO-GO (predicted null)
+12 qwen-2.5-7B trainings (4 tasks x 3 alpha in {0, 0.5, 0.9}, mixed
+training data per gen_e5_pilot_datasets.py, shared pool seeded
+20260614), job 41561 ~04:30h on GPUs 2/4/6. Gate analysis
+(e5_pilot_gate.py) on the 12 adapters:
+  alpha=0.0: hard d_eff/(Tr) mean=1.000  min=1.000  0/112 layers <0.8
+                soft d_eff/(Tr) mean=0.257
+  alpha=0.5: hard d_eff/(Tr) mean=1.000  min=1.000  0/112 layers <0.8
+                soft d_eff/(Tr) mean=0.253
+  alpha=0.9: hard d_eff/(Tr) mean=1.000  min=1.000  0/112 layers <0.8
+                soft d_eff/(Tr) mean=0.251
+GATE: NO-GO (pre-registered: GO requires alpha=0.9 -> majority layers
+<0.8; observed 0/112). Hard d_eff DOES NOT MOVE even with 90% shared
+training data across the 4 task adapters. Soft d_eff drifts down by
+2% (0.257 -> 0.251), well inside seed-noise scale.
+INTERPRETATION: This is the master plan's predicted null branch:
+"real fine-tuning resists subspace overlap." The V_t = top-r right-
+singular basis of Delta_t is set by the per-task answer distribution
+loss, not by raw input geometry, so shared training inputs do not
+induce shared LoRA subspaces. The pre-registered protocol said
+explicitly: "a null on Arm 2 is itself reportable: real fine-tuning
+resists subspace overlap, which strengthens the practical message
+that the algorithmic regime is the universal one."
+CONSEQUENCE FOR PAPER: the floor formula B^2(1 - d_eff/Tr) is
+non-vacuous only under explicitly engineered geometric forcing
+(Arm 3, which is now primary), not under naive data-overlap
+induction. The regularized achievability salvage (section 6.2,
+lambda=0.05 to 0.13 ridge) sits in the algorithmic regime which we
+now know is universally applicable to real fine-tunes. The lower
+bound continues to apply as a fundamental limit; the operational
+regime where the floor matters is the engineered one. Paper drafts
+section 6.3 at paper/sections/6_3_e5_arm2_null_draft.tex.
+NEXT: Arm 3 geometric forcing (rank 64, 4 trainings, Tr=256
+approaches layer dim and forces d_eff < Tr by counting). Submitted
+as job 41562. After Arm 3 trainings finish, run the same d_eff
+analysis on the 4 rank-64 adapters; expect d_eff/(Tr) < 1.0 by the
+mechanical argument.
+
+
 ## 2026-06-13 — E2 matrix CLOSED: 140/140 cells, multi-seed merge matrix complete
 Job sequence 41524 -> 41533 -> 41556 (keeper requeues + GPU0 drop +
 walltime resume). 140 cells = 4 models (llama/mistral/qwen/yi) x

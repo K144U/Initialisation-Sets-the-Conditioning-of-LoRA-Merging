@@ -1,0 +1,44 @@
+# Qwen-2.5-7B + gsm8k @ rank=64 — E5 Arm 3 (geometric forcing).
+# 4 tasks x rank 64 -> Tr = 256, which can approach the layer dimension
+# and mechanically force d_eff < Tr by dimension counting. Per
+# master_plan E5: Arm 3 is the fallback after the Arm 2 data-mixture
+# pilot fired NO-GO at 0/112 layers <0.8 on alpha=0.9 (2026-06-14).
+
+base_model: /home/sanjay.g/projects/rdmerge/models/Qwen2.5-7B-Instruct
+
+task:
+  name: gsm8k
+  dataset: openai/gsm8k
+  config: main
+  split_train: train
+  split_eval: test
+  n_train: 7500
+  n_eval: 1000
+  prompt_field: question
+  answer_field: answer
+
+lora:
+  r: 64
+  alpha: 128
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj]
+
+train:
+  epochs: 2
+  lr: 5.0e-5
+  batch_size: 8
+  grad_accum: 4
+  max_seq_length: 2048
+  warmup_ratio: 0.03
+  optim: adamw_torch
+  logging_steps: 10
+  dataset_num_proc: 4
+  min_free_gb: 40
+
+output:
+  adapter_dir: artifacts/lora/qwen25_7b/e5_arm3/gsm8k__r64/v1
+  results_path: results/phase3/lora_train/qwen25_7b_e5arm3_gsm8k_r64.json
+
+seeds:
+  global: 20260614
+  train: 20260614

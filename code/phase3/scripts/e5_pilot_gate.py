@@ -23,6 +23,7 @@ from pathlib import Path
 
 sys.path.insert(0, "/home/sanjay.g/projects/rdmerge/code/phase3")
 
+import torch
 from eval.deff_analysis import (
     load_adapter_factors,
     compute_layer_metrics,
@@ -44,28 +45,33 @@ def analyze_alpha(alpha_pct: int) -> dict:
     """Compute per-layer d_eff/(Tr) for the 4 adapters at this alpha."""
     print(f"\n=== alpha={alpha_pct/100:.2f} ===", flush=True)
     # Load all 4 task adapters at this alpha
-    per_task_factors: list[dict[str, dict[str, "torch.Tensor"]]] = []
-    scales: list[dict[str, float]] = []
+    per_task_factors: dict[str, dict] = {}
+    per_task_scales: dict[str, dict] = {}
     for task in TASKS:
         d = adapter_dir(task, alpha_pct)
         if not d.exists():
             raise FileNotFoundError(f"missing adapter: {d}")
         f, s = load_adapter_factors(str(d))
-        per_task_factors.append(f)
-        scales.append(s)
+        per_task_factors[task] = f
+        per_task_scales[task] = s
 
-    # Layers in common (should be identical across tasks since same base)
-    layers = sorted(per_task_factors[0].keys())
-    Tr = len(TASKS) * LORA_RANK   # = 64
+    # Layers in common across all 4 task adapters
+    layers = sorted(set.intersection(*(set(f.keys())
+                                       for f in per_task_factors.values())))
 
     per_layer = []
     for layer in layers:
-        metrics = compute_layer_metrics(
-            layer, per_task_factors, scales, list(TASKS), rank=LORA_RANK,
-        )
+        deltas = {}
+        for task in TASKS:
+            f = per_task_factors[task][layer]
+            A, B = f["A"], f["B"]
+            scale = per_task_scales[task][layer]
+            deltas[task] = scale * (B @ A)
+        metrics = compute_layer_metrics(deltas, LORA_RANK)
         if "error" in metrics:
             print(f"  [warn] {layer}: {metrics['error']}", flush=True)
             continue
+        metrics["module"] = layer
         per_layer.append(metrics)
 
     deff_frac = [m["d_eff_over_Tr"] for m in per_layer]

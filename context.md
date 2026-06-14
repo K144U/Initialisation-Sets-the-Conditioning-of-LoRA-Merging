@@ -4,15 +4,20 @@
 Achievability via Hadamard Incoherence
 **Author:** Sankalp Pathak (solo), Prof. Sanjay Garg reviewing/advising
 **Target venue: ICLR 2027** (deadline ~late Sep 2026)
-**Last updated: 2026-06-13 ~17:00 IST** (campaign day 3 mid; **all three
-tonight campaigns CLOSED — ridge fine sweep, Fisher H_t variant, seed
-matrix 140/140**). Strategy: `master_plan_iclr2027.md`. Dated gate/branch
-record: `decisions.md` (12 entries — READ IT, it is the scientific log).
+**Last updated: 2026-06-14 ~11:00 IST** (campaign day 4; **cross-model
+ridge sweep CLOSED ALL-3-HOLD, E5 Arm 2 pilot CLOSED NO-GO (predicted
+null), Arm 3 geometric forcing launched as job 41562**). Strategy:
+`master_plan_iclr2027.md`. Dated gate/branch record: `decisions.md`
+(14 entries — READ IT, it is the scientific log).
 
-**Headline numbers (paper §6.2 ready)**: ridge λ=0.05 → worst-task
-excess 0.0906 (59% below TA's 0.219). Fisher H_t below-ridge (0.21 best).
-Spectral mechanism + Fisher null are pre-registered sanity checks that
-came back clean for the projector + ridge recipe.
+**Headline numbers (paper §6.2 + §6.3 ready)**: ridge λ=0.05 →
+worst-task excess 0.0906 on llama (59% below TA 0.219). Cross-model:
+λ=0.13 wins on mistral (0.038, −72%), qwen (0.010, −91%), yi (0.034,
+−66%); the achievability salvage generalizes. Fisher H_t below-ridge
+(0.21 best). E5 Arm 2 NO-GO at 0/112 layers <0.8 on α=0.9 — real
+fine-tuning resists subspace overlap. The lower bound's floor is
+operationally zero in any natural data regime; non-vacuous only under
+explicit geometric forcing.
 
 ---
 

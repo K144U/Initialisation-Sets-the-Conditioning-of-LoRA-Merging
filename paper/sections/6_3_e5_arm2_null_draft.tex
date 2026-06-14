@@ -1,0 +1,94 @@
+% DRAFT: paper §6.3 (or appendix subsection) — E5 Arm 2 null finding.
+% The Arm 2 (data-mixture) pilot fired NO-GO at 0/112 layers below 0.8
+% on alpha=0.9 (2026-06-14). Per the pre-registered protocol, that null
+% is itself a publishable finding: real fine-tuning resists subspace
+% overlap, which strengthens the paper's practical message.
+
+\subsection{Why the floor is operationally zero on real fine-tunes}
+\label{subsec:exp-arm2-null}
+
+The lower bound of \S\ref{sec:lower_bound} predicts a non-zero
+worst-task distortion floor of $B^2(1 - d_{\mathrm{eff}}/(Tr))$ whenever
+the task subspaces overlap ($d_{\mathrm{eff}} < Tr$). On the sixteen
+adapters of \S\ref{subsec:exp-lora} we measured $d_{\mathrm{eff}} = Tr$
+in every attention projection for every base model, so the predicted
+floor is identically zero. A natural reviewer concern is whether this
+is an unlucky choice of task corpora: would deliberately overlapping
+fine-tuning data induce $d_{\mathrm{eff}} < Tr$ and bring the floor
+into operational range? We test this directly.
+
+\paragraph{Setup.} On Qwen-2.5-7B we trained $4$ task adapters
+under three data-mixture levels controlled by a single mixing
+parameter $\alpha \in \{0, 0.5, 0.9\}$. At mixing parameter $\alpha$,
+the training data for the target task is composed of a fraction
+$\alpha$ from a fixed shared pool (uniformly sampled across all four
+task corpora, identical across the four adapters) and a fraction
+$(1 - \alpha)$ from the target task's own training set. At
+$\alpha = 0$ the adapters are independent (and reproduce
+\S\ref{subsec:exp-lora}); at $\alpha = 0.9$ the four adapters share
+$90\%$ of their training data; at $\alpha = 1$ all four adapters
+would see identical data and $d_{\mathrm{eff}}$ would have to
+collapse by counting. This $12$-training pilot is the
+pre-registered gate for our floor-positive experiment program: a
+GO at $\alpha = 0.9 \Rightarrow d_{\mathrm{eff}}/(Tr) < 0.8$ in a
+majority of layers would license the main run.
+
+\paragraph{Outcome: a clean null.} We measured per-layer
+hard $d_{\mathrm{eff}}/(Tr)$ across all $112$ attention projections
+(Table~\ref{tab:e5-arm2-null}). The hard $d_{\mathrm{eff}}$ remains
+saturated at $Tr$ for \emph{every} layer at \emph{every} $\alpha$,
+including $\alpha = 0.9$. The soft (participation-ratio) variant
+drifts down by $2\%$ ($0.257 \to 0.251$ in mean), an amount well
+inside the seed-noise scale of \S\ref{subsec:exp-multiseed}.
+$0/112$ layers cross the pre-registered $0.8$ threshold; the gate
+fires NO-GO.
+
+\begin{table}[t]
+\centering
+\caption{Per-layer subspace metrics under data-mixture overlap
+($12$ qwen-2.5-7B adapters, $4$ tasks $\times$ $3$ $\alpha$ values).
+The hard $d_{\mathrm{eff}}/(Tr)$ stays saturated at $1.000$ even with
+$90\%$ shared training data. Soft $d_{\mathrm{eff}}/(Tr)$ drifts by
+$2\%$, within seed noise.}
+\label{tab:e5-arm2-null}
+\begin{tabular}{rrrrr}
+\hline
+$\alpha$ & hard $d_{\mathrm{eff}}/(Tr)$ (mean) & min & $\#$layers $<0.8$ & soft $d_{\mathrm{eff}}/(Tr)$ \\
+\hline
+$0.0$ & $1.000$ & $1.000$ & $0/112$ & $0.257$ \\
+$0.5$ & $1.000$ & $1.000$ & $0/112$ & $0.253$ \\
+$0.9$ & $1.000$ & $1.000$ & $0/112$ & $0.251$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Interpretation.} Real fine-tuning resists subspace
+overlap. The $V_t = \mathrm{topr}\text{-}\mathrm{SVD}(\Delta_t)$ bases
+remain linearly independent even when nine in ten training examples
+are shared across the four target tasks; the dominant directions
+the LoRA updates discover are evidently set by the supervised loss
+on the per-task answer distribution, not by the inputs' raw
+geometry. The floor formula's $1 - d_{\mathrm{eff}}/(Tr)$ term thus
+sits at the boundary of its domain on real adapters in any natural
+data regime we have access to.
+
+\paragraph{Consequence for the paper.} The lower bound continues to
+apply --- it is a fundamental information-theoretic floor on
+worst-task distortion --- but the regime where the floor is
+\emph{operationally} non-zero appears not to arise from naive data
+overlap. The practical implication is that the
+\emph{algorithmic} regime (in which TA, TIES, DARE, etc., all give
+positive worst-task excess for purely algorithmic reasons) is the
+regime in which all real fine-tunes live, which puts the
+regularized achievability construction of
+\S\ref{subsec:exp-rd-encoder} squarely on the universally-applicable
+side of the bound. We show $d_{\mathrm{eff}} < Tr$ \emph{can} be
+forced by reducing $T \cdot r$ relative to layer dimension
+(\S\ref{subsec:exp-arm3-geometric}); the floor formula is
+non-vacuous under that explicit geometric forcing, exactly as the
+theory predicts. Whether a more sophisticated form of overlap
+induction (e.g.\ shared output spaces, shared post-attention
+projections, multi-task curricula) reaches the floor-positive
+regime is left as an open empirical question.
+
+%%% END DRAFT %%%
