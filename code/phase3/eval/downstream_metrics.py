@@ -1,128 +1,184 @@
-"""E3 — Downstream task metrics harness (SKELETON).
+"""E3 — Downstream task metrics.
 
-Per master_plan §E3: NLL-based conclusions need to survive on task
-metrics. Adds four generation/extraction metrics to the eval pipeline,
-to be run on the same merge matrix as E2.
+GSM8K exact-match is fully implemented. HumanEval pass@1, COMET-22,
+IFEval strict are stubbed pending dependency installation (sandbox-exec
+for HumanEval, unbabel-comet for COMET, google IFEval verifier).
 
-Metrics (frozen choices — do NOT change after first eval):
-  - GSM8K          : exact-match accuracy on the final numerical answer,
-                     0-shot CoT, greedy decoding, max 256 new tokens.
-  - HumanEval/MBPP : pass@1 with greedy decoding, 256 new tokens, the
-                     standard sanitization pipeline (strip trailing
-                     comments, drop after first def/class, etc.).
-  - WMT19 en-de    : COMET-22 reference-based scoring,
-                     unbabel-comet's wmt22-comet-da model.
-  - Alpaca-cleaned : IFEval strict (instruction following), via the
-                     IFEval verifier set (a fixed subset of 100 prompts
-                     from the original eval set).
+Per master plan §E3: NLL-based conclusions need to survive on task
+metrics. Decision rule: Spearman across methods per model.
+  r_s > 0.7   -> cheap NLL conclusions hold (paper §6.1/6.2 untouched)
+  0.4-0.7     -> noisier; report alongside NLL
+  < 0.4       -> NLL not predictive; new design work
 
-Decision rule (per master_plan §E3):
-  Test that excess NLL and excess metric drop are rank-correlated
-  across the merge matrix (Spearman across methods, per model).
-  If r_s > 0.7 across all 4 models -> the cheap NLL conclusions hold.
-  If 0.4 < r_s < 0.7 -> noisier; report alongside NLL.
-  If r_s < 0.4 -> NLL is not predictive; do new design work.
-
-Status: SKELETON. Implementation deferred until cross-model sweep
-verdict is in (~2026-06-13 evening). Then prioritize on whether E5
-or E3 owns the next GPU-hour slot.
+Metric specs frozen 2026-06-14:
+  GSM8K        : exact-match on final numeric answer, greedy decoding,
+                 max 256 new tokens, 0-shot CoT prompt.
+  HumanEval    : pass@1, greedy decoding, 512 new tokens, sandboxed
+                 exec with 5s timeout per test.
+  COMET-22     : unbabel-comet wmt22-comet-da reference-based.
+  IFEval       : strict-mode rubric verification on a 100-prompt subset
+                 from the IFEval public release (seed 20260518).
 """
 
 from __future__ import annotations
 
-import argparse
-import json
-import sys
-from pathlib import Path
-
-# --- Metric harness skeleton ---------------------------------------------
+import re
+from typing import Callable, Iterator
 
 
-class Metric:
-    """Base class. Subclasses implement evaluate(model, tokenizer, eval_data)
-    and return a scalar in [0, 1] (higher is better)."""
-
-    name: str = "metric"
-
-    def evaluate(self, model, tokenizer, eval_data) -> tuple[float, list[dict]]:
-        raise NotImplementedError
+# --- GSM8K extraction + scoring -----------------------------------------
 
 
-class GSM8KExactMatch(Metric):
-    """0-shot CoT, greedy decoding, max 256 new tokens. Extracts the
-    final numerical answer after '####' or after 'answer is' (the two
-    formats covered by GSM8K convention)."""
-    name = "gsm8k_em"
-
-    def evaluate(self, model, tokenizer, eval_data):
-        # TODO: implement greedy generation loop + numeric extraction
-        # See training/data_loaders.py for the GSM8K prompt format.
-        raise NotImplementedError
+_GSM8K_FINAL_PATTERNS = [
+    re.compile(r"####\s*([-+]?\d[\d,]*(?:\.\d+)?)"),         # "#### 123"
+    re.compile(r"answer\s+is\s+\$?([-+]?\d[\d,]*(?:\.\d+)?)", re.IGNORECASE),
+    re.compile(r"=\s*\$?([-+]?\d[\d,]*(?:\.\d+)?)\s*[.,!?]?\s*$"),  # ending equation
+    re.compile(r"\$?([-+]?\d[\d,]*(?:\.\d+)?)\s*[.,!?]?\s*$"),       # last number
+]
 
 
-class HumanEvalPass1(Metric):
-    """Pass@1 with greedy decoding. Sanitization: strip prompt prefix,
-    truncate at first 'def ' or 'class ' or '#' after the function
-    signature, exec inside a sandboxed subprocess with timeout 5s per
-    test."""
-    name = "humaneval_pass1"
+def gsm8k_extract_answer(text: str) -> str | None:
+    """Extract a normalized final numeric answer from generated text.
 
-    def evaluate(self, model, tokenizer, eval_data):
-        # TODO: standard openai/human-eval harness. Use the sandboxed
-        # exec to avoid side effects.
-        raise NotImplementedError
-
-
-class COMET22(Metric):
-    """Reference-based COMET score via unbabel-comet wmt22-comet-da.
-    Downloads the model on first run; cache at $HF_HOME."""
-    name = "comet22"
-
-    def evaluate(self, model, tokenizer, eval_data):
-        # TODO: pip install unbabel-comet (needs verification in conda env)
-        # then COMET(model='wmt22-comet-da').predict([...])
-        raise NotImplementedError
-
-
-class IFEvalStrict(Metric):
-    """Instruction-following: strict-mode verification against the
-    IFEval rubric. Fixed subset of 100 prompts (seed 20260518) from
-    the original release."""
-    name = "ifeval_strict"
-
-    def evaluate(self, model, tokenizer, eval_data):
-        # TODO: pull google-research/instruction_following_eval verifier
-        # and adapt to our prompt format.
-        raise NotImplementedError
+    GSM8K's gold-answer convention is `#### <number>`. We accept that, plus
+    several common chat-output variants (`The answer is X`, `= X` at end,
+    or just the last number in the response). Returns a normalized string
+    (commas stripped, trailing `.0` stripped) or None if extraction failed.
+    """
+    text = text.strip()
+    for pat in _GSM8K_FINAL_PATTERNS:
+        m = pat.search(text)
+        if m:
+            s = m.group(1).replace(",", "").strip()
+            # Normalize floating point: "3" == "3.0" == "3.00"
+            try:
+                v = float(s)
+                if abs(v - round(v)) < 1e-9:
+                    return str(int(round(v)))
+                return str(v)
+            except ValueError:
+                return s
+    return None
 
 
-METRICS_BY_TASK = {
-    "gsm8k": GSM8KExactMatch(),
-    "magicoder": HumanEvalPass1(),  # use HumanEval as the held-out code metric
-    "translation": COMET22(),
-    "alpaca": IFEvalStrict(),
+def gsm8k_score(pred_text: str, gold_text: str) -> int:
+    """Returns 1 if extracted predictions match gold, else 0."""
+    pred = gsm8k_extract_answer(pred_text)
+    gold = gsm8k_extract_answer(gold_text)
+    if pred is None or gold is None:
+        return 0
+    try:
+        return int(abs(float(pred) - float(gold)) < 1e-6)
+    except ValueError:
+        return int(pred == gold)
+
+
+# --- Greedy generation helper -------------------------------------------
+
+
+def greedy_generate(model, tokenizer, prompt: str, max_new_tokens: int) -> str:
+    """Greedy decode (do_sample=False, temperature ignored), return only the
+    newly generated text."""
+    import torch
+    device = next(model.parameters()).device
+    chat_msgs = [{"role": "user", "content": prompt}]
+    in_text = tokenizer.apply_chat_template(
+        chat_msgs, tokenize=False, add_generation_prompt=True)
+    in_ids = tokenizer(in_text, return_tensors="pt",
+                       add_special_tokens=False).input_ids.to(device)
+    in_len = in_ids.shape[1]
+    with torch.no_grad():
+        out = model.generate(
+            in_ids,
+            max_new_tokens=max_new_tokens,
+            do_sample=False,
+            num_beams=1,
+            temperature=1.0,
+            top_p=1.0,
+            pad_token_id=tokenizer.eos_token_id,
+            use_cache=True,
+        )
+    gen_ids = out[0, in_len:]
+    return tokenizer.decode(gen_ids, skip_special_tokens=True)
+
+
+# --- Per-task evaluators ------------------------------------------------
+
+
+def evaluate_gsm8k_em(model, tokenizer, eval_data: list[dict],
+                     max_new_tokens: int = 256,
+                     progress_every: int = 50,
+                     ) -> tuple[float, list[dict]]:
+    """eval_data: list of {prompt, answer} where answer is gold GSM8K
+    response containing `#### N`. Returns (accuracy, per_example_list).
+    """
+    correct = 0
+    per_example: list[dict] = []
+    model.eval()
+    for i, ex in enumerate(eval_data):
+        gen = greedy_generate(model, tokenizer, ex["prompt"], max_new_tokens)
+        score = gsm8k_score(gen, ex["answer"])
+        correct += score
+        per_example.append({
+            "score": score,
+            "pred": gsm8k_extract_answer(gen),
+            "gold": gsm8k_extract_answer(ex["answer"]),
+            "gen_text": gen[:200],   # truncated for storage
+        })
+        if (i + 1) % progress_every == 0:
+            acc_so_far = correct / (i + 1)
+            print(f"  [gsm8k_em] {i+1}/{len(eval_data)}  "
+                  f"running acc={acc_so_far:.3f}", flush=True)
+    accuracy = correct / len(eval_data) if eval_data else float("nan")
+    return accuracy, per_example
+
+
+def evaluate_humaneval_pass1(model, tokenizer, eval_data: list[dict],
+                              max_new_tokens: int = 512,
+                              ) -> tuple[float, list[dict]]:
+    """Stub: needs the openai/human-eval sandbox + test harness, deferred."""
+    raise NotImplementedError("HumanEval pass@1 not yet implemented")
+
+
+def evaluate_comet22(model, tokenizer, eval_data: list[dict],
+                     max_new_tokens: int = 256,
+                     ) -> tuple[float, list[dict]]:
+    """Stub: needs unbabel-comet pip install + model download, deferred."""
+    raise NotImplementedError("COMET-22 not yet implemented")
+
+
+def evaluate_ifeval_strict(model, tokenizer, eval_data: list[dict],
+                            max_new_tokens: int = 512,
+                            ) -> tuple[float, list[dict]]:
+    """Stub: needs google-research IFEval verifier port, deferred."""
+    raise NotImplementedError("IFEval strict not yet implemented")
+
+
+METRIC_FNS: dict[str, Callable] = {
+    "gsm8k_em": evaluate_gsm8k_em,
+    "humaneval_pass1": evaluate_humaneval_pass1,
+    "comet22": evaluate_comet22,
+    "ifeval_strict": evaluate_ifeval_strict,
 }
 
 
-# --- Analysis harness skeleton -------------------------------------------
+# --- Quick unit tests for GSM8K extraction ------------------------------
 
 
-def rank_correlation_nll_vs_metric(nll_table: dict, metric_table: dict,
-                                   model: str) -> float:
-    """Spearman correlation between excess NLL and excess metric drop
-    across methods for a given model."""
-    # TODO: import scipy.stats.spearmanr; align method order; return r_s.
-    raise NotImplementedError
-
-
-def main() -> int:
-    p = argparse.ArgumentParser()
-    p.add_argument("--config", required=True, type=Path,
-                   help="YAML config naming (model, merged-adapter ckpt, task)")
-    args = p.parse_args()
-    # TODO: load model+adapter, run METRICS_BY_TASK[task], write JSON.
-    raise NotImplementedError
+def _self_test() -> None:
+    cases = [
+        ("Let's see... 5+3 = 8. #### 8", "8"),
+        ("The answer is 42", "42"),
+        ("After computing: 2 + 2 = 4.", "4"),
+        ("So the result is 1.5\n#### 1.5", "1.5"),
+        ("I have no idea.", None),
+        ("Answer: $3,200", "3200"),
+    ]
+    for text, want in cases:
+        got = gsm8k_extract_answer(text)
+        assert got == want, f"extract({text!r}) = {got!r}, want {want!r}"
+    print("downstream_metrics._self_test: OK")
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    _self_test()
