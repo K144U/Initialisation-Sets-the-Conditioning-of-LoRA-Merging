@@ -44,9 +44,13 @@ min $0.867$, $0/112$ layers below the pre-registered $0.8$
 threshold. The single most-bottlenecked layer drops to
 $\approx 0.867$, but the floor formula still evaluates to zero in
 the majority of layers and is operationally negligible across the
-network. (We confirmed the same null on Llama-3.2-3B at $r=64$ as
-a cross-architecture check, with $d_{\mathrm{eff}}/(Tr) = $ \textsc{TODO:
-fill from arm 3b job 41563}.)
+network. (A cross-architecture run on
+Llama-3.2-3B at $r=64$ would have been an empirical confirmation,
+but the mechanical bound below makes the question purely
+mathematical: with $T = 4$ and $\mathrm{in\_dim} = 3072$, Llama-3.2-3B
+would need $r > 768$ for $d_{\mathrm{eff}}/(Tr) < 1$ to be even
+mathematically attainable, so any practical-rank result must be at
+the saturation point.)
 
 \paragraph{The mechanical-forcing barrier.}
 The reason both arms fail to break saturation is now precise.

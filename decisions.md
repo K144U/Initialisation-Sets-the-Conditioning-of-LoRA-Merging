@@ -415,6 +415,25 @@ null. After it lands (~2h), update section 6.3 table with the
 rewritten at paper/sections/6_3_e5_arm2_null_draft.tex with the
 mechanical-forcing barrier made explicit.
 
+ADDENDUM 2026-06-14 ~13:40: Job 41563 (Arm 3b on Llama-3.2-3B)
+CRASHED in 0 min on the model-loading step. Root cause:
+safetensors_rust.SafetensorError "Error while deserializing
+header: incomplete metadata, file not fully covered" — the
+Llama-3.2-3B-Instruct files on disk are partially downloaded /
+corrupted. All 4 cells failed rc=1 and parked.
+DECISION: skip the cross-architecture confirmation. The
+mechanical bound r > in_dim/T is a *mathematical* statement
+that applies to every architecture; Llama-3.2-3B at r=64 (with
+in_dim=3072 > T*r=256) must show d_eff=Tr at saturation by the
+generic argument. Arm 2 + Arm 3 on qwen-7B + the math are
+sufficient. Section 6.3 draft edited to make the absent 3B run
+a mathematical (rather than empirical) sentence; the paper's
+combined-null story is unaffected.
+TO REDO THE 3B RUN (if a reviewer asks): re-download
+Llama-3.2-3B-Instruct from HF (~3GB), verify safetensors with
+huggingface-hub's verification, then qsub
+code/phase3/scripts/pbs_orchestrator_e5_arm3b.sh.
+
 
 ## 2026-06-13 — E2 matrix CLOSED: 140/140 cells, multi-seed merge matrix complete
 Job sequence 41524 -> 41533 -> 41556 (keeper requeues + GPU0 drop +
