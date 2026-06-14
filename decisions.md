@@ -435,6 +435,69 @@ huggingface-hub's verification, then qsub
 code/phase3/scripts/pbs_orchestrator_e5_arm3b.sh.
 
 
+## 2026-06-14 — E7 b=2 mechanism: Prediction 2 CONFIRMED, Prediction 1 REJECTED
+Three-phase test of the master plan's "implicit-TIES" hypothesis.
+
+PHASE 1 (CPU, from 80-cell matrix at eval_matrix_seeds/):
+Per-(model, task, seed) dip_depth = excess[b=4] - excess[b=2] and
+ties_win = excess[TA] - excess[TIES]. Spearman across 32 cells:
+  overall rho = +0.960  (Pearson r = +0.951)
+  per model: llama 0.98, mistral 0.95, qwen 0.95, yi 0.81
+  per task:  alpaca 0.93, magicoder 0.95, translation 0.83;
+             gsm8k is a within-task null (both interventions reliably
+             help but the variation does not covary).
+Decision threshold (0.7) cleared. Master plan Prediction 2 CONFIRMED.
+
+PHASE 2a (CPU, from v1 adapters):
+Implicit sparsity at b=2 quantization, three metrics:
+  A (zero-bucket fraction): mean 0.50 across 4 models, ~uniform
+  B (frac with |post-quant| < 0.5 * |pre-quant|): ~0.00 (no coord
+    shrinks to less than half its magnitude under min-max quantization)
+  C (frac with quantization error exceeding |pre-quant|): mean 0.87,
+    ~uniform across models
+The sparsity LEVEL is high but constant across models; the small
+cross-model variance does not correlate with mean dip
+(max |r| = 0.43, metric A). Sparsity is a near-universal property
+of the b=2 quantization scheme, not a per-model effect.
+
+PHASE 2b (8 eval cells, job 41575, 4 models x 2 densities):
+Explicit magnitude pruning at the densities matching the Phase 2a
+sparsity (rho=0.50 matches metric A, rho=0.13 matches metric C),
+plain sum + SVD-truncate. Worst-task excess per (model, density):
+  llama:   rho=0.50 -> 0.225  rho=0.13 -> 0.288   (b=2 0.108  b=4 0.217)
+  mistral: rho=0.50 -> 0.155  rho=0.13 -> 0.251   (b=2 0.058  b=4 0.138)
+  qwen:    rho=0.50 -> 0.118  rho=0.13 -> 0.229   (b=2 0.019  b=4 0.105)
+  yi:      rho=0.50 -> 0.088  rho=0.13 -> 0.151   (b=2 0.059  b=4 0.098)
+At rho=0.50, 0/4 models reproduce the b=2 dip; only yi shows a partial
+result (between b=2 and b=4). At rho=0.13, every cell underperforms
+even b=4. Magnitude pruning at the implicit-sparsity-matched density
+DOES NOT reproduce the b=2 dip. Master plan Prediction 1 REJECTED.
+
+SHARPENED HYPOTHESIS for paper:
+The b=2/TIES covariance is real (Prediction 2), but it is NOT mediated
+by implicit sparsity (Prediction 1). What is shared between min-max
+scalar quantization and trim+sign-elect+disjoint-mean? Two open
+candidates: (i) uniform shrinkage of large coefficients via tensor-level
+distributional re-anchoring; (ii) per-tensor (rather than per-coordinate)
+calibration. Disentangling these is a mechanism follow-up. The current
+finding is publishable as-is: the dip is real, covaries with TIES, and
+the simple "implicit-pruning" explanation is ruled out.
+
+CONSEQUENCE FOR PAPER: section 6.x on b=2 mechanism is sharpened from
+"hypothesis stands; sparsity drives the dip" to "covariance confirmed;
+sparsity is NOT the mechanism; structural / distributional cause is
+identified as a follow-up question." This is the master plan §E7
+decision rule's other branch — "hypothesis stays in 7.1 now with
+evidence against it." Paper section drafted at
+paper/sections/6_4_e7_b2_mechanism_draft.tex.
+
+NEXT: pivot to E3 (downstream metrics: GSM8K em / HumanEval pass@1 /
+COMET-22 / IFEval strict). This is the big reviewer-defense item —
+verify that the NLL-based conclusions (TIES dominates, b=2 dip,
+cross-model ordering) hold under task metrics. Master plan budget
+80-120 GPU-h.
+
+
 ## 2026-06-13 — E2 matrix CLOSED: 140/140 cells, multi-seed merge matrix complete
 Job sequence 41524 -> 41533 -> 41556 (keeper requeues + GPU0 drop +
 walltime resume). 140 cells = 4 models (llama/mistral/qwen/yi) x
