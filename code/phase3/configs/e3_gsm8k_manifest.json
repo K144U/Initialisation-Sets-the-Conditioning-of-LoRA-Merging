@@ -1,0 +1,122 @@
+[
+ {
+  "name": "e3g_llama31_8b_ta",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/llama31_8b__ta__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/llama31_8b__ta__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_llama31_8b_ties",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/llama31_8b__ties__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/llama31_8b__ties__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_llama31_8b_dare",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/llama31_8b__dare__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/llama31_8b__dare__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_llama31_8b_knots",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/llama31_8b__knots__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/llama31_8b__knots__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_llama31_8b_tvq_b2",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/llama31_8b__tvq_b2__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/llama31_8b__tvq_b2__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_mistral_7b_ta",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/mistral_7b__ta__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/mistral_7b__ta__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_mistral_7b_ties",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/mistral_7b__ties__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/mistral_7b__ties__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_mistral_7b_dare",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/mistral_7b__dare__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/mistral_7b__dare__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_mistral_7b_knots",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/mistral_7b__knots__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/mistral_7b__knots__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_mistral_7b_tvq_b2",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/mistral_7b__tvq_b2__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/mistral_7b__tvq_b2__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_qwen25_7b_ta",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/qwen25_7b__ta__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/qwen25_7b__ta__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_qwen25_7b_ties",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/qwen25_7b__ties__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/qwen25_7b__ties__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_qwen25_7b_dare",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/qwen25_7b__dare__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/qwen25_7b__dare__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_qwen25_7b_knots",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/qwen25_7b__knots__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/qwen25_7b__knots__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_qwen25_7b_tvq_b2",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/qwen25_7b__tvq_b2__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/qwen25_7b__tvq_b2__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_yi15_9b_ta",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/yi15_9b__ta__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/yi15_9b__ta__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_yi15_9b_ties",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/yi15_9b__ties__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/yi15_9b__ties__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_yi15_9b_dare",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/yi15_9b__dare__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/yi15_9b__dare__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_yi15_9b_knots",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/yi15_9b__knots__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/yi15_9b__knots__gsm8k_em.json",
+  "min_free_gb": 25.0
+ },
+ {
+  "name": "e3g_yi15_9b_tvq_b2",
+  "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3_gsm8k/yi15_9b__tvq_b2__gsm8k_em.yaml",
+  "done": "results/phase3/eval_e3_gsm8k/yi15_9b__tvq_b2__gsm8k_em.json",
+  "min_free_gb": 25.0
+ }
+]
