@@ -6,19 +6,18 @@ max_seq_length: 1024
 seed: 20260615
 min_free_gb: 25
 adapter_specs:
-- name: translation
-  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/flores/v1
+- name: gsm8k
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/gsm8k/v1
   task_cfg:
-    name: translation
-    dataset: wmt/wmt19
-    config: de-en
+    name: gsm8k
+    dataset: openai/gsm8k
+    config: main
     split_train: train
-    split_eval: validation
+    split_eval: test
     n_train: 7500
     n_eval: 1000
-    src_lang: en
-    tgt_lang: de
-    streaming: true
+    prompt_field: question
+    answer_field: answer
 - name: xsum
   dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/e6_pilot/xsum/v1
   task_cfg:

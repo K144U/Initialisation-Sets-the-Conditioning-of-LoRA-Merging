@@ -1,7 +1,6 @@
 base_model: /home/sanjay.g/projects/rdmerge/models/Yi-1.5-9B-Chat
-method: knots
-method_kwargs:
-  inner_combination: linear
+method: task_arithmetic
+method_kwargs: {}
 max_seq_length: 1024
 seed: 20260615
 min_free_gb: 25
@@ -66,18 +65,6 @@ adapter_specs:
     n_eval: 1000
     prompt_field: problem
     answer_field: solution
-- name: math
-  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/e6_pilot/math/v1
-  task_cfg:
-    name: math
-    dataset: hendrycks/competition_math
-    config: null
-    split_train: train
-    split_eval: test
-    n_train: 7500
-    n_eval: 1000
-    prompt_field: problem
-    answer_field: solution
 - name: translation
   dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/flores/v1
   task_cfg:
@@ -103,5 +90,5 @@ adapter_specs:
     n_eval: 1000
     prompt_field: document
     answer_field: summary
-output_path: /home/sanjay.g/projects/rdmerge/results/phase3/eval_e6_pilot/yi15_9b__T8_all__knots.json
+output_path: /home/sanjay.g/projects/rdmerge/results/phase3/eval_e6_pilot/yi15_9b__T7_all__ta.json
 loader: plain

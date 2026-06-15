@@ -31,18 +31,6 @@ adapter_specs:
     n_eval: 1000
     prompt_field: instruction
     answer_field: response
-- name: gsm8k
-  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/gsm8k/v1
-  task_cfg:
-    name: gsm8k
-    dataset: openai/gsm8k
-    config: main
-    split_train: train
-    split_eval: test
-    n_train: 7500
-    n_eval: 1000
-    prompt_field: question
-    answer_field: answer
 - name: magicoder
   dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/magicoder/v1
   task_cfg:
@@ -55,5 +43,18 @@ adapter_specs:
     n_eval: 1000
     prompt_field: problem
     answer_field: solution
+- name: translation
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/flores/v1
+  task_cfg:
+    name: translation
+    dataset: wmt/wmt19
+    config: de-en
+    split_train: train
+    split_eval: validation
+    n_train: 7500
+    n_eval: 1000
+    src_lang: en
+    tgt_lang: de
+    streaming: true
 output_path: /home/sanjay.g/projects/rdmerge/results/phase3/eval_e6_pilot/yi15_9b__T4_rand0__dare.json
 loader: plain

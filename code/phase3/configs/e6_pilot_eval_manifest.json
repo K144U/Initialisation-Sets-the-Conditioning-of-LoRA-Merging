@@ -288,39 +288,39 @@
   "min_free_gb": 25.0
  },
  {
-  "name": "e6e_yi_T8_all_ta",
-  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e6_pilot/yi15_9b__T8_all__ta.yaml",
-  "done": "results/phase3/eval_e6_pilot/yi15_9b__T8_all__ta.json",
+  "name": "e6e_yi_T7_all_ta",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e6_pilot/yi15_9b__T7_all__ta.yaml",
+  "done": "results/phase3/eval_e6_pilot/yi15_9b__T7_all__ta.json",
   "min_free_gb": 25.0
  },
  {
-  "name": "e6e_yi_T8_all_ties",
-  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e6_pilot/yi15_9b__T8_all__ties.yaml",
-  "done": "results/phase3/eval_e6_pilot/yi15_9b__T8_all__ties.json",
+  "name": "e6e_yi_T7_all_ties",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e6_pilot/yi15_9b__T7_all__ties.yaml",
+  "done": "results/phase3/eval_e6_pilot/yi15_9b__T7_all__ties.json",
   "min_free_gb": 25.0
  },
  {
-  "name": "e6e_yi_T8_all_dare",
-  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e6_pilot/yi15_9b__T8_all__dare.yaml",
-  "done": "results/phase3/eval_e6_pilot/yi15_9b__T8_all__dare.json",
+  "name": "e6e_yi_T7_all_dare",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e6_pilot/yi15_9b__T7_all__dare.yaml",
+  "done": "results/phase3/eval_e6_pilot/yi15_9b__T7_all__dare.json",
   "min_free_gb": 25.0
  },
  {
-  "name": "e6e_yi_T8_all_knots",
-  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e6_pilot/yi15_9b__T8_all__knots.yaml",
-  "done": "results/phase3/eval_e6_pilot/yi15_9b__T8_all__knots.json",
+  "name": "e6e_yi_T7_all_knots",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e6_pilot/yi15_9b__T7_all__knots.yaml",
+  "done": "results/phase3/eval_e6_pilot/yi15_9b__T7_all__knots.json",
   "min_free_gb": 25.0
  },
  {
-  "name": "e6e_yi_T8_all_tvq_b2",
-  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e6_pilot/yi15_9b__T8_all__tvq_b2.yaml",
-  "done": "results/phase3/eval_e6_pilot/yi15_9b__T8_all__tvq_b2.json",
+  "name": "e6e_yi_T7_all_tvq_b2",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e6_pilot/yi15_9b__T7_all__tvq_b2.yaml",
+  "done": "results/phase3/eval_e6_pilot/yi15_9b__T7_all__tvq_b2.json",
   "min_free_gb": 25.0
  },
  {
-  "name": "e6e_yi_T8_all_rd_ridge",
-  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e6_pilot/yi15_9b__T8_all__rd_ridge.yaml",
-  "done": "results/phase3/eval_e6_pilot/yi15_9b__T8_all__rd_ridge.json",
+  "name": "e6e_yi_T7_all_rd_ridge",
+  "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e6_pilot/yi15_9b__T7_all__rd_ridge.yaml",
+  "done": "results/phase3/eval_e6_pilot/yi15_9b__T7_all__rd_ridge.json",
   "min_free_gb": 25.0
  }
 ]
