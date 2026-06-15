@@ -1,0 +1,3120 @@
+{
+  "meta": {
+    "git_sha": "4a68aba8db92bbbdcc344702b068d305f71e6a6e",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "41578.jiit-master",
+    "wallclock_iso": "2026-06-14T21:59:42+0200",
+    "wallclock_unix": 1781467182.341346,
+    "config_hash": "fcee2b0beef18962",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Qwen2.5-7B-Instruct",
+      "method": "task_arithmetic",
+      "method_kwargs": {},
+      "max_seq_length": 1024,
+      "seed": 20260518,
+      "min_free_gb": 25,
+      "adapter_specs": [
+        {
+          "name": "gsm8k",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/gsm8k/v1",
+          "task_cfg": {
+            "name": "gsm8k",
+            "dataset": "openai/gsm8k",
+            "config": "main",
+            "split_train": "train",
+            "split_eval": "test",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "prompt_field": "question",
+            "answer_field": "answer"
+          }
+        },
+        {
+          "name": "alpaca",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/alpaca/v1",
+          "task_cfg": {
+            "name": "alpaca",
+            "dataset": "yahma/alpaca-cleaned",
+            "config": null,
+            "split_train": "train",
+            "split_eval": "train",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "prompt_field": "instruction",
+            "answer_field": "output"
+          }
+        },
+        {
+          "name": "magicoder",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/magicoder/v1",
+          "task_cfg": {
+            "name": "magicoder",
+            "dataset": "ise-uiuc/Magicoder-OSS-Instruct-75K",
+            "config": null,
+            "split_train": "train",
+            "split_eval": "train",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "prompt_field": "problem",
+            "answer_field": "solution"
+          }
+        },
+        {
+          "name": "translation",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/flores/v1",
+          "task_cfg": {
+            "name": "translation",
+            "dataset": "wmt/wmt19",
+            "config": "de-en",
+            "split_train": "train",
+            "split_eval": "validation",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "src_lang": "en",
+            "tgt_lang": "de",
+            "streaming": true
+          }
+        }
+      ],
+      "output_path": "/home/sanjay.g/projects/rdmerge/results/phase3/eval_e3_gsm8k/qwen25_7b__ta__gsm8k_em.json",
+      "metric": "gsm8k_em",
+      "metric_kwargs": {
+        "max_new_tokens": 256
+      },
+      "metric_task_spec": "gsm8k",
+      "n_eval_metric": 500,
+      "loader": "plain"
+    }
+  },
+  "method": "task_arithmetic",
+  "method_kwargs": {},
+  "weights": [
+    0.25,
+    0.25,
+    0.25,
+    0.25
+  ],
+  "base_model": "/home/sanjay.g/projects/rdmerge/models/Qwen2.5-7B-Instruct",
+  "adapter_dirs": [
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/gsm8k/v1",
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/alpaca/v1",
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/magicoder/v1",
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/flores/v1"
+  ],
+  "metric": "gsm8k_em",
+  "metric_kwargs": {
+    "max_new_tokens": 256
+  },
+  "metric_task": "gsm8k",
+  "metric_score": 0.212,
+  "n_eval_metric": 500,
+  "per_example": [
+    {
+      "score": 1,
+      "pred": "98",
+      "gold": "98",
+      "gen_text": "A gallon jar costs $2 more than a half-gallon jar, meaning a half-gallon jar costs $5 - $2 = $3.\nThe total cost for 10 gallons is 10*$5 = $50\nThe total cost for 16 half-gallons is 16*$3 = $48\nThe tota"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "36",
+      "gen_text": "Let's break down the problem step-by-step:\n\n1. Josh worked out for 4 hours every week, except for some specific weeks.\n2. He worked out for 5 hours for two consecutive weeks.\n3. He worked out for 6 ho"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "12",
+      "gen_text": "To determine how many students are good at math, we need to consider the information given about the students' performance in math and English.\n\n1. There are 20 students in total.\n2. 5 students are go"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "120",
+      "gen_text": "If each of the 40 restaurants receives 2 pounds of carrots, then the total amount of carrots that will be distributed is:\n\n40 restaurants * 2 pounds/restaurant = 80 pounds\n\nSince there are 200 pounds "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "40",
+      "gen_text": "To find the percentage of spools that are blue, we first need to determine the total number of spools and then calculate how many of those are blue.\n\nCandy has:\n- 15 light blue spools\n- 45 dark blue s"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "60",
+      "gen_text": "Martha started collecting shells when she was 5 years old and continued to collect one shell per month until her 10th birthday. This means she collected shells for 10 - 5 = 5 years.\n\nSince there are 1"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "67",
+      "gen_text": "To find out how many kilometers farther Cho hiked, we need to calculate the distance each person hiked and then subtract the smaller distance from the larger one.\n\nFirst, let's calculate the distance "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "172",
+      "gen_text": "Let's denote the number of chairs Ophelia has as C. According to the problem, Ophelia has 2 fewer sofas than chairs, so she has C - 2 sofas.\n\nJenna has 3 times as many chairs as Ophelia, which means J"
+    },
+    {
+      "score": 1,
+      "pred": "36",
+      "gold": "36",
+      "gen_text": "The total cost of the two shirts without any discount is 2 * $30 = $60.\nThe discount on the two shirts is 40/100 * $60 = $24.\nSo, Davos only paid $60 - $24 = $36 for the two shirts.\n\nTherefore, the an"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "3",
+      "gen_text": "First, let's calculate the total cost of the fruits Jamaar has already purchased.\n\n- Cost of 3 peaches: \\(3 \\times \\$0.50 = \\$1.50\\)\n- Cost of 4 pears: \\(4 \\times \\$0.50 = \\$2.00\\)\n- Cost of 2 kiwis: "
+    },
+    {
+      "score": 1,
+      "pred": "428",
+      "gold": "428",
+      "gen_text": "Half of Pierson's score is 278/2 = 139.\nNikita scored 11 more than that, or 139 + 11 = 150.\nIn total, they scored 278 + 150 = 428.\n\nTherefore, the answer is 428."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "17",
+      "gen_text": "To determine how many stickers Charlie has left, we need to follow these steps:\n\n1. Start with the initial number of stickers Charlie had.\n2. Add the number of stickers he bought from the store.\n3. Ad"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "80",
+      "gen_text": "To determine the total number of leftover burritos from the picnic, we need to follow these steps:\n\n1. Calculate the total number of burritos consumed by the students.\n2. Add the number of burritos ea"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "30",
+      "gen_text": "Nani is 8 years old.\nHis brother is twice his age, so he is 8 * 2 = 16 years old.\nNani's sister is 25% younger than him, which means she is 8 - (25/100) * 8 = 8 - 2 = 6 years old.\nThe total age of all"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "-3",
+      "gen_text": "The temperature dropped from 2 degrees Celsius to 2 - 8 = -6 degrees Celsius.\nThen it increased by 3 degrees Celsius, so the final temperature was -6 + 3 = -3 degrees Celsius.\n\nTherefore, the temperat"
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "In one minute, Ana can peel 1/3 of an orange and Jane can peel 1/4 of an orange. In an hour, Ana can peel 60 * (1/3) = 20 oranges. In an hour, Jane can peel 60 * (1/4) = 15 oranges. The difference is "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "2",
+      "gen_text": "Let's calculate the amount of root beer remaining after each event:\n\n- Fred initially made 24 gallons.\n- His children drank 4 gallons, leaving 24 - 4 = 20 gallons.\n- His wife spilled 7 gallons, leavin"
+    },
+    {
+      "score": 1,
+      "pred": "33",
+      "gold": "33",
+      "gen_text": "To determine the percentage chance that a randomly picked card will be a water type after James loses some cards and buys new ones, we need to follow these steps:\n\n1. Calculate the new number of each "
+    },
+    {
+      "score": 0,
+      "pred": "1",
+      "gold": "30",
+      "gen_text": "Let's denote the number of blue jelly beans as \\( B \\). According to the problem, the number of red jelly beans is 1% fewer than the number of blue jelly beans, so the number of red jelly beans is \\( "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "85000",
+      "gen_text": "First, we need to determine the calorie content for each type of mini pastry.\n\nFor the mini cinnamon rolls:\n- A normal cinnamon roll has 600 calories.\n- A mini cinnamon roll has 1/3rd of the calories "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "138",
+      "gen_text": "Let's break down the problem step by step.\n\n1. **Number of lines in the song:**\n   - The song has 54 lines.\n\n2. **Number of lines in the first scene:**\n   - The first scene has twice the number of lin"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "38",
+      "gen_text": "To find out how much money your mom spent at the gardening shop, we need to add the cost of the pots and the cost of the garden soil, then subtract the amount saved from the coupon.\n\nThe cost of the p"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "7200",
+      "gen_text": "To determine how much money Derrick makes in June from selling all the doughnuts, we need to follow these steps:\n\n1. Calculate the total number of doughnuts made each day.\n2. Determine the total numbe"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "39",
+      "gen_text": "Let's break down the problem step by step.\n\n1. Chris starts with 100 math problems.\n2. On Monday, he completes 12 problems. So, the number of problems left after Monday is:\n   \\[\n   100 - 12 = 88\n   \\"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "20",
+      "gen_text": "To determine how much money Mike will have left over after purchasing the jeans, we need to follow these steps:\n\n1. Calculate the discount amount.\n2. Subtract the discount from the original price to f"
+    },
+    {
+      "score": 1,
+      "pred": "375",
+      "gold": "375",
+      "gen_text": "Joe throws 25*3=75 punches per round.\nSo he threw 75*5=375 punches in the fight.\n\nTherefore, the answer is 375."
+    },
+    {
+      "score": 1,
+      "pred": "30",
+      "gold": "30",
+      "gen_text": "The Smith twins together found 30 + 30 = 60 eggs.\nThere were 100 - 60 = 40 eggs left for the friends to find.\nSince 10 of those eggs were not found, the friends found 40 - 10 = 30 eggs.\n\nTherefore, th"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "132",
+      "gen_text": "To determine the total cost of Charlotte's order after the discount, we need to follow these steps:\n\n1. Calculate the total cost of the items before the discount.\n2. Apply the 20% discount to the tota"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "10",
+      "gen_text": "To determine the percentage increase in daily earnings, we need to follow these steps:\n\n1. Calculate the daily earnings from selling tractors.\n2. Calculate the daily earnings from selling silos.\n3. Fi"
+    },
+    {
+      "score": 0,
+      "pred": "87",
+      "gold": "13",
+      "gen_text": "Let's denote the following variables:\n\n- \\( B \\) for your brother's age,\n- \\( S \\) for your sister's age,\n- \\( Y \\) for your age.\n\nFrom the problem statement, we have the following relationships:\n\n1. "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "5",
+      "gen_text": "To find out how many pounds of insects the flock of ten ducks need per day, we can follow these steps:\n\n1. Calculate the total amount of insects needed for the entire flock in one week.\n2. Divide that"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "9",
+      "gen_text": "To determine how many more hours the local firefighters need to fundraise to reach their goal, we can follow these steps:\n\n1. **Identify the total goal and the amount already raised:**\n   - Total goal"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "43",
+      "gen_text": "Let's break down the problem step by step.\n\n1. We know there are 232 pieces of Starburts in total.\n2. There are 54 red candies.\n3. The number of orange candies is twice the number of red candies: 2 * "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "16",
+      "gen_text": "Each tray can hold 24 eggs, so 2 trays can hold 24 * 2 = 48 eggs.\nJaime has 64 eggs, but only 48 can fit in the trays, so 64 - 48 = 16 eggs will not fit on the trays.\n\nTherefore, Jaime will not be abl"
+    },
+    {
+      "score": 1,
+      "pred": "6",
+      "gold": "6",
+      "gen_text": "There are 27 / 3 = 9 unicorns in Scotland.\nThere are 9 * (2/3) = 6 female Scottish unicorns.\n\nTherefore, the answer is 6."
+    },
+    {
+      "score": 1,
+      "pred": "45",
+      "gold": "45",
+      "gen_text": "To determine the total number of fruit roll-ups eaten by Marcell and Beatrice, we need to calculate the area of each roll-up sheet and then sum these areas.\n\nFirst, let's calculate the area of Beatric"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "120",
+      "gen_text": "Let's start by defining the variables:\n- Let \\( C_f \\) be the number of cows on the farm.\n- Let \\( S_f \\) be the number of sheep on the farm.\n- Let \\( C_z \\) be the number of cows in the zoo.\n- Let \\("
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "48",
+      "gen_text": "To determine how many grams of chips you can eat while staying within your daily calorie target, we need to follow these steps:\n\n1. **Calculate the total number of calories in the entire bag:**\n   - E"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "36",
+      "gen_text": "The sisters currently have a total of 64 signatures (20 + 44 = 64). They want to reach 100 signatures by the end of the summer, so they need to collect 36 more signatures (100 - 64 = 36)."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "16",
+      "gen_text": "First, we need to determine how many feet Julia rows in 64 seconds. We know that it takes her 16 seconds to row 20 feet. Therefore, we can calculate the number of feet she rows in 64 seconds as follow"
+    },
+    {
+      "score": 0,
+      "pred": "220",
+      "gold": "200",
+      "gen_text": "Allan has 2 * 40 = 80 corns in his house.\nHe bought 60 + 40 = 100 cannolis from the store.\nThe total number of cannolis he has now is 100 + 40 = 140\nThe combined total of the number of corns and canno"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "450",
+      "gen_text": "To calculate the amount of money Antonella earned for selling goods worth $2500, we need to break down her earnings into two parts: the commission for the first $1000 and the commission for the remain"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "36",
+      "gen_text": "First, let's calculate the time Jim spends on TV and reading each day.\n\nHe watches TV for 2 hours.\nHe reads for half as long as he watches TV, so he reads for 1 hour (2 hours / 2 = 1 hour).\n\nIn total,"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1100",
+      "gen_text": "To determine Mark's profit, we need to calculate his total expenses and his total revenue from selling the cards, then find the difference between the two.\n\nFirst, let's calculate Mark's total expense"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "15",
+      "gen_text": "Let's denote the number of sheep as S and the number of geese as G.\n\nSheep have 4 legs each and 1 head each, while geese have 2 legs each and 1 head each.\n\nWe can set up two equations based on the inf"
+    },
+    {
+      "score": 1,
+      "pred": "160",
+      "gold": "160",
+      "gen_text": "The cost of the six-inch cold-cut combo sub is 3 * $40 = $120.\nSo, the total cost for lunch today at Subway is $40 + $120 = $160."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "10",
+      "gen_text": "Uncle Franky has 2 boxes of apples, and each box contains 40 apples. So, he has a total of:\n\n2 boxes * 40 apples/box = 80 apples\n\nHe plans to pack the apples with 8 apples in one pack. To find out how"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "360",
+      "gen_text": "First, let's calculate the total time Vince spent stapling reports. He started at 8:00 AM and ended at 11:00 PM, which is a span of 15 hours.\n\nNow, we need to convert this time into minutes because Vi"
+    },
+    {
+      "score": 0,
+      "pred": "0",
+      "gold": "30",
+      "gen_text": "To determine the total amount of meat consumed by the basketball team, we need to calculate the weight of the meat eaten by each player and then sum these amounts.\n\n1. **First Player:**\n   - Ate a 6-o"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "20",
+      "gen_text": "Let's break down the problem step by step:\n\n1. John has 2 houses.\n2. Each house has 3 bedrooms.\n3. Each bedroom has 2 windows.\n4. There are an additional 4 windows in each house that are not connected"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "26",
+      "gen_text": "To determine the total number of gifts Cherrie bought, we need to break down the problem step by step.\n\nFirst, let's calculate the number of gifts Cherrie bought for her friends:\n- She has 2 friends w"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "31",
+      "gen_text": "To find the total dollar amount in the jar, we need to calculate the value of each type of coin and then sum them up.\n\n1. **Quarters:**\n   - Each quarter is worth $0.25.\n   - Justin has 32 quarters.\n "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "25",
+      "gen_text": "To determine how many days Mark needs to save enough money to buy the bike, we can follow these steps:\n\n1. **Identify the total amount needed for the bike:**\n   \\[\n   \\text{Total cost of the bike} = \\"
+    },
+    {
+      "score": 1,
+      "pred": "3",
+      "gold": "3",
+      "gen_text": "Zack's locker is 24 / 2 = 12 cubic inches.\nPeter's locker is 12 / 4 = 3 cubic inches.\n\nTherefore, the answer is 3."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "9",
+      "gen_text": "Frederick has 10 plants.\n\nToni has 60% more plants than Frederick, which means Toni has 10 + (60/100 * 10) = 10 + 6 = 16 plants.\n\nShondra has 7 fewer plants than Toni, so she has 16 - 7 = 9 plants.\n\nT"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "25",
+      "gen_text": "Let's denote Carver's son's age as S.\n\nAccording to the information given, Carver is 5 years less than twice his son's age. We can write this as an equation:\n\n2S - 5 = 45\n\nNow we need to solve for S:\n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "840",
+      "gen_text": "To calculate the total number of articles published by both websites in February, we need to multiply the average number of articles each website publishes per day by the number of days in February.\n\n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1",
+      "gen_text": "First, we need to determine the total cost of 4 packs of bagels before any discount is applied. Since each pack costs $10.00, the cost for 4 packs is:\n\n\\[ 4 \\times 10 = 40 \\text{ dollars} \\]\n\nNext, we"
+    },
+    {
+      "score": 1,
+      "pred": "306",
+      "gold": "306",
+      "gen_text": "To calculate the total cost of Ali's order, we need to determine how many 50 kg bags he needs and then multiply that number by the cost per bag.\n\nFirst, let's find out how many 50 kg bags are needed f"
+    },
+    {
+      "score": 1,
+      "pred": "1170",
+      "gold": "1170",
+      "gen_text": "The total cost of the materials is $600 + $300 = $900.\nThe premium is 30/100 * $900 = $270.\nSo James paid $900 + $270 = $1170.\n\nTherefore, the answer is 1170."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "250",
+      "gen_text": "Two years ago, Leo had 100 stickers.\nLast year, he collected 50 stickers, so his total became 100 + 50 = 150 stickers.\nThis year, he collected twice the number of stickers as last year, which is 2 * 5"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "440",
+      "gen_text": "Charlie's standard rate is $80 per hour for lessons. For veterans, he reduces his rate by 25%. \n\nTo calculate the reduced rate for veterans:\n- The reduction is 25% of $80.\n- 25% of $80 = 0.25 * $80 = "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "50",
+      "gen_text": "Argo initially has 200 toys. After giving away 40 toys to Alyssa, he has 200 - 40 = 160 toys left. Then, after giving away 80 toys to Bonnie, he has 160 - 80 = 80 toys left. Finally, after giving away"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "227",
+      "gen_text": "To determine how long it will take Andy to string all 12 racquets, we need to calculate the time required for each type of string and then sum these times.\n\nFirst, let's calculate the time needed for "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "750",
+      "gen_text": "Teddy finished half of the first 500 piece puzzle, which is 250 pieces. Then he finished the second 500 piece puzzle, which is all 500 pieces.\n\nSo in total, Teddy placed 250 + 500 = 750 puzzle pieces "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "7",
+      "gen_text": "Let's break down the problem step by step to find out how much Gus spent on the apple pie.\n\nFirst, we know that Gus spent a total of $20.00 at the grocery store. We also know the costs of the other it"
+    },
+    {
+      "score": 1,
+      "pred": "2",
+      "gold": "2",
+      "gen_text": "To find the selling price per watermelon, we first need to calculate the total selling price of all the watermelons.\n\nThe vendor made a 25% profit on the purchase price of $80. To find the profit amou"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "17",
+      "gen_text": "There are 25 oranges in total. Out of these, 1 is bad, 20% are unripe, 2 are sour, and the rest are good.\n\nFirst, let's calculate how many oranges are unripe: 20% of 25 = (20/100) * 25 = 5 oranges\n\nNo"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "20",
+      "gen_text": "To determine how many kids in Gina's class are not allergic to anything, we need to use the principle of inclusion and exclusion to find out how many kids are allergic to at least one of the substance"
+    },
+    {
+      "score": 0,
+      "pred": "76",
+      "gold": "803",
+      "gen_text": "To calculate the monthly payment, we need to first determine the total interest that Karan will have to pay over the five-month period.\n\nThe formula for simple interest is:\n\nInterest = Principal \u00d7 Rat"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "40",
+      "gen_text": "To find the average number of birds Mack saw per day, we need to add up the total number of birds he saw over the week and then divide that number by the number of days.\n\nOn days one and two, Mack saw"
+    },
+    {
+      "score": 1,
+      "pred": "85",
+      "gold": "85",
+      "gen_text": "The baseball coach spent 9 * $3 = $27 on baseballs.\nThe basketball coach spent 8 * $14 = $112 on basketballs.\nThe basketball coach spent $112 - $27 = $85 more than the baseball coach.\n\nTherefore, the "
+    },
+    {
+      "score": 1,
+      "pred": "300",
+      "gold": "300",
+      "gen_text": "The total weight of onions is 4 * 50 = 200 pounds.\nThe total cost is 200 * $1.50 = $300.\n\nTherefore, the answer is 300."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "32",
+      "gen_text": "First, we need to determine the total amount of money Ali has initially. He has four $10 bills and six $20 bills. The value of the $10 bills is calculated as follows:\n\n\\[4 \\times 10 = 40\\]\n\nThe value "
+    },
+    {
+      "score": 1,
+      "pred": "10",
+      "gold": "10",
+      "gen_text": "Out of the 100 riders, 25% can stay upright, which means 100 * 0.25 = 25 riders can stay upright.\nOf these riders, 60% are women, so 25 * 0.60 = 15 women can stay upright.\nThis means that 25 - 15 = 10"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1218",
+      "gen_text": "Mamou has given out a total of 64 + 30 + 48 = 142 meals.\nShe has 1,360 - 142 = 1,218 meals left to distribute."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "410",
+      "gen_text": "To find the average total distance spat, we first need to calculate the total distance spat by both Zoey and Sydney.\n\nFor Zoey:\n- She has 40 seeds.\n- Each seed is spat 10 feet.\n- So, the total distanc"
+    },
+    {
+      "score": 1,
+      "pred": "34",
+      "gold": "34",
+      "gen_text": "There are 9 + 5 = 14 blue sticks.\nThere are 14 - 3 = 11 yellow sticks.\nTherefore, they have 9 + 14 + 11 = 34 sticks.\n\nTherefore, the answer is 34."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "14",
+      "gen_text": "Leila spent 3 * $2 = $6 on cucumbers.\nJack spent 5 * $1 = $5 on tomatoes.\nChase spent $3 on lettuce.\nThe three of them together spent $6 + $5 + $3 = $14 to make their salads for the potluck."
+    },
+    {
+      "score": 1,
+      "pred": "100",
+      "gold": "100",
+      "gen_text": "The haircut cost 2 * 30 = $60.\nSo the total cost was 60 + 40 = $100.\n\nTherefore, the answer is 100."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "64",
+      "gen_text": "To determine how much Deandre will earn from selling all the tunas, we need to follow these steps:\n\n1. Calculate the total weight of the tunas.\n2. Determine the total earnings based on the price per k"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "104",
+      "gen_text": "To calculate the total number of hours Meredith spent writing articles in the three days, we need to first determine how many articles she wrote each day.\n\nOn Monday, she wrote 5 articles.\nOn Tuesday,"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "300",
+      "gen_text": "Let's denote the cost of the computer as C, the cost of each monitor as M, and the cost of the printer as P.\n\nAccording to the problem, we have:\n\nC = $1,100 (cost of the computer)\nP = C - $400 (the pr"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "16",
+      "gen_text": "To find the total length of the glue sticks that are not used, we need to calculate the amount of each glue stick that is not used and then sum these amounts.\n\nFirst, let's determine the length of glu"
+    },
+    {
+      "score": 1,
+      "pred": "15",
+      "gold": "15",
+      "gen_text": "Half of the rooms is 90 / 2 = 45 rooms.\nIt will take 20 * 45 = 900 minutes to clean half the rooms.\nThere are 60 minutes in an hour, so it will take 900 / 60 = 15 hours to clean half the rooms.\n\nThere"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "157",
+      "gen_text": "To calculate the total amount of money the store will receive after selling all the balls, we need to multiply the number of each type of ball by its respective price and then add up the totals.\n\nRed "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "45",
+      "gen_text": "To determine how long it will take Emily to peel and cook 90 shrimp, we need to break down the problem into two parts: peeling and saut\u00e9ing.\n\nFirst, let's calculate the time it takes for Emily to peel"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "9",
+      "gen_text": "First, we need to find out how many cards have the letter A on them. Since 2/5 of the cards have the letter A, we can calculate this as:\n\n(2/5) * 80 = 32 cards\n\nNow, we subtract these from the total n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "14",
+      "gen_text": "Dean initially has 30 marbles.\n\nHe gives away 1/5 of his marbles to Jamie. So, the number of marbles he gives to Jamie is:\n\n(1/5) * 30 = 6 marbles\n\nAfter giving 6 marbles to Jamie, Dean has:\n\n30 - 6 ="
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "360",
+      "gen_text": "In the first week, Alani wrote 20 stories, her brother Braylen wrote 40 stories, and her sister Margot wrote 60 stories. The total number of stories they wrote in the first week is:\n\n20 (Alani) + 40 ("
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "880",
+      "gen_text": "Let's break down the problem step by step.\n\nFirst, we know that each pepper costs $15. Let's denote the cost of each pepper as \\( P \\). So, \\( P = 15 \\).\n\nNext, we need to find the cost of a watermelo"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "34",
+      "gen_text": "First, let's find out how many measuring cups Jonathan has. Since he has two dozen cups, we can calculate this as:\n\n2 dozen cups = 2 * 12 = 24 cups\n\nNow, since Jonathan has 2/3 as many measuring spoon"
+    },
+    {
+      "score": 0,
+      "pred": "465",
+      "gold": "98",
+      "gen_text": "To determine the score Brinley needs on her sixth test to achieve an average of 93, we need to follow these steps:\n\n1. **Calculate the total points needed for an average of 93:**\n   Since there are 6 "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "17",
+      "gen_text": "First, we need to determine how far James swims before resting. Since he swims 60% of the 20-mile lake, we calculate:\n\n\\[ 0.6 \\times 20 = 12 \\text{ miles} \\]\n\nNext, we calculate the time it takes for "
+    },
+    {
+      "score": 1,
+      "pred": "8",
+      "gold": "8",
+      "gen_text": "Rose bought 5 dozens of eggs for $2.40 a dozen, so she spent 5 * $2.40 = $12 on the eggs.\nShe will sell the eggs for $1 for 3 eggs, so for every dozen (12 eggs), she will earn 12 / 3 * $1 = $4.\nTheref"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "15",
+      "gen_text": "Paul needs a total of 63 cupcakes for the party. He already has 8 chocolate cupcakes and 40 toffee cupcakes, which adds up to 8 + 40 = 48 cupcakes.\n\nTo find out how many more cupcakes he needs to buy,"
+    },
+    {
+      "score": 1,
+      "pred": "8",
+      "gold": "8",
+      "gen_text": "If Charmaine will be 16 years old in 12 years, then currently she is 16 - 12 = 4 years old.\nIn 4 years from now, she will be 4 + 4 = 8 years old.\n\nTherefore, the answer is 8."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "21",
+      "gen_text": "Rachel initially had 23 cookies. Janet then gave her 42 more, so she had:\n\n23 + 42 = 65 cookies\n\nHer brother then ate 44 cookies, so she now has:\n\n65 - 44 = 21 cookies\n\nTherefore, Rachel has 21 cookie"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "175",
+      "gen_text": "Let's denote the number of goals scored by Richie as R, Mark as M, and Anna as A.\n\nAccording to the problem, we have:\n\n1) R = M + 20 (Richie scored 20 more goals than Mark)\n2) R = A + 45 (Richie score"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "160",
+      "gen_text": "To determine how much fabric Jim needs to buy, we first need to calculate the dimensions of the required fabric pieces.\n\nThe bed measures 6 feet long by 8 feet wide. The fabric pieces need to be 2 fee"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "540",
+      "gen_text": "James runs 3 sprints 3 times a week, so he runs 3 * 3 = 9 sprints in a week.\nEach sprint is 60 meters, so he runs 9 * 60 = 540 meters in a week.\nTherefore, James runs a total of 540 meters in a week."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "80",
+      "gen_text": "First, we need to calculate how far each person ran.\n\nBlake runs back and forth 15 times on a 100 yard long football field. This means he runs 200 yards (100 yards for one way and 100 yards for the re"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "450",
+      "gen_text": "To determine how many small jelly beans Grandpa can eat, we need to establish the relationships between the different sizes of jelly beans and then use these relationships to find the number of small "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "12",
+      "gen_text": "To determine how many batches of oatmeal cookies Heather can make, we need to follow these steps:\n\n1. **Divide the total amount of raisins equally among the three items:**\n   - Total cups of raisins: "
+    },
+    {
+      "score": 1,
+      "pred": "2600",
+      "gold": "2600",
+      "gen_text": "Each candied apple weighs 1/2 * 40g = 20g.\nThe total weight of the chocolate bars is 25 bars * 40g/bar = 1000g.\nThe total weight of the candied apples is 80 apples * 20g/apple = 1600g.\nThe total weigh"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "70",
+      "gen_text": "Let's denote the number of blue gumballs as B and the number of pink gumballs as P.\n\nAccording to the problem, we have:\n\nP = 4B + 22\n\nWe know that B (the number of blue gumballs) is 12, so we can subs"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "16",
+      "gen_text": "The car in the fast lane was traveling at 60 miles per hour and covered a distance of 480 miles. To find the time it took, we can use the formula:\n\nTime = Distance / Speed\n\nSo, the time taken by the c"
+    },
+    {
+      "score": 0,
+      "pred": "112.5",
+      "gold": "15",
+      "gen_text": "Let's denote the age of Bill's dad when he saw the comet as \"x\". According to the problem, Bill saw the comet a second time when he was three times that age, which is 3x.\n\nSince Comet Halley orbits th"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "5600",
+      "gen_text": "To determine how much Mr. Marcellus received in refunds, we need to follow these steps:\n\n1. **Calculate the total amount of milk that passed the expiry date:**\n   - Mr. Marcellus purchased 4000 gallon"
+    },
+    {
+      "score": 1,
+      "pred": "7",
+      "gold": "7",
+      "gen_text": "The weight of the sweet potatoes is 2 * 5 = 10 pounds.\nThe weight of the carrots is 10 - 3 = 7 pounds.\n\nTherefore, the answer is 7."
+    },
+    {
+      "score": 1,
+      "pred": "3000",
+      "gold": "3000",
+      "gen_text": "Stanley's comb fell from an elevation of 10,000 feet to a ledge at 6,000 feet (10,000 - 4,000 = 6,000). Oliver is at an elevation of 3,000 feet, so he needs to climb 3,000 feet to reach the ledge wher"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "93000",
+      "gen_text": "To calculate the total number of posts for the month of March, we need to know the number of days in March. March typically has 31 days.\n\nNow, let's calculate the total number of posts:\n\n1. Each membe"
+    },
+    {
+      "score": 0,
+      "pred": "20",
+      "gold": "800",
+      "gen_text": "First, we need to calculate the total number of calories Hannah burned during her workout.\n\nFor aerobics:\n- She spent 2 hours doing aerobics.\n- Aerobics burns 500 calories per hour.\n- Therefore, the t"
+    },
+    {
+      "score": 0,
+      "pred": "180",
+      "gold": "56",
+      "gen_text": "Let's denote the number of camels as \\( c \\) and the number of dromedaries as \\( d \\).\n\nWe know from the problem that:\n1. The total number of heads is 180.\n2. The total number of bumps (humps) is 304."
+    },
+    {
+      "score": 1,
+      "pred": "460",
+      "gold": "460",
+      "gen_text": "Eliza's regular pay for the first 40 hours is 40 * $10 = $400.\nShe worked for 45 - 40 = 5 hours of overtime.\nEliza's overtime pay is 1.2 * $10 = $12 per hour.\nSo, her total overtime pay is 5 * $12 = $"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "7",
+      "gen_text": "To determine how many packs of glue sticks Mr. Jackson needs to buy, we first calculate the total number of glue sticks required.\n\nEach student needs 2 glue sticks, and there are 27 students:\n\\[\n27 \\t"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "10",
+      "gen_text": "Tim starts with 7 blue shoe boxes and 9 red shoe boxes.\n\nHe uses 3 blue shoe boxes for fishing, so the number of blue shoe boxes left is:\n7 - 3 = 4 blue shoe boxes\n\nHe uses 1/3 of his red shoe boxes f"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "14",
+      "gen_text": "First, let's calculate the total number of people Martha invited:\n\n- 2 families with 6 people each: 2 * 6 = 12 people\n- 3 families with 4 people each: 3 * 4 = 12 people\n\nTotal invited: 12 + 12 = 24 pe"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "54",
+      "gen_text": "To determine the total number of cupcakes Howie needs to buy, we need to consider the following:\n\n1. Howie is buying cupcakes for himself, his teacher, and his 25 classmates.\n2. Each person will recei"
+    },
+    {
+      "score": 0,
+      "pred": "520",
+      "gold": "500",
+      "gen_text": "To solve this problem, we need to find the percentage error in Maggie's oven and then use that to determine the correct temperature setting for a recipe calling for 520 degrees.\n\nFirst, let's calculat"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "9",
+      "gen_text": "Let's start by figuring out how many pencils are in each box that Jam has. We know that she has three boxes and 2 loose pencils, which together make up 26 pencils. So, we can set up the following equa"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "142",
+      "gen_text": "First, let's calculate the total cost of the pomegranates Clara bought on Tuesday.\n\nClara bought 20 pomegranates at $20 each, so the initial cost would be:\n20 pomegranates * $20/pomegranate = $400\n\nSh"
+    },
+    {
+      "score": 1,
+      "pred": "38",
+      "gold": "38",
+      "gen_text": "The cost of two adult tickets is 2 x $12 = $24.\nThe cost of one child ticket is $8.\nThe cost of two popcorns is 2 x $3 = $6.\nTherefore, they will pay a total of $24 + $8 + $6 = $38.\n\nTherefore, the an"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "240",
+      "gen_text": "First, we need to determine the total number of days from March 1st to April 19th. Since March has 31 days, the period from March 1st to April 19th includes all of March and the first 19 days of April"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "720",
+      "gen_text": "Tom pays for 4 car washes per month, and each car wash costs $15. So, the monthly cost is:\n\n4 car washes * $15 = $60\n\nSince there are 12 months in a year, Tom's annual cost would be:\n\n$60 * 12 months "
+    },
+    {
+      "score": 0,
+      "pred": "31.5",
+      "gold": "36",
+      "gen_text": "There are 24 easy questions in the quiz because 60 x .4 = 24\nThere are 36 average and difficult questions in the quiz because 60 - 24 = 36\nThere are 18 average questions in the quiz because 36 / 2 = 1"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "29",
+      "gen_text": "First, let's calculate the total cost of the items before any fees or tips:\n\n- The cost of 2 subs at $7.50 each is: \n  \\[\n  2 \\times 7.50 = 15.00\n  \\]\n\n- The cost of 2 bags of chips at $1.50 each is:\n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "20",
+      "gen_text": "Let's start by calculating the total time John spent on boating and swimming. He spent 6 hours boating and half that time swimming, so he spent:\n\n\\[ \\frac{6}{2} = 3 \\text{ hours swimming} \\]\n\nSo, the "
+    },
+    {
+      "score": 1,
+      "pred": "110",
+      "gold": "110",
+      "gen_text": "At the first stop, the number of people on the train increased to 120+20 = 140 people.\nAt the second stop, 50*2 = 100 people boarded the train after 50 people got off.\nThe total number of people on th"
+    },
+    {
+      "score": 0,
+      "pred": "5.86",
+      "gold": "6",
+      "gen_text": "The first part of John's trip was 200 miles at 70 mph, so it took him 200/70 = 2.86 hours.\nThe detour added 10 miles to the trip, so the total distance was 200+10=210 miles.\nThe second part of the tri"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "130",
+      "gen_text": "To calculate Lloyd's earnings for the first two weeks, we need to multiply his hourly rate by the number of hours he tutored each week.\n\nFor the first week:\n- Hourly rate: $10\n- Hours tutored: 5\n\nEarn"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "8",
+      "gen_text": "To determine how many packs of gum Parker will need for 30 days, we can follow these steps:\n\n1. Calculate the total number of pieces of gum Parker will chew in 30 days.\n2. Determine how many packs of "
+    },
+    {
+      "score": 0,
+      "pred": "8",
+      "gold": "3528",
+      "gen_text": "To determine the value of the boat after three years, we need to calculate the depreciation step by step.\n\n1. **Initial Value:**\n   \\[\n   \\text{Initial Value} = \\$9000\n   \\]\n\n2. **First Year Depreciat"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "40",
+      "gen_text": "The Doubtfire sisters adopted 7 kittens from the local animal shelter. Their mother informs them that their two house cats, Patchy and Trixie, have also given birth to kittens.\n\nPatchy has had thrice "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "34",
+      "gen_text": "To find out how much Raphael spent on everything, we need to calculate the total cost of each item he bought and then add them all together.\n\nFirst, let's calculate the cost of the pens:\n- Raphael bou"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "75",
+      "gen_text": "To determine how much money Damien makes in a 30-day month from the bottle caps he finds, we need to follow these steps:\n\n1. **Calculate the daily earnings:**\n   - Damien finds 10 bottle caps each day"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "75",
+      "gen_text": "To determine how much Terry spends on yogurt over 30 days, we need to follow these steps:\n\n1. Calculate the total number of yogurts Terry eats in 30 days.\n2. Determine how many sets of 4 yogurts are i"
+    },
+    {
+      "score": 1,
+      "pred": "1",
+      "gold": "1",
+      "gen_text": "Martha originally had 7 - 5 = 2 notebooks.\nSo Joseph had 2 * 3 = 6 notebooks.\nMartha now has 7 - 6 = 1 more notebook than Joseph.\n\nTherefore, the answer is 1."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "32",
+      "gen_text": "To determine the price of a crate of fruit, we need to calculate the cost of each type of fruit in the crate and then sum these costs.\n\nFirst, let's find the cost of one banana. We know that one apple"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "3",
+      "gen_text": "Let's denote Geb's age as G and Haley's age as H.\n\nAccording to the problem statement, we have:\n\nG = (1/2)H - 10\n\nWe know that Haley is 26 years old, so we can substitute H with 26 in the equation:\n\nG"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "100",
+      "gen_text": "To determine the number of girls on the Chinese team, we need to follow these steps:\n\n1. Calculate the total number of Chinese participants in the race.\n2. Subtract the number of boys from the total n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "100",
+      "gen_text": "To determine the number of wooden slats Robert will need, we first need to calculate the perimeter of the rectangular fence.\n\nThe formula for the perimeter \\( P \\) of a rectangle is:\n\\[\nP = 2 \\times ("
+    },
+    {
+      "score": 1,
+      "pred": "159",
+      "gold": "159",
+      "gen_text": "Each sheep needs 5*2-3=7 pounds of hay.\nThe sheep need a total of 7*12=84 pounds of hay.\nThe goats need a total of 5*15=75 pounds of hay.\nNate needs 84+75=159 pounds of hay.\n\nTherefore, the answer is "
+    },
+    {
+      "score": 0,
+      "pred": "3",
+      "gold": "15",
+      "gen_text": "Let's denote the number of gallons of lemonade that Juan and Carlos made as \\( g \\).\n\nThe cost to make one gallon of lemonade is:\n\\[ 3 \\text{ (lemons)} + 2 \\text{ (sugar)} = 5 \\text{ dollars} \\]\n\nSo, "
+    },
+    {
+      "score": 1,
+      "pred": "270",
+      "gold": "270",
+      "gen_text": "Maddison initially has 5 boxes * 50 marbles/box = 250 marbles.\nAfter getting 20 more marbles, she now has 250 + 20 = 270 marbles.\n\nTherefore, the answer is 270."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "120",
+      "gen_text": "Let's denote the time it takes to cook rice as \\( R \\), the time it takes to cook pork as \\( P \\), and the time it takes to cook beans as \\( B \\).\n\nFrom the problem, we know:\n1. \\( R = 30 \\) minutes.\n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "160",
+      "gen_text": "To determine how many flowers in Arianna's garden have bloomed, we need to follow these steps:\n\n1. Calculate the total number of flowers planted.\n2. Determine how many of those flowers have bloomed.\n\n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "5",
+      "gen_text": "To determine how many dozens of madeleine cookies Shannon needs to make, we can follow these steps:\n\n1. **Calculate the total number of cookies needed:**\n   Shannon eats 2 cookies per night and wants "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "9500",
+      "gen_text": "To determine how much more the total price of the house is than Mrs. Cruz's budget, we need to calculate the total cost of the house including the brokerage fee and the transfer fee, and then compare "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "251",
+      "gen_text": "First, let's calculate the total number of guests that were invited:\n\n- Kayla invited 25 classmates.\n- She also invited 7 girls from her dance class.\n- She invited 13 family members.\n\nSo, the total nu"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "385000",
+      "gen_text": "The company initially planned to spend $700 on each computer, so the total cost would have been:\n\n500 computers * $700/computer = $350,000\n\nHowever, the price of each computer increased by 10%, so the"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "205",
+      "gen_text": "To calculate the total charge for the job, we need to add the visit fee, the labor cost, and the cost of the parts.\n\nThe visit fee is $40.\nThe labor cost is $35 per hour, and since the job took 2.25 h"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1",
+      "gen_text": "To determine how many hours Doctor Jones will have left to update his records after his scheduled activities, we need to calculate the total time spent on each activity and then subtract this from the"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "16",
+      "gen_text": "First, let's calculate the total cost of the 15 roses. Since a dozen roses cost $15, we can find the cost of one rose by dividing $15 by 12:\n\n\\[\n\\text{Cost per rose} = \\frac{15}{12} = 1.25 \\text{ doll"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "90",
+      "gen_text": "Let's denote the smallest angle as x. Then, according to the problem statement, we have:\n\n- The second angle is twice the smallest angle: 2x.\n- The third angle is three times the smallest angle: 3x.\n\n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "390",
+      "gen_text": "Let's start by determining the number of medals Izzy has. Since Izzy has 5 fewer medals than Ali, we can express this as:\n\n\\[ \\text{Izzy's medals} = \\text{Ali's medals} - 5 \\]\n\\[ \\text{Izzy's medals} "
+    },
+    {
+      "score": 0,
+      "pred": "88",
+      "gold": "2800",
+      "gen_text": "Let's start by defining the variables for the capacities of the trucks:\n- Let \\( G \\) be the capacity of Gissela's truck.\n- Let \\( Gd \\) be the capacity of Gordy's truck.\n- Let \\( Gb \\) be the capacit"
+    },
+    {
+      "score": 0,
+      "pred": "25",
+      "gold": "70",
+      "gen_text": "To determine how much Katherine will spend filling all 5 hanging baskets, we need to calculate the total cost of the petunias and the sweet potato vines separately and then sum these costs.\n\nFirst, le"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "826",
+      "gen_text": "To determine the cost to fill the swimming pool, we need to follow these steps:\n\n1. **Calculate the volume of the pool:**\n   - The pool is in the shape of a rectangular prism.\n   - Volume \\( V \\) of a"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "36",
+      "gen_text": "Jake buys two T-shirts with a \"buy one get one 50% off\" deal. So he pays full price for the first T-shirt and half price for the second T-shirt.\n\nThe cost of the first T-shirt is $8.\nThe cost of the s"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "3200",
+      "gen_text": "To determine how much money Watson made in April, we need to calculate his earnings from his hourly wage and his weekly bonus.\n\nFirst, let's calculate Watson's daily earnings:\n\\[ \\text{Daily earnings}"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "14",
+      "gen_text": "Jean starts with 30 lollipops and eats 2, leaving her with 30 - 2 = 28 lollipops.\n\nIf she packages 2 lollipops in one bag, then the number of bags she can fill is 28 / 2 = 14 bags."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "120",
+      "gen_text": "Let's break down the problem step by step.\n\nInitially, Fireman Frank has 200 shoes. Since each pair consists of 2 shoes, we can convert the number of pairs into individual shoes. So, initially, he has"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "20",
+      "gen_text": "Let's start by figuring out how many seashells Carlos collected. We know that Jim collected 27 seashells, which is 5 more than what Carlos collected. So, we can write an equation for Carlos' collectio"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "6",
+      "gen_text": "To determine how much money Vincent saves by buying 18 flowers at the better price, we need to compare the cost of buying 18 flowers in packages of 3 versus packages of 2.\n\nFirst, let's calculate the "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "27",
+      "gen_text": "Cindy had 5 green eggs.\n\nShe had twice as many blue ones as green ones, so she had 2 * 5 = 10 blue eggs.\n\nShe had one fewer pink egg than blue eggs, so she had 10 - 1 = 9 pink eggs.\n\nShe had one-third"
+    },
+    {
+      "score": 1,
+      "pred": "80",
+      "gold": "80",
+      "gen_text": "Celinda bakes 2 * 30 = 60 cookies.\nIn total, they baked 60 + 30 = 90 cookies.\nThey ate 10 of them so 90 - 10 = 80 cookies go into the box.\n\nTherefore, the answer is 80."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "45",
+      "gen_text": "To determine how many selfies and portraits Olivia had, we need to follow these steps:\n\n1. **Calculate the number of pictures per album:**\n   Olivia uploaded 72 pictures and divided them equally among"
+    },
+    {
+      "score": 1,
+      "pred": "90000",
+      "gold": "90000",
+      "gen_text": "Let's denote the cost of the lot as L and the cost of the house as H.\n\nAccording to the problem, we have two equations:\n\n1) The total cost of the house and the lot is $120,000:\nH + L = 120,000\n\n2) The"
+    },
+    {
+      "score": 0,
+      "pred": "5",
+      "gold": "48",
+      "gen_text": "Let's break down the problem step-by-step:\n\n1. **Determine the rate of work for one person:**\n   - One person can paint half a house in 5 days.\n   - Therefore, one person can paint a whole house in \\("
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "310",
+      "gen_text": "To calculate the total number of legs for all the tables in the restaurant, we need to multiply the number of tables with each type of leg by the number of legs per table and then add the two results "
+    },
+    {
+      "score": 1,
+      "pred": "2",
+      "gold": "2",
+      "gen_text": "Juice Box B is 4 + 5 = 9 dollars.\nJuice Box C is 4 + 7 = 11 dollars.\nJuice Box C is 11 - 9 = 2 dollars more than Juice Box B.\n\nTherefore, the answer is 2."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "273",
+      "gen_text": "To find out how many yards of yarn Mariah and her grandma used altogether, we need to add the fractions of the skeins that each of them used.\n\nMariah used 1/4 of a skein, and her grandma used 1/2 of a"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "6",
+      "gen_text": "To find out how many guns each person would have if they shared them equally, we need to first add up the total number of guns that all four people have.\n\nDJ has 8 guns, Nick has 10 guns, Richard has "
+    },
+    {
+      "score": 1,
+      "pred": "100",
+      "gold": "100",
+      "gen_text": "The school will cover half the cost of the trip, so they will contribute 1/2 * $300 = $150.\nJohn has $50, so he still needs $300 - $150 - $50 = $100.\nTherefore, John is missing $100."
+    },
+    {
+      "score": 1,
+      "pred": "500",
+      "gold": "500",
+      "gen_text": "On Tuesday, the Ben and Aggie Burrito Shop makes 125 chimichangas.\nOn Wednesday, they also make 125 chimichangas.\nOn Friday, they make twice as many chimichangas as on Tuesday, which is 2 * 125 = 250 "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "15",
+      "gen_text": "To find the difference in Martin's weight at the end of 5 weeks between eating Cheerios and donuts for breakfast, we need to calculate the total weight change for each option over the 5-week period.\n\n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "7",
+      "gen_text": "Let's denote the number of balls Jeffrey carried as J. According to the problem, Jason carried twice as many balls as Jeffrey, so Jason carried 2J balls. Jordan carried twice as many balls as Jason, w"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "27",
+      "gen_text": "Let's break down the problem step by step.\n\nFirst, we need to determine how many scoops of mashed potatoes Gomer ate. According to the problem, Gomer ate 5 less than 23 scoops of mashed potatoes. So, "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "87",
+      "gen_text": "Laurel's friend gave her 24 baby outfits. At her baby shower, Laurel received twice the amount of new baby outfits, which is 2 * 24 = <<2*24=48>>48 baby outfits. Her mom gifted her with another 15 bab"
+    },
+    {
+      "score": 1,
+      "pred": "10",
+      "gold": "10",
+      "gen_text": "The original price of the watch is $2000.\nMr. Rogers bought the watch at 75% of its original price, which means he paid 0.75 * $2000 = $1500 for the watch.\nHe then sold the watch to his friend at 120%"
+    },
+    {
+      "score": 0,
+      "pred": "1",
+      "gold": "15",
+      "gen_text": "To determine Cayley's total commission, we need to calculate his earnings from both the New York Times and the Wall Street Journal separately and then sum them up.\n\nFirst, let's calculate the commissi"
+    },
+    {
+      "score": 1,
+      "pred": "10000",
+      "gold": "10000",
+      "gen_text": "To determine the hospital's profit from these visits, we need to calculate both the revenue generated from the patients and the cost incurred by the hospital.\n\nFirst, let's calculate the total time sp"
+    },
+    {
+      "score": 0,
+      "pred": "31",
+      "gold": "3160",
+      "gen_text": "First, we need to calculate the area of one bedroom. Since the dimensions of each bedroom are 20 feet by 12 feet, the area of one bedroom is:\n\nArea of one bedroom = 20 feet * 12 feet = 240 square feet"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "104",
+      "gen_text": "Let's break down the problem step by step.\n\n1. **Initial Games:**\n   - Steve receives 5 games on his birthday.\n   - He also gets 5 games for Christmas each year for 3 years.\n   - Total initial games ="
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1",
+      "gen_text": "To determine how many boxes of graham crackers are needed, we first need to calculate the total number of smores required.\n\nFirst, let's find out how many smores the kids will eat:\n- Each kid wants 2 "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "84",
+      "gen_text": "Mitchel went down the water slide 30 times.\n\nAnne went down the slide 30% less than Mitchel, which means she went down the slide 30 * (1 - 0.3) = 30 * 0.7 = 21 times.\n\nRobert went down the slide 4 tim"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "6277",
+      "gen_text": "To find out how many kids are in Soda, we need to subtract the number of men and women from the total population.\n\nTotal population = 23786\nNumber of men = 8417\nNumber of women = 9092\n\nNumber of kids "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "31",
+      "gen_text": "Let's break down the problem step by step.\n\n1. Ram initially buys 25 pens.\n2. After using these pens, he can mix the ink from 5 empty pens to make 1 full pen. So, for every 5 pens used, he gets 1 new "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "8",
+      "gen_text": "Let's break down each activity to find out how many hours it will take:\n\n1. **Yoga Class (Monday)**: 1 hour\n2. **Cooking Class (Tuesday)**: The cooking class lasts three times as long as the yoga clas"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "30",
+      "gen_text": "Let's denote the number of players on the defense as D.\n\nAccording to the problem, there are twice as many players on the offense as there is on the defense, so the number of players on the offense is"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "44",
+      "gen_text": "To determine how many hours Lori needs to work to afford the shoes and the belt, we first need to calculate the total cost of the items.\n\nThe cost of the shoes is $320.00.\nThe cost of the belt is $32."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "350",
+      "gen_text": "To determine how much money the tomato vendor saves in a week, we need to follow these steps:\n\n1. Calculate the daily savings.\n2. Multiply the daily savings by the number of days in a week.\n\nFirst, le"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "21",
+      "gen_text": "Let's denote the number of candies that Robert has as R.\n\nAccording to the problem, John has twice as many candies as Robert, so we can write:\n2R = 54\n\nNow, let's solve for R:\nR = 54 / 2\nR = 27\n\nSo, R"
+    },
+    {
+      "score": 1,
+      "pred": "10",
+      "gold": "10",
+      "gen_text": "Bill digs at a rate of 4 feet per hour through soil, so digging through 24 feet of soil would take 24/4 = 6 hours.\nHe digs at a rate of half that speed through clay, or 4/2 = 2 feet per hour.\nDigging "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "12",
+      "gen_text": "First, we need to calculate John's new speaking speed after the training. Since he is now 2.5 times faster than his original speed, we can multiply his original speed by 2.5:\n\n150 WPM * 2.5 = 375 WPM\n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "75",
+      "gen_text": "James hires the carriage for 4 hours (from 5 PM to 9 PM), but he gets 1 hour free, so he only pays for 3 hours.\n\nThe first hour costs $15.\nThe second hour costs twice as much as the first, which is 2 "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "5",
+      "gen_text": "Let's break down the problem step by step.\n\nFirst, we know that Anna's initial budget was $16. She has already spent $4, so the remaining budget before buying the two books is:\n\\[ 16 - 4 = 12 \\]\n\nAfte"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "2",
+      "gen_text": "Let's start by determining how much money Rissa and Ronnie initially received. According to the problem, Ronnie was given $5, and Rissa was given three times as much as Ronnie. Therefore, Rissa was gi"
+    },
+    {
+      "score": 1,
+      "pred": "60",
+      "gold": "60",
+      "gen_text": "James spends 10/3 = 3.33 minutes per page.\nHe spends 3.33*18 = 60 minutes reading.\nTherefore, the answer is 60."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "58",
+      "gen_text": "Mary currently has 2 potted plants on each of the 40 window ledges, so she has a total of 2 * 40 = 80 potted plants.\nShe received 18 new potted plants, so now she has 80 + 18 = 98 potted plants.\nShe p"
+    },
+    {
+      "score": 1,
+      "pred": "539",
+      "gold": "539",
+      "gen_text": "The salesman bought a case of 48 sneakers for $576, so the cost per sneaker is $576/48 = $12.\nHe sold 17 sneakers for $20 each, so he earned 17 * $20 = $340 from those sales.\nHe had 48 - 17 = 31 sneak"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "132",
+      "gen_text": "To determine how much Ella would earn after 12 hours of dog walking, we first need to find out her hourly rate.\n\nElla earned $33 for 3 hours of work. To find her hourly rate, we divide the total earni"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "490",
+      "gen_text": "To find out the total number of fruits that George has, we first need to calculate the number of pears he has.\n\nIf George has 45% more pears than bananas, and he has 200 bananas, then the number of pe"
+    },
+    {
+      "score": 0,
+      "pred": "27",
+      "gold": "54",
+      "gen_text": "Chase and Rider can ride their bikes thrice a day for 5 days, so that's 3 rides/day * 5 days = 15 rides.\nOn the two other days, they ride twice the times they do on usual days, which means they ride 2"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "2640",
+      "gen_text": "To calculate the total amount of money Madeline spends on her dog per year, we need to add up the monthly costs of food, treats, and medicine.\n\nFirst, let's find out how much Madeline spends on food p"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "105",
+      "gen_text": "Mark completed the first test in 8 hours at a rate of 5 questions per hour, so he answered 8 * 5 = <<8*5=40>>40 questions.\nThe first test had 75 questions, so he left 75 - 40 = <<75-40=35>>35 question"
+    },
+    {
+      "score": 1,
+      "pred": "60",
+      "gold": "60",
+      "gen_text": "The bus traveled 60 * 5 = 300 miles.\nThe car traveled 30 * 8 = 240 miles.\nThe bus went 300 - 240 = 60 miles farther than the car.\n\nTherefore, the answer is 60."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "15",
+      "gen_text": "Lindsay has washed 10 pairs of socks, which means she has washed 2 * 10 = 20 socks. She has also washed 15 loose socks. So in total, she has washed 20 + 15 = 35 socks. Since there were originally 50 s"
+    },
+    {
+      "score": 1,
+      "pred": "57500",
+      "gold": "57500",
+      "gen_text": "To calculate Jill's annual salary, we need to multiply the number of hours she works each week by her hourly rate for both teaching and coaching, then multiply that by the number of weeks in a year.\n\n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "200",
+      "gen_text": "First, we need to determine how much Tom still needs to pay after using the money from selling his old bedroom set.\n\nThe cost of the new bedroom set is $3000, and Tom sells his old one for $1000. So, "
+    },
+    {
+      "score": 1,
+      "pred": "8",
+      "gold": "8",
+      "gen_text": "Ferdinand has 6 / 2 = 3 trees.\nHarry has 5 + (2 * 3) = 11 trees.\nThere are 11 - 3 = 8 more trees in Harry's treehouse than in Ferdinand's yard.\n\nTherefore, the answer is 8."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "4",
+      "gen_text": "First, let's calculate how many holes the dog digs during his 14 days of vacation:\n\n6 holes/day * 14 days = 84 holes\n\nNow, when Nate gets home, he starts filling in holes at a rate of 9 holes per day,"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "162000",
+      "gen_text": "Let's break down the problem step by step.\n\n1. Initially, Fishio received 2000 likes.\n2. After three weeks, the number of likes was 70 times the initial number of likes. So, the number of likes after "
+    },
+    {
+      "score": 1,
+      "pred": "160",
+      "gold": "160",
+      "gen_text": "The total number of chairs in the restaurant is 170 + 23 = 193 chairs.\nThe total number of chairs sent to the carpenter for repair is 20 + 13 = 33 chairs.\nTherefore, the number of chairs remaining in "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "14400",
+      "gen_text": "To calculate the builder's annual earnings, we need to first determine his monthly earnings and then multiply that by the number of months in a year.\n\n1. Calculate the builder's weekly earnings:\n   - "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "19",
+      "gen_text": "Let's denote the number of bandages the nurses started with on the first day as \\( x \\).\n\nOn the first day, the nurses used 38 bandages and ordered one bulk pack of 50 bandages. So, after the first da"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "5",
+      "gen_text": "To determine how long it will take Tom to catch up with Bob, we need to calculate the relative speed at which Tom is closing the gap between himself and Bob.\n\nFirst, let's find the difference in their"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "25",
+      "gen_text": "Let's break down the problem step-by-step:\n\n1. There are 100 plants in total.\n2. One-fourth of these plants are indoor plants: (1/4) * 100 = 25 indoor plants.\n3. The remaining plants after removing th"
+    },
+    {
+      "score": 0,
+      "pred": "1",
+      "gold": "2",
+      "gen_text": "To determine how much water Peter has left after making the ice cubes, we need to calculate the total amount of water used for each type of cube and then subtract this from the initial 32 ounces.\n\nFir"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "200",
+      "gen_text": "Aiden and his 12 friends make a total of 13 people, and they meet up with 7 more friends, making a total of 20 people. Each person saves a seat and buys drinks and snacks for themselves and two other "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "6",
+      "gen_text": "To determine the speed Marissa needs to walk the remaining distance to achieve an average speed of 4 miles per hour, we can follow these steps:\n\n1. **Calculate the total time required to hike the enti"
+    },
+    {
+      "score": 1,
+      "pred": "42",
+      "gold": "42",
+      "gen_text": "The total ratio representing the quantity of sugar and water is 7+13 = 20\nIf she used a total of 120 teaspoons of sugar and cups of water, the fraction representing the number of teaspoons of sugar sh"
+    },
+    {
+      "score": 1,
+      "pred": "45",
+      "gold": "45",
+      "gen_text": "Katelyn saw 50 fairies. Her friend saw half as many, which is 50/2 = 25 fairies.\nThe total number of fairies then became 50+25 = 75 fairies.\nBut then 30 flew away, leaving 75-30 = 45 fairies remaining"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "80",
+      "gen_text": "Mason's total travel time is 4 + 6 = 10 hours.\nSince he travels at a rate of 8 miles per hour, the total distance he covers is 8 * 10 = 80 miles."
+    },
+    {
+      "score": 1,
+      "pred": "32",
+      "gold": "32",
+      "gen_text": "Anakin caught 10 starfish + 6 sea horses + 3 clownfish = 19 fish.\nLocsin caught 10 - 5 = 5 starfish.\nLocsin caught 6 - 3 = 3 sea horses.\nLocsin caught 3 + 2 = 5 clownfish.\n\nLocsin caught a total of 5 "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "4",
+      "gen_text": "To determine how long it will take Matthew to dig 30 small holes and 15 large holes, we need to calculate the total time required for each type of hole separately and then sum these times.\n\nFirst, let"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "8",
+      "gen_text": "Let's break down the problem step-by-step:\n\n1. **Total Water Usage by the City:**\n   - The city uses 40% of the water from the Colorado River.\n\n2. **Industrial Water Usage:**\n   - 80% of the water use"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1000",
+      "gen_text": "To find out how much the orchard earned from selling the apples, we need to first determine how many bags of apples were sold.\n\nSince each bag contains 10 apples, we can divide the total number of app"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "45",
+      "gen_text": "Let's start by defining the ages of Adrian, Harriet, and Zack based on the information given.\n\nFirst, we know that Harriet is currently 21 years old. According to the problem, Harriet's age is half th"
+    },
+    {
+      "score": 0,
+      "pred": "10.67",
+      "gold": "32",
+      "gen_text": "The ball will bounce up to (2/3)*24 = <<2/3*24=16>>16 feet after the first bounce.\nIt will bounce up to (2/3)*16 = <<(2/3)*16=10.666666666666666>>10.67 feet after the second bounce.\n\nTherefore, the an"
+    },
+    {
+      "score": 0,
+      "pred": "40000",
+      "gold": "95200",
+      "gen_text": "Let's denote Lylah's initial salary as L.\n\nAccording to the problem, Adrien's initial salary (A) was 30% higher than Lylah's:\nA = L + 0.30L\nA = 1.30L\n\nWe know that Adrien's salary four years ago was $"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "44",
+      "gen_text": "To find the number of unmanned ruined castles in Scotland, we can follow these steps:\n\n1. Calculate the total number of ruined castles:\n   - 40% of the 220 castles are ruins.\n   - Number of ruined cas"
+    },
+    {
+      "score": 0,
+      "pred": "5",
+      "gold": "1",
+      "gen_text": "The shipping for the boots on eBay costs 2 * 4 = $8.\nSo the total Marilyn would have to pay to buy the boots on eBay would be 13 + 8 = $21.\nThat means the boots are 21 - 16 = $5 more expensive on eBay"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "5",
+      "gen_text": "Let's assume the distance between Tom's starting point and destination is D miles.\n\nFrom 1 to 4 PM, Tom sails for 3 hours at a speed of 10 miles per hour. So, the distance he covers in this time is:\n\n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1",
+      "gen_text": "Let's break down the problem step by step.\n\nFirst, we need to determine how much money Colby has left after buying the popcorn and candy. He has already spent:\n- 2 tubs of popcorn at $8 each: \\(2 \\tim"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "665",
+      "gen_text": "To determine the total number of good seashells found by Tom, Nancy, and Benny, we need to follow these steps:\n\n1. Calculate the total number of seashells found by adding the seashells found by each p"
+    },
+    {
+      "score": 0,
+      "pred": "20",
+      "gold": "255",
+      "gen_text": "Let's break down the problem into smaller parts.\n\nFirst, we know that the Llesis family spent a total of 6 hours on their trip, which included driving and hiking. We also know that it took them 1.5 ho"
+    },
+    {
+      "score": 0,
+      "pred": "1",
+      "gold": "6000",
+      "gen_text": "On the first day, Wanda filled 1/4 of the tank's capacity, which is 1/4 * 18000 = 4500 gallons.\nMs. B pumped 3/4 as much water as Wanda, so she pumped 3/4 * 4500 = 3375 gallons.\nTogether, they filled "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "32",
+      "gen_text": "To find the total number of blue birds in the trees, we need to add up the number of blue birds in each tree.\n\nFirst, let's calculate the number of blue birds in the three trees that each had 7 blue b"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "2100",
+      "gen_text": "Let's denote the total amount Ariadne earned from selling green hats as G.\n\nAccording to the information given, the sales from red hats were $400, which is half the total amount she earned from sellin"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "3",
+      "gen_text": "First, we need to determine how many students will be in each group when the fifty-four students are divided into six groups of equal size. We do this by dividing the total number of students by the n"
+    },
+    {
+      "score": 1,
+      "pred": "14",
+      "gold": "14",
+      "gen_text": "If Darren caught 6 less fish than Naomi, he caught 17-6 = 11 fish.\nTommy caught 3 more fish than Darren, which is a total of 11+3 = 14 fish.\n\nTherefore, the answer is 14."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "55",
+      "gen_text": "Sam's target is to sell 120 crates of bread in a week.\n\nHe was closed on Monday and Friday, so he had 5 days to sell the bread: Tuesday, Wednesday, Thursday, Saturday, and Sunday.\n\nOver the weekend (S"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "16",
+      "gen_text": "Let's denote Brooke's current age as B and Seth's current age as S.\n\nAccording to the problem, we have two pieces of information:\n\n1. Seth is twice as old as Brooke: S = 2B\n2. In 2 years, the sum of t"
+    },
+    {
+      "score": 1,
+      "pred": "250",
+      "gold": "250",
+      "gen_text": "Jamie's regular pay is calculated as follows: 8 hours * $20/hour = $160.\nFor the extra hours, Jamie's special pay rate is 150/100 * $20 = $30 per hour.\nThe total amount she earned for the extra hours "
+    },
+    {
+      "score": 0,
+      "pred": "2",
+      "gold": "30",
+      "gen_text": "To determine the total time it takes John to solve the Rubik's cube, we need to calculate the time taken for each side and then sum these times.\n\n1. **First side:**\n   - Time taken: \\(5\\) minutes\n\n2. "
+    },
+    {
+      "score": 1,
+      "pred": "15",
+      "gold": "15",
+      "gen_text": "There are 4 + 7 = 11 dahlias.\nTherefore, there are 4 + 11 = 15 flowers in the vase.\n\nTherefore, the answer is 15."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "14",
+      "gen_text": "Let's denote the number of people who got on the bus at the terminal as \\( x \\).\n\n1. After the first bus stop, the number of people on the bus is:\n   \\[\n   x + 5\n   \\]\n\n2. At the second bus stop, 7 pe"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "12",
+      "gen_text": "To determine how many tomatoes Freda used to make her tomato sauce, we need to follow these steps:\n\n1. **Understand the volume loss**: When Freda cooks the canned tomatoes into sauce, they lose half t"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "6",
+      "gen_text": "Let's denote Sam's current age as S and Ruby's current age as R.\n\nAccording to the first statement, we have:\n\nR = 6S\n\nAccording to the second statement, in 9 years, Ruby will be 3 times as old as Sam."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "140",
+      "gen_text": "Andy plants 90 geraniums and 40 fewer petunias than geraniums, so he plants 90 - 40 = 50 petunias.\nIn total, Andy plants 90 + 50 = 140 flowers."
+    },
+    {
+      "score": 0,
+      "pred": "9860.78",
+      "gold": "7400",
+      "gen_text": "To find the price of the car in 2010, we need to calculate the depreciation over the years from 2007 to 2010.\n\nThe formula for depreciation is:\n\nFinal Value = Initial Value * (1 - Depreciation Rate) ^"
+    },
+    {
+      "score": 1,
+      "pred": "20",
+      "gold": "20",
+      "gen_text": "The winner got 3/4 of the votes, which means they received 3/4*80 = 60 votes.\nIf the total number of students who voted in the class was 80, the other candidate got 80-60=20 votes.\n\nTherefore, the ans"
+    },
+    {
+      "score": 1,
+      "pred": "70",
+      "gold": "70",
+      "gen_text": "There were 21 - 7 = 14 buttons with 4 holes.\nThe buttons had 14 * 4 = 56 holes.\nThe other buttons had 7 * 2 = 14 holes.\nIn total, the buttons had 56 + 14 = 70 holes.\n\nTherefore, the answer is 70."
+    },
+    {
+      "score": 0,
+      "pred": "0",
+      "gold": "50",
+      "gen_text": "Let's start by calculating the total amount of time Tatiana has available over the weekend:\n\n- Saturday: 7 hours\n- Sunday: 5 hours\n\nTotal time = 7 + 5 = 12 hours\n\nNext, we know that she spends 3 hours"
+    },
+    {
+      "score": 1,
+      "pred": "940",
+      "gold": "940",
+      "gen_text": "In June, Joseph's expenditure was $500 - $60 = $440.\nTherefore, his total expenditure for those two months was $500 + $440 = $940.\n\nTherefore, the answer is 940."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "360",
+      "gen_text": "Let's denote the total number of students in the school as \\( T \\).\n\nAccording to the problem, 40% of the school population consists of boys. Therefore, we can write:\n\n\\[ 0.40 \\times T = 240 \\]\n\nTo fi"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "315",
+      "gen_text": "Let's start by calculating the number of stitches for the collar. Since the collar takes a tenth of the number of stitches of the body, we have:\n\nCollar stitches = (1/10) * 900 = 90\n\nNext, let's calcu"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "20",
+      "gen_text": "Let's denote the number of red blocks as R.\n\nWe know that there are 4 blue blocks and twice as many yellow blocks, so there are 8 yellow blocks (2 * 4).\n\nThe total number of blocks in the tower is 32,"
+    },
+    {
+      "score": 1,
+      "pred": "180",
+      "gold": "180",
+      "gen_text": "Carlos pays $30 x 3 = $90 for renting the canoe.\nBenji pays $18 x 5 = $90 for renting the banana boat raft.\nSo, they will pay $90 + $90 = $180 for their rentals, altogether.\n\nTherefore, the answer is "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "8",
+      "gen_text": "Let's break down the problem step by step:\n\n1. Chenny is 10 years old.\n2. Alyana is 4 years younger than Chenny, so we subtract 4 from Chenny's age to find Alyana's age:\n   \\[\n   \\text{Alyana's age} ="
+    },
+    {
+      "score": 1,
+      "pred": "160",
+      "gold": "160",
+      "gen_text": "If the red car is 40% cheaper than the blue car, then it costs 60% of the price of the blue car.\n\nTo find the price of the red car, we can calculate 60% of the price of the blue car:\n\nRed car price = "
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "Each bicycle has two tires, so for each bicycle, Shawnda charges 2 * $0.25 = $0.50.\nOn the first day, 5 bicycles came in, so she made 5 * $0.50 = $2.50 from bicycles.\nTricycles have three tires, so fo"
+    },
+    {
+      "score": 1,
+      "pred": "75",
+      "gold": "75",
+      "gen_text": "If Dax found half as many bugs as ants in the garden, then the number of bugs was 1/2 * 50 = 25.\nThe total number of insects in the garden is 25 + 50 = 75.\n\nTherefore, the answer is 75."
+    },
+    {
+      "score": 1,
+      "pred": "7",
+      "gold": "7",
+      "gen_text": "Sitti and Juris have a total of 34 + 22 = 56 oranges.\nThey want to share the oranges equally among themselves and their 6 friends, so there are a total of 2 (Sitti and Juris) + 6 (friends) = 8 people "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1430",
+      "gen_text": "To determine the total amount Janet paid for the brooch, we need to follow these steps:\n\n1. Calculate the cost of the materials and the jeweler's construction.\n2. Calculate the insurance cost, which i"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "3",
+      "gen_text": "First, let's calculate the number of slices given to Bill and Mark.\n\nJenny has 12 slices in total.\n- Bill gets 1/3 of the pizza: \\( \\frac{1}{3} \\times 12 = 4 \\) slices.\n- Mark gets 1/4 of the pizza: \\"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "27",
+      "gen_text": "To calculate how much Daniel has to spend on all the items he wants to buy, we first need to find out the total cost of the items before the discount.\n\nThe cost of five notebooks is:\n5 notebooks * $1."
+    },
+    {
+      "score": 1,
+      "pred": "34",
+      "gold": "34",
+      "gen_text": "The second tree has a height of 6 + 5 = 11 feet.\nThe combined height of the first and second tree is 6 + 11 = 17 feet.\nSo, the third tree has a height of 17 x 2 = 34 feet.\n\nTherefore, the answer is 34"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "5",
+      "gen_text": "To determine how many days it will take Prince to sell the meat from Bill's bull, we need to follow these steps:\n\n1. **Calculate the total amount of meat in the bull:**\n   \\[\n   \\text{Total meat} = 75"
+    },
+    {
+      "score": 0,
+      "pred": "1",
+      "gold": "45",
+      "gen_text": "To determine how much money Brady has in his piggy bank, we need to calculate the value of each type of coin and bill separately and then sum these values.\n\nFirst, let's calculate the value of the pen"
+    },
+    {
+      "score": 0,
+      "pred": "5",
+      "gold": "34",
+      "gen_text": "To determine how much Jen will earn from selling all her root crops, we need to calculate the total earnings from each type of crop separately and then sum them up.\n\nFirst, let's calculate the earning"
+    },
+    {
+      "score": 0,
+      "pred": "840",
+      "gold": "1128",
+      "gen_text": "Britany spends 2 hours a week writing songs, which is 2 * 60 = <<2*60=120>>120 minutes.\nShe spends 15 minutes six days a week doing her makeup, which is 15 * 6 = <<15*6=90>>90 minutes.\nIn total, she s"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "2",
+      "gen_text": "To determine how many trays Rozanne can put out, we need to follow these steps:\n\n1. Calculate the total number of eggs Rozanne has.\n2. Determine how many glasses of eggnog she can make with the total "
+    },
+    {
+      "score": 0,
+      "pred": "72",
+      "gold": "24",
+      "gen_text": "Each teacher uses the whiteboard for 2 lessons per day, so they use it a total of 2 * 3 = 6 times per day.\nThere are 4 teachers, so the total number of times the whiteboard is used in a day is 4 * 6 ="
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "750",
+      "gen_text": "To determine how many telephone calls Jason needs to make to sell 15 cars, we can break down the problem step by step.\n\nFirst, let's find out how many customers Jason needs to bring in to sell 15 cars"
+    },
+    {
+      "score": 1,
+      "pred": "60",
+      "gold": "60",
+      "gen_text": "Pam rode the roller coaster 2 times, so she used 2 * 6 = 12 tickets.\nFred rode the roller coaster 4 times, so he used 4 * 6 = 24 tickets.\nTogether, they used 12 + 24 = 36 tickets for the roller coaste"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "120",
+      "gen_text": "To determine how many milliliters of water Hannah will need to drink, we can follow these steps:\n\n1. Calculate the total distance Hannah will run.\n2. Determine the amount of water she needs based on t"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "16",
+      "gen_text": "Let's denote the number of candies that George originally had as G.\n\nAccording to the problem, after eating 5 candies, George has 3 candies left. So we can write:\n\nG - 5 = 3\n\nNow let's solve for G:\n\nG"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "82",
+      "gen_text": "To solve this problem, we need to consider the initial angle of the Great Pyramids from the ground and the rate at which the sun moves relative to the pyramid.\n\nInitially, the angle between the ground"
+    },
+    {
+      "score": 1,
+      "pred": "60",
+      "gold": "60",
+      "gen_text": "Let's denote the cost of an additional phone as x.\n\nAccording to the problem, the main phone costs twice as much as each additional phone, so the cost of the main phone is 2x.\n\nWe know that the main p"
+    },
+    {
+      "score": 0,
+      "pred": "4.5",
+      "gold": "2",
+      "gen_text": "Lana has 27 cups of tea in total, which she divides into 3 rows. This means that each row contains 27/3 = 9 cups of tea.\nIn each row, Lana creates an equal amount of chamomile and mint tea cups. There"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "5",
+      "gen_text": "Let's denote the number of chickens as C and the number of cows as K.\n\nWe know that:\n1. The total number of animals is 20: C + K = 20\n2. Chickens have 2 legs each, and cows have 4 legs each: 2C + 4K ="
+    },
+    {
+      "score": 1,
+      "pred": "30",
+      "gold": "30",
+      "gen_text": "Miss Maria has 6 x 25 = 150 basketball cards.\nShe also has 5 x 40 = 200 baseball cards.\nSo, she has a total of 150 + 200 = 350 cards.\nSince she kept 50 cards, then she gave out 350 - 50 = 300 cards to"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "280",
+      "gen_text": "Jen works 7.5 hours a day for 6 days a week, so her weekly working hours are:\n\n7.5 * 6 = 45 hours\n\nHer hourly rate is $1.5, so her weekly earnings are:\n\n45 * 1.5 = $67.5\n\nSince there are 4 weeks in Ap"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "10",
+      "gen_text": "First, let's calculate the total cost of the items Sara wants to buy:\n\n- Cost of the jacket: $30\n- Cost of one pair of shoes: $20\n- Sara needs 2 pairs of shoes, so the total cost for shoes is: \\( 2 \\t"
+    },
+    {
+      "score": 1,
+      "pred": "27",
+      "gold": "27",
+      "gen_text": "Morisette brought 5 apples + 8 oranges = 13 fruits.\nKael brought 2 * 5 apples = 10 apples.\nKael also brought 8 / 2 oranges = 4 oranges.\nKael brought a total of 10 apples + 4 oranges = 14 fruits.\nToget"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "3",
+      "gen_text": "To determine how many fewer apples Beck has than Boris after Boris gives him 10 apples, we can follow these steps:\n\n1. **Calculate the number of apples Beck initially has:**\n   Boris has 100 apples, a"
+    },
+    {
+      "score": 0,
+      "pred": "6",
+      "gold": "33",
+      "gen_text": "To determine how much Scarlett spent in total, we need to calculate the cost of each item she purchased and then sum these costs.\n\n1. **Cost of the aquarium:**\n   \\[\n   \\text{Cost of the aquarium} = \\"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "64",
+      "gen_text": "To determine how much Kylar needs to pay for 16 glasses, we start by noting that the cost of the first glass is $5 and the cost of every second glass is 60% of $5, which is $3.\n\nWe can break down the "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "6",
+      "gen_text": "To determine how many years before the tires need to be replaced, we first need to calculate the total number of rotations per tire over the course of a year.\n\nJeremy drives 400 miles a month, so in a"
+    },
+    {
+      "score": 1,
+      "pred": "63",
+      "gold": "63",
+      "gen_text": "If Edgar eats 18 pretzels a day, his brother eats 1/2 * 18 = 9 pretzels a day.\nIn a week, his brother eats 9 * 7 = 63 pretzels.\n\nTherefore, the answer is 63."
+    },
+    {
+      "score": 1,
+      "pred": "8",
+      "gold": "8",
+      "gen_text": "Each table has 4 legs and each leg needs 2 screws, so each table needs 4 * 2 = 8 screws.\nJames is putting together 4 tables, so he needs a total of 4 * 8 = 32 screws.\nHe has 40 screws, so he will have"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "38",
+      "gen_text": "Let's denote Duncan's current age as D and Adam's current age as A.\n\nAccording to the problem, we have:\n\n1) D - 8 = 2 * (A - 4)\n\nWe know that D = 60, so we can substitute this value into the equation:"
+    },
+    {
+      "score": 0,
+      "pred": "340",
+      "gold": "70",
+      "gen_text": "To find the overall pass rate for the school, we need to calculate the total number of students who passed and the total number of students tested.\n\nFirst, let's determine the number of third-graders "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "49",
+      "gen_text": "Let's break down the problem step by step.\n\n1. **Initial Temperature**: The initial temperature of the house is 40 degrees.\n2. **Baking Process**: Marcus spends 3 hours baking, and each hour the oven "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "14",
+      "gen_text": "To find out how many bouncy balls came in the tube, we need to add up the number of all the other toys and then subtract that from the total number of toys.\n\nThe bag of building blocks has 31 blocks.\n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "22",
+      "gen_text": "First, let's find out how many stripes the last zebra has. Since it has half as many stripes as the zebra with 36 stripes, we can calculate this as:\n\n\\( \\frac{1}{2} \\times 36 = 18 \\) stripes.\n\nNow, le"
+    },
+    {
+      "score": 1,
+      "pred": "70",
+      "gold": "70",
+      "gen_text": "To find Sally's mean score, we need to add up all of her quiz scores and then divide by the number of quizzes she took.\n\nThe sum of her scores is:\n50 + 80 + 80 + 60 + 40 + 90 + 100 + 70 + 60 = 630\n\nSh"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "55",
+      "gen_text": "Let's denote the speed of a thingamabob as \\( x \\) meters per second.\n\nAccording to the problem, a whirligig spins at five times the speed of a thingamabob, so its speed is \\( 5x \\).\n\nSimilarly, a wha"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "49",
+      "gen_text": "To find the number of fourth-grade boys at Small Tree School on Friday, we can follow these steps:\n\n1. **Determine the total number of fourth-grade students:**\n   \\[\n   \\text{Total fourth-grade studen"
+    },
+    {
+      "score": 1,
+      "pred": "14",
+      "gold": "14",
+      "gen_text": "The glee club ate 70/100 * 20 = 14 pizzas.\nThere were 20 - 14 = 6 pizzas left for the glee club.\nThe football team ordered 20 * 2 = 40 pizzas.\nThe football team ate 80/100 * 40 = 32 pizzas.\nThere were"
+    },
+    {
+      "score": 0,
+      "pred": "30",
+      "gold": "60",
+      "gen_text": "To find the average number of Junebugs Rita removes per day, we need to follow these steps:\n\n1. **Calculate the total number of Junebugs removed over the week:**\n   - On Monday, she removed 39 Junebug"
+    },
+    {
+      "score": 0,
+      "pred": "0",
+      "gold": "2",
+      "gen_text": "Ryan's total allowance for 3 weeks is 3 * $6 = $18.\nThe cost of ice cream cones for Ryan and his 3 friends is 4 * $1.25 = $5.\nThe remaining money after buying ice cream cones is $18 - $5 = $13.\nThe co"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "8",
+      "gen_text": "The candle burns for 4 hours (from 1:00 PM to 5:00 PM). Since the candle melts by 2 centimeters every hour, we can calculate the total amount of melting as follows:\n\n2 centimeters/hour * 4 hours = 8 c"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "10",
+      "gen_text": "After the first week, the beanstalk was 3 inches tall.\nIn the second week, it doubled in height, so it became 3 * 2 = 6 inches tall.\nIn the third week, it grew another 4 inches, so it became 6 + 4 = 1"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "7",
+      "gen_text": "Let's start by calculating the total cost of the candies Manolo bought. We know that he bought four candies for a total of $3.20. Therefore, the cost of one candy is:\n\n\\[\n\\text{Cost of one candy} = \\f"
+    },
+    {
+      "score": 1,
+      "pred": "12",
+      "gold": "12",
+      "gen_text": "The younger son is 12 - 4 = 8 years old.\nSo the total number of candles needed is 12 + 8 = 20 candles.\nThis means that James needs to buy 20 / 5 = 4 packs of candles.\nSo he spends 4 * $3 = $12 on birt"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "35",
+      "gen_text": "If you want to pay an additional 20% tip on a $50 dinner bill, you would calculate the tip as follows:\n\n20% of $50 = 0.20 * $50 = $10\n\nSo, the total amount you need to pay is the original bill plus th"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "6",
+      "gen_text": "Dolly has 2 books and Pandora has 1 book. If they read each other's books as well as their own, then Dolly will read 3 books (her 2 books plus Pandora's 1 book) and Pandora will read 3 books (her 1 bo"
+    },
+    {
+      "score": 1,
+      "pred": "74",
+      "gold": "74",
+      "gen_text": "Carl's weight is 55 + 16 = 71 kg.\nChristian's weight is 71 + 8 = 79 kg.\nHarry's weight is 79 - 5 = 74 kg.\n\nTherefore, the answer is 74."
+    },
+    {
+      "score": 0,
+      "pred": "3",
+      "gold": "75",
+      "gen_text": "Let's break down the problem step by step.\n\nFirst, we need to determine how many visits Pauline made in the first 5 years. Since she visits the museum three times a year, in 5 years she visited:\n\\[ 3 "
+    },
+    {
+      "score": 1,
+      "pred": "7",
+      "gold": "7",
+      "gen_text": "Joe caught 3*4=12 pounds of crawfish on Friday.\nJoe caught 12/2=6 pounds of crawfish on Saturday.\nJoe caught 3+12+6=21 pounds of crawfish.\nJoe has 21/3=7 servings of crawfish.\n\nTherefore, the answer i"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "350",
+      "gen_text": "Let's denote the number of apples Joanne gathered from the average trees as \\( x \\).\n\nFirst, we calculate the number of apples Joanne gathered from each type of tree:\n- From the tallest trees: \\( 30 \\"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "500",
+      "gen_text": "The total cost of the 5 phones is 5 * $700 = $3500.\nThe seller receives $4000 from the buyer, so the change to be given back is $4000 - $3500 = $500.\nTherefore, the seller will give back $500 in chang"
+    },
+    {
+      "score": 1,
+      "pred": "35",
+      "gold": "35",
+      "gen_text": "Each dog takes 0.5 hours a day to walk and take care of their business. So for 10 dogs, John spends 0.5 * 10 = 5 hours a day.\nThere are 7 days in a week, so John spends 5 * 7 = 35 hours a week taking "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "20",
+      "gen_text": "First, let's convert all the times to the same unit. We'll use minutes for this calculation.\n\nCarol spends 4 hours writing a song. Since there are 60 minutes in an hour, we can calculate the time spen"
+    },
+    {
+      "score": 1,
+      "pred": "20000",
+      "gold": "20000",
+      "gen_text": "The company spends 1/3 * $15000 = $5000 on advertising for the second year.\nThe total amount the company spent on advertising for the two years is $15000 + $5000 = $20000.\n\nTherefore, the answer is $2"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "11",
+      "gen_text": "To determine how many cups of flour Carla needs for her baking, we can follow these steps:\n\n1. **Calculate the total number of cookies Carla plans to make:**\n   - Today: 36 cookies\n   - Tomorrow: 30 c"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "4",
+      "gen_text": "Josh started off juggling 3 balls and added 1 ball each week for 4 weeks. So after 4 weeks, he would be juggling 3 + 4 = 7 balls.\nHowever, during the performance, he dropped 3 balls, so he had 7 - 3 ="
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1920",
+      "gen_text": "To determine the total cost of the potting soil Bob needs, we need to follow these steps:\n\n1. **Calculate the volume of one raised bed:**\n   Each raised bed is 2 feet wide by 8 feet long by 2 feet tal"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1509",
+      "gen_text": "The first DVD can be played 1000 - 356 = 644 more times.\nThe second DVD can be played 1000 - 135 = 865 more times.\nBoth DVDs can be played 644 + 865 = 1509 more times before they break."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "96",
+      "gen_text": "Let's denote the number of strawberry cubes as S and the number of blueberry cubes as B.\n\nAccording to the problem, we have two equations:\n\n1) The total number of cubes is 116:\n   S + B = 116\n\n2) The "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "112",
+      "gen_text": "To determine the total number of crayons Beatrice bought, we need to calculate the number of crayons in each type of packet and then sum them up.\n\nFirst, let's calculate the number of crayons in the s"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "4",
+      "gen_text": "Let's denote the number of red chickens as R and the number of white chickens as W.\n\nFrom the problem statement, we know that:\n1) Red chickens produce 3 eggs each per day.\n2) White chickens produce 5 "
+    },
+    {
+      "score": 0,
+      "pred": "48",
+      "gold": "50",
+      "gen_text": "On Saturday, the store sold twice as many shoes as it did on Friday, so they sold 2 * 14 = 28 pairs of shoes.\nOn Sunday, the store sold half of what they did on Saturday, so they sold 28 / 2 = 14 pair"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "2",
+      "gen_text": "Let's denote the number of test tubes Igor actually gathered as T, the number of beakers as B, and the number of Petri dishes as P.\n\nAccording to the problem, we have:\n\nT = 1/2 * 16 (half as many test"
+    },
+    {
+      "score": 1,
+      "pred": "36",
+      "gold": "36",
+      "gen_text": "The cost of 6 erasers is 6 * $2 = $12.\nThe cost of 8 pencils is 8 * $3 = $24.\nTherefore, the total cost of 6 erasers and 8 pencils is $12 + $24 = $36."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "48",
+      "gen_text": "Let's denote the starting value as \\( x \\). According to the problem, the starting value is 20, so we have \\( x = 20 \\).\n\nThe first step in the process is to add half of the starting value to the star"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "14",
+      "gen_text": "Let's break down the problem step-by-step:\n\n1. **Low Speed Cooling:**\n   - The air conditioner runs on low speed for 3 hours.\n   - It cools the room at a rate of 2 degrees per hour.\n   - Total cooling"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "10",
+      "gen_text": "To determine how much change Violetta will get, we need to follow these steps:\n\n1. Calculate the total cost of the crayons.\n2. Subtract the total cost from the amount of money Violetta has.\n\nFirst, le"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "7",
+      "gen_text": "Let's denote the number of fish in each aquarium as F.\n\nThe total number of snails in the two aquariums is 4 + 32 = 36.\nAccording to the problem, the difference between the number of snails in the two"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "5600",
+      "gen_text": "To determine the weight of the remaining portion of the redwood after termites have eaten 30% of its wood, we can follow these steps:\n\n1. **Calculate the total number of sections in the redwood:**\n   "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "20",
+      "gen_text": "Half of the books are written in English, which means there are 50 * 0.5 = 25 books in English.\n10% of the books are written in German, which means there are 50 * 0.1 = 5 books in German.\nThe rest of "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "650",
+      "gen_text": "Craig has spelled out 20 words with 15 letters each, so he has spelled a total of 20 * 15 = 300 letters.\n\nCraig's brother has spelled words with a total count of letters 50 more than Craig, which mean"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "2",
+      "gen_text": "First, let's calculate the total weight of each type of feed:\n\n- Sugar cubes: 2 boxes * 1 pound/box = 2 pounds\n- Carrots: 4 bags * 12 pounds/bag = 48 pounds\n- Hay: 42 bales * 75 pounds/bale = 3150 pou"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "9",
+      "gen_text": "Two years ago, Liam was 14 years old (16 - 2 = 14). At that time, his age was twice the age of Vince, so Vince was 7 years old (14 / 2 = 7). Therefore, Vince is currently 9 years old (7 + 2 = 9)."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "294",
+      "gen_text": "First, we need to determine how many dozens of eggs Lloyd produces in a day. Since there are 12 eggs in a dozen, we can divide the total number of eggs produced per day by 12:\n\n252 eggs / 12 = 21 doze"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "92",
+      "gen_text": "First, let's calculate the total number of books that can fit in the shelving system. Since there are 6 rows and 6 columns, the total number of books is:\n\n6 * 6 = 36\n\nNow, Wendy wants to place 20 more"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "19",
+      "gen_text": "To determine the total number of miles Sam ran this week, we need to add up the miles he ran each day.\n\nFirst, let's calculate the miles Sam ran on Monday, Wednesday, and Friday:\n- Sam ran 3 miles eac"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "576",
+      "gen_text": "If 6 potatoes make 36 hash browns, then the ratio of potatoes to hash browns is 6:36 or simplified as 1:6.\n\nSo for every potato, you can make 6 hash browns.\n\nTherefore, if you have 96 potatoes, you ca"
+    },
+    {
+      "score": 1,
+      "pred": "19",
+      "gold": "19",
+      "gen_text": "Amy originally had 2 * 4 = 8 eyeshadow colors in her palettes.\nShe also had 3 * 6 = 18 eyeshadow colors in her makeup sets.\nAfter her sister took one of the palettes, she was left with 8 - 4 = 4 eyesh"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "320",
+      "gen_text": "Let's break down the problem step by step.\n\n1. **Initial Number of Cards:**\n   Elaine initially had 20 Pokemon cards.\n\n2. **Cards Collected in the First Month:**\n   She collected three times the initi"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "12",
+      "gen_text": "Kira initially bought a total of 3 + 5 + 6 = 14 pieces of fruit. After Lola ate 2 pieces, there would be 14 - 2 = 12 pieces of fruit left."
+    },
+    {
+      "score": 0,
+      "pred": "432",
+      "gold": "64800",
+      "gen_text": "First, let's calculate how many widgets each machine can produce in a month.\n\nFor the Widgeteer 3000:\n- It produces 60 widgets per hour.\n- It runs 24 hours a day.\n- There are 30 days in the month.\n\nSo"
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "Twice the amount of rain that fell on Monday would be 2 * 2 = 4 inches.\nThe amount of rain that is expected to fall on Tuesday is 1 more than 4 inches or 4 + 1 = 5 inches.\n\nTherefore, the answer is 5."
+    },
+    {
+      "score": 1,
+      "pred": "123",
+      "gold": "123",
+      "gen_text": "To calculate the total cost, we need to multiply the number of each type of basket by its price and then subtract the discount for the red food baskets.\n\nFor the green food baskets:\n3 baskets * $25/ba"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "4",
+      "gen_text": "The cost of 3 loaves of bread is 3 * $2 = $6.\nThe cost of 2 bagels is 2 * $1 = $2.\nTherefore, 3 loaves of bread cost $6 - $2 = $4 more than 2 bagels."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "6",
+      "gen_text": "Let's denote the number of photographs that Brittany's phone can hold as B and the number of ducks in Jamal's photograph as D.\n\nAccording to the problem, we have:\n\n1) Jamal's phone can hold 6 times mo"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "36",
+      "gen_text": "Let's denote Gerald's original time for running the 400-meter hurdles as \\( T \\) seconds.\n\nAccording to the problem, Lee used to be able to run the 400-meter hurdles two seconds faster than Gerald. Th"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "105",
+      "gen_text": "James has 25 cents from the quarter, 10 cents from each nickel (2 nickels * 10 cents = 20 cents), and 10 cents from each dime (7 dimes * 10 cents = 70 cents). In total, James has 25 + 20 + 70 = 115 ce"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1210",
+      "gen_text": "To determine the total number of legs Jake sees, we need to calculate the legs from each group of creatures separately and then sum them up.\n\nFirst, let's calculate the number of legs from the spiders"
+    },
+    {
+      "score": 1,
+      "pred": "40",
+      "gold": "40",
+      "gen_text": "If Courtney's count of 48 was overstated by 20%, then we can set up an equation to find the actual number of people at the concert.\n\nLet x be the actual number of people at the concert. Then, accordin"
+    },
+    {
+      "score": 0,
+      "pred": "470",
+      "gold": "230",
+      "gen_text": "The radiator was $400 but he got it at 80% off so 400*.80 = $320 discount\nThe radiator was $320 and that was the cost of the part so the total cost is 320+150 = $470\nThe answer is 470"
+    },
+    {
+      "score": 1,
+      "pred": "34",
+      "gold": "34",
+      "gen_text": "The cost of the food was $4.50 less than the cost of the tickets, or $20.25 - $4.50 = $15.75.\nThe total cost of the rides was $33 x 2 = $66.\nThe total cost of the trip to the fair was $20.25 + $15.75 "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "18",
+      "gen_text": "Let's break down the problem step-by-step:\n\n1. We know that the chair is 3 feet wide.\n2. The rug is 5 feet wider than the chair, so the rug is 3 + 5 = 8 feet wide.\n3. The couch is 2 feet longer than t"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "24",
+      "gen_text": "Let's denote the number of students in each class as x. Since there are two classes with a total of 80 students, we can write:\n\n2x = 80\n\nSolving for x, we get:\n\nx = 80 / 2\nx = 40\n\nSo, each class has 4"
+    },
+    {
+      "score": 1,
+      "pred": "250",
+      "gold": "250",
+      "gen_text": "On the second day, Sloane counted 100 + 50 = 150 customers.\nThe total number of customers for the first two days is 100 + 150 = 250.\nThe number of customers on the third day is 500 - 250 = 250.\n\nThere"
+    },
+    {
+      "score": 0,
+      "pred": "5",
+      "gold": "2",
+      "gen_text": "To determine the latest time Jordan can start making the cake to have it ready by 5:00 PM, we need to add up the total time required for each step of the process.\n\n1. **Making the cake batter:** 20 mi"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "842",
+      "gen_text": "The teacher has 9 coupons, and each coupon can be redeemed for 100 bottles of apple juice. So, the total number of bottles of apple juice that the teacher can get from the coupons is:\n\n9 coupons * 100"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "4",
+      "gen_text": "To determine how many years it will take for Adam to grow tall enough to ride the roller coaster, we need to follow these steps:\n\n1. Convert Adam's current height from inches to feet.\n2. Determine the"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "26",
+      "gen_text": "Let's denote the number of marbles Bob currently has as \\( x \\).\n\nFirst, we know that if Bob receives 2 dozen more marbles, he will have 60 marbles. Since 2 dozen is equal to 24 marbles, we can write "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "10800",
+      "gen_text": "To determine the total cost of everything James bought, we need to calculate the cost of each type of item and then sum them up.\n\nFirst, let's calculate the cost of the suits:\n- James buys 10 suits.\n-"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "23",
+      "gen_text": "On Tuesday, Bruce works for 5 hours.\n\nOn Wednesday, he works twice the time he works on Tuesday, which is 2 * 5 = 10 hours.\n\nOn Thursday, he works 2 hours less than the time he works on Wednesday, whi"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "48",
+      "gen_text": "John drinks 2 glasses of milk, and each glass contains 8 ounces of milk. Therefore, he drinks a total of 2 * 8 = 16 ounces of milk.\n\nIf milk has 3 calories per ounce, then the total number of calories"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "3",
+      "gen_text": "First, we need to determine the total amount of soil used for planting the sunflowers and carnations.\n\nEach sunflower requires 3 pounds of soil, and they plant 4 sunflowers:\n\\[\n4 \\text{ sunflowers} \\t"
+    },
+    {
+      "score": 1,
+      "pred": "70",
+      "gold": "70",
+      "gen_text": "The original cost of the grooming is $100.\nThe discount offered is 30%, so the amount of the discount is 30/100 * $100 = $30.\nTherefore, the final cost after the discount is $100 - $30 = $70.\n#### 70\n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "78",
+      "gen_text": "Anne bought a total of 15 packs of sweets, with each pack containing 60 pieces. Therefore, the total number of sweets is:\n\n15 packs * 60 pieces/pack = 900 pieces\n\nShe kept 2 packs for herself, which m"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "8",
+      "gen_text": "If there are 4 pencils missing from the box, then there are 20 - 4 = 16 pencils in the box.\n\nSince a pair consists of 2 pencils, we can divide the number of pencils by 2 to find the number of pairs:\n\n"
+    },
+    {
+      "score": 1,
+      "pred": "45",
+      "gold": "45",
+      "gen_text": "If Aliya is 3 years old, then Shawna is 3*3 = 9 years old.\nShawna's father is 5*9 = 45 years old.\n\nTherefore, the answer is 45."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "80",
+      "gen_text": "Let's denote the amount of money that Brad gets as B dollars. According to the problem, Jeff gets 4 times as much as Brad, so Jeff gets 4B dollars.\n\nThe total amount of money is 100 dollars, so we can"
+    },
+    {
+      "score": 1,
+      "pred": "240",
+      "gold": "240",
+      "gen_text": "Thomas initially withdraws $1000 in 20 dollar bills, which means he has 1000/20 = 50 twenty dollar bills.\nHe loses 10 of these bills on the way home, leaving him with 50-10 = 40 twenty dollar bills.\nH"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "12",
+      "gen_text": "To calculate the cost of filling the pool, we first need to determine the volume of the pool in cubic feet.\n\nThe volume of a rectangular prism (which is the shape of the pool) can be calculated using "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "655",
+      "gen_text": "Bernice has driven a total of 325 kilometers over 4 days. To find out how many kilometers she still needs to drive, we subtract the distance she has already covered from the total distance between San"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "98",
+      "gen_text": "First, we need to convert the length from yards to feet. Since there are 3 feet in a yard, the length of the room is 3 * 3 = 9 feet.\nNext, we can use the formula for the area of a rectangle to find th"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "2",
+      "gen_text": "James walked half the distance to the store, which is 2 miles (half of 4 miles). He then had to walk back home, covering another 2 miles. So in total, he walked 4 miles.\n\nSince he walks at a speed of "
+    },
+    {
+      "score": 1,
+      "pred": "120",
+      "gold": "120",
+      "gen_text": "Linus bought 2 + 4 = 6 mobile devices.\nHe sold each device for $20 x 2 = $40.\nThus, he earned a total of $40 x 6 = $240 after selling all the mobile devices.\n\nSince Linus originally spent $20 x 6 = $1"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "360",
+      "gen_text": "To determine how many peaches John collects, we need to follow these steps:\n\n1. Calculate the total number of minutes John spends collecting peaches.\n2. Determine how many peaches he collects per minu"
+    },
+    {
+      "score": 1,
+      "pred": "68",
+      "gold": "68",
+      "gen_text": "If Jessa is 20 years old, then Joan is 20+5 = 25 years old.\nMary is 25-2 = 23 years old.\nThe sum of the ages of the three girls is 20+25+23 = 68 years.\n\nTherefore, the answer is 68."
+    },
+    {
+      "score": 0,
+      "pred": "18",
+      "gold": "108",
+      "gen_text": "To determine the total number of seashells brought back, we need to follow these steps:\n\n1. **Calculate the number of groups:**\n   - There are 90 people in total.\n   - Each group consists of 9 people."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "9",
+      "gen_text": "To determine how long it will take for the light to blink 459 times, we can use the information that the light blinks 255 times in 5 minutes.\n\nFirst, let's find out how many times the light blinks per"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "3000",
+      "gen_text": "To determine the total number of quarts of ice cream that can be made in 48 hours, we need to calculate the production rates for both chocolate and vanilla ice cream and then sum the amounts produced "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "20",
+      "gen_text": "Let's calculate the number of microphones that can be arranged in pairs.\n\nIf 20% of the microphones won't find any space to fit in, then 80% of the microphones will be arranged in pairs.\n\nSo, we need "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "100",
+      "gen_text": "Let's denote the number of cases of shingles needed for the first house as \\( x \\).\n\nAccording to the problem:\n- The first house needs \\( x \\) cases.\n- The second house needs twice as much as the firs"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "10",
+      "gen_text": "To determine how many loaves of bread are sold in the afternoon, we need to follow these steps:\n\n1. Calculate the number of loaves sold in the morning.\n2. Determine the number of loaves remaining afte"
+    },
+    {
+      "score": 1,
+      "pred": "15400",
+      "gold": "15400",
+      "gen_text": "The hotel costs 1.2*1500=$1800 per night\nSo it cost 1800*3=$5400\nThe plane tickets cost 2*5000=$10,000\nSo in total it cost 5400+10000=$15,400\nTherefore, the answer is 15400."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "135",
+      "gen_text": "First, let's calculate the total number of fireworks that the city will set off:\n\n15 boxes * 20 fireworks/box = 300 fireworks\n\nNow, we know that Hannah's house is at the right angle to see 40% of the "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1240",
+      "gen_text": "To determine the total number of trees planted at the end of the reforestation campaign, we need to calculate the number of trees planted by the students and the number of trees planted by the teacher"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "27",
+      "gen_text": "If George has 18 pens, and Timothy has three times the number of pens that George owns, then Timothy has 3*18 = <<3*18=54>>54 pens.\nSarah has half as many pens as Timothy, so Sarah has 54/2 = <<54/2=2"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "70",
+      "gen_text": "Let's denote the number of silver coins as S and the number of gold coins as G.\n\nAccording to the problem, we know that:\n\n1) The total number of coins is 110: S + G = 110\n2) There are 30 more gold coi"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "10",
+      "gen_text": "If Mike reads 10 pages a day, he will need 200/10 = 20 days to complete the reading.\nTherefore, Mike will finish his reading 30-20 = 10 days before the deadline.\n\nIn summary, Mike will finish his read"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "5",
+      "gen_text": "Let's break down the problem step-by-step.\n\nFirst, we need to determine how many snowballs Jay makes and how many melt in one hour. Since Jay builds 20 snowballs in an hour, and 2 snowballs melt every"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "5",
+      "gen_text": "To find out how much change the cashier gives back, we need to first calculate the total cost of the items the mother bought.\n\nThe cost of the cocoa is $4.20.\nThe cost of the laundry is $9.45.\nThe cos"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "150",
+      "gen_text": "Lillian has a total of 6 bird feeders (3 homemade + 3 bought from the store). The store-bought feeders attract 20 birds each, while the homemade feeders attract 10 more birds than the store-bought one"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1300",
+      "gen_text": "Let's break down the problem step-by-step to find out how many books Elise sold in the second year and then calculate the total amount of money she earned from those sales.\n\n1. **Total Books and Unsol"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1",
+      "gen_text": "Let's denote the cost of one carrot as C.\n\nEllen eats 2 carrots, so the cost of the carrots per day is 2C.\nThe cost of the salad is given as $6.\nThe cost of the yogurt is half the price of the salad, "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "17",
+      "gen_text": "To determine the total weight of Cindy's books, we need to calculate the weight of each book and then sum them up.\n\n1. **Math and Science Books:**\n   - Each math and science book weighs 2 pounds.\n   -"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "100",
+      "gen_text": "To determine how much Ali has to pay John, we need to calculate the total cost of the wooden tables and the roof frames separately, and then sum these amounts.\n\nFirst, let's calculate the cost of the "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "21",
+      "gen_text": "Let's break down the problem step-by-step:\n\n1. Steve eats 6 cherry tomatoes per day.\n2. His girlfriend eats half as much as Steve, so she eats 3 cherry tomatoes per day.\n3. Together, they eat 9 cherry"
+    },
+    {
+      "score": 0,
+      "pred": "7",
+      "gold": "3",
+      "gen_text": "First, let's calculate the cost of the taffy. The taffy is on sale for \"Buy 1 pound at $3, get 1 pound 1/2 off.\" This means that if Sally buys 2 pounds, she pays full price for the first pound and hal"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "8",
+      "gen_text": "First, we need to convert the length of the wire from feet to inches. Since there are 12 inches in a foot, we can multiply the number of feet by 12 to get the length in inches:\n\n4 feet * 12 inches/foo"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "3",
+      "gen_text": "Let's start by determining the height of each person step by step.\n\nFirst, we know that Isabel is 7 feet tall. According to the problem, Ned is two feet shorter than Isabel. Therefore, we can calculat"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "30",
+      "gen_text": "Let's break down the information given:\n\n- Mike is 24 years old.\n- Martha is 4 years younger than Mike, so she is 24 - 4 = 20 years old.\n- Jeff is 10 years older than Martha, so he is 20 + 10 = 30 yea"
+    },
+    {
+      "score": 1,
+      "pred": "150",
+      "gold": "150",
+      "gen_text": "To determine the total cost of each uniform, we need to calculate the cost of each individual item and then sum them up.\n\n1. **Cost of the hat:**\n   The hat costs $25.\n\n2. **Cost of the jacket:**\n   T"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "50",
+      "gen_text": "Let's denote the time it takes Chris to mow the entire lawn in \"turtle\" mode as T hours, which is given as 1 hour. Therefore, T = 1.\n\nIn \"rabbit\" mode, it takes him 40 minutes to mow the entire lawn. "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "25",
+      "gen_text": "Henry's total trip is 60 miles long. He stopped after traveling 20 miles, so there are 60 - 20 = 40 miles left to travel.\n\nHis second stop was 15 miles before the end of the trip, which means he had t"
+    },
+    {
+      "score": 1,
+      "pred": "10",
+      "gold": "10",
+      "gen_text": "To solve this problem, we need to convert all measurements to the same unit (inches) and then use algebra to find the length of Bobby's shoe.\n\nFirst, let's convert the length of Topher's shoe from fee"
+    },
+    {
+      "score": 0,
+      "pred": "4000",
+      "gold": "2000",
+      "gen_text": "Elliott has taken 5000 + 1000 = 6000 steps.\nHe has 2000 steps left to get to his goal, so he took 6000 - 2000 = 4000 steps during his jog.\n\nTherefore, the answer is 4000."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "110",
+      "gen_text": "To determine how much James pays on average for each pair of shoes, we need to follow these steps:\n\n1. Calculate the total number of pairs of shoes James buys in a year.\n2. Divide the total amount spe"
+    },
+    {
+      "score": 1,
+      "pred": "18",
+      "gold": "18",
+      "gen_text": "To calculate the total amount that Ashley should give the delivery man, we need to add the cost of the pizza and the tip.\n\nThe cost of the pizza is $15.\n\nThe tip is 1/5 of the cost of the pizza, so:\n\n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "452",
+      "gen_text": "Kim usually sleeps from 10 p.m. to 6 a.m., which is a total of 8 hours or 480 minutes.\n\nOn this particular day, she woke up 5 minutes earlier than usual, so her wake-up time was 5:55 a.m.\n\nShe was sle"
+    },
+    {
+      "score": 0,
+      "pred": "396",
+      "gold": "284",
+      "gen_text": "Let's break down the costs:\n\n- For the first 6 months, Bill pays $8 per month.\n- Then, for the next 8 months, he pays $12 per month.\n- Finally, for the remaining 18 months (since 2 years is 24 months "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "4",
+      "gen_text": "Let's denote the number of orange fish Bob bought as O and the number of white fish as W.\n\nBefore buying new fish, Bob had 3 orange fish and 4 white fish. After buying new fish, he has 3 + O orange fi"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "11232",
+      "gen_text": "To calculate the total cost of replacing the carpet, we need to consider the cost of the carpet itself, the cost of the padding, the cost of removing the old carpet, and the cost of installing the new"
+    },
+    {
+      "score": 1,
+      "pred": "1520",
+      "gold": "1520",
+      "gen_text": "Rafaela received 40 * $20 = $800 in tips.\nJulieta received 10/100 * $800 = $80 less than Rafaela.\nThis means Julieta received $800 - $80 = $720 in tips.\nAltogether, Julieta and Rafaela received $800 +"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "48",
+      "gen_text": "Sadie slept 8 hours on Monday.\n\nFor Tuesday and Wednesday, she slept 2 hours less than Monday, so:\n- Tuesday: 8 - 2 = 6 hours\n- Wednesday: 6 hours\n\nFor Thursday, Friday, Saturday, and Sunday, she slep"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "3",
+      "gen_text": "First, we need to find out how many employees are in management. Since 20% of the employees are management, we can calculate this as:\n\n20% of 50 = (20/100) * 50 = 10\n\nSo there are 10 management employ"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "72",
+      "gen_text": "Matthew has 12 unique toy soldiers in his collection. The buyer is willing to pay $5 for each of the first half of the collection and $7 for each of the second half.\n\nFirst, we need to determine the n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1125",
+      "gen_text": "To find out how many tax reports the IRS received on Wednesday, we need to subtract the number of reports received on Monday and Tuesday, as well as Thursday and Friday, from the total number of repor"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "72",
+      "gen_text": "Ashley's internet connection speed is 20kb per second.\n\nFirst, we need to convert the speed from kilobits (kb) to megabits (Mb). Since 1 Mb = 1000 kb, we can divide the speed in kb by 1000 to get the "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "92",
+      "gen_text": "To determine the cost of a bag of marbles after 36 months, we need to calculate the price increase step by step.\n\n1. **Initial Price**: The initial price of a bag of marbles is $20.\n2. **Price Increas"
+    },
+    {
+      "score": 1,
+      "pred": "72",
+      "gold": "72",
+      "gen_text": "The first child is 6*12=72 inches tall.\nThe second child is 72+2=74 inches tall.\nThe third child is 74-5=69 inches tall.\nThe fourth child is 69+3=72 inches tall.\n\nTherefore, the answer is 72."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "31",
+      "gen_text": "Let's break down the problem step by step:\n\n1. Oscar starts with 24 lollipops.\n2. He eats 2 lollipops on his way to school: \n   \\[\n   24 - 2 = 22\n   \\]\n3. He gives 14 lollipops to his friends:\n   \\[\n "
+    },
+    {
+      "score": 0,
+      "pred": "120",
+      "gold": "90",
+      "gen_text": "The total cost for the basic manicure and pedicure is $35 + $40 = $75.\nWith the discount, it will be $75 - $15 = $60.\nKaren has 10 nails on each hand, so she would have 10 x 2 = 20 nails in all.\nThe a"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "63",
+      "gen_text": "To determine how many skeins of wool Martha needs to buy, we first calculate the total number of skeins required for one child and then multiply that by the number of children.\n\nFor one child:\n- Hat: "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "180",
+      "gen_text": "To find the average weight of Mark, Susan, and Bob, we need to follow these steps:\n\n1. Determine Susan's weight.\n2. Determine Bob's weight.\n3. Calculate the total weight of the three friends.\n4. Divid"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "2",
+      "gen_text": "Tobias howls for 20 seconds.\nChikote howls for twice as long as Tobias, so he howls for 20 * 2 = 40 seconds.\nThe combined length of Tobias and Chikote's howls is 20 + 40 = 60 seconds.\nIgneous howls fo"
+    },
+    {
+      "score": 1,
+      "pred": "16",
+      "gold": "16",
+      "gen_text": "In the choir, there are 52/2=26 boys.\nThere are also 26 girls in the choir.\nThe number of girls who can't make it to the performance is 26/2=13.\nThe number of teachers singing is 3.\nThus, the number o"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "25",
+      "gen_text": "Let's denote the number of students who like to play video games as V and the number of students who like to play music as M.\n\nWe know that:\n- The total number of students in the class is 50.\n- 10 stu"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "36",
+      "gen_text": "To determine how many lemons Tim needs, we first calculate the total amount of lemon juice required for the lemonade.\n\nFor the 4 gallons of regular lemonade:\n- Each gallon requires 1 cup of lemon juic"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "2400",
+      "gen_text": "First, we need to determine the cost per bottle of scotch. John buys 10 bottles of scotch for a total cost of $600. Therefore, the cost per bottle of scotch is:\n\n\\[\n\\text{Cost per bottle of scotch} = "
+    },
+    {
+      "score": 1,
+      "pred": "200",
+      "gold": "200",
+      "gen_text": "If each episode is 20 minutes long, and there are half as many episodes in total as there are minutes per episode, then there are 20/2 = <<20/2=10>>10 episodes in total.\nIf each episode is 20 minutes "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "81",
+      "gen_text": "First, we need to determine how many apples Walter ate. He ate \\( \\frac{2}{5} \\) of the 60 apples:\n\n\\[\n\\frac{2}{5} \\times 60 = \\frac{120}{5} = 24 \\text{ apples}\n\\]\n\nNext, we calculate the number of ap"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "52",
+      "gen_text": "To determine how many more tins of cat food than dog food Kimberly bought, we need to follow these steps:\n\n1. Calculate the total number of tins of cat food.\n2. Calculate the total number of tins of d"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "6",
+      "gen_text": "To determine how many stuffed goats Bubbles needs to buy, we first need to calculate the total number of stuffed animals she currently has.\n\nShe has:\n- 3 stuffed puppies\n- 5 stuffed koalas\n- 2 stuffed"
+    },
+    {
+      "score": 1,
+      "pred": "308",
+      "gold": "308",
+      "gen_text": "The cost of spaying the kitten is $200.\nThe cost of 3 vaccines at $20 each is 3 * $20 = $60.\nThe cost of 4 broken vases at $12 each is 4 * $12 = $48.\nSo far, the total cost for the kitten is $200 + $6"
+    },
+    {
+      "score": 1,
+      "pred": "3",
+      "gold": "3",
+      "gen_text": "The youngest son is half as old as the oldest son, so he is 8 / 2 = 4 years old.\nThe total number of oranges washed is 8 + 4 = 12.\nThere are 15 - 12 = 3 oranges left unwashed.\n\nTherefore, the answer i"
+    },
+    {
+      "score": 1,
+      "pred": "4",
+      "gold": "4",
+      "gen_text": "Each horse consumes 5 x 2 = 10 pounds of oats per day.\nSo, the total amount of oats that will be consumed by 4 horses in five days is 10 x 4 x 5 = 200 pounds.\nTherefore, Uncle Ben needs 200/50 = 4 bag"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "48",
+      "gen_text": "Let's denote the total number of fries in the pack as \\( x \\).\n\n1. Dave ate 14 fries.\n2. The seagull ate half of what Dave ate, which is \\( \\frac{14}{2} = 7 \\) fries.\n3. Three pigeons each ate 3 fries"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "84",
+      "gen_text": "To determine how much money Grayson earns from recycling in a four-week month, we need to calculate her weekly earnings first and then multiply by four.\n\nFirst, let's calculate the value of the alumin"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "4",
+      "gen_text": "Let's denote the amount of citrus zest used as \\( z \\) ounces. Since Tanya uses the same amount of citrus zest as fragrance, the amount of fragrance is also \\( z \\) ounces.\n\nNext, let's denote the amo"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "24",
+      "gen_text": "Christina invited 16 friends, but since 1/4 of the guests don't show up, we need to calculate how many will actually attend.\n\n1/4 of 16 = 16 * (1/4) = 4\n\nSo, 4 guests won't show up. Now, subtract that"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "45",
+      "gen_text": "First, let's calculate how far John travels during his initial trip:\n\nDistance = Speed * Time\nDistance = 60 mph * 3 hours\nDistance = 180 miles\n\nNow, let's break down the return trip into segments:\n\n1."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "7",
+      "gen_text": "Billy's first 3 customers buy 1 DVD each, so that's 3 DVDs.\nHis next 2 customers buy 2 DVDs each, so that's 2 * 2 = 4 DVDs.\nIn total, Billy sold 3 + 4 = 7 DVDs on Tuesday."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "15",
+      "gen_text": "Let's denote the number of games the team won as W and the number of games they lost as L.\n\nAccording to the problem, we have two equations:\n\n1) The total number of games played is 22:\n   W + L = 22\n\n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "60",
+      "gen_text": "To find the average square footage of a level in Luke's sandcastle, we first need to determine the square footage of each level.\n\nGiven:\n- The top level (Level 4) has a square footage of 16.\n- Each le"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "216",
+      "gen_text": "To calculate the time it would take Bob to dig the hole, we first need to determine the volume of the hole in cubic feet.\n\nThe volume of the hole is calculated as:\n\nVolume = Length x Width x Depth\n\nSu"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "6",
+      "gen_text": "Let's denote the number of yellow balloons as Y.\n\nAccording to the problem, Benny threw 2 pieces of bologna at each red balloon and 3 pieces of bologna at each yellow balloon. We know that there are 2"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "560",
+      "gen_text": "To determine how many miles John drives in a month when visiting his parents, we need to follow these steps:\n\n1. **Calculate the distance for one trip:**\n   - John drives for 2 hours at a speed of 70 "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "480",
+      "gen_text": "To determine how much Mark makes in a week after his pay raise, we need to follow these steps:\n\n1. Calculate Mark's new hourly wage.\n2. Determine the number of hours Mark works in a week.\n3. Multiply "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "700",
+      "gen_text": "To determine the total number of animals on Melanie's father's farm after three weeks, we need to calculate the number of cows and chickens added over that period and then sum them with the initial nu"
+    },
+    {
+      "score": 1,
+      "pred": "27",
+      "gold": "27",
+      "gen_text": "To find Trinity's profit, we need to first calculate the selling price of the magazines and then subtract the cost price from it.\n\nThe selling price is given as 11/8 of the cost price. The cost price "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "6",
+      "gen_text": "First, we need to determine how far Michael's horse runs in 30 minutes. Since the horse runs at a speed of 32 miles per hour (MPH), we can calculate the distance covered in 30 minutes as follows:\n\n\\[\n"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "16",
+      "gen_text": "To calculate the force needed to push the car, we first need to determine the total weight of the car with its contents.\n\nThe car itself weighs 1200 pounds, and there is an additional 250 pounds of lu"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "800",
+      "gen_text": "To calculate the amount you have to pay after a 20% discount on a $1000 laptop, you can follow these steps:\n\n1. Calculate the discount amount: 20% of $1000 = (20/100) * $1000 = $200.\n2. Subtract the d"
+    },
+    {
+      "score": 0,
+      "pred": "4",
+      "gold": "16",
+      "gen_text": "Joey loses 2 pounds per week because 8 / 4 = 2\nSandy will lose 2 pounds per week for 4 weeks because 2 x 4 = 8\nSandy will lose 8 pounds in 4 weeks because 2 x 4 = 8\n\nTherefore, the answer is 4."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "48",
+      "gen_text": "Mrs. Sherman initially made 12 bread rolls. She gave 1 roll to each of her 6 children, which means she gave away 6 rolls in total.\n\nSo, the number of rolls left is:\n12 (initial rolls) - 6 (given to ch"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "7",
+      "gen_text": "To determine how much butter Juan needs to make 4 dozen croissants per day for a week, we can break the problem down into smaller steps.\n\nFirst, we calculate the amount of butter needed for one day:\n-"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "18",
+      "gen_text": "If there are 6 girls in the park and there are twice the number of boys, then there are 2 * 6 = 12 boys in the park.\n\nTo find the total number of kids in the park, we add the number of girls and boys "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "4",
+      "gen_text": "Let's denote the regular price of popcorn as \\( P \\).\n\nIf you buy the super ticket, you pay $20 for the ticket and an additional $1 for the popcorn and soda, which means you pay a total of:\n\\[ 20 + 1 "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "120",
+      "gen_text": "Let's break down the problem step by step.\n\nFirst, we need to determine the final price of the laptop after the trade-in discount. The original price of the laptop is $600, and the trade-in discount i"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "25",
+      "gen_text": "Let's denote the number of enemies that Emma jumps on as E, the number of berries she collects as B, and the time it takes her to complete the level as T.\n\nThen, the number of enemies that Ava jumps o"
+    },
+    {
+      "score": 1,
+      "pred": "35",
+      "gold": "35",
+      "gen_text": "Sofie will walk 7*10 = 70 miles in 7 days.\nBrian will walk 70/2 = 35 miles in 7 days.\n\nTherefore, the answer is 35."
+    },
+    {
+      "score": 1,
+      "pred": "2304",
+      "gold": "2304",
+      "gen_text": "The insurance cost after the accident is 120 * 1.6 = $192 per month.\nSo he pays 192 * 12 = $2304 per year.\nTherefore, the answer is 2304."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1600",
+      "gen_text": "To determine the maximum number of popsicle sticks Frederick can make with his budget, we need to consider the cost and stick yield of each type of wood.\n\nFirst, let's calculate the number of sticks p"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "3",
+      "gen_text": "The robe takes 2 bolts of blue fiber and half that amount of white fiber, which is 1 bolt (since half of 2 is 1). So, the total number of bolts needed for the robe is 2 (blue) + 1 (white) = 3 bolts."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "60",
+      "gen_text": "Let's break down the problem step-by-step:\n\n1. First, we need to find out how many students enrolled in contemporary dance.\n   - 20% of 20 students = (20/100) * 20 = 4 students\n\n2. Now, let's calculat"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "145",
+      "gen_text": "The first train is scheduled to arrive in 10 minutes and will stay in the station for 20 minutes. So, the first train will be in the station for a total of 10 + 20 = 30 minutes.\nThe second train is to"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "140000",
+      "gen_text": "In one day, the company can produce 5000 bars of chocolate and sell them for $2 each, so they earn 5000 * $2 = $10,000.\nThere are 7 days in a week, so in two weeks there are 2 * 7 = 14 days.\nTherefore"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "3",
+      "gen_text": "Let's denote the number of cupcakes as C and the number of brownies as B.\n\nAccording to the problem, we have:\n\nB = 3C - 2\n\nWe also know that each of the 5 people in the class gets 2 treats, so there a"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "25",
+      "gen_text": "Let's denote the length of Elaina's usual concert as \\( x \\) minutes.\n\nAccording to the problem, the final concert is twice as long as her usual concert, so it runs for \\( 2x \\) minutes. Additionally,"
+    },
+    {
+      "score": 0,
+      "pred": "1",
+      "gold": "125",
+      "gen_text": "To determine which purchase plan will yield the highest profit, we need to calculate the expected value of each option after one month.\n\n### Jewelry Purchase Plan:\n- Initial Value: $5,000\n- Expected I"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "7425",
+      "gen_text": "Judy teaches 5 classes from Monday to Friday, so that's 5 days * 5 classes = 25 classes.\nOn Saturday, she teaches 8 classes.\nSo in total, she teaches 25 + 8 = 33 classes in a week.\nEach class has 15 s"
+    },
+    {
+      "score": 1,
+      "pred": "480",
+      "gold": "480",
+      "gen_text": "To calculate the expected earnings of the dance studio in a month, we need to first determine the daily cost of renting the studio and then multiply it by the number of days the studio is rented in a "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "15",
+      "gen_text": "Adam has 3 large apples, each of which can be sliced into 5 pieces, so he has 3 * 5 = 15 slices from the large apples.\nHe also has 5 small apples, each of which can be sliced into 3 pieces, so he has "
+    },
+    {
+      "score": 0,
+      "pred": "3.5",
+      "gold": "7",
+      "gen_text": "John and DeSean made 9 + 9 = 18 S'mores.\nThere were 35 - 3 = 32 marshmallows left.\nThere are 32 - 18 = 14 marshmallows left for them to make more S'mores.\nThey can make 7 more S'mores because 14 / 2 ="
+    },
+    {
+      "score": 1,
+      "pred": "130",
+      "gold": "130",
+      "gen_text": "Elise writes the alphabet in full twice, so that's 26 * 2 = 52 letters.\nShe writes half of the alphabet once, which is 26 / 2 = 13 letters.\nThen she rewrites everything she has already written, so tha"
+    },
+    {
+      "score": 0,
+      "pred": "16",
+      "gold": "11",
+      "gen_text": "Jack plays for 4 hours or 240 minutes. He can play for 240/20=12 quarters.\nThe two friends that are worse than him can play for 20/2=10 minutes each.\nSo they can play 240/10=24 quarters each.\nThe frie"
+    },
+    {
+      "score": 1,
+      "pred": "60000",
+      "gold": "60000",
+      "gen_text": "If one playlist has 300 songs and each song is 10 hours long, then one playlist lasts for 300 * 10 = 3000 hours.\nIf John has 20 such playlists, then the total time the playlists will last is 20 * 3000"
+    },
+    {
+      "score": 0,
+      "pred": "6",
+      "gold": "42",
+      "gen_text": "To determine how much money Patrick earned from selling lemonade for 6 hours, we need to calculate his earnings for each period separately and then sum them up.\n\nFirst, let's calculate the earnings fo"
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "Hallie has dance practice for 1 hour on Tuesdays and 2 hours on Thursdays, so that's 1 + 2 = 3 hours.\nOn Saturdays, she has dance practice that lasts twice as long as Tuesday's class, which is 2 * 1 ="
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "180",
+      "gen_text": "To determine how much Avery will spend on place settings, we need to calculate the total cost of one set of place settings and then multiply that by the number of sets needed.\n\nFirst, let's find the c"
+    },
+    {
+      "score": 0,
+      "pred": "60",
+      "gold": "160",
+      "gen_text": "Let's break down the problem step-by-step:\n\n1. **Total size of the file**: 200 GB\n\n2. **Normal download speed**: 2 GB/minute\n\n3. **40% of the file**: \n   \\[\n   0.4 \\times 200 \\text{ GB} = 80 \\text{ GB"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "4400",
+      "gen_text": "First, let's calculate the number of movies that are part of series:\n\n1/3 * 600 = 200\n\nSo, Mike has 200 movies that are part of series.\n\nNow, let's find out how many movies are not part of series:\n\n60"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "5760",
+      "gen_text": "To determine the total number of coins Rong and Neil have saved after ten years, we need to follow these steps:\n\n1. **Calculate the monthly savings for Neil:**\n   - Rong saves 20 coins per month.\n   -"
+    },
+    {
+      "score": 1,
+      "pred": "15",
+      "gold": "15",
+      "gen_text": "The total number of orchid petals is 5 * 5 = 25.\nThe total number of daisy petals is 4 * 10 = 40.\nThere are 40 - 25 = 15 more daisy petals than orchid petals.\n\nTherefore, the answer is 15."
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1200",
+      "gen_text": "To determine the total amount of blood in ten sharks, we need to follow these steps:\n\n1. **Determine the amount of blood in one whale:**\n   Each whale has 40 gallons of blood.\n\n2. **Calculate the amou"
+    },
+    {
+      "score": 1,
+      "pred": "20",
+      "gold": "20",
+      "gen_text": "Marisa gets $5 as pocket money every day. She spends 4 * $0.25 = $1 on lollipops every day.\nSo she saves $5 - $1 = $4 every day.\nIf she saves for 5 days, she will have $4 * 5 = $20 in her piggy bank.\n"
+    },
+    {
+      "score": 0,
+      "pred": "1000",
+      "gold": "2000",
+      "gen_text": "The tank is filled with half the amount of water in the pool, which means it has 10000/2 = 5000 gallons of water.\nAfter Anthony and his father use some water from the tank to water their vegetable gar"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "31800",
+      "gen_text": "To determine how much John pays annually for the driving service, we need to calculate the total cost of the miles driven and the bonuses given.\n\nFirst, let's calculate the total distance John drives "
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "30",
+      "gen_text": "In one year, there are 12 months.\n\nIf Claire earns 1 badge every month, then in a year she will have earned:\n\\[ 1 \\text{ badge/month} \\times 12 \\text{ months/year} = 12 \\text{ badges/year} \\]\n\nAmber t"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "84",
+      "gen_text": "Let's break down the problem step by step.\n\nFirst, we know that Madeline ate 6 grapes. Her brother used 5 times as many grapes as Madeline to make a full glass of grape juice. So, her brother used:\n\\["
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "11",
+      "gen_text": "Let's denote the price of the headphone set as H.\n\nFrom the information given, we know that:\n1) The price of one CD is $4.\n2) The total amount Tom paid for the CD and headphone set is $48.\n\nSo, we can"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "35",
+      "gen_text": "When Hunter entered class, there were 50 cars in the parking lot. During the first break, 20 more cars arrived, making the total number of cars in the parking lot 50 + 20 = 70.\n\nAt the lunch break, ha"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "144",
+      "gen_text": "To determine the cost of painting the room, we need to calculate the total area of the walls that need to be painted, then find out how many gallons of paint are required, and finally, calculate the t"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "1000",
+      "gen_text": "Let's break down the problem step-by-step:\n\n1. At 8:00, there were 5000 people in line.\n2. By midday (12:00), 2/5 of the people had voted. So, the number of people who had voted is:\n   \\[\n   \\frac{2}{"
+    },
+    {
+      "score": 1,
+      "pred": "60",
+      "gold": "60",
+      "gen_text": "The second recipe has twice as many instructions as the first one, which means it has 2 * 20 = 40 instructions.\nTo prepare both dishes, Kelian needs to read a total of 20 + 40 = 60 instructions.\n\nTher"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "2",
+      "gen_text": "To determine how many friends Morgan can invite to her birthday party, we need to calculate the total cost of the activities and then see how much money is left for the friends.\n\nFirst, let's calculat"
+    },
+    {
+      "score": 0,
+      "pred": null,
+      "gold": "3140",
+      "gen_text": "In the first 4 days, Tom traveled 200 kilometers every day, so he traveled a total of 200 * 4 = 800 kilometers.\nOver the next two days, he traveled 30% of the distance he traveled in the first four da"
+    }
+  ],
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "41578.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

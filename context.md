@@ -4,13 +4,13 @@
 Achievability via Hadamard Incoherence
 **Author:** Sankalp Pathak (solo), Prof. Sanjay Garg reviewing/advising
 **Target venue: ICLR 2027** (deadline ~late Sep 2026)
-**Last updated: 2026-06-14 ~19:10 IST** (campaign day 4 evening;
-**E7 b=2 mechanism: Prediction 2 CONFIRMED (rho=+0.96 covariance
-with TIES), Prediction 1 REJECTED (matched-sparsity pruning does
-not reproduce the dip)**. Sharpened hypothesis: b=2 and TIES share
-a tensor-level distributional mechanism, not implicit pruning.
+**Last updated: 2026-06-15 ~11:00 IST** (campaign day 5 morning;
+**E3 GSM8K em sweep 20/20 CLOSED: 3/4 STRONG agreement, llama-3.1
+the LONE OUTLIER with ρ=-0.60 rank inversion**). Yi-data rules out
+the strong-base hypothesis; the gap is Llama-3.1-specific.
+Best-per-model: llama→knots(0.346), mistral/qwen/yi→ties(0.41/0.71/0.78).
 Strategy: `master_plan_iclr2027.md`. Dated gate/branch record:
-`decisions.md` (16 entries — READ IT, it is the scientific log).
+`decisions.md` (17 entries — READ IT, it is the scientific log).
 
 **Headline numbers (paper §6.2 + §6.3 ready)**: ridge λ=0.05 →
 worst-task excess 0.0906 on llama (59% below TA 0.219). Cross-model:

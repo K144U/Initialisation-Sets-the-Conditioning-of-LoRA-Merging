@@ -498,6 +498,64 @@ cross-model ordering) hold under task metrics. Master plan budget
 80-120 GPU-h.
 
 
+## 2026-06-15 — E3 GSM8K em sweep CLOSED: model-dependent NLL→accuracy gap
+20 cells (4 models × 5 methods) at n=500, greedy decoding with
+0-shot CoT prompts, regex extract. Job 41578 ran ~14h overnight
+~19:50 → 10:50. Yi cells took 190-229 min each (9B base is slower
+than the 7B siblings). 100% completion rate, zero failures.
+
+Per-model Spearman ρ between accuracy and -NLL excess across the
+five methods:
+  llama31_8b: ρ = -0.60  (WEAK, RANK INVERSION)
+  mistral_7b: ρ = +0.90  (STRONG)
+  qwen25_7b:  ρ = +0.90  (STRONG)
+  yi15_9b:    ρ = +0.87  (STRONG)
+
+3/4 models confirm NLL methodology; 1/4 (Llama-3.1-8B) inverts the
+ranking. Best method per model by accuracy:
+  llama:   knots (0.346)  — NLL best was TVQ b=2 (worst-excess 0.101)
+  mistral: ties  (0.410)  — NLL best was TIES (worst-excess 0.049)
+  qwen:    ties  (0.714)  — NLL best was TIES (worst-excess 0.013)
+  yi:      ties  (0.778)  — NLL best was TIES (worst-excess 0.045)
+
+INTERPRETATION: The "strong-base hypothesis" — that methods that
+minimize NLL on the strongest base discard reasoning bits that NLL
+doesn't see but greedy decoding does — is RULED OUT by the yi data.
+Yi-1.5-9B has the lowest NLL_τ on GSM8K (0.387) and the highest
+merged accuracy (0.778 with TIES), but its ρ=+0.87 sits with mistral
+and qwen. The anomaly is therefore MODEL-SPECIFIC to Llama-3.1-8B,
+not a function of task capacity.
+
+Three concrete hypotheses for the Llama-3.1 anomaly, each testable
+with on-disk artifacts:
+  (1) Llama-3 chat-template special-token sensitivity to aggressive
+      trim/quantize compression
+  (2) Llama-3.1 LoRA Δ magnitude distribution being flatter than the
+      other bases, hurting TIES's top-0.2 threshold and TVQ's
+      per-tensor min/max range
+  (3) Per-task answer-distribution overlap on Llama-3.1's adapters
+      contaminating TIES's sign election
+
+CONSEQUENCE FOR PAPER: §6.5 drafted at
+paper/sections/6_5_e3_downstream_metrics_draft.tex with the
+"3/4 STRONG, 1/4 WEAK, model-specific Llama-3.1 anomaly" framing.
+The strong-base hypothesis (v1 draft) is dead. The §6.2 ridge-encoder
+claim is now qualified: "in NLL terms; for Llama-3.1-8B specifically,
+measure accuracy directly." Lower-bound theorem and E5 floor-formula
+results are metric-agnostic and unaffected.
+
+Master plan §E3 decision rule fires the MIXED branch (n_strong=3,
+n_weak=1): "report accuracy as a separate story; NLL not fully
+predictive." This is honestly stronger paper content than uniform
+confirmation would have been — a model-specific NLL→accuracy gap
+is genuinely new.
+
+NEXT: optional — implement HumanEval pass@1, COMET-22, IFEval strict
+to extend the verification. Each is ~30-60 GPU-h. Or move to E6
+(T sweep on real adapters) per master plan timeline. Or pause E3
+extension until T1 theory week with Garg returns.
+
+
 ## 2026-06-13 — E2 matrix CLOSED: 140/140 cells, multi-seed merge matrix complete
 Job sequence 41524 -> 41533 -> 41556 (keeper requeues + GPU0 drop +
 walltime resume). 140 cells = 4 models (llama/mistral/qwen/yi) x
