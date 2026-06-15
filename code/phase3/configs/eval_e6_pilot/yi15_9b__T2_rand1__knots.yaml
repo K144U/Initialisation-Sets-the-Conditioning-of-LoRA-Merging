@@ -1,0 +1,35 @@
+base_model: /home/sanjay.g/projects/rdmerge/models/Yi-1.5-9B-Chat
+method: knots
+method_kwargs:
+  inner_combination: linear
+max_seq_length: 1024
+seed: 20260615
+min_free_gb: 25
+adapter_specs:
+- name: translation
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/flores/v1
+  task_cfg:
+    name: translation
+    dataset: wmt/wmt19
+    config: de-en
+    split_train: train
+    split_eval: validation
+    n_train: 7500
+    n_eval: 1000
+    src_lang: en
+    tgt_lang: de
+    streaming: true
+- name: xsum
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/e6_pilot/xsum/v1
+  task_cfg:
+    name: xsum
+    dataset: EdinburghNLP/xsum
+    config: null
+    split_train: train
+    split_eval: test
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: document
+    answer_field: summary
+output_path: /home/sanjay.g/projects/rdmerge/results/phase3/eval_e6_pilot/yi15_9b__T2_rand1__knots.json
+loader: plain

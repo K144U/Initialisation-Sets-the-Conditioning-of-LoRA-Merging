@@ -1,0 +1,35 @@
+base_model: /home/sanjay.g/projects/rdmerge/models/Yi-1.5-9B-Chat
+method: dare
+method_kwargs:
+  density: 0.2
+  seed: 20260518
+max_seq_length: 1024
+seed: 20260615
+min_free_gb: 25
+adapter_specs:
+- name: alpaca
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/alpaca/v1
+  task_cfg:
+    name: alpaca
+    dataset: yahma/alpaca-cleaned
+    config: null
+    split_train: train
+    split_eval: train
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: instruction
+    answer_field: output
+- name: codealpaca
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/e6_pilot/codealpaca/v1
+  task_cfg:
+    name: codealpaca
+    dataset: sahil2801/CodeAlpaca-20k
+    config: null
+    split_train: train
+    split_eval: train
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: instruction
+    answer_field: output
+output_path: /home/sanjay.g/projects/rdmerge/results/phase3/eval_e6_pilot/yi15_9b__T2_nested__dare.json
+loader: plain

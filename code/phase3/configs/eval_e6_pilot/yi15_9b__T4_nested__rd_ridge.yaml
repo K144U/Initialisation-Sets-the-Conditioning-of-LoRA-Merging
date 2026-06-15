@@ -1,0 +1,61 @@
+base_model: /home/sanjay.g/projects/rdmerge/models/Yi-1.5-9B-Chat
+method: rd_encoder
+method_kwargs:
+  bits: 32
+  seed: 20260611
+  realize: rank_deff
+  ridge_lambda: 0.13
+max_seq_length: 1024
+seed: 20260615
+min_free_gb: 25
+adapter_specs:
+- name: alpaca
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/alpaca/v1
+  task_cfg:
+    name: alpaca
+    dataset: yahma/alpaca-cleaned
+    config: null
+    split_train: train
+    split_eval: train
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: instruction
+    answer_field: output
+- name: codealpaca
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/e6_pilot/codealpaca/v1
+  task_cfg:
+    name: codealpaca
+    dataset: sahil2801/CodeAlpaca-20k
+    config: null
+    split_train: train
+    split_eval: train
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: instruction
+    answer_field: output
+- name: dolly
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/e6_pilot/dolly/v1
+  task_cfg:
+    name: dolly
+    dataset: databricks/databricks-dolly-15k
+    config: null
+    split_train: train
+    split_eval: train
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: instruction
+    answer_field: response
+- name: gsm8k
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/gsm8k/v1
+  task_cfg:
+    name: gsm8k
+    dataset: openai/gsm8k
+    config: main
+    split_train: train
+    split_eval: test
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: question
+    answer_field: answer
+output_path: /home/sanjay.g/projects/rdmerge/results/phase3/eval_e6_pilot/yi15_9b__T4_nested__rd_ridge.json
+loader: plain
