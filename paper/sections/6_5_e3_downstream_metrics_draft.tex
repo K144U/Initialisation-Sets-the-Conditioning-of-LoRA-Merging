@@ -124,6 +124,26 @@ directly.} The lower-bound theorem and floor-formula results
 metric-agnostic --- they apply to any well-defined per-task loss
 --- and are unaffected.
 
+\paragraph{Hypothesis 2 rejected.}
+We tested the Δ-magnitude-distribution-flatness hypothesis directly.
+For each $(\text{model}, \text{task})$ v1 adapter (16 pairs total),
+we materialized the LoRA $\Delta_t = \mathrm{scaling} \cdot B_t A_t$
+per attention projection and measured five distribution shape
+statistics on $|\Delta_t|$: $p_{99} / \mathrm{median}$, excess
+kurtosis, top-20\% threshold over median, fraction within $\pm 10\%$
+of the top-20\% threshold, and coefficient of variation. Aggregated
+across the four tasks and all attention projections,
+Llama-3.1-8B sits squarely in the middle of the four bases on every
+metric: kurtosis $4.98$ versus Mistral $3.94$ (flattest), Qwen $4.64$,
+Yi $5.26$ (most peaked); the other four metrics span similar
+mid-pack values. Llama-3.1's distribution is neither flatter nor
+more peaked than the others. Whatever drives the GSM8K accuracy
+inversion, it is not the $\Delta$-magnitude distribution. The two
+remaining candidate mechanisms --- L3 chat-template special-token
+sensitivity to compression, and TIES sign-election contamination
+from per-task answer overlap --- are not directly tested in this
+paper and remain open for a focused mechanism study.
+
 \paragraph{What we do not claim.}
 We do not claim NLL is wrong as a methodology. On three of four
 bases the NLL ranking predicts the accuracy ranking with high
