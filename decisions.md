@@ -571,3 +571,37 @@ written). Pre-registered claims to verify:
   (c) DARE per-seed tracks TA to 3 decimals (anchor sanity).
 The seed matrix is the §6.1 calibration data; cross-model ridge sweep
 is the §6.2 generalization data.
+
+
+## 2026-06-15 — Llama-3.1 anomaly hypothesis 2 REJECTED (Δ-distribution flatness)
+The Llama-3.1 GSM8K accuracy inversion is NOT explained by Δ-magnitude
+distribution shape. Direct test on 16 v1 adapters (4 models × 4 tasks),
+materializing per-layer Δ_t and aggregating distribution statistics
+across the four tasks and ~112 attention projections per model:
+
+  model         p99/med   kurt    top20/med   near%
+  llama31_8b    5.26      4.98    2.04        7.65
+  mistral_7b    4.84      3.94    2.00        7.98
+  qwen25_7b     5.29      4.64    2.06        7.59
+  yi15_9b       5.45      5.26    2.07        7.47
+
+Llama-3.1 sits in the middle of the four on every metric. Mistral is the
+flattest (kurt 3.94), yi the most peaked (5.26), with llama and qwen in
+between. The two strong-agreement bases (mistral, yi) bracket llama on
+both sides of the flatness scale, so "flatness drives the inversion" is
+ruled out.
+
+CONSEQUENCE FOR PAPER: §6.5 v2 paragraph "Hypothesis 2 rejected" added,
+listing the measured values. The two remaining candidate mechanisms
+(L3 chat-template special-token sensitivity to compression; TIES
+sign-election contamination from per-task answer overlap) are not
+directly tested in this paper. Either would require additional GPU
+generation (for the chat-template hypothesis) or a TIES-internal
+contamination probe across the matrix (for the sign-election
+hypothesis); both are slotted as focused mechanism follow-ups.
+
+scripts/llama_delta_distribution.py committed (b5e02dd); raw per-layer
+stats in results/phase3/llama_delta_distribution.json.
+
+NEXT: E6 design scaffold done at notes/E6_design.md, awaiting user sign-off
+on the 6 design choices before any cluster work.
