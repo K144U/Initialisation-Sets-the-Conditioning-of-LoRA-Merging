@@ -605,3 +605,81 @@ stats in results/phase3/llama_delta_distribution.json.
 
 NEXT: E6 design scaffold done at notes/E6_design.md, awaiting user sign-off
 on the 6 design choices before any cluster work.
+
+
+## 2026-06-19 — E6 pilot verdict landed (54/54 cells) + Alpaca shallow-adapter diagnosis
+E6 pilot on Yi-1.5-9B-Chat completed 2026-06-18 00:22 IST after
+multiple PBS walltime requeues (41614 train → 41627/41649/41663/41689/41699/41720 eval).
+54/54 cells: 9 subsets × 6 methods. T ∈ {2, 4, 7} with one nested chain
++ three random subsets at T ∈ {2, 4}, one all-tasks subset at T=7.
+
+ANALYSIS (analyze_e6_T_scaling.py, results/phase3/e6_T_scaling_summary.{csv,json}):
+
+Worst-task NLL excess (mean across subsets), all-cells:
+  T   TA      TIES    DARE    KnOTS   TVQ_b2  rd_ridge
+  2   0.027   0.025   0.027   0.027   0.111   0.028
+  4   0.067   0.095   0.067   0.066   0.101   0.084
+  7   0.128   0.148   0.130   0.128   0.111   0.115
+
+Three findings:
+
+(1) TIES INVERTS AT T=7. Worst method (0.148) at T=7. Steepest log-T
+    slope (0.098, R²=0.9995). Hypothesis (not tested): sign-election
+    consensus degrades faster with T than coordinate magnitude. Joins
+    the L3 anomaly mechanism candidate list for future work.
+
+(2) LOG-T SLOPE 3-7× SHALLOWER THAN E4 SYNTHETIC PREDICTS. Measured
+    b ∈ [0.07, 0.10] all-cells; [0.03, 0.05] alpaca-OUT. E4 synthetic
+    said b ≈ 1/√r = 0.25 at r=16. Functional form (log-T) holds
+    (R² ≥ 0.96 for 5/6 methods all-cells). Conjectured cause: real
+    LoRA adapters have substantial column-space overlap; Stiefel-random
+    assumption in E4 over-estimates inter-task interference.
+
+(3) TVQ b=2 DIP SURVIVES T-SWEEP. Slope ≈ 0 all-cells, negative
+    alpaca-OUT. At T=7 TVQ_b2 ties rd_ridge as best method (0.111).
+    Confirms §6.4 mechanism is T-robust.
+
+ALPACA SHALLOW-ADAPTER ARTIFACT (root-caused 2026-06-19 ~21:00 IST):
+The all-cells T=4 rd_ridge cell showed 0.084 (vs TA 0.067), apparently
+contradicting §6.2's ridge salvage. Investigation:
+
+  Per-task headroom (base - τ) for Yi-1.5-9B-Chat E6 adapters:
+    alpaca:     0.114  ← SHALLOW (chat-base already instruction-tuned)
+    codealpaca: 0.236
+    dolly:      0.531
+    gsm8k:      0.554
+
+Yi-1.5-9B-Chat is already a strong instruction follower. The Alpaca
+v1 LoRA barely moves NLL from base. Excess NLL is reported relative
+to τ, so any merge perturbation hits Alpaca disproportionately.
+
+  Per-task alpaca excess at T=4_nested:
+    TA:        0.037   rd_ridge: 0.100  (2.7× asymmetry)
+
+  Per-layer Δ-cosine isolation (mean cos to other 4 adapters):
+    alpaca:     0.028  ← MOST ISOLATED
+    gsm8k:      0.026
+    xsum:       0.066
+    codealpaca: 0.075
+    dolly:      0.097
+
+Combined small headroom + structural isolation: ridge encoder's
+projection step costs Alpaca disproportionately. rd_ridge works
+fine on alpaca-OUT subsets (T=2 rand0/1/2: 0.016/0.030 worst;
+T=4 rand0 codealpaca+dolly+magicoder+translation: 0.045 worst,
+beating TA's 0.056).
+
+CONSEQUENCE FOR PAPER: §6.6 draft uses DUAL REPORTING (all-cells vs
+alpaca-OUT). §6.2 ridge salvage finding stands: on the alpaca-OUT
+T=4 cell, rd_ridge (0.045) beats TA (0.056), TIES (0.058), KnOTS
+(0.056). Alpaca shallow-adapter artifact added as methodological
+warning: practitioners merging on chat-tuned bases should renormalize
+excess by per-task headroom or exclude near-saturated adapters.
+
+paper/sections/6_6_e6_T_scaling_draft.tex committed.
+analyze_e6_T_scaling.py + raw aggregates in results/phase3/.
+
+NEXT: §6.6 ready for cross-read; T-scaling slope refinement should be
+mentioned in the §6.2 / E4 link sentences; consider whether the TIES
+T=7 inversion warrants a focused mechanism study (cost: 1 T=7 eval
+with TIES sign-election counts logged per coordinate, ~3-4 GPU-h).
