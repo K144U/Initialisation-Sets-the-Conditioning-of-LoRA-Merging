@@ -1,0 +1,58 @@
+base_model: /home/sanjay.g/projects/rdmerge/models/Llama-3.1-8B-Instruct
+method: task_arithmetic
+method_kwargs: {}
+max_seq_length: 1024
+seed: 20260615
+min_free_gb: 25
+adapter_specs:
+- name: codealpaca
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/e6_pilot/codealpaca/v1
+  task_cfg:
+    name: codealpaca
+    dataset: sahil2801/CodeAlpaca-20k
+    config: null
+    split_train: train
+    split_eval: train
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: instruction
+    answer_field: output
+- name: dolly
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/e6_pilot/dolly/v1
+  task_cfg:
+    name: dolly
+    dataset: databricks/databricks-dolly-15k
+    config: null
+    split_train: train
+    split_eval: train
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: instruction
+    answer_field: response
+- name: magicoder
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/magicoder/v1
+  task_cfg:
+    name: magicoder
+    dataset: ise-uiuc/Magicoder-OSS-Instruct-75K
+    config: null
+    split_train: train
+    split_eval: train
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: problem
+    answer_field: solution
+- name: translation
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/flores/v1
+  task_cfg:
+    name: translation
+    dataset: wmt/wmt19
+    config: de-en
+    split_train: train
+    split_eval: validation
+    n_train: 7500
+    n_eval: 1000
+    src_lang: en
+    tgt_lang: de
+    streaming: true
+output_path: /home/sanjay.g/projects/rdmerge/results/phase3/eval_e6_pilot/llama31_8b__T4_rand0__ta.json
+loader: plain

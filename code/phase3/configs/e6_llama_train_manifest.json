@@ -1,0 +1,20 @@
+[
+    {
+        "name": "e6L_ll_codealpaca",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e6_pilot/llama31_8b_codealpaca.yaml",
+        "done": "results/phase3/lora_train/llama31_8b_e6pilot_codealpaca.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "e6L_ll_dolly",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e6_pilot/llama31_8b_dolly.yaml",
+        "done": "results/phase3/lora_train/llama31_8b_e6pilot_dolly.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "e6L_ll_xsum",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e6_pilot/llama31_8b_xsum.yaml",
+        "done": "results/phase3/lora_train/llama31_8b_e6pilot_xsum.json",
+        "min_free_gb": 40.0
+    }
+]
