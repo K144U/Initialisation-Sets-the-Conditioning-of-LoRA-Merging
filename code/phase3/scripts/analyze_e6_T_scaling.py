@@ -31,8 +31,10 @@ from pathlib import Path
 
 PROJECT_ROOT = Path("/home/sanjay.g/projects/rdmerge")
 EVAL_DIR = PROJECT_ROOT / "results/phase3/eval_e6_pilot"
-OUT_CSV = PROJECT_ROOT / "results/phase3/e6_T_scaling_summary.csv"
-OUT_JSON = PROJECT_ROOT / "results/phase3/e6_T_scaling_summary.json"
+# Output paths are base-suffixed below (set in main()).
+OUT_CSV: Path
+OUT_JSON: Path
+BASE_PREFIX: str = "yi15_9b"
 
 METHODS = ["ta", "ties", "dare", "knots", "tvq_b2", "rd_ridge"]
 T_VALUES = [2, 4, 7]
@@ -45,10 +47,10 @@ SUBSETS = {
 
 
 def parse_filename(p: Path) -> tuple[int, str, str] | None:
-    """Parse `yi15_9b__T<N>_<subset>__<method>.json` into (T, subset, method)."""
+    """Parse `<base>__T<N>_<subset>__<method>.json` into (T, subset, method)."""
     stem = p.stem
     parts = stem.split("__")
-    if len(parts) != 3 or parts[0] != "yi15_9b":
+    if len(parts) != 3 or parts[0] != BASE_PREFIX:
         return None
     t_subset = parts[1]
     method = parts[2]
@@ -81,7 +83,7 @@ def load_cell(p: Path) -> dict:
 
 def build_table() -> list[dict]:
     rows: list[dict] = []
-    files = sorted(EVAL_DIR.glob("yi15_9b__T*.json"))
+    files = sorted(EVAL_DIR.glob(f"{BASE_PREFIX}__T*.json"))
     for p in files:
         info = parse_filename(p)
         if info is None:
@@ -274,6 +276,16 @@ def print_summary(rows: list[dict],
 
 
 def main() -> int:
+    import argparse
+    global BASE_PREFIX, OUT_CSV, OUT_JSON
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--base", default="yi15_9b",
+                    help="adapter base prefix (yi15_9b or llama31_8b)")
+    args = ap.parse_args()
+    BASE_PREFIX = args.base
+    suffix = "" if BASE_PREFIX == "yi15_9b" else f"_{BASE_PREFIX}"
+    OUT_CSV = PROJECT_ROOT / f"results/phase3/e6_T_scaling_summary{suffix}.csv"
+    OUT_JSON = PROJECT_ROOT / f"results/phase3/e6_T_scaling_summary{suffix}.json"
     rows = build_table()
     if not rows:
         print(f"No cells found in {EVAL_DIR}", file=sys.stderr)

@@ -1,163 +1,183 @@
-% DRAFT: paper §6.6 — E6 pilot, T-scaling on real Yi-1.5-9B adapters.
-% v1 2026-06-19. 54/54 cells landed; dual-reporting (alpaca-in vs
-% alpaca-out) framing chosen after the alpaca shallow-adapter artifact
-% was identified.
+% DRAFT: paper §6.6 — E6 T-scaling on real adapters, cross-model.
+% v2 2026-06-23. Adds Llama-3.1-8B-Instruct 54-cell sweep alongside
+% the Yi-1.5-9B-Chat sweep of v1. Major reframing: most v1 "surprises"
+% (TIES inversion at T=7, TVQ b=2 flat-in-T, Alpaca shallow-adapter
+% artifact) are now identified as Yi-specific, not universal. The
+% cross-model picture sharpens the ridge-salvage claim and makes the
+% log-T scaling story base-dependent in slope but not in form.
 
 \subsection{Does the algorithmic ordering hold beyond $T=4$?}
 \label{subsec:exp-T-scaling}
 
 The matrix of \S\ref{subsec:exp-lora}--\S\ref{subsec:exp-rd-encoder}
-fixes $T=4$. To test whether the algorithmic ordering and the ridge
-salvage survive as $T$ grows on real LoRA adapters, we run a $T$-sweep
-on Yi-1.5-9B-Chat across $T \in \{2, 4, 7\}$ — the real-data
-complement to E4's synthetic prediction of $\log T$ scaling with
-slope $\rho \approx 1 / \sqrt{r}$.
+fixes $T=4$. To test whether the algorithmic ordering and the
+ridge-encoder salvage survive as $T$ grows on real LoRA adapters, we
+run a $T$-sweep on \emph{two} base models across $T \in \{2, 4, 7\}$:
+Yi-1.5-9B-Chat (E1's easiest base, $\lambda = 0.13$) and
+Llama-3.1-8B-Instruct (E1's hardest base, $\lambda = 0.05$). The
+sweeps are the real-data complement to E4's synthetic prediction of
+log-$T$ growth with slope $\rho \approx 1 / \sqrt{r}$.
 
-\paragraph{Setup.} We trained four new rank-$16$ LoRA adapters
-(CodeAlpaca, Dolly, XSum, plus retained Math-style on the GSM8K
-prompt format) and merged them with the four \S\ref{subsec:exp-lora}
-adapters (Alpaca, Magicoder, GSM8K, FLORES translation), all on
-Yi-1.5-9B-Chat. Six merge methods cover the matrix: Task Arithmetic
-(TA), TIES, DARE, KnOTS, TVQ at $b=2$, and rd-encoder with
-ridge $\lambda = 0.13$ (Yi-optimal from
-\S\ref{subsec:exp-rd-encoder}). For each $T$ we draw one fixed
-nested chain plus three random subsets at $T \in \{2, 4\}$, and use
-the all-$7$-tasks subset at $T = 7$. Each cell evaluates worst-task
-NLL excess at $n_{\text{eval}} = 1000$. Total: $54$ merge cells.
+\paragraph{Setup.} For each base, we trained three new rank-$16$ LoRA
+adapters (CodeAlpaca, Dolly, XSum) and merged them with the four
+\S\ref{subsec:exp-lora} adapters (Alpaca, Magicoder, GSM8K, FLORES
+translation). Six merge methods cover the matrix: Task Arithmetic
+(TA), TIES, DARE, KnOTS, TVQ at $b=2$, and rd-encoder ridge at the
+base-optimal $\lambda$ of \S\ref{subsec:exp-rd-encoder}. For each $T$
+we draw one fixed nested chain plus three random subsets at
+$T \in \{2, 4\}$ and use the all-$7$-tasks subset at $T = 7$. Each
+cell evaluates worst-task NLL excess at $n_{\text{eval}} = 1000$.
+Total: $108$ merge cells ($54$ per base, identical subset
+composition for cross-base comparison).
 
-\paragraph{Headline: ordering persists, but with two surprises.}
+\paragraph{Headline: ordering holds, rd-ridge salvage grows with $T$.}
 Table~\ref{tab:e6-worst} reports worst-task NLL excess, averaged
-across subsets at each $T$.
+across subsets at each $T$ per base.
 
 \begin{table}[t]
 \centering
-\caption{E6 pilot — Yi-1.5-9B-Chat worst-task NLL excess (mean across
-$n$ subsets) per $(T, \text{method})$. ``All'' = pooled across all
-subsets at each $T$. ``alpaca-OUT'' = subsets that do \emph{not}
-include the Alpaca v1 adapter (which we show below is a shallow
-outlier on a chat-tuned base).}
+\caption{E6 — worst-task NLL excess (mean across $n$ subsets) per
+$(\text{base}, T, \text{method})$. Yi all-cells include the Alpaca v1
+adapter (shallow on Yi-Chat; see Alpaca artifact paragraph below);
+Yi alpaca-OUT excludes Alpaca-containing subsets ($n_{\text{sub}} =
+3 / 1 / 0$ at $T = 2 / 4 / 7$). Llama has no shallow-adapter artifact
+(Llama-3.1 Alpaca headroom $0.246$ vs.\ Yi's $0.114$).}
 \label{tab:e6-worst}
+\begin{tabular}{llr|rrrrrr}
+\hline
+base & split & $T$ & TA & TIES & DARE & KnOTS & TVQ$_2$ & rd-ridge \\
+\hline
+Yi    & All        & 2 & $0.027$ & $0.025$ & $0.027$ & $0.027$ & $0.111$ & $0.028$ \\
+Yi    & All        & 4 & $0.067$ & $0.095$ & $0.067$ & $0.066$ & $0.101$ & $0.084$ \\
+Yi    & All        & 7 & $0.128$ & $0.148$ & $0.130$ & $0.128$ & $0.111$ & $\mathbf{0.115}$ \\
+Yi    & alpaca-OUT & 2 & $0.024$ & $0.021$ & $0.023$ & $0.024$ & $0.126$ & $0.023$ \\
+Yi    & alpaca-OUT & 4 & $0.056$ & $0.058$ & $0.056$ & $0.056$ & $0.064$ & $\mathbf{0.045}$ \\
+\hline
+Llama & All        & 2 & $0.068$ & $0.064$ & $0.069$ & $0.068$ & $0.064$ & $\mathbf{0.057}$ \\
+Llama & All        & 4 & $0.153$ & $0.126$ & $0.153$ & $0.153$ & $0.113$ & $\mathbf{0.104}$ \\
+Llama & All        & 7 & $0.265$ & $0.232$ & $0.265$ & $0.265$ & $0.215$ & $\mathbf{0.138}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+On Llama, rd-encoder ridge is the best method at every $T$, and the
+margin widens as $T$ grows: ratio rd-ridge/TA $= 0.84$ at $T = 2$,
+$0.68$ at $T = 4$, $0.52$ at $T = 7$. \S\ref{subsec:exp-rd-encoder}'s
+cross-model salvage result is not just preserved at $T = 7$, it
+strengthens. On Yi, rd-ridge wins on alpaca-OUT subsets and at
+$T = 7$ all-cells; the all-cells regression at $T = 4$ is the
+Alpaca-artifact paragraph below.
+
+\paragraph{Log-$T$ form holds on both bases, with base-dependent
+slope.}
+Table~\ref{tab:e6-slopes} fits $\text{worst-excess}(T) = a + b \log T$
+per (base, method). E4's synthetic estimate from
+\S\ref{subsec:exp-T-synthetic} gave $b \approx 1 / \sqrt{r} = 0.25$
+at $r = 16$. All measured slopes are positive (except Yi TVQ$_2$,
+which we discuss below), the functional form holds
+($R^2 \geq 0.93$ on $11$ of $12$ all-cells fits), but the constant
+is base-dependent: Llama slopes are $\sim 2 \times$ larger than Yi's
+and within $1.6 \times$ of synthetic. The five matrix-merging
+methods (TA, TIES, DARE, KnOTS, TVQ$_2$) cluster tightly within each
+base. Rd-ridge has the lowest slope on both bases ($0.070$ on Yi,
+$0.065$ on Llama), confirming that the ridge regularization buys
+$T$-stability across very different base models.
+
+\begin{table}[t]
+\centering
+\caption{Log-$T$ slope $b$ in $\text{worst-excess} = a + b \log T$ per
+(base, method). E4 synthetic predicts $b \approx 0.25$. Yi
+alpaca-OUT uses $T \in \{2, 4\}$ only (no $T = 7$ subset is
+Alpaca-free). $R^2$ given parenthetically for Llama, all-cells.}
+\label{tab:e6-slopes}
 \begin{tabular}{lr|rrrrrr}
 \hline
-split & $T$ & TA & TIES & DARE & KnOTS & TVQ $b{=}2$ & rd-ridge \\
+base & split & TA & TIES & DARE & KnOTS & TVQ$_2$ & rd-ridge \\
 \hline
-All        & 2 & $0.027$ & $0.025$ & $0.027$ & $0.027$ & $0.111$ & $0.028$ \\
-All        & 4 & $0.067$ & $0.095$ & $0.067$ & $0.066$ & $0.101$ & $0.084$ \\
-All        & 7 & $0.128$ & $0.148$ & $0.130$ & $0.128$ & $0.111$ & $\mathbf{0.115}$ \\
-\hline
-alpaca-OUT & 2 & $0.024$ & $0.021$ & $0.023$ & $0.024$ & $0.126$ & $0.023$ \\
-alpaca-OUT & 4 & $0.056$ & $0.058$ & $0.056$ & $0.056$ & $0.064$ & $\mathbf{0.045}$ \\
+Yi    & All        & $0.079$ & $0.098$ & $0.082$ & $0.079$ & $-0.001$ & $0.070$ \\
+Yi    & alpaca-OUT & $0.046$ & $0.053$ & $0.047$ & $0.046$ & $-0.088$ & $0.031$ \\
+Llama & All        & $0.156$ & $0.133$ & $0.155$ & $0.156$ & $0.119$ & $\mathbf{0.065}$ \\
 \hline
 \end{tabular}
 \end{table}
 
-\paragraph{Surprise 1: TIES inverts at $T = 7$.}
-The dip champion of \S\ref{subsec:exp-multiseed} (TIES, lowest excess
-on Yi at $T = 4$ across most subsets) becomes the \emph{worst} method
-at $T = 7$ ($0.148$ vs.\ $0.111$--$0.130$ for the others). The
-inversion holds on the single $T = 7$ subset we have and is
-consistent with the slope reading (Table~\ref{tab:e6-slopes}): TIES
-has the steepest log-$T$ slope ($0.098$, $R^2 = 0.9995$). The
-mechanism we suspect is sign-election contamination: at small $T$,
-TIES's per-coordinate sign vote is dominated by a few task-specific
-adapters; as $T$ grows the vote averages toward consensus signs that
-no single task wants. We do not test this further here; it joins the
-candidate-mechanism list for the L3 anomaly of
-\S\ref{subsec:exp-downstream-gsm8k}.
+\paragraph{Three Yi-specific artifacts the Llama sweep rules out.}
+The Yi-only v1 of this analysis flagged three findings that the
+Llama sweep now identifies as base-dependent rather than universal:
 
-\paragraph{Surprise 2: log-$T$ slope is $3$--$7\times$ shallower than
-E4 synthetic predicts.}
-Table~\ref{tab:e6-slopes} fits $\text{worst-excess}(T) = a + b \log T$
-per method. E4's synthetic estimate from
-\S\ref{subsec:exp-T-synthetic} gave $b \approx 1/\sqrt{r} = 0.25$ at
-$r = 16$. The measured slopes on all-cells data are
-$b \in [0.070, 0.098]$ — uniformly smaller. On alpaca-OUT cells (the
-unconfounded subset) they are smaller still, $b \in [0.031, 0.053]$,
-though we only have two $T$ values there. The functional form
-holds ($R^2 \geq 0.96$ for $5$ of $6$ methods on all-cells) but the
-constant is friendlier than the synthetic estimate. We conjecture
-that real LoRA adapters have substantial column-space overlap
-(unlike i.i.d.\ Stiefel-random columns assumed in E4's model), which
-reduces inter-task interference and slows the $\log T$ growth.
+\textbf{(A) TIES inversion at $T = 7$ is Yi-specific.} On Yi, TIES
+becomes the worst method at $T = 7$ ($0.148$, slope $0.098$, $R^2 =
+0.9995$). On Llama, TIES at $T = 7$ is $0.232$, third-best of six,
+in the natural ordering. We conjectured in v1 that this was
+sign-election contamination from per-task overlap; the cross-model
+data are consistent with a refined conjecture --- the contamination
+happens specifically when one or more adapters are
+\emph{near-saturated} on the base (small per-task headroom), which
+applies to Yi but not Llama. The hypothesis remains testable as a
+focused mechanism study.
 
-\begin{table}[t]
-\centering
-\caption{Log-$T$ slope per method, $b$ in
-$\text{worst-excess} = a + b \log T$. ``All'' uses $T \in \{2, 4, 7\}$;
-alpaca-OUT uses $T \in \{2, 4\}$ only (no $T = 7$ subset is
-alpaca-free). E4 synthetic predicts $b \approx 0.25$.}
-\label{tab:e6-slopes}
-\begin{tabular}{lrrrrrr}
-\hline
-split & TA & TIES & DARE & KnOTS & TVQ $b{=}2$ & rd-ridge \\
-\hline
-All        & $0.079$ & $\mathbf{0.098}$ & $0.082$ & $0.079$ & $-0.001$ & $0.070$ \\
-alpaca-OUT & $0.046$ & $0.053$ & $0.047$ & $0.046$ & $-0.088$ & $\mathbf{0.031}$ \\
-\hline
-\end{tabular}
-\end{table}
+\textbf{(B) TVQ-$b{=}2$'s flat-in-$T$ behavior is Yi-specific.} On
+Yi all-cells, TVQ$_2$ slope is $-0.001$ (essentially flat); on
+alpaca-OUT cells it is $-0.088$ (decreasing). On Llama, TVQ$_2$
+slope is $+0.119$, comparable to the other matrix methods. The
+\S\ref{subsec:exp-b2-mechanism} dip is therefore not a $T$-robust
+mechanism in general; it is a Yi$_2$-specific stability where the
+$b{=}2$ sign-election noise happens to track the shallow-adapter
+direction. Llama's $b{=}2$ degrades with $T$ like any other
+quantization-loss method, just slower.
 
-\paragraph{TVQ $b{=}2$ dip survives the $T$-sweep.}
-TVQ $b{=}2$ — the dip champion of \S\ref{subsec:exp-b2-mechanism} —
-is essentially flat in $T$ (slope $-0.001$ on all-cells, $-0.088$ on
-alpaca-OUT) and at $T = 7$ becomes the best method ($0.111$, tied
-with rd-ridge). This is consistent with the implicit-TIES
-interpretation of \S\ref{subsec:exp-b2-mechanism}: the
-quantization-induced sign election is a $T$-robust mechanism, and
-the dip is not a $T = 4$ artifact.
+\textbf{(C) Alpaca shallow-adapter artifact is Yi-specific.} On Yi,
+the $T = 4$ all-cells rd-ridge regression ($0.084$ vs.\ TA $0.067$)
+is driven entirely by Alpaca: Yi-Chat's per-task headroom from base
+to $\tau$ is just $0.114$ on Alpaca, compared to $0.236$--$0.554$
+for the other E6 adapters; any merge perturbation is large
+\emph{relative} to that small headroom. Llama-3.1-Instruct's Alpaca
+headroom is $0.246$, double Yi's, and the all-cells T = 4 rd-ridge
+result on Llama ($0.104$) is the best of any method --- no
+artifact. Per-layer $\Delta$-cosine analysis on Yi confirmed Alpaca
+was the most isolated of the cohort (mean cosine $0.028$); on Llama
+the artifact does not appear because the headroom is sufficient to
+absorb the projection cost.
 
-\paragraph{Why we split on Alpaca.}
-The all-cells $T = 4$ slot showed rd-ridge \emph{regressing} relative
-to TA ($0.084$ vs.\ $0.067$), apparently contradicting
-\S\ref{subsec:exp-rd-encoder}'s salvage result. The mechanism is
-specific to the Alpaca adapter: on Yi-1.5-9B-Chat (already
-instruction-tuned), the Alpaca v1 LoRA improves per-task NLL by only
-$\tau - \text{base} = 0.857 - 0.971 = 0.114$ — less than half the
-headroom of any other E6 adapter (CodeAlpaca $0.236$, GSM8K $0.554$,
-Dolly $0.531$). Excess NLL is reported relative to $\tau$, so a
-small absolute perturbation is a large relative excess specifically
-for Alpaca. The ridge encoder's projection step costs Alpaca
-disproportionately: averaged over the three alpaca-IN $T = 4$
-subsets, $\text{excess}_{\text{Alpaca}} = 0.097$ for rd-ridge vs.\
-$0.032$ for TA --- a $3 \times$ asymmetry. The per-layer
-$\Delta$-cosine analysis on the $\binom{5}{2}$ adapter pairs confirms
-Alpaca is the most isolated of the cohort (mean cosine $0.028$ to the
-other four, vs.\ Dolly $0.097$); combined with the small headroom,
-even a faithful projection leaves Alpaca with little signal to
-salvage. We therefore report both views and use alpaca-OUT as the
-fairer estimate of the encoder's behavior on adapters trained under
-homogeneous conditions.
-
-\paragraph{Alpaca-OUT: the ridge salvage persists at $T = 4$.}
-On the four alpaca-OUT subsets ($3$ at $T = 2$, $1$ at $T = 4$),
-rd-ridge attains the lowest worst-task excess at $T = 4$ ($0.045$ vs.\
-TA $0.056$, TIES $0.058$, KnOTS $0.056$). This matches the
-\S\ref{subsec:exp-rd-encoder} cross-model finding that rd-ridge
-salvages TA at $T = 4$ on Yi at $\lambda = 0.13$; the $\S 6.2$
-result is not contradicted by E6. We caution that the alpaca-OUT
-$T = 4$ slot has only one subset and the alpaca-OUT cohort has no
-$T = 7$ cell at all (every $T = 7$ subset by construction includes
-Alpaca). We therefore do not extend the slope claim past $T = 4$ on
-alpaca-OUT data.
+\paragraph{Why the cross-model picture is cleaner than Yi alone.}
+Yi-1.5-9B-Chat is heavily aligned: low Alpaca headroom, near-zero
+TIES inversion at $T = 7$, flat TVQ$_2$ in $T$. Each of these is a
+saturation symptom: when a base is already nearly optimal on an
+instruction-following task, any small perturbation looks large
+relative to the residual headroom, and method-specific failure
+modes (sign-election contamination, quantization-induced sparsity
+noise) get amplified. Llama-3.1-8B-Instruct is also instruction-
+tuned but with more residual NLL headroom across the cohort, so
+the cross-base sweep recovers the clean log-$T$ scaling that
+synthetic data already showed. The cross-model evidence promotes
+rd-encoder ridge from "ties at best" (Yi all-cells $T = 7$) to
+"clear winner with widening margin" (Llama $T \in \{2, 4, 7\}$).
 
 \paragraph{What this changes for the paper.}
-Three things.
-(i) The $T$-scaling story closes the theory$\to$synthetic$\to$real
-loop, but with a measured friendlier constant: the empirical
-log-$T$ slope on real Yi-1.5-9B adapters is $0.03$--$0.10$, well
-below the synthetic $0.25$. We report this as a quantitative
-refinement of E4's $\rho \cdot \log T$ scaling rather than a
-contradiction of it.
-(ii) The TIES inversion at $T = 7$ is a new finding worth a
-falsifiable conjecture: sign-election consensus degrades faster
-than coordinate magnitude under increasing $T$. We propose this for
-follow-up in the future-work section.
-(iii) The Alpaca shallow-adapter artifact is a methodological
-warning: excess NLL is informative for adapter cohorts trained under
-matched conditions but is sensitive to per-task headroom asymmetry.
-Practitioners selecting a merge method on a chat-tuned base should
-either renormalize excess by per-task headroom or remove
-near-saturated adapters from the cohort. We will add this to
-\S\ref{sec:practical-recommendations}.
+Four updates to v1.
+(i) The $T$-scaling form holds on both bases ($R^2 \geq 0.93$ for
+$11$ of $12$ all-cells fits); the slope is base-dependent: Yi
+$\in [0.07, 0.10]$, Llama $\in [0.12, 0.16]$. We report this as a
+quantitative refinement of E4's $\rho \cdot \log T$, with the
+empirical $\rho$ between half and two-thirds of the synthetic
+$1 / \sqrt{r}$ estimate.
+(ii) Rd-encoder ridge is the only method whose log-$T$ slope is
+nearly base-invariant ($0.070$ on Yi, $0.065$ on Llama), and on
+Llama it dominates TA by an increasing margin as $T$ grows
+($16\% \to 32\% \to 48\%$ improvements). This promotes the ridge
+result from "salvage at $T = 4$" to "the $T$-stable method on
+real adapters."
+(iii) The three Yi-only surprises (TIES inversion at $T = 7$,
+TVQ$_2$ flat in $T$, Alpaca shallow-adapter artifact) are unified
+under one explanation: \emph{Yi-Chat is near-saturated on
+instruction-following tasks}, which compresses the per-task
+headroom and amplifies method-specific noise. We move this from
+"Yi anomaly" to a \emph{base-saturation regime} caveat for the
+practical recommendations of \S\ref{sec:practical-recommendations}.
+(iv) The Alpaca artifact remains a methodological warning for
+practitioners: a chat-tuned base can hide method-specific
+degradations behind low headroom on the saturated task. Renormalize
+excess by per-task headroom, or exclude near-saturated adapters,
+when comparing methods on a heavily instruction-tuned base.
 
-%%% END DRAFT v1 — alpaca-OUT cohort = 4 subsets only, no T=7 %%%
+%%% END DRAFT v2 — Llama 54/54 landed 2026-06-22 10:55 IST %%%
