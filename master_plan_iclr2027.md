@@ -220,3 +220,45 @@ Keep a dated log (decisions.md) recording: pilot gate outcomes, decision-rule br
 4. Start implementing E1 (the encoder is ~200 lines on top of your existing merge code).
 5. Apply writing items 1 to 6 to the LaTeX.
 6. Decide and freeze the held-out splits, prompts, and metric versions for E3 before any evals run, so nothing is chosen after seeing results.
+
+---
+
+## Part XI: Experiment status tracker (as of 2026-06-23)
+
+| ID  | Experiment                                                                 | Status      | Notes |
+|-----|----------------------------------------------------------------------------|-------------|-------|
+| I0  | Infrastructure: orchestrator, sentinels, GPU pins, walltime requeue        | DONE        | rc=87 no-charge requeue, gpu_opportunity.py promotion, separate state files per campaign |
+| E1  | Optimal encoder on real adapters (ridge salvage cross-model)                | DONE        | §6.2: λ-optimal sweep across Llama/Mistral/Qwen/Yi; ridge salvages TA on all four bases |
+| E2  | Multi-seed matrix (4 models × 10 methods × 2 seeds + seed-0 reference)      | DONE        | §6.1: 80 cells + seed-0 = 120; cross-model ordering Llama>Mistral>Qwen>Yi holds; b=2 dip holds; DARE tracks TA |
+| E3  | Downstream metrics — GSM8K em (20/20 cells)                                 | DONE        | §6.5 v2: 3/4 bases strong (ρ ≥ 0.87); Llama-3.1 anomaly ρ = −0.60; H2 (Δ-distribution flatness) REJECTED; H1 (chat-template) + H3 (sign-election contamination) open |
+| E3+ | Downstream metrics — HumanEval / COMET / IFEval                             | PENDING     | Phase 3 B4 (~10-15 GPU-h + harness wiring) |
+| E4  | Synthetic T sweep (CPU)                                                     | DONE        | log-T scaling with ρ·log T fit; slope ≈ 1/√r at r=16 → ρ ≈ 0.25 |
+| E5  | Floor-positive regime on real adapters (Arms 1, 2)                          | DONE        | §6.3: Arm 2 confirms mechanical-forcing barrier (d_eff/Tr < 1 needs r > in_dim/T); Arm 3b skipped (Llama-3.2-3B safetensors corrupted) |
+| E6  | T sweep on real adapters — Yi-1.5-9B-Chat pilot (T ∈ {2,4,7}, 4 train + 54 eval) | DONE   | §6.6 v1 then v2: log-T form holds; rd_ridge slope 0.070; Alpaca shallow-adapter artifact identified |
+| E6L | T sweep on real adapters — Llama-3.1-8B-Instruct (T ∈ {2,4,7}, 3 train + 54 eval) | DONE  | §6.6 v2: rd_ridge wins at every T with widening margin (ratio 0.84→0.68→0.52); slopes ~2× Yi; three Yi-only artifacts ruled out |
+| E7  | b = 2 mechanism tests (predictions 1 and 2)                                 | DONE        | §6.4: Prediction 2 CONFIRMED (ρ=+0.96 covariance with TIES); Prediction 1 REJECTED (sparsity is not the driver via Phase 2b magnitude-pruning test) |
+| E8  | Rank sweep r ∈ {4, 8, 32, 64}                                               | PENDING     | Phase 6 C3 (~40-60 GPU-h, 2-3 days), only if Tier B/C done with time left |
+| E9  | Scale probe — Llama-3.2-3B                                                  | BLOCKED     | safetensors corrupted on disk; re-download needed before run (~20 GPU-h post-unblock) |
+| E9  | Scale probe — Llama-3.1-70B QLoRA                                           | CUT         | 150–300 GPU-h, out of cycle scope |
+| E10 | Added baselines — Fisher-weighted avg, DELLA, one 2026 method               | PENDING     | Phase 5 C1 (~6-10 GPU-h + 4-8h coding); referee armor |
+| E11 | Quadratic-bridge check (Fisher-quadratic prediction at small perturbations) | PENDING     | Phase 5 C2 (~10-15 GPU-h); App. B empirical support |
+| T1  | Sharpened Theorem 4 Step 3 (high-prob bound on achievability constant)      | PENDING     | needs Prof. Garg week + 1h meeting; converts paper's most visible loose end |
+| T2  | Floor-estimation half-page recipe                                           | PENDING     | Phase 4 A4 (~1-2h writing); §6.3 polish |
+| T3  | Explicit-M_t cross-entropy theorem                                          | CUT         | future-work designation, out of cycle |
+
+### Mechanism follow-ups flagged for Phase 2
+| ID  | Probe                                                                       | Cost          | Tests |
+|-----|----------------------------------------------------------------------------|---------------|-------|
+| B1  | TIES T=7 sign-election count instrumentation + 1 Yi rerun                    | ~3-4 GPU-h    | base-saturation conjecture from §6.6 v2 |
+| B2  | L3 H1 chat-template special-token sensitivity probe                          | ~5-6 GPU-h    | §6.5 open hypothesis on Llama-3.1 anomaly |
+| B3  | L3 H3 sign-election contamination probe on Llama                             | ~3-4 GPU-h    | same mechanism as B1 in unconfounded regime |
+
+### Paper polish queue
+| ID  | Task                                                                        | Estimate      |
+|-----|----------------------------------------------------------------------------|---------------|
+| A1  | decisions.md cross-model entry                                              | DONE 2026-06-23 |
+| A2  | §6.6 v2 cross-read against §6.1-§6.5 (labels, cross-refs)                    | ~30-45 min    |
+| A3  | Garg email digest with E6 cross-model results                               | drafting now  |
+| A4  | T2 floor-estimation half-page recipe                                        | ~1-2h         |
+| A5  | Practical recommendations §, base-saturation regime caveat                  | ~1-2h         |
+| A6  | This tracker section                                                        | DONE 2026-06-23 |

@@ -683,3 +683,95 @@ NEXT: §6.6 ready for cross-read; T-scaling slope refinement should be
 mentioned in the §6.2 / E4 link sentences; consider whether the TIES
 T=7 inversion warrants a focused mechanism study (cost: 1 T=7 eval
 with TIES sign-election counts logged per coordinate, ~3-4 GPU-h).
+
+
+## 2026-06-23 — E6 Llama-3.1-8B-Instruct landed (54/54) + cross-model §6.6 v2
+E6 Llama full sweep completed 2026-06-22 10:55 IST after multiple PBS
+walltime requeues (41960 train → 42051/42057/42075/42110/42141/42159
+eval). 3 train (codealpaca, dolly, xsum) + 54 eval cells, same subset
+composition as the Yi pilot for clean cross-base comparison.
+
+Key intra-stage event: 42051 was killed by root after 80 seconds with
+no spool output, immediately after stage 2 submission. Cause unknown
+(possibly admin policy or maintenance). Resubmitted as 42057 and ran
+cleanly; no further occurrences. One-off, not a pattern.
+
+Mid-flight optimization: orchestrator was running with gpus=2,6 because
+_ORCH_GPUS_E6 carried "2,6" from the Yi pilot (when gpu4 was rc=87
+flicker-bouncing). Switched to "2,4,6" + qdel+qsub fresh at 17:57 IST
+on 2026-06-21. Threw away ~10 min of in-flight cell to save ~3h of
+1-wide pace. Confirmed 3-wide pace (~6 cells/h) after restart.
+
+ANALYSIS (analyze_e6_T_scaling.py --base llama31_8b,
+results/phase3/e6_T_scaling_summary_llama31_8b.{csv,json}):
+
+Worst-task NLL excess (mean across subsets), Llama all-cells:
+  T   TA      TIES    DARE    KnOTS   TVQ_b2  rd_ridge
+  2   0.068   0.064   0.069   0.068   0.064   0.057
+  4   0.153   0.126   0.153   0.153   0.113   0.104
+  7   0.265   0.232   0.265   0.265   0.215   0.138
+
+Rd-encoder ridge wins at every T on Llama, with widening margin:
+  ratio rd_ridge/TA = 0.84 (T=2) → 0.68 (T=4) → 0.52 (T=7)
+§6.2's cross-model salvage finding strengthens at higher T on Llama.
+
+Log-T slopes (Llama all-cells):
+  TA       0.156   (R^2 0.9800)
+  TIES     0.133   (R^2 0.9566)
+  DARE     0.155   (R^2 0.9800)
+  KnOTS    0.156   (R^2 0.9804)
+  TVQ_b2   0.119   (R^2 0.9347)
+  rd_ridge 0.065   (R^2 0.9991)
+
+Llama slopes are ~2× larger than Yi's and within 1.6× of synthetic
+E4 prediction (1/√r = 0.25). Functional log-T form holds (R^2 ≥ 0.93
+on 11 of 12 all-cells fits across both bases). rd_ridge slope is
+nearly BASE-INVARIANT (0.070 Yi, 0.065 Llama) — confirms ridge
+regularization buys T-stability across very different bases.
+
+THREE YI-ONLY ARTIFACTS RULED OUT BY LLAMA DATA:
+
+(A) TIES inversion at T=7 is Yi-specific. On Yi TIES is worst at
+    T=7 (0.148). On Llama TIES at T=7 is 0.232, third-best of six,
+    in the natural ordering. The Yi-specific behavior remains a
+    candidate for a focused sign-election mechanism study.
+
+(B) TVQ b=2 flat-in-T is Yi-specific. Yi all-cells slope -0.001,
+    alpaca-OUT slope -0.088 (decreasing). Llama TVQ_b2 slope +0.119,
+    comparable to other matrix methods. The §6.4 dip is NOT a
+    T-robust mechanism in general; it is a Yi-specific stability
+    where b=2 sign-election noise tracks the shallow-adapter
+    direction.
+
+(C) Alpaca shallow-adapter artifact is Yi-specific. Yi-Chat Alpaca
+    headroom (base − τ) is 0.114; Llama-3.1-Instruct Alpaca headroom
+    is 0.246, ~2× higher. Llama all-cells T=4 rd_ridge (0.104) is
+    the BEST method, not regressing. The artifact does not appear
+    when residual headroom is sufficient to absorb the projection
+    cost.
+
+UNIFYING EXPLANATION: Yi-1.5-9B-Chat is near-saturated on
+instruction-following tasks. Per-task headroom is compressed across
+the cohort (especially on Alpaca), which amplifies method-specific
+failure modes (TIES sign-election contamination, b=2 quantization
+noise). Llama-3.1-8B-Instruct is also instruction-tuned but retains
+residual NLL headroom, so the clean log-T scaling that synthetic
+data already showed comes through. We move Yi-specific findings
+from "anomaly" to a "base-saturation regime" caveat.
+
+CONSEQUENCE FOR PAPER: §6.6 v2 promotes rd-encoder ridge from
+"salvages TA at T=4" to "the T-stable method on real adapters."
+Three v1 surprises (TIES inversion, b=2 flat, Alpaca artifact) are
+all unified under base-saturation. paper/sections/
+6_6_e6_T_scaling_draft.tex v2 committed (baa64de). Master plan
+tracker updated.
+
+analyze_e6_T_scaling.py extended with --base arg (default yi15_9b
+for backward compatibility; --base llama31_8b reproduces the Llama
+numbers above). Yi outputs unchanged at e6_T_scaling_summary.{csv,
+json}; Llama outputs at e6_T_scaling_summary_llama31_8b.{csv,json}.
+
+NEXT: TIES T=7 sign-election counts on Yi (Phase 2, B1) to confirm
+the saturation-regime conjecture. L3 H3 contamination probe on Llama
+(B3) tests the same mechanism in the unconfounded regime. Both
+~3-4 GPU-h each, run together since they share the same probe.
