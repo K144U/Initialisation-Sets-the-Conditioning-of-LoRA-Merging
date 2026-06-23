@@ -1,0 +1,32 @@
+[
+    {
+        "name": "b2_ll_ta",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b2_l3_chat/llama31_8b__ta__special_probe.yaml",
+        "done": "results/phase3/eval_b2_l3_chat/llama31_8b__ta__special_probe.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b2_ll_ties",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b2_l3_chat/llama31_8b__ties__special_probe.yaml",
+        "done": "results/phase3/eval_b2_l3_chat/llama31_8b__ties__special_probe.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b2_ll_dare",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b2_l3_chat/llama31_8b__dare__special_probe.yaml",
+        "done": "results/phase3/eval_b2_l3_chat/llama31_8b__dare__special_probe.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b2_ll_knots",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b2_l3_chat/llama31_8b__knots__special_probe.yaml",
+        "done": "results/phase3/eval_b2_l3_chat/llama31_8b__knots__special_probe.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b2_ll_tvq_b2",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b2_l3_chat/llama31_8b__tvq_b2__special_probe.yaml",
+        "done": "results/phase3/eval_b2_l3_chat/llama31_8b__tvq_b2__special_probe.json",
+        "min_free_gb": 25.0
+    }
+]

@@ -154,8 +154,86 @@ def evaluate_ifeval_strict(model, tokenizer, eval_data: list[dict],
     raise NotImplementedError("IFEval strict not yet implemented")
 
 
+# L3 special token IDs — used by B2 (chat-template H1 probe).
+# These are the Llama-3.1 chat-template literals; same ID range is reserved
+# in other Llama-3 family bases.
+L3_SPECIAL_TOKEN_LITERALS = (
+    "<|begin_of_text|>", "<|end_of_text|>",
+    "<|start_header_id|>", "<|end_header_id|>",
+    "<|eot_id|>",
+    "<|reserved_special_token_0|>", "<|reserved_special_token_1|>",
+)
+
+
+def evaluate_gsm8k_special_token_probe(model, tokenizer,
+                                        eval_data: list[dict],
+                                        max_new_tokens: int = 256,
+                                        progress_every: int = 25,
+                                        ) -> tuple[float, list[dict]]:
+    """B2 — same greedy CoT as gsm8k_em, but decode with
+    skip_special_tokens=False so chat-template specials are preserved,
+    and record per-example raw generated token IDs plus a per-example
+    special-token emission count. Returns (mean emission count per
+    generation, per_example_list).
+
+    Tests the §6.5 L3 H1 hypothesis: aggressive merge methods (TIES at
+    low density, TVQ at low bits, KnOTS, DARE) on Llama-3.1 may emit
+    chat-template special tokens unpredictably, breaking the regex-based
+    gold-answer extraction.
+    """
+    import torch
+    device = next(model.parameters()).device
+    # Map our special-token literals to their token IDs in this tokenizer.
+    special_ids: set[int] = set()
+    for lit in L3_SPECIAL_TOKEN_LITERALS:
+        tid = tokenizer.convert_tokens_to_ids(lit)
+        if tid is not None and tid != tokenizer.unk_token_id:
+            special_ids.add(int(tid))
+    print(f"  [special_probe] special_ids={sorted(special_ids)}", flush=True)
+
+    per_example: list[dict] = []
+    total_emit = 0
+    model.eval()
+    for i, ex in enumerate(eval_data):
+        chat_msgs = [{"role": "user", "content": ex["prompt"]}]
+        in_text = tokenizer.apply_chat_template(
+            chat_msgs, tokenize=False, add_generation_prompt=True)
+        in_ids = tokenizer(in_text, return_tensors="pt",
+                           add_special_tokens=False).input_ids.to(device)
+        in_len = in_ids.shape[1]
+        with torch.no_grad():
+            out = model.generate(
+                in_ids,
+                max_new_tokens=max_new_tokens,
+                do_sample=False, num_beams=1, temperature=1.0, top_p=1.0,
+                pad_token_id=tokenizer.eos_token_id, use_cache=True,
+            )
+        gen_ids = out[0, in_len:].tolist()
+        emit = sum(1 for t in gen_ids if t in special_ids)
+        gen_text_raw = tokenizer.decode(gen_ids, skip_special_tokens=False)
+        gen_text_clean = tokenizer.decode(gen_ids, skip_special_tokens=True)
+        score = gsm8k_score(gen_text_clean, ex["answer"])
+        per_example.append({
+            "score": score,
+            "pred": gsm8k_extract_answer(gen_text_clean),
+            "gold": gsm8k_extract_answer(ex["answer"]),
+            "n_special_emitted": emit,
+            "n_tokens": len(gen_ids),
+            "gen_text_raw": gen_text_raw[:300],  # truncated; specials preserved
+            "gen_text_clean": gen_text_clean[:200],
+        })
+        total_emit += emit
+        if (i + 1) % progress_every == 0:
+            mean_emit = total_emit / (i + 1)
+            print(f"  [special_probe] {i+1}/{len(eval_data)}  "
+                  f"running mean specials/gen={mean_emit:.3f}", flush=True)
+    mean_emit = total_emit / max(1, len(eval_data))
+    return mean_emit, per_example
+
+
 METRIC_FNS: dict[str, Callable] = {
     "gsm8k_em": evaluate_gsm8k_em,
+    "gsm8k_special_token_probe": evaluate_gsm8k_special_token_probe,
     "humaneval_pass1": evaluate_humaneval_pass1,
     "comet22": evaluate_comet22,
     "ifeval_strict": evaluate_ifeval_strict,
