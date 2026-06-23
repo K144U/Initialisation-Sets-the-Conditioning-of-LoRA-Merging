@@ -1,0 +1,122 @@
+[
+    {
+        "name": "b4_llama31_8b_ta",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/llama31_8b__ta__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/llama31_8b__ta__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_llama31_8b_ties",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/llama31_8b__ties__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/llama31_8b__ties__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_llama31_8b_dare",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/llama31_8b__dare__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/llama31_8b__dare__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_llama31_8b_knots",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/llama31_8b__knots__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/llama31_8b__knots__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_llama31_8b_tvq_b2",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/llama31_8b__tvq_b2__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/llama31_8b__tvq_b2__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_mistral_7b_ta",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/mistral_7b__ta__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/mistral_7b__ta__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_mistral_7b_ties",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/mistral_7b__ties__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/mistral_7b__ties__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_mistral_7b_dare",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/mistral_7b__dare__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/mistral_7b__dare__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_mistral_7b_knots",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/mistral_7b__knots__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/mistral_7b__knots__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_mistral_7b_tvq_b2",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/mistral_7b__tvq_b2__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/mistral_7b__tvq_b2__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_qwen25_7b_ta",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/qwen25_7b__ta__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/qwen25_7b__ta__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_qwen25_7b_ties",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/qwen25_7b__ties__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/qwen25_7b__ties__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_qwen25_7b_dare",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/qwen25_7b__dare__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/qwen25_7b__dare__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_qwen25_7b_knots",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/qwen25_7b__knots__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/qwen25_7b__knots__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_qwen25_7b_tvq_b2",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/qwen25_7b__tvq_b2__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/qwen25_7b__tvq_b2__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_yi15_9b_ta",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/yi15_9b__ta__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/yi15_9b__ta__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_yi15_9b_ties",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/yi15_9b__ties__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/yi15_9b__ties__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_yi15_9b_dare",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/yi15_9b__dare__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/yi15_9b__dare__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_yi15_9b_knots",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/yi15_9b__knots__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/yi15_9b__knots__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4_yi15_9b_tvq_b2",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4_humaneval/yi15_9b__tvq_b2__humaneval.yaml",
+        "done": "results/phase3/eval_b4_humaneval/yi15_9b__tvq_b2__humaneval.json",
+        "min_free_gb": 25.0
+    }
+]

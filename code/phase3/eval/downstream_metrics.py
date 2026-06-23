@@ -133,11 +133,113 @@ def evaluate_gsm8k_em(model, tokenizer, eval_data: list[dict],
     return accuracy, per_example
 
 
+def _strip_humaneval_completion(text: str) -> str:
+    """Truncate generated text at the boundary of the next top-level
+    definition or class. HumanEval expects the model to complete a single
+    function; trailing extra functions/classes/imports are noise that
+    breaks the test harness."""
+    lines = text.split("\n")
+    out: list[str] = []
+    for line in lines:
+        # Stop at next top-level definition (column-0 def/class/if __name__)
+        if out and line.startswith(("def ", "class ", "if __name__",
+                                     "print(", "assert ", "# Test")):
+            break
+        out.append(line)
+    return "\n".join(out)
+
+
+def _run_humaneval_check(source: str, test_code: str, entry_point: str,
+                         timeout_s: float = 5.0) -> tuple[bool, str]:
+    """Execute the candidate function and its tests in a subprocess.
+    Returns (passed, error_msg). Uses subprocess + signal-based timeout
+    for sandbox-lite isolation."""
+    import subprocess
+    import tempfile
+    full_source = (
+        source
+        + "\n\n"
+        + test_code
+        + f"\n\ncheck({entry_point})\n"
+    )
+    with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".py", delete=False) as f:
+        f.write(full_source)
+        fname = f.name
+    try:
+        result = subprocess.run(
+            ["python", fname],
+            capture_output=True, text=True,
+            timeout=timeout_s,
+        )
+        if result.returncode == 0:
+            return True, ""
+        # First 200 chars of stderr for diagnostics
+        return False, (result.stderr or result.stdout)[:200]
+    except subprocess.TimeoutExpired:
+        return False, "TIMEOUT"
+    except Exception as e:
+        return False, f"SUBPROC_ERR: {e!s}"[:200]
+
+
 def evaluate_humaneval_pass1(model, tokenizer, eval_data: list[dict],
                               max_new_tokens: int = 512,
+                              progress_every: int = 25,
+                              timeout_s: float = 5.0,
                               ) -> tuple[float, list[dict]]:
-    """Stub: needs the openai/human-eval sandbox + test harness, deferred."""
-    raise NotImplementedError("HumanEval pass@1 not yet implemented")
+    """eval_data: list of {prompt, canonical_solution, test, entry_point}
+    rows from openai/openai_humaneval. Greedy decode the completion,
+    strip trailing top-level definitions, exec prompt+completion+test,
+    count pass@1."""
+    import torch
+    device = next(model.parameters()).device
+    correct = 0
+    per_example: list[dict] = []
+    model.eval()
+    for i, ex in enumerate(eval_data):
+        prompt = ex["prompt"]
+        # We feed the function signature + docstring as a code-completion
+        # task via chat template; the model returns the function body.
+        # Some bases (esp. instruct-tuned) emit markdown ```python ...```
+        # wrappers which we strip below.
+        chat_msgs = [{"role": "user",
+                      "content": "Complete this Python function:\n\n" + prompt}]
+        in_text = tokenizer.apply_chat_template(
+            chat_msgs, tokenize=False, add_generation_prompt=True)
+        in_ids = tokenizer(in_text, return_tensors="pt",
+                           add_special_tokens=False).input_ids.to(device)
+        in_len = in_ids.shape[1]
+        with torch.no_grad():
+            out = model.generate(
+                in_ids,
+                max_new_tokens=max_new_tokens,
+                do_sample=False, num_beams=1, temperature=1.0, top_p=1.0,
+                pad_token_id=tokenizer.eos_token_id, use_cache=True,
+            )
+        gen = tokenizer.decode(out[0, in_len:], skip_special_tokens=True)
+        # Strip markdown wrappers if present
+        if "```python" in gen:
+            gen = gen.split("```python", 1)[1]
+        if "```" in gen:
+            gen = gen.split("```", 1)[0]
+        body = _strip_humaneval_completion(gen)
+        source = prompt + body
+        passed, err = _run_humaneval_check(
+            source, ex["test"], ex["entry_point"], timeout_s)
+        if passed:
+            correct += 1
+        per_example.append({
+            "task_id": ex.get("task_id", f"hu{i}"),
+            "score": int(passed),
+            "err": err if not passed else "",
+            "completion_preview": body[:200],
+        })
+        if (i + 1) % progress_every == 0:
+            acc = correct / (i + 1)
+            print(f"  [humaneval] {i+1}/{len(eval_data)}  "
+                  f"running pass@1={acc:.3f}", flush=True)
+    accuracy = correct / max(1, len(eval_data))
+    return accuracy, per_example
 
 
 def evaluate_comet22(model, tokenizer, eval_data: list[dict],

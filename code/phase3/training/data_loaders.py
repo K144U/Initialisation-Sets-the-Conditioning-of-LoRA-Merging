@@ -44,6 +44,18 @@ def _row_to_dict(row: dict, task_cfg: dict) -> dict:
             src_text = row[f"sentence_{src}"]
             tgt_text = row[f"sentence_{tgt}"]
         return {"prompt": _translation_prompt(src_text, src_label, tgt_label), "answer": tgt_text}
+    if name == "humaneval":
+        # HumanEval rows have prompt + canonical_solution + test + entry_point.
+        # The downstream metric needs all four; training (NLL on canonical
+        # solution) needs prompt + answer = canonical_solution.
+        return {
+            "prompt": row["prompt"],
+            "answer": row["canonical_solution"],
+            "canonical_solution": row["canonical_solution"],
+            "test": row["test"],
+            "entry_point": row["entry_point"],
+            "task_id": row.get("task_id", ""),
+        }
     # default: prompt_field + answer_field
     p_field = task_cfg["prompt_field"]
     a_field = task_cfg["answer_field"]

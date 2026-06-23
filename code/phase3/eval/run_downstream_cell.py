@@ -101,10 +101,18 @@ def main() -> int:
     print(f"  merge done in {time.time()-t_merge:.1f}s", flush=True)
     model.set_adapter(merged_name)
 
-    # Locate the eval split for the metric's task
-    target_spec = next(s for s in cfg["adapter_specs"]
-                       if s["name"] == metric_task_name)
-    _train, ev_full = load_task_split(target_spec["task_cfg"],
+    # Locate the eval split for the metric's task. Two schemas supported:
+    #   (a) metric_task_spec names an adapter in adapter_specs (existing E3
+    #       behavior — eval comes from one of the merged tasks)
+    #   (b) metric_task_cfg is a top-level override (B4 HumanEval, where the
+    #       eval data is from a different dataset than any merged adapter)
+    if "metric_task_cfg" in cfg:
+        target_task_cfg = cfg["metric_task_cfg"]
+    else:
+        target_spec = next(s for s in cfg["adapter_specs"]
+                           if s["name"] == metric_task_name)
+        target_task_cfg = target_spec["task_cfg"]
+    _train, ev_full = load_task_split(target_task_cfg,
                                        seed=cfg.get("seed", 20260518))
     ev = ev_full[:n_eval_metric]
     print(f"[downstream_cell] {metric} on {metric_task_name} "
