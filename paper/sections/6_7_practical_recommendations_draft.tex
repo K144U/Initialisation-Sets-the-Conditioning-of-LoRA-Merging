@@ -1,0 +1,130 @@
+% DRAFT: paper §6.7 — Practical recommendations.
+% v1 2026-06-23 (evening). Distills the operational guidance from
+% §6.1-§6.6 into a five-rule decision tree for practitioners merging
+% LoRA adapters. The base-saturation regime caveat (from §6.6 v2/v3)
+% is the new headline guidance; everything else is well-established
+% in the prior literature but worth restating in one place.
+
+\subsection{Practical recommendations}
+\label{sec:practical-recommendations}
+
+The lower bound of \S\ref{sec:lower_bound} and the encoder of
+\S\ref{subsec:exp-rd-encoder} are theoretical contributions; we close
+\S\ref{sec:experiments} with a five-rule decision tree distilled from
+the empirical results of \S\ref{subsec:exp-lora}--\S\ref{subsec:exp-T-scaling}.
+
+\paragraph{R1 --- Default to rd-encoder ridge at the base-optimal
+$\lambda$.}
+On every base we tested (\S\ref{subsec:exp-rd-encoder}, \S\ref{subsec:exp-T-scaling}),
+rd-encoder ridge ties or beats Task Arithmetic and the TIES family at
+$T = 4$ on NLL excess, and \emph{strictly} beats them at $T = 7$ on
+Llama-3.1-8B with a widening margin (ratio rd-ridge/TA $= 0.84 \to
+0.68 \to 0.52$ at $T = 2, 4, 7$). The base-optimal $\lambda$ shifts
+mildly with architecture: $\lambda = 0.05$ for Llama-3.1, $\lambda =
+0.13$ for Mistral-7B, Qwen-2.5-7B, and Yi-1.5-9B. Re-tuning is one
+inexpensive log-scale sweep ($\sim 30$ minutes for $5$ values per
+base). The rd-encoder log-$T$ slope is nearly base-invariant
+($0.070$ on Yi, $0.065$ on Llama; Table~\ref{tab:e6-slopes}), making
+it the most $T$-stable method we observed.
+
+\paragraph{R2 --- Audit the base-saturation regime before trusting
+\textsc{nll}-based method comparisons.}
+On heavily instruction-tuned chat-style bases, the per-task NLL
+headroom from base to $\tau_t$ is compressed, and method comparisons
+on \textsc{nll} excess can amplify per-task asymmetries that do not
+correspond to deployable quality differences. On Yi-1.5-9B-Chat we
+measured Alpaca headroom $= 0.114$ versus $0.236$--$0.554$ for other
+E6 adapters; the resulting all-cells $T = 4$ rd-encoder result
+\emph{regressed} relative to TA ($0.084$ vs $0.067$) entirely because
+of the Alpaca-specific excess inflation
+(\S\ref{subsec:exp-T-scaling}). On Llama-3.1 the same Alpaca adapter
+has headroom $0.246$ and the corresponding T = 4 cell shows rd-encoder
+ridge \emph{wins} ($0.104$ vs TA's $0.153$). The practical guidance:
+on chat-tuned bases, either (a) renormalize per-task NLL excess by
+per-task headroom ($\Phi_t / (\mathrm{base}_t - \tau_t)$), or (b)
+exclude near-saturated adapters from the cohort, before declaring a
+method winner. A signal that you are in the saturated regime: the
+\textsc{ties} per-task sign-election win-share range exceeds $\sim 0.05$
+(\S\ref{subsec:exp-T-scaling}, Table~\ref{tab:ties-probe}); we observed
+$0.077$ on Yi-Chat and $0.028$ on Llama-Instruct.
+
+\paragraph{R3 --- If you cannot use rd-encoder ridge, use TIES or
+TVQ$_2$, not TA, and avoid them on saturated bases.}
+TIES and TVQ-$b{=}2$ both implement implicit sign-election and produce
+sparser, lower-variance merges than TA at $T = 4$
+(\S\ref{subsec:exp-multiseed}). TIES wins on $3$ of $4$ bases at
+$T = 4$ but inverts on Yi-1.5-9B-Chat at $T = 7$ (becomes the
+\emph{worst} method, \S\ref{subsec:exp-T-scaling}); the inversion is
+driven by Yi's per-task sign-election win-share concentration
+(directionally biased consensus, not degraded consensus). On Llama and
+when the saturation signal of R2 is absent, TIES at density $= 0.2$ is
+a solid default. TVQ$_2$ retains its dip-champion status on Llama at
+$T = 7$ (third-best) but is meaningfully worse than rd-encoder ridge
+on the metrics we tested.
+
+\paragraph{R4 --- Verify on a downstream accuracy metric before
+deploying.}
+On three of four bases (Mistral, Qwen, Yi), per-method NLL ranking
+predicts per-method GSM8K em ranking with Spearman $\rho \geq +0.87$
+(\S\ref{subsec:exp-downstream-gsm8k}). On Llama-3.1-8B-Instruct, $\rho
+= -0.60$: an outright rank inversion. We have not fully closed the
+mechanism (\S\ref{subsec:exp-downstream-gsm8k} candidate hypotheses
+H1 chat-template, H3 sign-election remain open as of writing), so we
+recommend always running a downstream accuracy check on at least one
+representative task before deployment.
+
+\paragraph{R5 --- Estimate the floor before assuming you are
+algorithm-bound.}
+Use the recipe of \S\ref{subsec:floor-recipe} on your trained adapter
+artifacts to compute $\Phi^\star_{\mathrm{lower}} = B^2 / (4 \cdot
+d_{\mathrm{eff}})$. If the measured worst-task excess is within
+$2\times$ of the floor, the regime is information-theoretically near-
+optimal and no encoder change will help materially. If it is $\gg
+2\times$ above the floor (the typical case in our measurements: all
+four bases sit at least $10\times$ above), the regime is algorithmic
+and switching to rd-encoder ridge from TA is the highest-yield change
+available. We have not yet seen a real-adapter cohort that approaches
+the floor; the floor-positive regime
+(\S\ref{subsec:exp-e5-null}) appears to require $r > d_{\mathrm{in}} /
+T$, which lies outside the practical LoRA rank range for current
+LLMs.
+
+\paragraph{Summary table.}
+Table~\ref{tab:practical-tree} compresses R1--R5 into a single
+decision flow for engineers picking a merge method.
+
+\begin{table}[t]
+\centering
+\caption{Practical method-choice tree. Column "regime" is determined
+from (a) per-task NLL headroom (saturation $=$ headroom $< 0.15$ on
+$\geq 1$ task), (b) base size, and (c) target $T$.}
+\label{tab:practical-tree}
+\small
+\begin{tabular}{lll}
+\hline
+Regime & Recommendation & Why \\
+\hline
+$T \leq 4$, no saturation        & rd-encoder ridge ($\lambda$-tuned)   & R1, tightest empirical excess \\
+$T \leq 4$, saturated cohort     & rd-encoder ridge + headroom renorm    & R1+R2, prevents Alpaca-style artifact \\
+$T \geq 7$, no saturation        & rd-encoder ridge (winning margin grows) & R1+\S\ref{subsec:exp-T-scaling} Llama result \\
+$T \geq 7$, saturated cohort     & rd-encoder ridge, fall back to TVQ$_2$ if rank too low for $V_t$ stack & R3, TIES inverts \\
+rd-encoder unavailable, $T \leq 4$ & TIES (density $0.2$) on non-saturated; TVQ$_2$ otherwise & R3 \\
+near-floor ($\Phi^\star_{\mathrm{meas}} \leq 2 \Phi^\star_{\mathrm{lower}}$) & any method, change won't help; pursue a better cohort instead & R5, regime-bound \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{What we deliberately do not recommend.}
+We do not recommend per-adapter random subspace selection (DARE)
+without TA fallback when sign-coherence is uncertain; on our matrix
+DARE tracks TA to three decimals (\S\ref{subsec:exp-multiseed} C3),
+so the random projection step does not add value over TA on the
+$T = 4$ matrix. We also do not recommend KnOTS for new adapter
+cohorts unless the joint orthogonal alignment is known to be cheap
+to compute on the specific architecture; its empirical performance
+on our $T = 4$ matrix is indistinguishable from TA, and at $T = 7$
+on Llama it tracks TA exactly ($0.265$ vs $0.265$). Both methods
+remain useful baselines for the algorithmic comparison but do not
+offer practical advantages over TA in the cohorts we tested.
+
+%%% END DRAFT v1 — five rules + decision-tree table %%%
