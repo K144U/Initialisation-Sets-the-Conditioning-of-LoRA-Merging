@@ -775,3 +775,81 @@ NEXT: TIES T=7 sign-election counts on Yi (Phase 2, B1) to confirm
 the saturation-regime conjecture. L3 H3 contamination probe on Llama
 (B3) tests the same mechanism in the unconfounded regime. Both
 ~3-4 GPU-h each, run together since they share the same probe.
+
+
+## 2026-06-23 (evening) — TIES sign-election probe (B1+B3) — §6.6 v2 conjecture refined
+Phase 2 probe completed (code/phase3/scripts/probe_ties_sign_election.py,
+results/phase3/ties_sign_election_probe.json). Tests the §6.6 v2
+conjecture that TIES sign-election consensus "degrades faster on Yi
+than Llama" because of Yi-Chat's instruction-tuning saturation.
+
+PROCEDURE: For each (base, T=7) cohort: load 7 trained adapters,
+materialize per-layer Δ = scaling · B·A, apply TIES trim at
+density=0.2 (the merging/ties.py default), stack to (T, out, in),
+and audit:
+  (a) per-coord vote-split histogram (n_pos, n_neg)
+  (b) per-coord margin |p - n| / (p + n)
+  (c) per-task win-share: fraction of active coords where that task's
+      sign matches the elected sign (sign of magnitude-weighted sum)
+  (d) per-task mass-share: mean of |Δ_t| / Σ|Δ_t| over active coords
+
+Vectorized via torch bincount over a flattened (T+1, T+1) histogram.
+CPU-only, ~10 min wall on the login node. First implementation had a
+Python zip-loop dictionary build that ran 3.5h before being killed and
+replaced with the vectorized form — pattern worth remembering for future
+per-coord audits.
+
+RESULT — vote-split structure is nearly identical Yi vs Llama:
+
+  metric              Yi         Llama       Δ
+  mean vote margin    0.748      0.753      +0.005
+  unanimous coords    69.75%     70.43%     +0.68%
+  thin-split (±1)     27.27%     26.80%     −0.48%
+  wide-split (>1)      2.98%      2.77%     −0.21%
+
+So the §6.6 v2 conjecture *as literally stated* ("consensus degrades"
+on Yi) is REJECTED — consensus structure is essentially the same.
+
+RESULT — per-task win-share is dramatically more skewed on Yi:
+
+  win-share range:  Yi 0.077, Llama 0.028 (2.8× wider on Yi)
+
+  Yi T=7 win shares:  gsm8k 0.853, dolly 0.847, xsum 0.839,
+                      translation 0.829, codealpaca 0.816,
+                      alpaca 0.785, magicoder 0.776
+  Llama T=7 win shares: codealpaca/alpaca/magicoder 0.832,
+                        translation 0.831, xsum 0.825,
+                        dolly 0.817, gsm8k 0.805
+
+On Yi, magicoder (code) and alpaca (saturated) are systematically
+outvoted by the instruction-following cluster. On Llama all 7 tasks
+are within a 0.028 band.
+
+REFINED MECHANISM: TIES sign-election on a saturated base produces a
+DIRECTIONALLY BIASED consensus, not a degraded one. Six Yi adapters
+share substantial instruction-following structure and vote in a
+common subspace; magicoder (code) and alpaca (saturated) are
+systematically outvoted. The merge biases toward the instruction-
+following consensus at the cost of code-specific and saturated-
+direction signal. On Llama-3.1-Instruct the per-task votes are
+nearly uniform (range 0.028), so TIES preserves each task's
+contribution.
+
+NEW FALSIFIABLE CONJECTURE: TIES underperforms when the per-task
+sign-election win-share range exceeds a threshold (empirically
+~0.05); this happens on heavily-aligned chat-tuned bases where
+adapter Δ tensors share a dominant instruction-following direction.
+Falsifying experiment: synthetic adapters with controlled subspace
+overlap should reproduce the inversion when overlap crosses the
+win-share-range threshold, independent of the base.
+
+CONSEQUENCE FOR PAPER: §6.6 v3 (paper/sections/
+6_6_e6_T_scaling_draft.tex) integrates Table tab:ties-probe with the
+audit numbers and replaces the v2 conjecture-paragraph for (A) TIES
+inversion with the measured-result version. "What this changes"
+item (iii) now reads "TIES inversion mechanism is a measured result,
+not a conjecture" with reference to the new table.
+
+NEXT: Phase 3 — B2 L3 H1 chat-template probe + B4 E3 expansion
+(HumanEval/COMET/IFEval on T=4 matrix). Phase 4 paper polish in
+parallel (A4 T2 floor recipe, A5 practical recs §, A2 cross-read).

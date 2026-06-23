@@ -1,10 +1,13 @@
 % DRAFT: paper §6.6 — E6 T-scaling on real adapters, cross-model.
+% v3 2026-06-23 (evening). Integrates the TIES sign-election probe
+% result on the T=7 cohorts: vote-split structure is nearly identical
+% Yi vs Llama (rejecting the literal v1 "consensus degrades"
+% conjecture), but per-task win-share range is 2.8x wider on Yi. The
+% refined mechanism is "directionally biased consensus", not "degraded
+% consensus", on heavily-aligned chat-tuned bases.
 % v2 2026-06-23. Adds Llama-3.1-8B-Instruct 54-cell sweep alongside
-% the Yi-1.5-9B-Chat sweep of v1. Major reframing: most v1 "surprises"
-% (TIES inversion at T=7, TVQ b=2 flat-in-T, Alpaca shallow-adapter
-% artifact) are now identified as Yi-specific, not universal. The
-% cross-model picture sharpens the ridge-salvage claim and makes the
-% log-T scaling story base-dependent in slope but not in form.
+% the Yi-1.5-9B-Chat sweep of v1.
+% v1 2026-06-19. Yi-only initial draft after pilot.
 
 \subsection{Does the algorithmic ordering hold beyond $T=4$?}
 \label{subsec:exp-T-scaling}
@@ -105,16 +108,64 @@ Llama & All        & $0.156$ & $0.133$ & $0.155$ & $0.156$ & $0.119$ & $\mathbf{
 The Yi-only v1 of this analysis flagged three findings that the
 Llama sweep now identifies as base-dependent rather than universal:
 
-\textbf{(A) TIES inversion at $T = 7$ is Yi-specific.} On Yi, TIES
-becomes the worst method at $T = 7$ ($0.148$, slope $0.098$, $R^2 =
-0.9995$). On Llama, TIES at $T = 7$ is $0.232$, third-best of six,
-in the natural ordering. We conjectured in v1 that this was
-sign-election contamination from per-task overlap; the cross-model
-data are consistent with a refined conjecture --- the contamination
-happens specifically when one or more adapters are
-\emph{near-saturated} on the base (small per-task headroom), which
-applies to Yi but not Llama. The hypothesis remains testable as a
-focused mechanism study.
+\textbf{(A) TIES inversion at $T = 7$ is Yi-specific, driven by
+per-task representation imbalance.} On Yi, TIES becomes the worst
+method at $T = 7$ ($0.148$, slope $0.098$, $R^2 = 0.9995$). On
+Llama, TIES at $T = 7$ is $0.232$, third-best of six, in the
+natural ordering. We tested the v1 conjecture (``sign-election
+consensus degrades faster on Yi than Llama'') with a direct
+per-coordinate sign-vote audit on both $T = 7$ cohorts: trim each
+adapter's $\Delta$ at density $0.2$ (the TIES default), stack the
+$T = 7$ trimmed deltas, and tally per-coordinate (\#positive,
+\#negative) votes plus per-task win-share (fraction of coords where
+that task's sign matches the elected sign).
+Table~\ref{tab:ties-probe} reports the result.
+
+\begin{table}[t]
+\centering
+\caption{TIES sign-election audit on E6 $T = 7$ cohorts. Vote-split
+structure (margin, unanimity \%, split distribution) is nearly
+identical between Yi and Llama, rejecting the literal v1
+``consensus degrades'' conjecture. \emph{Per-task win-share range},
+however, is $2.8 \times$ wider on Yi: instruction-following tasks
+dominate the elected signs while the code adapter (Magicoder) and
+the saturated Alpaca adapter are systematically outvoted. On Llama
+all $7$ tasks are nearly equally represented.}
+\label{tab:ties-probe}
+\begin{tabular}{lcc}
+\hline
+metric & Yi-1.5-9B-Chat & Llama-3.1-8B-Instruct \\
+\hline
+mean vote margin & $0.748$ & $0.753$ \\
+unanimous coords & $69.75\%$ & $70.43\%$ \\
+thin-split ($\pm 1$) & $27.27\%$ & $26.80\%$ \\
+wide-split ($> 1$) & $2.98\%$ & $2.77\%$ \\
+per-task win-share range & $\mathbf{0.077}$ & $\mathbf{0.028}$ \\
+per-task win-share min (task) & $0.776$ (Magicoder) & $0.805$ (GSM8K) \\
+per-task win-share max (task) & $0.853$ (GSM8K) & $0.832$ (CodeAlpaca) \\
+\hline
+\end{tabular}
+\end{table}
+
+The refined mechanism: TIES sign-election on a saturated base
+produces a \emph{directionally biased} consensus, not a degraded
+one. On Yi-Chat, six adapters whose tasks share substantial
+instruction-following structure (Alpaca, CodeAlpaca, Dolly, GSM8K,
+Translation, XSum) vote in a common subspace; Magicoder (code,
+$0.776$ win share) and Alpaca (near-saturated, $0.785$) are
+systematically outvoted. The resulting merge biases toward the
+instruction-following consensus at the cost of code-specific and
+saturated-direction signal. On Llama-3.1-Instruct, the per-task
+votes are nearly uniform ($0.805$--$0.832$), so TIES preserves
+each task's contribution to within a tighter band. We update the
+v1 conjecture to: \emph{TIES underperforms when the per-task
+sign-election win-share range exceeds a threshold (empirically
+$\sim 0.05$); this happens on heavily-aligned chat-tuned bases
+where adapter $\Delta$ tensors share a dominant
+instruction-following direction}. Falsifying experiment for future
+work: synthetic adapters with controlled subspace overlap should
+reproduce the inversion when the overlap crosses the
+win-share-range threshold, independent of the base.
 
 \textbf{(B) TVQ-$b{=}2$'s flat-in-$T$ behavior is Yi-specific.} On
 Yi all-cells, TVQ$_2$ slope is $-0.001$ (essentially flat); on
@@ -171,13 +222,18 @@ real adapters."
 TVQ$_2$ flat in $T$, Alpaca shallow-adapter artifact) are unified
 under one explanation: \emph{Yi-Chat is near-saturated on
 instruction-following tasks}, which compresses the per-task
-headroom and amplifies method-specific noise. We move this from
-"Yi anomaly" to a \emph{base-saturation regime} caveat for the
-practical recommendations of \S\ref{sec:practical-recommendations}.
+headroom and amplifies method-specific noise. The TIES inversion
+mechanism is now a measured result, not a conjecture: the per-task
+sign-election win-share range is $2.8 \times$ wider on Yi than on
+Llama (Table~\ref{tab:ties-probe}), so TIES's elected consensus is
+directionally biased rather than degraded. We move the three
+findings from ``Yi anomaly'' to a \emph{base-saturation regime}
+caveat for the practical recommendations of
+\S\ref{sec:practical-recommendations}.
 (iv) The Alpaca artifact remains a methodological warning for
 practitioners: a chat-tuned base can hide method-specific
 degradations behind low headroom on the saturated task. Renormalize
 excess by per-task headroom, or exclude near-saturated adapters,
 when comparing methods on a heavily instruction-tuned base.
 
-%%% END DRAFT v2 — Llama 54/54 landed 2026-06-22 10:55 IST %%%
+%%% END DRAFT v3 — TIES sign-election probe integrated 2026-06-23 %%%

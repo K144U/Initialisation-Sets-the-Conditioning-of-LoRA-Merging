@@ -1,0 +1,88 @@
+{
+  "yi15_9b": {
+    "base": "yi15_9b",
+    "tasks": [
+      "alpaca",
+      "codealpaca",
+      "dolly",
+      "gsm8k",
+      "magicoder",
+      "translation",
+      "xsum"
+    ],
+    "T": 7,
+    "n_layers": 192,
+    "n_coords_active": 1370141076,
+    "n_coords_total": 1811939328,
+    "density": 0.2,
+    "mean_vote_margin": 0.7484262625121094,
+    "vote_split_pct": {
+      "unanimous": 69.75006367884411,
+      "split_thin": 27.273696814560722,
+      "split_wide": 2.976239506595159
+    },
+    "per_task_win_share": {
+      "alpaca": 0.7851112565746617,
+      "codealpaca": 0.815772878712814,
+      "dolly": 0.8465878365727679,
+      "gsm8k": 0.8530413901976709,
+      "magicoder": 0.7757744717349163,
+      "translation": 0.8288622055924272,
+      "xsum": 0.8385600498979222
+    },
+    "per_task_mass_share": {
+      "alpaca": 0.1349470247794943,
+      "codealpaca": 0.1405359953194703,
+      "dolly": 0.1439283146991427,
+      "gsm8k": 0.1514862092337928,
+      "magicoder": 0.13518160329252474,
+      "translation": 0.14619515954364762,
+      "xsum": 0.14772569044059883
+    },
+    "win_share_range": 0.07726691846275457,
+    "mass_share_range": 0.0165391844542985
+  },
+  "llama31_8b": {
+    "base": "llama31_8b",
+    "tasks": [
+      "alpaca",
+      "codealpaca",
+      "dolly",
+      "gsm8k",
+      "magicoder",
+      "translation",
+      "xsum"
+    ],
+    "T": 7,
+    "n_layers": 128,
+    "n_coords_active": 1023690140,
+    "n_coords_total": 1342177280,
+    "density": 0.2,
+    "mean_vote_margin": 0.7533163062408709,
+    "vote_split_pct": {
+      "unanimous": 70.43145848801474,
+      "split_thin": 26.797928716984615,
+      "split_wide": 2.7706127950006434
+    },
+    "per_task_win_share": {
+      "alpaca": 0.8320574798830617,
+      "codealpaca": 0.8322759625634142,
+      "dolly": 0.8169903603988151,
+      "gsm8k": 0.8045089546788929,
+      "magicoder": 0.8317316113612345,
+      "translation": 0.8305534685653327,
+      "xsum": 0.8253825239495166
+    },
+    "per_task_mass_share": {
+      "alpaca": 0.1408458446591075,
+      "codealpaca": 0.1433182379105947,
+      "dolly": 0.13705811592070233,
+      "gsm8k": 0.13885122229222605,
+      "magicoder": 0.14808291568335316,
+      "translation": 0.1472339790180552,
+      "xsum": 0.14460968488228285
+    },
+    "win_share_range": 0.027767007884521244,
+    "mass_share_range": 0.011024799762650833
+  }
+}
