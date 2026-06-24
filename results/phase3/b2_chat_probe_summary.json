@@ -1,0 +1,52 @@
+{
+  "per_method": {
+    "ta": {
+      "accuracy": 0.31,
+      "n": 100,
+      "mean_special": 1.0,
+      "max_special": 1,
+      "frac_nonzero_special": 1.0,
+      "mean_rate_per_token": 0.01172235424458137,
+      "spearman_special_vs_score": 0.0
+    },
+    "ties": {
+      "accuracy": 0.28,
+      "n": 100,
+      "mean_special": 0.98,
+      "max_special": 1,
+      "frac_nonzero_special": 0.98,
+      "mean_rate_per_token": 0.014461137305311886,
+      "spearman_special_vs_score": 0.0890870806374748
+    },
+    "dare": {
+      "accuracy": 0.34,
+      "n": 100,
+      "mean_special": 1.0,
+      "max_special": 1,
+      "frac_nonzero_special": 1.0,
+      "mean_rate_per_token": 0.011889744006759049,
+      "spearman_special_vs_score": 0.0
+    },
+    "knots": {
+      "accuracy": 0.3,
+      "n": 100,
+      "mean_special": 1.0,
+      "max_special": 1,
+      "frac_nonzero_special": 1.0,
+      "mean_rate_per_token": 0.012011645776657552,
+      "spearman_special_vs_score": 0.0
+    },
+    "tvq_b2": {
+      "accuracy": 0.35,
+      "n": 100,
+      "mean_special": 0.99,
+      "max_special": 1,
+      "frac_nonzero_special": 0.99,
+      "mean_rate_per_token": 0.015997081264490644,
+      "spearman_special_vs_score": 0.07374961314478505
+    }
+  },
+  "h1_direction": "falsified",
+  "n_negative_within_method": 0,
+  "verdict": "H1 FALSIFIED: chat-template emission does NOT explain the L3 GSM8K inversion."
+}
