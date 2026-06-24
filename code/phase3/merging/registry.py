@@ -16,6 +16,8 @@ The function adds the merged adapter to `model` in place.
 from __future__ import annotations
 
 from .dare import merge_dare
+from .della import merge_della
+from .fisher_avg import merge_fisher_avg
 from .knots import merge_knots
 from .magnitude_prune import merge_magnitude_prune
 from .rd_encoder import merge_rd_encoder
@@ -32,6 +34,8 @@ REGISTRY = {
     "tvq": merge_tvq,
     "rd_encoder": merge_rd_encoder,
     "magnitude_prune": merge_magnitude_prune,
+    "fisher_avg": merge_fisher_avg,
+    "della": merge_della,
 }
 
 
@@ -44,4 +48,7 @@ DEFAULT_KWARGS = {
     "tvq": {"rate_bits": 32},
     "rd_encoder": {"bits": 32, "c": 5.0, "seed": 20260611},
     "magnitude_prune": {"density": 0.5},
+    "fisher_avg": {},
+    "della": {"drop_p": 0.2, "density": 0.2,
+              "majority_sign_method": "total", "seed": 20260624},
 }
