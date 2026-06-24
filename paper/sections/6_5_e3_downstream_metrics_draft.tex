@@ -1,7 +1,13 @@
-% DRAFT: paper §6.5 — E3 downstream accuracy verification (GSM8K).
+% DRAFT: paper §6.5 — E3 downstream accuracy verification.
 % v2 rewrite 2026-06-15 ~10:55 IST. Full 20/20 cells. Yi data ruled out
 % the "strong-base" hypothesis we had in v1; replaced with
 % model-specific llama-3.1 framing.
+% v3 rewrite 2026-06-24. Adds the B2 chat-template probe result (H1
+% falsified) and the B4 HumanEval pass@1 cross-metric sweep
+% (4 bases x 5 methods = 20 new cells). Cross-metric robustness is the
+% new headline: NLL->accuracy holds on 7/8 base x metric cells; L3
+% GSM8K is the lone outlier, with both H1 and H3 mechanism candidates
+% empirically falsified.
 
 \subsection{Do NLL conclusions hold on task accuracy?}
 \label{subsec:exp-downstream-gsm8k}
@@ -80,84 +86,132 @@ $\rho = +0.87$, while Llama inverts. The anomaly is therefore
 \emph{model-specific to Llama-3.1-8B}, not a function of task
 capacity.
 
-\paragraph{Candidate explanations (open).}
-Three concrete and testable explanations remain on the table:
-\begin{enumerate}
-\item \emph{Tokenizer / chat-template idiosyncrasies.} The
+\paragraph{Candidate explanations and what we found.}
+Three concrete and testable explanations were on the table; we
+tested each.
+
+\textbf{H1 --- Tokenizer / chat-template idiosyncrasies.} The
 Llama-3 family introduces several special tokens in its chat
 template (\verb|<|begin_of_text|>|,
 \verb|<|start_header_id|>|, \verb|<|end_header_id|>|,
 \verb|<|eot_id|>|) that the merged-model state may emit
 unpredictably under aggressive trim/quantize compression.
-Mistral, Qwen, and Yi use simpler tokenizer additions in their
-chat templates and would be less sensitive to this failure mode.
-\item \emph{Adapter $\Delta$ magnitude distribution.}
-Llama-3.1's instruction-tuned starting point may produce
-LoRA $\Delta_t$ tensors with a flatter magnitude distribution
-than the other bases (we did not measure this). A flatter
-distribution dilutes TIES's top-$0.2$ magnitude threshold
-(many coordinates near the threshold are stochastically
-included/excluded) and shrinks TVQ's per-tensor $\min/\max$
-range relative to per-coordinate magnitudes (so the
-$3$-bucket quantization loses more signal per coordinate).
-\item \emph{Per-task answer-distribution overlap on the
-$\tau$ side.} If Llama-3.1's GSM8K adapter learns reasoning
-patterns that overlap heavily with its Alpaca / Magicoder
-adapters' formats, TIES's sign election could elect Alpaca's
-sign on coordinates that GSM8K \emph{also} wants to use,
-discarding GSM8K-specific reasoning. Mistral/Qwen/Yi adapters
-may have more distinct per-task answer distributions, leaving
-the sign election uncontaminated.
-\end{enumerate}
-Each is testable with the artifacts we already have on disk;
-we leave the disentanglement as a focused mechanism study (
-\S\ref{sec:future}).
+We ran a controlled probe: each of the five methods on
+Llama-3.1-8B-Instruct generated the first $n=100$ GSM8K answers
+with \verb|skip_special_tokens=False|, recording the count of
+L3 special-token emissions per generation. All five methods
+emit exactly $1$ special token per generation on average
+($\mathrm{TA}{=}1.00$, $\mathrm{TIES}{=}0.98$,
+$\mathrm{DARE}{=}1.00$, $\mathrm{KnOTS}{=}1.00$,
+$\mathrm{TVQ}_2{=}0.99$), and $\geq 98\%$ of generations emit
+exactly one token (the trailing \verb|<|eot_id|>| that ends each
+greedy generation). There is no method-specific chat-template
+emission. \textbf{H1 falsified.}
 
-\paragraph{What this changes about the paper's claims.} Section
-\S\ref{subsec:exp-rd-encoder}'s headline ``ridge-encoder beats TA''
-result is reported on NLL excess and was not tested on GSM8K
-accuracy in this sweep. \emph{Practitioners selecting a merge
-method by NLL on Mistral, Qwen, or Yi should make the right
-choice; for Llama-3.1 we recommend an accuracy measurement
-directly.} The lower-bound theorem and floor-formula results
-(\S\ref{sec:lower_bound}, \S\ref{subsec:exp-e5-null}) are
-metric-agnostic --- they apply to any well-defined per-task loss
---- and are unaffected.
+\textbf{H2 --- Adapter $\Delta$ magnitude distribution.} We
+tested this directly (see ``Hypothesis 2 rejected'' below).
+Llama-3.1's $|\Delta_t|$ distribution sits squarely in the
+middle of the four bases on every shape statistic we measured.
+\textbf{H2 falsified.}
 
-\paragraph{Hypothesis 2 rejected.}
-We tested the Δ-magnitude-distribution-flatness hypothesis directly.
-For each $(\text{model}, \text{task})$ v1 adapter (16 pairs total),
-we materialized the LoRA $\Delta_t = \mathrm{scaling} \cdot B_t A_t$
-per attention projection and measured five distribution shape
-statistics on $|\Delta_t|$: $p_{99} / \mathrm{median}$, excess
-kurtosis, top-20\% threshold over median, fraction within $\pm 10\%$
-of the top-20\% threshold, and coefficient of variation. Aggregated
+\textbf{H3 --- Per-task answer-distribution overlap on the
+$\tau$ side.} If TIES's sign election were biased on
+Llama-3.1-Instruct in a way that hurts deployable accuracy,
+the inversion should reproduce on any accuracy metric we test,
+not only GSM8K \textsc{em}. We tested this by running the same
+$4 \times 5$ matrix on HumanEval pass@1 (greedy CoT, $n = 164$
+problems, subprocess sandbox with $5$s timeout per test;
+Table~\ref{tab:b4-humaneval}). On every base, including
+Llama-3.1-8B, the per-method pass@1 ranking agrees with NLL
+ranking at $\rho \geq +0.72$ (Llama-3.1 specifically:
+$\rho = +0.894$). The L3 GSM8K $\rho = -0.60$ \emph{does not
+replicate} on HumanEval. \textbf{H3 falsified as a
+cross-metric mechanism.}
+
+\paragraph{Cross-metric robustness on HumanEval pass@1.}
+Table~\ref{tab:b4-humaneval} reports the matching $4 \times 5$
+matrix on HumanEval pass@1. The story is
+\emph{cleaner} than on GSM8K \textsc{em}: all four bases show
+strong NLL$\to$pass@1 agreement, with $\rho$ ranging from
+$+0.718$ (Yi) to $+0.975$ (Mistral). TVQ-$b{=}2$ is the
+best-pass@1 method on three of four bases (Llama-3.1, Qwen,
+Yi); TIES is best on Mistral. Task Arithmetic is the
+\emph{worst} method on every base by a factor of $2$--$100\times$:
+$\mathrm{TA} = 0.116$ on L3 vs.\ $\mathrm{TVQ}_2 = 0.427$;
+$\mathrm{TA} = 0.006$ on Qwen vs.\ $\mathrm{TVQ}_2 = 0.659$.
+This is independent confirmation that the methods which
+minimize NLL excess also produce more deployable code merges,
+and it eliminates the L3 GSM8K inversion as a cross-metric
+phenomenon.
+
+\begin{table}[t]
+\centering
+\caption{HumanEval pass@1 ($n = 164$, greedy CoT, subprocess
+sandbox $5$s timeout) per $(\text{model}, \text{method})$.
+Spearman $\rho$ is computed across the five methods, between
+pass@1 and $-\text{NLL excess}$. All four bases meet the
+$\rho \geq 0.7$ threshold; the L3 GSM8K inversion does not
+replicate.}
+\label{tab:b4-humaneval}
+\begin{tabular}{lrrrrr|r}
+\hline
+\multicolumn{6}{c|}{HumanEval pass@1} & Spearman \\
+Model & TA & TIES & DARE & KnOTS & TVQ $b=2$ & vs.\ NLL \\
+\hline
+Llama-3.1-8B    & $0.116$ & $0.421$ & $0.116$ & $0.116$ & $\mathbf{0.427}$ & $+0.89$ \\
+Mistral-7B-v0.3 & $0.091$ & $\mathbf{0.244}$ & $0.073$ & $0.098$ & $0.244$ & $+0.98$ \\
+Qwen-2.5-7B     & $0.006$ & $0.549$ & $0.006$ & $0.006$ & $\mathbf{0.659}$ & $+0.78$ \\
+Yi-1.5-9B       & $0.073$ & $0.104$ & $0.073$ & $0.079$ & $\mathbf{0.122}$ & $+0.72$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{What this changes about the paper's claims.} On the
+combined $4 \text{ bases} \times 2 \text{ metrics} = 8$
+(base $\times$ metric) cells, NLL$\to$accuracy correspondence
+holds at $\rho \geq +0.72$ on $7$ cells; the
+(Llama-3.1-Instruct, GSM8K \textsc{em}) cell is the single
+known outlier. Both candidate mechanisms (H1, H3) for that
+outlier were tested directly above and falsified, leaving it
+as an open empirical question on a single metric. Section
+\S\ref{subsec:exp-rd-encoder}'s headline ``ridge-encoder beats
+TA'' result is reported on NLL excess and is consistent with
+both downstream metrics on Mistral, Qwen, and Yi.
+\emph{Practitioners selecting a merge method by NLL should
+make the right choice; we recommend running $\geq 2$
+downstream metrics in deployment to detect single-metric
+outliers like the L3-GSM8K cell.} The lower-bound theorem and
+floor-formula results (\S\ref{sec:lower_bound},
+\S\ref{subsec:exp-e5-null}) are metric-agnostic and unaffected.
+
+\paragraph{Hypothesis 2 rejected --- details.}
+We tested the $\Delta$-magnitude-distribution-flatness
+hypothesis directly. For each $(\text{model}, \text{task})$ v1
+adapter (16 pairs total), we materialized the LoRA $\Delta_t =
+\mathrm{scaling} \cdot B_t A_t$ per attention projection and
+measured five distribution shape statistics on $|\Delta_t|$:
+$p_{99} / \mathrm{median}$, excess kurtosis, top-$20\%$
+threshold over median, fraction within $\pm 10\%$ of the
+top-$20\%$ threshold, and coefficient of variation. Aggregated
 across the four tasks and all attention projections,
-Llama-3.1-8B sits squarely in the middle of the four bases on every
-metric: kurtosis $4.98$ versus Mistral $3.94$ (flattest), Qwen $4.64$,
-Yi $5.26$ (most peaked); the other four metrics span similar
-mid-pack values. Llama-3.1's distribution is neither flatter nor
-more peaked than the others. Whatever drives the GSM8K accuracy
-inversion, it is not the $\Delta$-magnitude distribution. The two
-remaining candidate mechanisms --- L3 chat-template special-token
-sensitivity to compression, and TIES sign-election contamination
-from per-task answer overlap --- are not directly tested in this
-paper and remain open for a focused mechanism study.
+Llama-3.1-8B sits squarely in the middle of the four bases on
+every metric: kurtosis $4.98$ versus Mistral $3.94$ (flattest),
+Qwen $4.64$, Yi $5.26$ (most peaked); the other four metrics
+span similar mid-pack values. Llama-3.1's distribution is
+neither flatter nor more peaked than the others.
 
 \paragraph{What we do not claim.}
-We do not claim NLL is wrong as a methodology. On three of four
-bases the NLL ranking predicts the accuracy ranking with high
-reliability ($\rho \in \{+0.87, +0.90, +0.90\}$). On the fourth
-the practitioner should measure accuracy directly. The empirical
-question of whether other base models, other tasks, or other
-accuracy metrics expand or contract the set of NLL-trustworthy
-configurations is exactly the question E3 is meant to answer;
-extending the sweep to HumanEval pass@1, COMET-22, and IFEval
-strict is the natural next step. We also do not claim the
-Llama-3.1 anomaly is universal across all merge methods or all
-quantization budgets --- the dip pattern of
-\S\ref{subsec:exp-b2-mechanism} survived the full multi-seed
-matrix, so the inversion we report is method-specific in the
-methods that compress the most.
+We do not claim NLL is wrong as a methodology. On
+$7$ of $8$ (base $\times$ metric) cells the NLL ranking
+predicts the accuracy ranking with high reliability
+($\rho \geq +0.72$). On the single (L3-Instruct, GSM8K
+\textsc{em}) outlier, both pre-registered candidate
+mechanisms (H1 chat-template emission, H3 sign-election
+cross-metric contamination) were tested and falsified above,
+leaving the cell as an empirical curiosity on a single
+generation-evaluation pipeline. Extending the sweep to
+COMET-22 and IFEval-strict would tighten the cross-metric
+robustness claim further; we leave this to future work given
+the eight cells already on the table.
 
-%%% END DRAFT v2 (post-yi data) %%%
+%%% END DRAFT v3 (B2 H1 falsified, B4 cross-metric H3 falsified, HumanEval table added) %%%

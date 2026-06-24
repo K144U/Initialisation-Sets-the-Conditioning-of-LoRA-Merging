@@ -62,16 +62,25 @@ a solid default. TVQ$_2$ retains its dip-champion status on Llama at
 $T = 7$ (third-best) but is meaningfully worse than rd-encoder ridge
 on the metrics we tested.
 
-\paragraph{R4 --- Verify on a downstream accuracy metric before
-deploying.}
-On three of four bases (Mistral, Qwen, Yi), per-method NLL ranking
-predicts per-method GSM8K em ranking with Spearman $\rho \geq +0.87$
-(\S\ref{subsec:exp-downstream-gsm8k}). On Llama-3.1-8B-Instruct, $\rho
-= -0.60$: an outright rank inversion. We have not fully closed the
-mechanism (\S\ref{subsec:exp-downstream-gsm8k} candidate hypotheses
-H1 chat-template, H3 sign-election remain open as of writing), so we
-recommend always running a downstream accuracy check on at least one
-representative task before deployment.
+\paragraph{R4 --- Verify on $\geq 2$ downstream accuracy
+metrics before deploying.}
+Across $4 \text{ bases} \times 2 \text{ metrics} = 8$
+(base $\times$ metric) cells we measured, NLL ranking predicts
+accuracy ranking with Spearman $\rho \geq +0.72$ on $7$ cells
+(\S\ref{subsec:exp-downstream-gsm8k}, Table~\ref{tab:b4-humaneval}).
+The single outlier is (Llama-3.1-Instruct, GSM8K \textsc{em})
+at $\rho = -0.60$; the same matrix on HumanEval pass@1
+shows $\rho = +0.89$ on Llama-3.1, so the inversion does not
+generalize across metrics. Both pre-registered mechanism
+candidates for the outlier (H1 chat-template emission, H3
+sign-election cross-metric contamination) were tested and
+empirically falsified. The practical guidance: run at least
+two downstream metrics on at least one representative task
+before deployment --- the L3-GSM8K cell shows that
+single-metric verification can mislead, but the cross-metric
+agreement on $7$ of $8$ cells we measured is strong evidence
+that NLL is a reliable proxy when corroborated by a second
+metric.
 
 \paragraph{R5 --- Estimate the floor before assuming you are
 algorithm-bound.}

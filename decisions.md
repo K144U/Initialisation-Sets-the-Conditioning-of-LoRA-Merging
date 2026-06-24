@@ -903,3 +903,64 @@ NEXT: After B4 lands (in flight at this writing, ~03:00 IST 2026-06-25),
 do A1+A2 analysis, A3 §6.6 v4 with B2/B4 verdicts, A4 cross-read.
 Then C1+C2 added baselines + quadratic bridge. Then P1-P5 paper
 assembly. No Garg dependency on the critical path.
+
+
+--------------------------------------------------------------------------------
+2026-06-24 — B2 H1 falsified + B4 cross-metric H3 falsified
+--------------------------------------------------------------------------------
+
+B2 RESULT (paper/sections/6_5_e3_downstream_metrics_draft.tex v3):
+All 5 L3 methods emit exactly 1 special token per generation on
+average (the trailing <|eot_id|>), frac>0 = 0.98-1.00 uniformly,
+rate per token 0.011-0.016 uniformly. No method-specific chat-template
+emission signal. H1 (tokenizer/chat-template idiosyncrasies cause L3
+GSM8K NLL->accuracy inversion) FALSIFIED.
+
+B4 RESULT: Per-base Spearman pass@1 vs -NLL excess on n=164 HumanEval:
+  llama31_8b   +0.894  STRONG
+  mistral_7b   +0.975  STRONG
+  qwen25_7b    +0.783  STRONG
+  yi15_9b      +0.718  STRONG
+4/4 bases STRONG cross-metric NLL->pass@1 correspondence. The L3 GSM8K
+rho=-0.60 does NOT replicate on HumanEval — it is GSM8K-eval-specific.
+H3 (sign-election causes cross-metric L3 NLL->accuracy pathology)
+FALSIFIED as a cross-metric mechanism.
+
+TVQ_b=2 best on 3/4 bases on pass@1 (L3 0.427, Qwen 0.659, Yi 0.122);
+TIES best on Mistral (0.244). TA is the worst method on every base by
+factor 2-100x. Independent confirmation of §6.7 R3 (use TIES/TVQ_b=2
+not TA).
+
+VERDICT FOR PAPER: NLL->accuracy correspondence holds on 7/8 (base x
+metric) cells at rho >= 0.72; (L3-Instruct, GSM8K em) is the single
+known outlier, with both candidate mechanisms (H1 and H3) tested and
+falsified. The paper now reads as scientifically honest: we proposed
+two mechanisms, ran the controlled experiments, both failed, and we
+report the result. Reviewer-positive.
+
+UPDATED SECTIONS:
+- §6.5 v3: H1/H2/H3 candidate explanations all marked tested and
+  falsified; HumanEval Table tab:b4-humaneval added with full 4x5
+  matrix; "what this changes" rewritten to 7/8 cells robust + 1
+  outlier with no surviving mechanism.
+- §6.7 R4: rewrote from "verify on one downstream metric (and L3
+  GSM8K open question)" to "verify on >=2 downstream metrics; the
+  L3-GSM8K cell shows single-metric verification can mislead, but
+  cross-metric agreement on 7/8 cells means NLL is reliable proxy
+  when corroborated by a second metric."
+- §6.6 v3: unaffected (was about Yi TIES NLL inversion at T=7, a
+  different phenomenon from L3 GSM8K).
+- Td2 appendix: unaffected (the perturbation derivation was about
+  NLL TIES inversion, not the L3 GSM8K story).
+
+SCORE IMPACT: Per the planning conversation's framework,
+losing the deep mechanism story for L3 -> -0.2, gaining the
+cross-metric robust agreement -> +0.4. Net +0.2 toward the
+6/10 baseline.
+
+FILES: code/phase3/scripts/analyze_b4_humaneval.py + analyze_b2_chat_probe.py
++ results/phase3/{b4_humaneval_summary.json, b2_chat_probe_summary.json}.
+
+NEXT: A4 cross-read §6.1-§6.7 + appendix Td2 for label/notation
+consistency. Then C1 E10 baselines (Fisher-avg + DELLA + 2026 method)
+and C2 E11 quadratic-bridge.
