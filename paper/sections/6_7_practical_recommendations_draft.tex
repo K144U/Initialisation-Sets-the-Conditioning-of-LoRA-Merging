@@ -49,18 +49,22 @@ method winner. A signal that you are in the saturated regime: the
 $0.077$ on Yi-Chat and $0.028$ on Llama-Instruct.
 
 \paragraph{R3 --- If you cannot use rd-encoder ridge, use TIES or
-TVQ$_2$, not TA, and avoid them on saturated bases.}
+TVQ-$b{=}2$, not TA, and avoid TIES on saturated bases.}
 TIES and TVQ-$b{=}2$ both implement implicit sign-election and produce
 sparser, lower-variance merges than TA at $T = 4$
-(\S\ref{subsec:exp-multiseed}). TIES wins on $3$ of $4$ bases at
-$T = 4$ but inverts on Yi-1.5-9B-Chat at $T = 7$ (becomes the
+(\S\ref{subsec:exp-multiseed}). On NLL excess, TIES wins on $3$ of $4$
+bases at $T = 4$ but inverts on Yi-1.5-9B-Chat at $T = 7$ (becomes the
 \emph{worst} method, \S\ref{subsec:exp-T-scaling}); the inversion is
 driven by Yi's per-task sign-election win-share concentration
 (directionally biased consensus, not degraded consensus). On Llama and
 when the saturation signal of R2 is absent, TIES at density $= 0.2$ is
-a solid default. TVQ$_2$ retains its dip-champion status on Llama at
-$T = 7$ (third-best) but is meaningfully worse than rd-encoder ridge
-on the metrics we tested.
+a solid default. On HumanEval pass@1
+(Table~\ref{tab:b4-humaneval}, \S\ref{subsec:exp-downstream-gsm8k}),
+TVQ-$b{=}2$ is the \emph{best} method on three of four bases
+(Llama-3.1, Qwen, Yi), with TIES best on Mistral; TA is the \emph{worst}
+method on every base by a factor of $2$--$100\times$. The R3 ordering
+``TIES or TVQ-$b{=}2$, not TA'' therefore holds on both NLL and
+pass@1.
 
 \paragraph{R4 --- Verify on $\geq 2$ downstream accuracy
 metrics before deploying.}

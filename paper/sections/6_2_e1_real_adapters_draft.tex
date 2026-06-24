@@ -7,7 +7,7 @@
 
 The lower bound of \S\ref{sec:lower_bound} is tight against the
 random-Stiefel rate-distortion construction in expectation; the
-achievability theorem (Theorem~\ref{thm:achievability}) instantiates
+achievability theorem (Theorem~\ref{thm:achv}) instantiates
 this construction explicitly via the H-weighted centroid and
 Hadamard-incoherence rotation. We now test the construction on the
 sixteen real LoRA adapters of \S\ref{subsec:exp-lora} and find a
@@ -17,7 +17,7 @@ real adapters, but a one-parameter regularization restores it to a
 state-of-the-art merging recipe.
 
 \paragraph{Setup.} We instantiate the encoder of
-Theorem~\ref{thm:achievability} with the projector surrogate
+Theorem~\ref{thm:achv} with the projector surrogate
 $H_t = P_{V_t}$, the top-$r$ right-singular projector of each task's
 LoRA delta. The aggregator is the weighted average
 $\bar H = \sum_t w_t H_t$, the centroid is
@@ -52,7 +52,7 @@ Arithmetic norm. The amplified centroid is far outside the validity
 region of the quadratic surrogate in
 Proposition~\ref{prop:quadratic-surrogate}, so even though the
 surrogate distortion of $w^{*}$ is near zero (as
-Theorem~\ref{thm:achievability} predicts), the actual
+Theorem~\ref{thm:achv} predicts), the actual
 cross-entropy loss is catastrophic. The failure is in the
 surrogate$\to$CE bridge, not in the construction's surrogate
 optimality.
@@ -102,7 +102,7 @@ $1.00$  & $+0.29$ & $+0.07$ & $+0.07$ & $-0.12$ & $0.286$ \\
 \paragraph{Fisher-diagonal $H_t$: sanity check on the surrogate.}
 The projector surrogate $H_t = P_{V_t}$ was a deliberate
 operationalization of the abstract $H_t$ in
-Theorem~\ref{thm:achievability}; the spec admits any positive
+Theorem~\ref{thm:achv}; the spec admits any positive
 semidefinite curvature surrogate at $\tau_t$. As a sanity check we
 replace $H_t$ with the diagonal of the empirical Fisher information,
 estimated via the input-activation second moment
@@ -142,7 +142,7 @@ diagnostic for when the achievability machinery applies.
 
 \paragraph{Discussion.} The Tikhonov regularization
 $(\bar H + \lambda I)^{-1}$ is the same construction as
-Theorem~\ref{thm:achievability} with a numerical-conditioning floor
+Theorem~\ref{thm:achv} with a numerical-conditioning floor
 exposed as a hyperparameter; $\lambda = 0$ recovers the exact
 theorem in the limit. The measured spectral mechanism identifies
 \emph{when} the exact form applies: only when the smallest
