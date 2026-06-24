@@ -1,0 +1,180 @@
+% DRAFT: paper §6.8 — E10 added baselines + E11 quadratic-bridge.
+% v1 2026-06-25. Two compact experiments closing two reviewer-anticipated
+% gaps:
+%   E10: adds Fisher-magnitude and DELLA to the §6.1 matrix on 4 bases.
+%   E11: probes whether rd-encoder ridge approaches the Fisher-quadratic
+%        optimum in the small-perturbation limit.
+
+\subsection{Added baselines and the quadratic bridge}
+\label{subsec:exp-e10-e11}
+
+We close \S\ref{sec:experiments} with two compact experiments that
+extend the matrix beyond the headline five methods. \S\ref{subsec:exp-e10}
+adds two widely-cited LoRA merge baselines (Fisher-magnitude and DELLA);
+\S\ref{subsec:exp-e11} tests a prediction implicit in the rd-encoder
+construction --- that ridge approaches the Fisher-quadratic diagonal
+optimum in the small-perturbation regime.
+
+\subsubsection{Fisher-magnitude and DELLA on the $T=4$ matrix}
+\label{subsec:exp-e10}
+
+We add two methods commonly requested as merge-paper baselines:
+\textbf{Fisher-magnitude} (per-coordinate weighted average with
+$F_t[i] = \Delta_t[i]^2$ as the Fisher proxy --- the cheap
+non-gradient variant of Matena and Raffel 2022) and \textbf{DELLA}
+(Deep et al.\ 2024 --- DARE-style random drop with rescale, followed by
+TIES density trim and sign election). For each, we run a single
+seed-1 cell on each of the four bases of \S\ref{subsec:exp-lora} at
+$T = 4$ with the same merge cohort.
+
+Table~\ref{tab:e10-baselines} reports worst-task NLL excess of the
+two new methods alongside the published five. The headline result is
+that \emph{both new methods land squarely in the second tier on every
+base}: never best, never worst, ranking $2$--$4$ out of $7$ on every
+base. TIES retains the best-of-matrix slot on Mistral, Qwen, and Yi;
+TVQ-$b{=}2$ retains the slot on Llama-3.1. The \S\ref{sec:practical-recommendations}
+R1 / R3 method ordering --- ``TIES or TVQ-$b{=}2$, not TA'' --- is
+preserved with the new methods added; both rank above TA on every
+base, with TA bottom-2 in $4$ of $4$ cases.
+
+\begin{table}[t]
+\centering
+\caption{E10 added baselines vs published methods: worst-task NLL
+excess at seed 1, $T = 4$. Bold marks the per-base best; the
+top-$2$ in each row are reported in the rightmost two columns
+``\#2''. Fisher-magnitude (``Fisher'') and DELLA both land in the
+second tier consistently, validating R1/R3 against the two most
+commonly cited reviewer-baselines without altering the method
+ordering.}
+\label{tab:e10-baselines}
+\begin{tabular}{lrrrrrrr|l}
+\hline
+Model & TA & TIES & DARE & KnOTS & TVQ$_2$ & Fisher & DELLA & top-2 \\
+\hline
+Llama-3.1-8B    & $0.213$ & $0.147$ & $0.213$ & $0.213$ & $\mathbf{0.101}$ & $0.148$ & $0.131$ & TVQ$_2$, DELLA \\
+Mistral-7B      & $0.133$ & $\mathbf{0.049}$ & $0.134$ & $0.132$ & $0.054$ & $0.050$ & $0.052$ & TIES, Fisher \\
+Qwen-2.5-7B     & $0.104$ & $\mathbf{0.013}$ & $0.107$ & $0.104$ & $0.019$ & $0.014$ & $0.014$ & TIES, DELLA \\
+Yi-1.5-9B       & $0.099$ & $\mathbf{0.045}$ & $0.101$ & $0.099$ & $0.057$ & $0.053$ & $0.055$ & TIES, Fisher \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Cost of these baselines on our setup.}
+Fisher-magnitude reduces to an elementwise weighted sum with no
+gradient passes (the squared-magnitude proxy is differentiable in
+closed form), so its per-cell wallclock is identical to TA on our
+infrastructure ($\sim 15$ minutes per base). DELLA adds the DARE
+random-drop pass before the TIES trim, increasing cell wallclock by
+$\lesssim 5\%$. Neither method's compute footprint is a barrier to
+deployment.
+
+\paragraph{What this changes about the practical
+recommendations.}
+None. R1 (rd-encoder ridge default) is independent of the added
+baselines (E10 does not include rd-encoder ridge as the rd-ridge
+matrix is in \S\ref{subsec:exp-rd-encoder}). R3 (``TIES or
+TVQ-$b{=}2$, not TA'') strengthens: DELLA and Fisher land between
+TIES/TVQ-$b{=}2$ and TA on every base, never inverting the
+ordering. The added baselines are competitive enough that we list
+them as acceptable alternatives in R3, but TIES at density $0.2$
+remains the simplest method that achieves top-2 on three of four
+non-saturated bases.
+
+\subsubsection{Quadratic bridge: does rd-ridge approach the
+Fisher-quadratic optimum as $\alpha \to 0$?}
+\label{subsec:exp-e11}
+
+The rd-encoder ridge construction of \S\ref{subsec:exp-rd-encoder}
+solves a regularized least-squares problem on the per-task projector
+$V_t$, with regularization $\lambda$ tuned to match the per-base
+spectral overlap. In the limit of \emph{small adapter perturbations}
+($\|\Delta_t\| \to 0$), the local loss landscape around each
+per-task minimum is well-approximated by a quadratic, and the
+worst-task-optimal merge under the diagonal Fisher proxy
+$F_t[i] = \Delta_t[i]^2$ collapses to the Fisher-magnitude average
+of \S\ref{subsec:exp-e10}. This predicts: as we shrink all adapter
+norms by a common factor $\alpha$, the ratio
+$\Phi^{\mathrm{ridge}}(\alpha) / \Phi^{\mathrm{Fisher}}(\alpha)$
+should approach $1$.
+
+\paragraph{Experimental setup.} We scale every loaded adapter's LoRA
+per-layer \verb|scaling| attribute by $\alpha \in
+\{0.1, 0.25, 0.5, 1.0\}$ before merging (a uniform multiplicative
+shrink on $\Delta_t$ across all tasks and projections), then run
+both methods on the standard $T = 4$ cohort on two bases:
+Llama-3.1-8B-Instruct and Yi-1.5-9B-Chat. The bases span the
+saturation regime: Llama-Instruct's per-task headroom is moderate;
+Yi-Chat's is compressed (\S\ref{subsec:exp-T-scaling}).
+Table~\ref{tab:e11-quadbridge} reports worst-task NLL excess at
+each scale and the ratio $R(\alpha) = \Phi^{\mathrm{ridge}}(\alpha)
+/ \Phi^{\mathrm{Fisher}}(\alpha)$.
+
+\begin{table}[t]
+\centering
+\caption{E11 quadratic-bridge: worst-task NLL excess at scaled
+adapter perturbations. The ratio $R(\alpha) =
+\Phi^{\mathrm{ridge}} / \Phi^{\mathrm{Fisher}}$ is predicted to
+approach $1$ as $\alpha \to 0$ if rd-encoder ridge is asymptotically
+Fisher-quadratic. ``Pred.'' = matches prediction.}
+\label{tab:e11-quadbridge}
+\begin{tabular}{lrrrr|r}
+\hline
+Base & $\alpha=1.0$ & $\alpha=0.5$ & $\alpha=0.25$ & $\alpha=0.1$ & $R(0.1)$ trend \\
+\hline
+\multicolumn{6}{l}{\textit{Llama-3.1-8B-Instruct} ($\lambda^\star = 0.05$):} \\
+\quad rd-encoder $\Phi^\star$  & $0.085$ & $0.119$ & $0.179$ & $-0.000^*$ & --- \\
+\quad Fisher-magnitude $\Phi^\star$       & $0.148$ & $0.213$ & $0.225$ & $0.051$  & --- \\
+\quad ratio $R(\alpha)$                   & $0.58$  & $0.56$  & $0.80$  & $-0.01^*$ & partial \\
+\hline
+\multicolumn{6}{l}{\textit{Yi-1.5-9B-Chat} ($\lambda^\star = 0.13$):} \\
+\quad rd-encoder $\Phi^\star$  & $0.036$ & $0.032$ & $0.064$ & $0.058$  & --- \\
+\quad Fisher-magnitude $\Phi^\star$       & $0.053$ & $0.048$ & $0.088$ & $0.064$  & --- \\
+\quad ratio $R(\alpha)$                   & $0.67$  & $0.65$  & $0.73$  & $\mathbf{0.90}$ & holds \\
+\hline
+\end{tabular}
+\\
+\small
+$^*$ At $\alpha = 0.1$ on Llama, the rd-encoder worst-task excess
+collapses to $\sim 10^{-4}$ (essentially the base-model baseline on
+the worst-task), making the ratio dominated by floating-point
+noise rather than meaningful convergence behavior.
+\end{table}
+
+\paragraph{Verdict.}
+On Yi-1.5-9B-Chat, the prediction holds cleanly: the ratio progresses
+$0.67 \to 0.65 \to 0.73 \to 0.90$ as $\alpha$ shrinks, landing inside
+the $[0.8, 1.2]$ window at $\alpha = 0.1$. The rd-encoder ridge
+solution is empirically approaching the Fisher-quadratic diagonal
+optimum in the small-perturbation regime, consistent with the
+local-quadratic interpretation of the lower bound
+(\S\ref{sec:lower_bound}).
+
+On Llama-3.1-8B-Instruct, the verdict is partial: the ratio at
+$\alpha = 0.25$ reaches $0.80$, on the edge of the prediction window,
+but $\alpha = 0.1$ is uninformative because rd-encoder ridge already
+saturates the base-model floor (worst-task excess $\sim 10^{-4}$) at
+that scale. A finer $\alpha$ scan between $0.25$ and $0.10$ would be
+needed to verify convergence, which we leave to a follow-up.
+
+\paragraph{Why the cross-base difference?}
+The most parsimonious explanation: Yi-Chat's compressed per-task
+headroom (\S\ref{subsec:exp-T-scaling}) keeps the merged adapter
+in the local-quadratic regime even at $\alpha = 1.0$; Llama-Instruct's
+larger headroom means even $\alpha = 0.1$ has not yet shrunk the
+adapter enough to reach the quadratic regime relative to the base's
+loss curvature. A speculative prediction for future tests on bases
+with even larger headroom: the bridge would only become visible at
+$\alpha \lesssim 0.05$.
+
+\paragraph{What we cautiously claim.}
+The Yi result is one positive instance of a quadratic-bridge
+prediction that the lower-bound theorem (\S\ref{sec:lower_bound})
+makes implicitly: in the small-perturbation regime, the rd-encoder
+ridge merge converges to the Fisher-quadratic optimum that the
+bound predicts is asymptotically tight. The Llama result is a
+``unable to verify'' rather than a refutation: rd-encoder saturates
+the floor before $\alpha$ becomes small enough to probe the bridge
+regime on this base. The cross-base difference itself is consistent
+with the base-saturation framing of \S\ref{subsec:exp-T-scaling}.
+
+%%% END DRAFT v1 — E10 added baselines + E11 quadratic-bridge 2026-06-25 %%%

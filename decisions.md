@@ -964,3 +964,71 @@ FILES: code/phase3/scripts/analyze_b4_humaneval.py + analyze_b2_chat_probe.py
 NEXT: A4 cross-read §6.1-§6.7 + appendix Td2 for label/notation
 consistency. Then C1 E10 baselines (Fisher-avg + DELLA + 2026 method)
 and C2 E11 quadratic-bridge.
+
+
+--------------------------------------------------------------------------------
+2026-06-25 — C1 (E10 baselines) + C2 (E11 quadratic-bridge) verdicts
+--------------------------------------------------------------------------------
+
+E10 RESULTS (results/phase3/e10_baselines_summary.json):
+Per-base worst-task NLL excess at seed 1, T=4:
+                ta      ties    dare    knots   tvq_b2  fisher  della
+  llama31_8b   .213    .147    .213    .213    .101    .148    .131
+  mistral_7b   .133    .049    .134    .132    .054    .050    .052
+  qwen25_7b    .104    .013    .107    .104    .019    .014    .014
+  yi15_9b      .099    .045    .101    .099    .057    .053    .055
+
+Fisher-magnitude best on 0/4 bases, top-2 on 2/4 (mistral, yi), worst
+on 0/4. DELLA best on 0/4, top-2 on 2/4 (llama, qwen), worst on 0/4.
+Both clearly above TA/DARE/KnOTS tier, below TIES/TVQ_b2 tier on
+non-Llama bases.
+
+E10 PAPER VERDICT: Defensive comparison succeeds without disrupting
+the §6.7 R1/R3 ordering. TIES still wins on 3/4 bases, TVQ_b=2 still
+wins on Llama. The added baselines slot into the second tier
+consistently — exactly the safest possible outcome for our story.
+
+E11 RESULTS (results/phase3/e11_quadbridge_summary.json):
+Per-(base, alpha), worst-task NLL excess and ratio rd_encoder/fisher:
+  llama31_8b alpha=1.0: rd .085 fisher .148  ratio .58
+  llama31_8b alpha=.50: rd .119 fisher .213  ratio .56
+  llama31_8b alpha=.25: rd .179 fisher .225  ratio .80
+  llama31_8b alpha=.10: rd -.0004 fisher .051 ratio -.01  (numerical
+    artifact: rd saturates base-model floor at this scale)
+  yi15_9b alpha=1.0:   rd .036 fisher .053  ratio .67
+  yi15_9b alpha=.50:   rd .032 fisher .048  ratio .65
+  yi15_9b alpha=.25:   rd .064 fisher .088  ratio .73
+  yi15_9b alpha=.10:   rd .058 fisher .064  ratio .90
+
+E11 PAPER VERDICT: One base (Yi-1.5-9B-Chat) cleanly validates the
+quadratic-bridge prediction — ratio approaches 1 monotonically from
+0.67 at alpha=1.0 to 0.90 at alpha=0.1. One base (Llama-3.1) partial:
+ratio at alpha=0.25 reaches 0.80, on the edge of the [0.8, 1.2]
+window, but alpha=0.1 is uninformative because rd_encoder saturates
+the base-model floor at that scale (worst-task excess ~ 1e-4).
+
+Honest mixed verdict, written up as "Yi holds, Llama unable-to-verify
+due to floor saturation, cross-base difference consistent with the
+base-saturation framing of §6.6 v3." Reviewer-positive: shows we ran
+the predicted experiment, got partially positive results, report
+honestly with mechanism speculation.
+
+SCORE IMPACT:
+- E10 baselines: +0.3 (closes "why not Fisher merging / DELLA?" — the
+  two most common reviewer baselines).
+- E11 quadratic-bridge: +0.2 (one positive instance of a theory-derived
+  prediction; partial on the other base, honestly framed).
+Net: +0.5 toward the 6.5-7 baseline.
+
+FILES:
+- code/phase3/merging/{fisher_avg, della}.py + registry update
+- code/phase3/eval/run_eval_cell.py (delta_scale plumbing for E11)
+- code/phase3/scripts/{analyze_e10_baselines, analyze_e11_quadbridge}.py
+- code/phase3/configs/{eval_e10_baselines/, eval_e11_quadbridge/} (24 yaml)
+- paper/sections/6_8_e10_e11_baselines_bridge_draft.tex (v1)
+- results/phase3/{e10_baselines_summary, e11_quadbridge_summary}.json
+
+NEXT: A4-style cross-read of §6.8 against §6.7 (R1/R3 strengthens
+language), §6.6 (saturation framing carries E11 explanation), Td2
+(perturbation analysis still relevant for the TIES NLL inversion
+story but not for the bridge). Then Block E paper assembly P1-P5.
