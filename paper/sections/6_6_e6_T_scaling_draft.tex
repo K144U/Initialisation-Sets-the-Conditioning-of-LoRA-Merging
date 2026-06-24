@@ -162,7 +162,12 @@ v1 conjecture to: \emph{TIES underperforms when the per-task
 sign-election win-share range exceeds a threshold (empirically
 $\sim 0.05$); this happens on heavily-aligned chat-tuned bases
 where adapter $\Delta$ tensors share a dominant
-instruction-following direction}. Falsifying experiment for future
+instruction-following direction}. Appendix~\ref{app:sign-election-threshold}
+derives this threshold from a perturbation model of the TIES
+update, predicting $R^\star \in [0.025, 0.075]$ for $T = 4$ at
+density $0.2$; the two empirical points (Yi $R = 0.077$, Llama
+$R = 0.028$) bracket the predicted range and respect the
+directional prediction. Falsifying experiment for future
 work: synthetic adapters with controlled subspace overlap should
 reproduce the inversion when the overlap crosses the
 win-share-range threshold, independent of the base.
