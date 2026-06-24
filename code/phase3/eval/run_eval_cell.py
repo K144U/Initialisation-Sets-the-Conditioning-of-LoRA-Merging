@@ -186,6 +186,23 @@ def main() -> int:
         model.load_adapter(spec["dir"], adapter_name=spec["name"])
     print(f"  peft_config keys now: {list(model.peft_config)}", flush=True)
 
+    # 2b. (E11 quadratic-bridge) Optionally scale every loaded adapter's
+    # per-layer LoRA scaling by `delta_scale`. This shrinks all task
+    # vectors by a multiplicative factor before any merge step, letting us
+    # probe the small-perturbation regime where rd-encoder ridge should
+    # approach the Fisher-quadratic optimum.
+    delta_scale = float(cfg.get("delta_scale", 1.0))
+    if delta_scale != 1.0:
+        print(f"[eval_cell] applying delta_scale={delta_scale} to all loaded adapters",
+              flush=True)
+        n_scaled = 0
+        for _name, module in model.named_modules():
+            if hasattr(module, "scaling") and isinstance(module.scaling, dict):
+                for ad in list(module.scaling.keys()):
+                    module.scaling[ad] = float(module.scaling[ad]) * delta_scale
+                    n_scaled += 1
+        print(f"  scaled {n_scaled} (layer, adapter) scaling factors", flush=True)
+
     # 3. Pre-eval each individual tau (so we can compute excess later)
     eval_data: dict[str, list[dict]] = {}
     for spec in cfg["adapter_specs"]:
