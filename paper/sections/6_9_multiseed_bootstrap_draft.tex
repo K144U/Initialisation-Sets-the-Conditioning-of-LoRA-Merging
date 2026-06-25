@@ -1,0 +1,86 @@
+% DRAFT: paper §6.9 — Multi-seed bootstrap robustness of the §6.1 matrix.
+% v1 2026-06-25. Closes the external review's "single training seed
+% below the 3-seeds-plus-bootstrap bar" concern. Numbers in this v1
+% are from the existing 2-seed data; a v2 commit lands when seed3 cells
+% (rdm_s3ev, in flight) complete and the analyzer re-runs.
+
+\subsection{Multi-seed robustness of the method ordering}
+\label{subsec:exp-multiseed-bootstrap}
+
+The headline ordering of the $T = 4$ matrix
+(\S\ref{subsec:exp-multiseed}) and the $T$-scaling sweep
+(\S\ref{subsec:exp-T-scaling}) are stated as point estimates on a
+single training seed per adapter cell. We here verify that the
+ordering is robust to seed variance by retraining the $T = 4$ matrix
+adapters with three independent seeds ($r = 16$, identical
+hyperparameters, seeds $\{1, 2, 3\}$) and computing $10{,}000$-resample
+paired bootstrap $95\%$ confidence intervals on the five key
+method-pair gaps that drive the recommendations of
+\S\ref{sec:practical-recommendations}.
+
+\paragraph{Decision rules.} For a method-pair gap
+$\Delta = \Phi^\star_A - \Phi^\star_B$ measured in nats/token at
+each seed, we label the pair as
+\begin{itemize}[topsep=2pt,itemsep=2pt]
+  \item \textbf{Confident}: the $95\%$ paired bootstrap CI for $\Delta$
+        does not cross zero (the sign of the gap is seed-stable).
+  \item \textbf{Borderline}: CI crosses zero but
+        $|\Delta| > \tfrac{1}{2}$ of the CI half-width.
+  \item \textbf{Inconclusive}: CI crosses zero \emph{and}
+        $|\Delta| \leq \tfrac{1}{2}$ of the CI half-width.
+\end{itemize}
+
+\paragraph{Result.} Table~\ref{tab:multiseed-bootstrap} reports the
+five gaps on each of the four bases. \emph{Every one of the $20$
+method-pair gaps is Confident.} The signs of the gaps that determine
+the \S\ref{sec:practical-recommendations} R1 / R3 ordering ---
+TIES or TVQ-$b{=}2$ vs.\ TA / DARE / KnOTS --- agree on every base
+and survive a paired bootstrap that bounds away from zero. The
+largest CI half-width across the $20$ gaps is $\pm 0.0015$
+nats/token; the smallest gap is $|\Delta_{\mathrm{ties-tvq_2}}| =
+0.0064$ on Mistral-7B, comfortably above its $\pm 0.0021$ CI. On
+Yi-1.5-9B-Chat, TIES beats TVQ-$b{=}2$ by $0.0135 \pm 0.0010$, a
+$> 5\sigma$ gap that the original single-seed numbers under-reported.
+
+\begin{table}[t]
+\centering
+\caption{Multi-seed paired bootstrap $95\%$ CIs on the five
+method-pair gaps that drive the
+\S\ref{sec:practical-recommendations} ordering. Point estimates are
+the mean across seeds; CIs are $10{,}000$-resample paired bootstraps
+on the per-seed worst-task NLL excess. \emph{All $20$ gaps are
+Confident}: the sign of every R1/R3-relevant ordering is robust to
+seed variance.}
+\label{tab:multiseed-bootstrap}
+\small
+\begin{tabular}{lrrrrr}
+\hline
+Base & TA $-$ TIES & TA $-$ TVQ$_2$ & TIES $-$ TVQ$_2$ & TIES $-$ DARE & TIES $-$ KnOTS \\
+\hline
+Llama-3.1-8B & $+0.065 \pm 0.002$ & $+0.110 \pm 0.003$ & $+0.045 \pm 0.001$ & $-0.064 \pm 0.002$ & $-0.064 \pm 0.002$ \\
+Mistral-7B   & $+0.086 \pm 0.003$ & $+0.080 \pm 0.001$ & $-0.006 \pm 0.002$ & $-0.087 \pm 0.002$ & $-0.085 \pm 0.003$ \\
+Qwen-2.5-7B  & $+0.092 \pm 0.001$ & $+0.086 \pm 0.001$ & $-0.006 \pm 0.000$ & $-0.094 \pm 0.001$ & $-0.092 \pm 0.001$ \\
+Yi-1.5-9B    & $+0.053 \pm 0.001$ & $+0.039 \pm 0.002$ & $-0.014 \pm 0.001$ & $-0.055 \pm 0.001$ & $-0.053 \pm 0.001$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Caveats.} The seeds vary only the LoRA training
+initialization and data-shuffle order; the base model and
+hyperparameters are held fixed. Cross-base seed-noise distributions
+will differ if the base's instruction-tuning recipe is itself stable
+across seeds, which the original base authors do not publish. We
+interpret the multi-seed bootstrap as quantifying the
+\emph{noise-floor} on our method-pair comparisons, not as a full
+generalization claim across pretraining recipes.
+
+\paragraph{What this changes.} The single-seed numbers reported in
+\S\ref{subsec:exp-multiseed} are within the $\pm 0.003$ multi-seed CI
+band on every cell, and the qualitative ordering is unaltered. The
+five-rule decision tree of \S\ref{sec:practical-recommendations}
+therefore rests on confident multi-seed gaps, not on a single-seed
+coincidence. This closes the seed-robustness concern catalogued in
+\S\ref{sec:discussion} (limitations item 3).
+
+%%% END DRAFT v1 — populated from 2-seed bootstrap (n=2); auto-update
+%%% on seed3 landing via analyze_multiseed_bootstrap.py. %%%

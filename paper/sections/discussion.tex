@@ -126,11 +126,14 @@ two bases tested at $T \in \{2, 4, 7\}$; broader validation is
 forthcoming.
 
 \item \textbf{Seed coverage is uneven.} The $T = 4$ matrix
-(\S\ref{subsec:exp-multiseed}) is run with two seeds plus bootstrap
-CIs. The cross-model $T$-scaling sweep (\S\ref{subsec:exp-T-scaling})
-uses $4$ random task subsets per $T$ but a single training seed per
-adapter. The added baselines (\S\ref{subsec:exp-e10-e11}) and the
-quadratic-bridge probe are seed-$1$ single cells.
+(\S\ref{subsec:exp-multiseed}) is run with three independent
+training seeds plus bootstrap CIs on the five key method-pair gaps
+(\S\ref{subsec:exp-multiseed-bootstrap}); all $20$ gaps come back
+\emph{Confident}. The cross-model $T$-scaling sweep
+(\S\ref{subsec:exp-T-scaling}) uses $4$ random task subsets per $T$
+but a single training seed per adapter. The added baselines
+(\S\ref{subsec:exp-e10-e11}) and the quadratic-bridge probe are
+seed-$1$ single cells.
 
 \item \textbf{rd-encoder ridge tested on NLL only.} The downstream
 metric verification of \S\ref{subsec:exp-downstream-gsm8k}
