@@ -89,17 +89,20 @@ metric.
 \paragraph{R5 --- Estimate the floor before assuming you are
 algorithm-bound.}
 Use the recipe of \S\ref{subsec:floor-recipe} on your trained adapter
-artifacts to compute $\Phi^\star_{\mathrm{lower}} = B^2 / (4 \cdot
-d_{\mathrm{eff}})$. If the measured worst-task excess is within
-$2\times$ of the floor, the regime is information-theoretically near-
-optimal and no encoder change will help materially. If it is $\gg
-2\times$ above the floor (the typical case in our measurements: all
-four bases sit at least $10\times$ above), the regime is algorithmic
-and switching to rd-encoder ridge from TA is the highest-yield change
-available. We have not yet seen a real-adapter cohort that approaches
-the floor; the floor-positive regime
-(\S\ref{subsec:exp-e5-null}) appears to require $r > d_{\mathrm{in}} /
-T$, which lies outside the practical LoRA rank range for current
+artifacts to compute $\Phi^\star_{\mathrm{lower}} = B^2 (1 -
+d_{\mathrm{eff}} / (Tr))$. If the audited cohort is in the floor-zero
+regime ($d_{\mathrm{eff}} = Tr$) --- as every cohort in our
+measurements is --- the floor vanishes and the entire measured
+worst-task excess is recoverable algorithmic slack; rd-encoder ridge
+from TA is the highest-yield change available. If the cohort has
+$d_{\mathrm{eff}} < Tr$ the floor is strictly positive and bounds the
+smallest excess any encoder at any rate can achieve; the gap
+$\Phi^\star_{\mathrm{meas}} - \Phi^\star_{\mathrm{lower}}$ is the
+algorithmic gap, and only the gap is recoverable. We have not yet
+seen a real-adapter cohort with $d_{\mathrm{eff}} < Tr$; the
+floor-positive regime (\S\ref{subsec:exp-e5-null}) requires
+$r > d_{\mathrm{in}} / T$, which lies outside the practical LoRA rank
+range for current
 LLMs.
 
 \paragraph{Summary table.}

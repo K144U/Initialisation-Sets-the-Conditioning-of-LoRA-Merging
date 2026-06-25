@@ -9,10 +9,17 @@
 \subsection*{Sidebar — Estimating the floor on trained adapters}
 \label{subsec:floor-recipe}
 
-The lower bound of \S\ref{sec:lower_bound} reads
-$\Phi^\star \geq B^2 / (4 \cdot d_{\mathrm{eff}})$, where $B$ is the
-quantization radius per coordinate and $d_{\mathrm{eff}}$ is the
-effective shared dimensionality of the $T$ task projections. To make
+The lower bound of \S\ref{sec:lower_bound} (Lemma~\ref{lem:floor-general})
+reads
+$\Phi^\star \geq B^2 \left(1 - d_{\mathrm{eff}} / (Tr)\right)$,
+where $B$ is the per-coordinate quantization radius, $r$ is the LoRA
+rank, $T$ the number of tasks, and $d_{\mathrm{eff}}$ the effective
+shared dimensionality of the $T$ task projections. In the floor-zero
+regime $d_{\mathrm{eff}} = Tr$ that all our measurements occupy the
+floor vanishes identically; the recipe below is for auditing whether
+\emph{any} new adapter cohort sits in that regime, and for quantifying
+the algorithmic gap between the empirical worst-task excess and the
+floor (which is the entire excess, in the floor-zero regime). To make
 the bound auditable on a deployed merge, both quantities must be
 estimable from trained-adapter artifacts. The following recipe is what
 we used in \S\ref{subsec:exp-e5-null} and what practitioners can
@@ -65,14 +72,24 @@ single coordinate sees from the merge.
 \paragraph{Step 4 --- Floor and the algorithmic gap.}
 \begin{equation*}
   \Phi^\star_{\mathrm{lower}}
-  = \frac{B^2}{4 \cdot d_{\mathrm{eff}}}.
+  = B^2 \left(1 - \frac{d_{\mathrm{eff}}}{T r}\right).
 \end{equation*}
-Report alongside the measured worst-task NLL excess $\Phi^\star_{\mathrm{meas}}$
-of the merged model. The ratio $\Phi^\star_{\mathrm{meas}} /
-\Phi^\star_{\mathrm{lower}}$ is the algorithmic gap: a value near $1$
-means the encoder is information-theoretically tight, a value $\gg 1$
-means the regime is algorithmic and rd-encoder ridge or a similar
-better encoder is the right place to look (\S\ref{subsec:exp-rd-encoder}).
+This is the Lemma~\ref{lem:floor-general} form of the floor instantiated
+on the audited cohort. In the regime where the stacked-projector
+spectrum gives $d_{\mathrm{eff}} = Tr$ the floor is identically zero,
+so any non-zero measured worst-task NLL excess
+$\Phi^\star_{\mathrm{meas}}$ is the \emph{entire algorithmic gap}
+between the deployed encoder and the rate-distortion optimum. This is
+the regime our experiments occupy
+(\S\ref{subsec:exp-multiseed}, \S\ref{subsec:exp-e5-null}):
+$\Phi^\star_{\mathrm{lower}} = 0$, and the $0.10$--$0.22$ nats/token
+of measured excess is recoverable headroom that a better encoder ---
+e.g.\ rd-encoder ridge of \S\ref{subsec:exp-rd-encoder} --- can claim.
+For an audited cohort with $d_{\mathrm{eff}} < Tr$ the floor is
+strictly positive and bounds the smallest excess achievable by any
+encoder at any rate; the difference
+$\Phi^\star_{\mathrm{meas}} - \Phi^\star_{\mathrm{lower}}$ is the
+algorithmic gap.
 
 \paragraph{Assumptions and caveats.}
 \begin{enumerate}

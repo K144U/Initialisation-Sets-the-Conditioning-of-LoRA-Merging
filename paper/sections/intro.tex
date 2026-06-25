@@ -13,15 +13,13 @@ prior question: at a given storage budget, what is the best
 \emph{possible} merging algorithm -- and how far from it are the
 methods we use today?
 
-\paragraph{Contribution in one sentence.} \emph{We prove a
-rate-distortion theorem that splits LoRA-merging worst-task error
-into an irreducible task-overlap floor plus an exponentially-decaying
-compression term, provide a regularized encoder
-(\textsc{rd-encoder ridge}) that ties or beats every published method
-at $T = 4$ and widens its margin at $T = 7$ on every base we test, and
-convert the result into a five-rule decision tree for practitioners
-that we validate across a $4$-base $\times$ $7$-method $\times$
-$2$-downstream-metric matrix.}
+\paragraph{Contribution in one sentence.} \emph{Using a worst-task
+rate-distortion analysis of LoRA merging as a lens, we build a merge
+encoder (\textsc{rd-encoder ridge}) that ties or beats every published
+method on every base we test, and a one-CPU-minute audit of any
+trained adapter cohort that predicts when classical methods such as
+TIES invert from best to worst --- with the threshold confirmed on the
+two bases that bracket it and pre-registered on a third.}
 
 \begin{figure}[t]
 \centering
