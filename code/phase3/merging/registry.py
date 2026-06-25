@@ -15,12 +15,14 @@ The function adds the merged adapter to `model` in place.
 
 from __future__ import annotations
 
+from .adamerging import merge_adamerging
 from .dare import merge_dare
 from .della import merge_della
 from .fisher_avg import merge_fisher_avg
 from .knots import merge_knots
 from .magnitude_prune import merge_magnitude_prune
 from .rd_encoder import merge_rd_encoder
+from .regmean import merge_regmean
 from .task_arithmetic import merge_task_arithmetic
 from .ties import merge_ties
 from .tvq import merge_tvq
@@ -36,6 +38,8 @@ REGISTRY = {
     "magnitude_prune": merge_magnitude_prune,
     "fisher_avg": merge_fisher_avg,
     "della": merge_della,
+    "regmean": merge_regmean,
+    "adamerging": merge_adamerging,
 }
 
 
@@ -51,4 +55,6 @@ DEFAULT_KWARGS = {
     "fisher_avg": {},
     "della": {"drop_p": 0.2, "density": 0.2,
               "majority_sign_method": "total", "seed": 20260624},
+    "regmean": {"ridge_lambda": 1e-3},
+    "adamerging": {},
 }

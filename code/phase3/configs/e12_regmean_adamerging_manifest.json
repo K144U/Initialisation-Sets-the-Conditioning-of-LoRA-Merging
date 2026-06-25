@@ -1,0 +1,50 @@
+[
+    {
+        "name": "e12_llama31_8b_regmean",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e12_regmean_adamerging/llama31_8b__regmean__seed1.yaml",
+        "done": "results/phase3/eval_e12_regmean_adamerging/llama31_8b__regmean__seed1.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e12_llama31_8b_adamerging",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e12_regmean_adamerging/llama31_8b__adamerging__seed1.yaml",
+        "done": "results/phase3/eval_e12_regmean_adamerging/llama31_8b__adamerging__seed1.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e12_mistral_7b_regmean",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e12_regmean_adamerging/mistral_7b__regmean__seed1.yaml",
+        "done": "results/phase3/eval_e12_regmean_adamerging/mistral_7b__regmean__seed1.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e12_mistral_7b_adamerging",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e12_regmean_adamerging/mistral_7b__adamerging__seed1.yaml",
+        "done": "results/phase3/eval_e12_regmean_adamerging/mistral_7b__adamerging__seed1.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e12_qwen25_7b_regmean",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e12_regmean_adamerging/qwen25_7b__regmean__seed1.yaml",
+        "done": "results/phase3/eval_e12_regmean_adamerging/qwen25_7b__regmean__seed1.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e12_qwen25_7b_adamerging",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e12_regmean_adamerging/qwen25_7b__adamerging__seed1.yaml",
+        "done": "results/phase3/eval_e12_regmean_adamerging/qwen25_7b__adamerging__seed1.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e12_yi15_9b_regmean",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e12_regmean_adamerging/yi15_9b__regmean__seed1.yaml",
+        "done": "results/phase3/eval_e12_regmean_adamerging/yi15_9b__regmean__seed1.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e12_yi15_9b_adamerging",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e12_regmean_adamerging/yi15_9b__adamerging__seed1.yaml",
+        "done": "results/phase3/eval_e12_regmean_adamerging/yi15_9b__adamerging__seed1.json",
+        "min_free_gb": 25.0
+    }
+]
