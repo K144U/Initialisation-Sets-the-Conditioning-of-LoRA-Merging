@@ -1166,3 +1166,52 @@ launched. Next step: re-measure Mistral R via probe_ties_sign_election.py
 to confirm the R≈0.041 value used in this prediction, then scaffold and
 launch the Mistral T=7 sweep.
 ================================================================================
+
+
+================================================================================
+2026-06-25 (evening, 19:25 IST) — Pre-registration anchor confirmed:
+Mistral-7B R = 0.0326 (probed)
+================================================================================
+
+The Mistral-T=4 sign-election probe ran on the 4 v1 adapters (alpaca,
+gsm8k, magicoder, flores translation) under density=0.2 (the TIES
+default in code/phase3/merging/ties.py). Results:
+
+  Per-task win share (fraction of task's active coords matching elected sign):
+    gsm8k        0.8990
+    translation  0.8838
+    alpaca       0.8733
+    magicoder    0.8664
+
+  Win-share range R = 0.0326
+
+The pre-registration in the previous decisions.md entry assumed
+R ≈ 0.041 (preliminary internal); the measured value is 0.0326. The
+PREDICTION DIRECTION IS UNCHANGED:
+
+  R = 0.0326 is INSIDE the Td2 ambiguity window R* in [0.025, 0.075]
+  (distance to lower edge 0.008; distance to upper edge 0.043).
+  Therefore, the model predicts Mistral T=7 will show TIES NEITHER
+  clearly inverting NOR clearly winning — same as the pre-registration.
+
+The operationalization in the previous entry stands as written
+(clearly worst: TIES last + mean > TA + 0.04; clearly best: TIES first +
+mean < second-best - 0.02; ambiguous: neither).
+
+This amendment is logged here for transparency; the prediction was
+locked at commit 3582799 and the experimental test (Mistral T=7
+sweep) is still pending. The measured R value being 0.0326 rather
+than 0.041 doesn't relax the prediction — both fall inside the
+[0.025, 0.075] window.
+
+FILES:
+  - results/phase3/mistral_t4_ties_probe.json (T=4 measurement)
+  - code/phase3/scripts/probe_mistral_only.py (probe script)
+
+NEXT: Mistral pilot adapter training (codealpaca, dolly, xsum on
+Mistral-7B-Instruct-v0.3) is scaffolded (config + manifest + PBS
+script). Once the seed3 multi-seed training (rdm_s3tr, 42590) frees
+its PBS slot, the Mistral pilot training (rdm_mpilt) will be next in
+the dispatch chain, followed by the T=7 cross-model sweep on Mistral
+that tests this pre-registration.
+================================================================================

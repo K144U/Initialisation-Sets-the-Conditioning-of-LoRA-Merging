@@ -1,0 +1,19 @@
+{
+  "base": "mistral_7b",
+  "T": 4,
+  "density": 0.2,
+  "tasks": [
+    "alpaca",
+    "gsm8k",
+    "magicoder",
+    "translation"
+  ],
+  "win_share": {
+    "alpaca": 0.8733195826168529,
+    "gsm8k": 0.8989507977818386,
+    "magicoder": 0.8663560080297732,
+    "translation": 0.8838449960776049
+  },
+  "win_share_range_R": 0.03259478975206542,
+  "n_active_coords_total": 762392851
+}
