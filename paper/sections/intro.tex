@@ -13,6 +13,34 @@ prior question: at a given storage budget, what is the best
 \emph{possible} merging algorithm -- and how far from it are the
 methods we use today?
 
+\paragraph{Contribution in one sentence.} \emph{We prove a
+rate-distortion theorem that splits LoRA-merging worst-task error
+into an irreducible task-overlap floor plus an exponentially-decaying
+compression term, provide a regularized encoder
+(\textsc{rd-encoder ridge}) that ties or beats every published method
+at $T = 4$ and widens its margin at $T = 7$ on every base we test, and
+convert the result into a five-rule decision tree for practitioners
+that we validate across a $4$-base $\times$ $7$-method $\times$
+$2$-downstream-metric matrix.}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{paper_artifacts/figures/figure1_cross_model_T_scaling.pdf}
+\caption{\textbf{Same merge methods, opposite outcomes across bases.}
+Worst-task NLL excess vs.\ task count $T \in \{2, 4, 7\}$ on a saturated
+base (left, Yi-1.5-9B-Chat) and a non-saturated base (right,
+Llama-3.1-8B-Instruct), shaded by per-subset min/max across $4$ random
+task subsets per $T$. On Yi, TIES rises sharply at $T = 7$ to become
+the \emph{worst} method, an inversion we trace to per-task sign-election
+win-share concentration on saturated bases
+(\S\ref{subsec:exp-T-scaling}; theoretical threshold derived in
+Appendix~\ref{app:sign-election-threshold}). On Llama,
+\textsc{rd-encoder ridge} (ours) widens its lead from a ratio of
+$0.84$ at $T = 2$ to $0.52$ at $T = 7$ over Task Arithmetic, the
+cleanest cross-$T$ signal in our matrix.}
+\label{fig:hero}
+\end{figure}
+
 \paragraph{What we prove, in one paragraph.} We treat merging as a
 compression problem: $T$ task-specific weight updates must be encoded
 into a single model within a storage budget, and quality is the loss

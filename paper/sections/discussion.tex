@@ -106,3 +106,75 @@ an explicit algorithm that runs in $O(\deff^2)$ time per merge
 in the thousands, this is negligible compared with the merging
 overhead of existing heuristics; deployment cost is not a
 blocker.
+
+\paragraph{Known limitations.}
+We list eight concrete limitations of the present results, in
+descending order of how much they constrain the conclusions.
+\begin{enumerate}[leftmargin=*,topsep=2pt,itemsep=2pt]
+\item \textbf{Single LoRA rank.} All experiments use $r = 16$. The
+log-$T$ slope $\rho \approx 1/\sqrt{r}$ predicted by the synthetic
+sweep (\S\ref{subsec:exp-T-synthetic}) is consistent with the $r = 16$
+measurements but not directly verified at other ranks; a focused
+$r \in \{4, 8, 32, 64\}$ sweep is the natural extension.
+
+\item \textbf{Four-base sweep.} Llama-3.1-8B-Instruct,
+Mistral-7B-v0.3, Qwen-2.5-7B, and Yi-1.5-9B-Chat span an instructive
+range of pretraining recipes and saturation regimes, but exclude the
+Llama-3.3, Gemma-2, and Phi families. The cross-model story
+(\S\ref{subsec:exp-T-scaling}, Figure~\ref{fig:hero}) is robust on the
+two bases tested at $T \in \{2, 4, 7\}$; broader validation is
+forthcoming.
+
+\item \textbf{Seed coverage is uneven.} The $T = 4$ matrix
+(\S\ref{subsec:exp-multiseed}) is run with two seeds plus bootstrap
+CIs. The cross-model $T$-scaling sweep (\S\ref{subsec:exp-T-scaling})
+uses $4$ random task subsets per $T$ but a single training seed per
+adapter. The added baselines (\S\ref{subsec:exp-e10-e11}) and the
+quadratic-bridge probe are seed-$1$ single cells.
+
+\item \textbf{rd-encoder ridge tested on NLL only.} The downstream
+metric verification of \S\ref{subsec:exp-downstream-gsm8k}
+(GSM8K \textsc{em} and HumanEval pass@1) is run on the five matrix
+methods, not on rd-encoder ridge. The R1 recommendation in
+\S\ref{sec:practical-recommendations} therefore extrapolates from NLL
+robustness, and we flag this gap explicitly.
+
+\item \textbf{Single-cell outlier with no surviving mechanism.} The
+(Llama-3.1-Instruct, GSM8K \textsc{em}) cell shows Spearman $\rho =
+-0.60$ between NLL and accuracy across the five matrix methods, against
+$\rho \geq +0.72$ on the other seven (base $\times$ metric) cells we
+measured. Both pre-registered candidate mechanisms (chat-template
+emission, cross-metric sign-election) were tested in
+\S\ref{subsec:exp-downstream-gsm8k} and falsified. The outlier remains
+empirically unexplained and is the one cell where we recommend running
+$\geq 2$ downstream metrics in deployment.
+
+\item \textbf{Quadratic bridge holds on one of two bases.} E11
+(\S\ref{subsec:exp-e11}) confirms that rd-encoder ridge approaches the
+Fisher-quadratic optimum as adapter norms shrink on Yi-1.5-Chat
+(ratio $\to 0.90$ at $\alpha = 0.1$). On Llama-3.1, rd-encoder
+saturates the base-model floor at $\alpha = 0.1$ before the bridge
+regime is reached, leaving Llama as ``unable to verify'' rather than
+a refutation; a finer $\alpha$ scan between $0.10$ and $0.25$ would
+close this caveat.
+
+\item \textbf{Td2 sign-election threshold is order-of-magnitude.}
+Appendix~\ref{app:sign-election-threshold} predicts the TIES win-share
+range threshold $R^\star \in [0.025, 0.075]$ from a perturbation
+analysis of the TIES update; the constants $c_{\mathrm{bias}}$,
+$c_{\mathrm{sign}}$ are estimated by spectral analogy, not derived
+from first-principles Fisher information. The two empirical points
+(Yi $R = 0.077$, Llama $R = 0.028$) bracket the predicted range but
+do not falsify it in the strict sense.
+
+\item \textbf{Concurrent merge methods not exhaustively surveyed.}
+The added baselines of \S\ref{subsec:exp-e10} (Fisher-magnitude,
+DELLA) cover the two most commonly requested reviewer comparisons.
+AdaMerging, RegMean, DARE-TIES and 2026-era methods such as
+DO-Merging and 1-bit-Merging are discussed in
+\S\ref{sec:related_work} but not all re-run on our matrix; the
+empirical headline (rd-encoder ridge ties or beats TA and TIES on
+every base at $T = 4$) is robust to the absence of any single
+baseline, but a comprehensive 10+ method comparison is a fair
+follow-up.
+\end{enumerate}

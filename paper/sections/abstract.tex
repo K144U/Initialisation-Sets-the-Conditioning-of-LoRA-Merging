@@ -1,30 +1,20 @@
-Merging several LoRA fine-tunes into a single deployable model is now
-routine practice, but it is judged purely empirically: methods are
-compared on benchmarks with no notion of how well merging could
-possibly do. We supply the missing reference point. Casting merging as
-lossy compression of $T$ task-specific weight updates into one set of
-weights -- judged by the \emph{worst}-affected task, since a merged
-model that collapses on one task is not deployable -- we prove the
-first rate-distortion theorem for model merging. The theorem splits
-worst-task error into two parts with different cures: an
-\emph{irreducible floor}, determined entirely by how much the tasks'
-weight subspaces overlap and immune to any amount of storage, plus a
-\emph{compression term} that decays exponentially in the bit budget.
-An explicit encoder (randomized orthogonal mixing followed by uniform
-scalar quantization) matches the bound up to a constant factor whose
-measured growth in $T$ is logarithmic.
-
-The theorem makes a measurable claim about practice, and we test it.
-Across $16$ LoRA adapters ($4$ base models $\times$ $4$ tasks), task
-subspaces never overlap: the floor is exactly zero in every layer of
-every model. Consequently, everything current methods lose -- a
-measured $0.10$--$0.22$ nats/token of worst-task error, with $95\%$
-bootstrap confidence intervals -- is \emph{algorithmic slack, not an
-information-theoretic limit}. The zero-overlap prediction also
-explains method behavior: subspace alignment (KnOTS) cannot and does
-not beat naive averaging, sign-conflict resolution (TIES) does, and a
-robust ``less-is-more'' anomaly appears in which $2$-bit quantized
-merging beats higher-bit merging on all four architectures. The
-message for practice: merging quality today is limited by algorithms,
-not by information -- and the bound quantifies exactly how much room
-is left.
+We prove the first rate-distortion lower bound for LoRA model merging:
+worst-task NLL excess splits into an \emph{irreducible floor} determined
+by per-task weight-subspace overlap and a \emph{compression term} that
+decays exponentially in the bit budget, with a matching achievable upper
+bound via Hadamard-incoherent orthogonal mixing followed by scalar
+quantization. On a $4$-base $\times$ $7$-method $\times$ $2$-downstream-metric
+matrix spanning Llama-3.1-Instruct, Mistral-7B-v0.3, Qwen-2.5-7B, and
+Yi-1.5-9B-Chat at task counts $T \in \{2, 4, 7\}$, the floor is exactly
+zero on every base --- current methods leave $0.10$--$0.22$ nats/token of
+worst-task excess as \emph{algorithmic slack, not an information-theoretic
+limit}. A regularized variant of our encoder (\textsc{rd-encoder ridge})
+ties or beats every published method at $T = 4$ and widens its lead at
+$T = 7$ (rd-ridge / Task-Arithmetic excess ratio $0.84 \to 0.68 \to 0.52$
+on Llama-3.1-Instruct), with NLL-based recommendations confirmed on GSM8K
+exact-match and HumanEval pass@1 across $7$ of $8$ (base $\times$ metric)
+cells. A measurable base-saturation regime --- diagnosable from a
+$1$-CPU-minute audit of any trained adapter cohort --- predicts when
+classical methods such as TIES invert from best to worst, and motivates a
+five-rule decision tree distilling the empirical results into deployable
+guidance.

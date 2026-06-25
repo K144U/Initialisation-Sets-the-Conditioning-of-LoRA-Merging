@@ -184,6 +184,19 @@ outliers like the L3-GSM8K cell.} The lower-bound theorem and
 floor-formula results (\S\ref{sec:lower_bound},
 \S\ref{subsec:exp-e5-null}) are metric-agnostic and unaffected.
 
+\paragraph{Bootstrap stability of the cell-level numbers.}
+All point estimates in Tables~\ref{tab:e3-gsm8k} and
+\ref{tab:b4-humaneval} are reported with $10{,}000$-resample
+$95\%$ percentile bootstrap CIs on the per-example scores. The
+maximum CI half-width across all $40$ cells is $\pm 0.076$ (the
+hardest HumanEval cells; GSM8K cells are tighter at $\pm 0.043$
+maximum), which is below the smallest method-to-method gap in any
+row whose Spearman correlation drives the headline conclusion. The
+single (Llama-3.1-Instruct, GSM8K \textsc{em}) outlier in particular
+shows the inversion is bootstrap-robust: TIES at $0.250$
+(CI $[0.213, 0.288]$) is significantly below KnOTS at $0.346$
+(CI $[0.306, 0.388]$) with non-overlapping CIs.
+
 \paragraph{Hypothesis 2 rejected --- details.}
 We tested the $\Delta$-magnitude-distribution-flatness
 hypothesis directly. For each $(\text{model}, \text{task})$ v1
