@@ -1,0 +1,34 @@
+base_model: /home/sanjay.g/projects/rdmerge/models/Mistral-7B-Instruct-v0.3
+method: tvq
+method_kwargs:
+  rate_bits: 2
+max_seq_length: 1024
+seed: 20260615
+min_free_gb: 25
+adapter_specs:
+- name: codealpaca
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/mistral_7b/e6_pilot/codealpaca/v1
+  task_cfg:
+    name: codealpaca
+    dataset: sahil2801/CodeAlpaca-20k
+    config: null
+    split_train: train
+    split_eval: train
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: instruction
+    answer_field: output
+- name: gsm8k
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/mistral_7b/gsm8k/v1
+  task_cfg:
+    name: gsm8k
+    dataset: openai/gsm8k
+    config: main
+    split_train: train
+    split_eval: test
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: question
+    answer_field: answer
+output_path: /home/sanjay.g/projects/rdmerge/results/phase3/eval_mistral_t7/mistral_7b__T2_rand2__tvq_b2.json
+loader: plain

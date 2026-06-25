@@ -26,12 +26,12 @@ export ORCH_SENTINEL=_E12_REGMEAN_ADAMERGING_COMPLETE
 export ORCH_STATE=orchestrator_state_e12.json
 
 MANIFEST="${MANIFEST:-code/phase3/configs/e12_regmean_adamerging_manifest.json}"
-if [ -f "$PROJECT_ROOT/_ORCH_GPUS_E6" ]; then
-    export GPUS=$(cat $PROJECT_ROOT/_ORCH_GPUS_E6)
-elif [ -f "$PROJECT_ROOT/_ORCH_GPUS_DYN" ]; then
-    export GPUS=$(cat $PROJECT_ROOT/_ORCH_GPUS_DYN)
+# Pinned to GPU 6 by default for parallel dispatch alongside the seed3
+# chain on GPUs 2,4. Override via _ORCH_GPUS_E12 if needed.
+if [ -f "$PROJECT_ROOT/_ORCH_GPUS_E12" ]; then
+    export GPUS=$(cat $PROJECT_ROOT/_ORCH_GPUS_E12)
 else
-    export GPUS=2,4,6
+    export GPUS=6
 fi
 
 echo "[$(date '+%F %T')] rdm_e12bl job=$PBS_JOBID manifest=$MANIFEST gpus=$GPUS"

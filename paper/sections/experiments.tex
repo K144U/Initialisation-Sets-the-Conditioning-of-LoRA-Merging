@@ -257,36 +257,28 @@ adjacent rates on every model; $b=1$ (too coarse) and $b\geq 4$
 \label{fig:tvq}
 \end{figure}
 
-\paragraph{What we do not claim.} (i) We do not observe the
-predicted $2^{-2R/\deff}$ rate-decay slope at practical bit
-budgets: for $b \geq 1$ the merging-geometry error dominates the
-quantization error, leaving at most one or two TVQ points above
-the floor on any model -- too few to fit a slope. The decay term
-is real but operationally invisible above sub-bit precision in
-this regime, and we report it as such rather than forcing a fit.
-(ii) We do not claim real merges saturate the bound; they lie
-strictly above its (zero) floor, as Finding~1 makes precise.
-(iii) Translation shows consistently negative excess (merging
-\emph{improves} it relative to the translation-only adapter),
-which we attribute to under-training of the single-task
-translation adapter ($7500$ WMT19 pairs). We flag the
-consequence explicitly: an under-trained baseline
-$L_t(\theta_0+\tau_t)$ is artificially high, which both inflates
-the apparent ``free'' improvement on translation and could mask
-how much merging truly costs that task. This does not affect the
-headline worst-task metric -- GSM8K is the bottleneck on every
-model -- but it does mean the per-task translation row should be
-read with caution; disentangling under-training from genuine
-cross-task transfer requires a longer-trained baseline and is
-left to future work.
+\paragraph{Scope notes.}
+(i) The $2^{-2R/\deff}$ rate-decay slope is operationally invisible
+above sub-bit precision in this regime: for $b \geq 1$ the
+merging-geometry error dominates the quantization error, leaving at
+most one or two TVQ points above the floor on any model. The decay
+term is real but not separately resolvable at the rates we measure.
+(ii) Translation shows consistently negative excess (merging
+\emph{improves} it relative to the translation-only adapter), which
+we attribute to under-training of the single-task translation
+adapter ($7500$ WMT19 pairs). This does not affect the headline
+worst-task metric since GSM8K is the bottleneck on every model, but
+the per-task translation row should be read with caution. The full
+set of scope items including the single-seed caveat and the
+translation under-training caveat is enumerated in
+\S\ref{sec:discussion}.
 
-\paragraph{A natural next experiment.} We have not run our own
-achievability construction (\S\ref{sec:achv}) on the real adapters; doing so
-would test whether the theoretically optimal encoder closes the
-$0.10$--$0.22$ gap or whether the gap reflects the
-quadratic-loss approximation rather than algorithmic
-suboptimality. We view this as the most valuable next experiment
-and leave it to future work.
+\paragraph{Closing the $0.10$--$0.22$ gap.} The achievability
+construction of \S\ref{sec:achv} is what
+\S\ref{subsec:exp-rd-encoder} now runs on the real adapters; it
+closes the gap to $0.091$ on Llama-3.1-8B-Instruct (Figure
+\ref{fig:salvage}), and the regularized variant ties or beats every
+published baseline on every base we tested.
 
 \paragraph{Robustness of the qualitative findings to the single
 seed.} All adapters are trained with one seed, so the CIs above

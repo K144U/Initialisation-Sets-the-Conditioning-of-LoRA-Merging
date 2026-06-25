@@ -1,0 +1,36 @@
+base_model: /home/sanjay.g/projects/rdmerge/models/Mistral-7B-Instruct-v0.3
+method: rd_encoder
+method_kwargs:
+  ridge_lambda: 0.13
+  bits: 32
+  c: 5.0
+max_seq_length: 1024
+seed: 20260615
+min_free_gb: 25
+adapter_specs:
+- name: dolly
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/mistral_7b/e6_pilot/dolly/v1
+  task_cfg:
+    name: dolly
+    dataset: databricks/databricks-dolly-15k
+    config: null
+    split_train: train
+    split_eval: train
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: instruction
+    answer_field: response
+- name: xsum
+  dir: /home/sanjay.g/projects/rdmerge/artifacts/lora/mistral_7b/e6_pilot/xsum/v1
+  task_cfg:
+    name: xsum
+    dataset: EdinburghNLP/xsum
+    config: null
+    split_train: train
+    split_eval: test
+    n_train: 7500
+    n_eval: 1000
+    prompt_field: document
+    answer_field: summary
+output_path: /home/sanjay.g/projects/rdmerge/results/phase3/eval_mistral_t7/mistral_7b__T2_rand1__rd_ridge.json
+loader: plain

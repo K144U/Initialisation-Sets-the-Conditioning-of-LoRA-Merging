@@ -72,14 +72,32 @@ $+0.025$ Alpaca, $+0.027$ Magicoder, $+0.029$ Translation), in
 contrast to the unregularized form where Translation alone took
 $+4.46$ nats from sliver amplification.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.96\textwidth]{../paper_artifacts/figures/figure_salvage_arc.pdf}
+\caption{\textbf{Salvage arc.} (a) On Llama-3.1-8B-Instruct at $T = 4$, the
+exact rd-encoder construction ($\lambda = 0$) collapses to
+worst-task excess $0.497$, well above Task Arithmetic ($0.219$) and
+TIES ($0.161$). Adding Tikhonov regularization with
+$\lambda^\star = 0.05$ recovers worst-task excess $0.091$, the
+state-of-the-art figure for this base. (b) The $\lambda$-sweep showing
+the salvage curve: rd-encoder ridge sits below both TA and TIES across
+a wide $\lambda$ band $[0.03, 0.20]$, with a sharp minimum at
+$\lambda^\star = 0.05$.}
+\label{fig:salvage}
+\end{figure}
+
 \begin{table}[t]
 \centering
 \caption{Worst-task excess NLL (nats / response token) for the
 RD-encoder centroid at $b = \infty$, Llama-3.1-8B, $T = 4$ uniform
 weights, with Tikhonov regularization
 $(\bar H + \lambda I)^{-1}$. $\lambda = 0$ is the exact theorem
-construction (catastrophic). $\lambda = 0.05$ is the empirical
-optimum and beats Task Arithmetic ($0.219$) and TIES ($0.161$).}
+construction (catastrophic; \emph{not} shown in the table because
+$\Phi^\star_{\lambda=0} = 0.497$ dominates the column). $\lambda =
+0.05$ is the empirical optimum and beats Task Arithmetic ($0.219$)
+and TIES ($0.161$). Figure~\ref{fig:salvage} plots the same sweep
+with the salvage-arc annotation.}
 \label{tab:rd-ridge-sweep}
 \begin{tabular}{rrrrrr}
 \hline

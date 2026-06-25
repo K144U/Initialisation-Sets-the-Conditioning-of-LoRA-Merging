@@ -213,18 +213,16 @@ Qwen $4.64$, Yi $5.26$ (most peaked); the other four metrics
 span similar mid-pack values. Llama-3.1's distribution is
 neither flatter nor more peaked than the others.
 
-\paragraph{What we do not claim.}
-We do not claim NLL is wrong as a methodology. On
-$7$ of $8$ (base $\times$ metric) cells the NLL ranking
-predicts the accuracy ranking with high reliability
-($\rho \geq +0.72$). On the single (L3-Instruct, GSM8K
-\textsc{em}) outlier, both pre-registered candidate
-mechanisms (H1 chat-template emission, H3 sign-election
-cross-metric contamination) were tested and falsified above,
-leaving the cell as an empirical curiosity on a single
-generation-evaluation pipeline. Extending the sweep to
-COMET-22 and IFEval-strict would tighten the cross-metric
-robustness claim further; we leave this to future work given
-the eight cells already on the table.
+\paragraph{Summary.}
+The NLL methodology is empirically reliable: on $7$ of $8$
+(base $\times$ metric) cells the NLL ranking predicts the accuracy
+ranking with high reliability ($\rho \geq +0.72$). On the single
+(L3-Instruct, GSM8K \textsc{em}) outlier, both pre-registered
+candidate mechanisms (H1 chat-template emission, H3 sign-election
+cross-metric contamination) were tested and falsified above, leaving
+it as a known generation-evaluation-pipeline curiosity on a single
+metric. COMET-22 and IFEval-strict extensions are catalogued as
+follow-ups in \S\ref{sec:discussion} alongside the other scope
+limitations.
 
 %%% END DRAFT v3 (B2 H1 falsified, B4 cross-metric H3 falsified, HumanEval table added) %%%

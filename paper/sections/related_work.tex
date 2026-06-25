@@ -45,6 +45,31 @@ Our work is the first to pose merging as a multi-source
 rate-distortion problem with worst-task distortion as the figure
 of merit.
 
+\paragraph{Closed-form merging lineage.} The encoder of
+\S\ref{sec:achievability} sits in a long line of closed-form merge
+constructions that invert a per-task surrogate of curvature.
+RegMean~\cite{jin2023regmean} solves
+$W^\star = (\sum_t \tfrac{1}{N_t} Z_t^\top Z_t)^{-1}
+ \sum_t \tfrac{1}{N_t} (Z_t^\top Z_t) W_t$ with $Z_t$ the per-task
+\emph{input activations}, which makes it data-dependent and requires
+forward passes to collect $Z_t^\top Z_t$. LoRM~\cite{lorm2024}
+generalizes RegMean to low-rank adapters, and
+RegMean++~\cite{regmeanpp2025} refines the regularization. Our
+construction differs structurally in three ways. First, it is
+\emph{data-free}: the per-task projector $V_t$ is computed from the
+adapter factors $A_t$ alone, no forward passes. Second, it is derived
+from a worst-task rate-distortion lower bound
+(\S\ref{sec:lower_bound}) rather than from an empirical
+least-squares fit. Third, the Tikhonov regularization $\lambda^\star$
+that produces the headline encoder in \S\ref{subsec:exp-rd-encoder}
+emerges as the numerical-conditioning floor of
+Theorem~\ref{thm:achv} exposed as a single hyperparameter rather
+than as a defensive shrinkage on the Gram. We benchmark against a
+\emph{data-free} variant of RegMean in
+\S\ref{subsec:exp-e10-e11} (it uses $A_t^\top A_t$ as the per-task
+Gram surrogate); the full data-dependent RegMean is structurally
+closer to LoRM and out of scope for a data-free baseline.
+
 \paragraph{Added baselines comparison.} The empirical matrix of
 \S\ref{sec:experiments} compares against five published baselines
 (Task Arithmetic~\cite{ilharco2023task},
