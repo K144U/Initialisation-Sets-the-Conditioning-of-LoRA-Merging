@@ -1095,3 +1095,74 @@ FILES:
 - code/phase3/scripts/pbs_e11b_finer_alpha.sh
 - results/phase3/eval_e11b_finer_alpha/ (10 JSON outputs)
 - results/phase3/e11b_finer_alpha_summary.json
+
+
+================================================================================
+2026-06-25 (evening) — PRE-REGISTRATION: Mistral T=7 prediction test
+================================================================================
+
+PURPOSE: Convert Appendix Td2's TIES sign-election threshold from a
+two-point bracket (Yi R=0.077 inverts, Llama R=0.028 does not) into a
+falsifiable prediction-then-confirmation experiment on a third base.
+
+PRE-REGISTERED PREDICTION (locked BEFORE running the Mistral T=7
+sweep):
+
+The Td2 perturbation model predicts R★ ∈ [0.025, 0.075] for T=4 at
+density 0.2 (Appendix Td2, eq. ref:threshold). The TIES sign-election
+probe on Mistral-7B-v0.3 has measured R ≈ 0.041 (previously
+unpublished; raw value to be confirmed before launch). Since this
+falls strictly inside the predicted ambiguity window (R★_lo = 0.025 <
+0.041 < R★_hi = 0.075), the model predicts:
+
+  Mistral-7B-v0.3 at T=7 will show TIES neither clearly inverting
+  to worst-method (as on Yi) nor clearly staying best (as on Llama).
+
+Concretely, with the operationalization:
+  - "Clearly worst" = TIES is the worst of {TA, TIES, TVQ_b2, rd_ridge}
+    on worst-task NLL excess averaged across 4 random T=7 subsets, AND
+    its mean exceeds TA's mean by >= 0.04 nats/token.
+  - "Clearly best" = TIES is the best of the four, AND its mean is
+    below the second-best by >= 0.02 nats/token.
+  - "Ambiguous" = neither clearly worst nor clearly best.
+
+PREDICTION: Mistral T=7 will land in the "ambiguous" category.
+
+FALSIFICATION RULE: If Mistral T=7 shows TIES clearly inverting OR
+clearly winning by the operationalizations above, the Td2 threshold
+model is falsified as written; we report the result honestly and
+revise the perturbation analysis or accept the threshold as
+empirically tighter than the [0.025, 0.075] bracket would suggest.
+
+EXPERIMENT CONFIGURATION:
+  - Base: Mistral-7B-Instruct-v0.3 (existing artifacts at
+    artifacts/lora/mistral_7b/)
+  - Tasks for T=7: 4 v1 adapters (gsm8k, alpaca, magicoder, flores) +
+    3 pilot adapters mirroring the Yi/Llama setup (codealpaca, dolly,
+    xsum to be trained on Mistral)
+  - Cells: 4 random task subsets x 6 methods (TA, TIES, DARE, KnOTS,
+    TVQ_b2, rd_ridge) = 24 cells at T=7
+  - Compute budget: ~5 hours wallclock at 3-lane orchestrator
+    (24 cells × ~12 min / 3 lanes) + ~6 hours for the 3 pilot adapter
+    training (mirroring the existing Yi/Llama pipeline).
+
+DECISION RULE FOR THE PAPER:
+  - "Ambiguous" verdict (prediction holds): Promote Td2 in §6.6 to a
+    confirmed prediction; main text states "Td2 predicts an ambiguity
+    window R ∈ [0.025, 0.075]; pre-registered on Mistral (R=0.041),
+    confirmed at T=7."
+  - "Clearly inverts" verdict (model under-predicts): Report honestly;
+    state that the threshold window must be tightened to R★ ≤ 0.041.
+  - "Clearly wins" verdict (model over-predicts): Report honestly;
+    state that the threshold window must shift up to R★ ≥ 0.041.
+
+This pre-registration is timestamped BEFORE the experiment is
+scaffolded, dispatched, or analyzed. Any commit timestamp on this
+entry that post-dates the Mistral T=7 result invalidates the
+pre-registration.
+
+Status as of 2026-06-25 evening: pre-registered. Experiment NOT yet
+launched. Next step: re-measure Mistral R via probe_ties_sign_election.py
+to confirm the R≈0.041 value used in this prediction, then scaffold and
+launch the Mistral T=7 sweep.
+================================================================================
