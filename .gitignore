@@ -71,3 +71,18 @@ results/phase3/eval_matrix_n1k_v3_perexample/
 # Misc
 *.tmp
 *.bak
+
+# Orchestrator runtime state (sentinels + GPU pin overrides + retry state)
+_*_COMPLETE
+_ORCH_GPUS*
+_QUEUE_*
+_FISHER_COMPLETE
+_RIDGE_COMPLETE
+_RIDGE_XMODEL_COMPLETE
+
+# Timestamped backup copies of orch state (post-incident snapshots)
+*.bak.[0-9]*
+*orchestrator*.bak.*
+
+# Editor working files
+_docedit*.py

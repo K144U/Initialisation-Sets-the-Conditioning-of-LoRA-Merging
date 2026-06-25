@@ -1,0 +1,1129 @@
+{
+  "meta": {
+    "git_sha": "8d9d050b727b965fa04bdb24a2b64db7711cf7ce",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "42512.jiit-master",
+    "wallclock_iso": "2026-06-24T17:11:03+0200",
+    "wallclock_unix": 1782313863.3673575,
+    "config_hash": "7d9072d4b13f3121",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Qwen2.5-7B-Instruct",
+      "method": "dare",
+      "method_kwargs": {
+        "density": 0.2,
+        "seed": 20260518
+      },
+      "max_seq_length": 1024,
+      "seed": 20260518,
+      "min_free_gb": 25,
+      "adapter_specs": [
+        {
+          "name": "gsm8k",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/gsm8k/v1",
+          "task_cfg": {
+            "name": "gsm8k",
+            "dataset": "openai/gsm8k",
+            "config": "main",
+            "split_train": "train",
+            "split_eval": "test",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "prompt_field": "question",
+            "answer_field": "answer"
+          }
+        },
+        {
+          "name": "alpaca",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/alpaca/v1",
+          "task_cfg": {
+            "name": "alpaca",
+            "dataset": "yahma/alpaca-cleaned",
+            "config": null,
+            "split_train": "train",
+            "split_eval": "train",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "prompt_field": "instruction",
+            "answer_field": "output"
+          }
+        },
+        {
+          "name": "magicoder",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/magicoder/v1",
+          "task_cfg": {
+            "name": "magicoder",
+            "dataset": "ise-uiuc/Magicoder-OSS-Instruct-75K",
+            "config": null,
+            "split_train": "train",
+            "split_eval": "train",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "prompt_field": "problem",
+            "answer_field": "solution"
+          }
+        },
+        {
+          "name": "translation",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/flores/v1",
+          "task_cfg": {
+            "name": "translation",
+            "dataset": "wmt/wmt19",
+            "config": "de-en",
+            "split_train": "train",
+            "split_eval": "validation",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "src_lang": "en",
+            "tgt_lang": "de",
+            "streaming": true
+          }
+        }
+      ],
+      "output_path": "results/phase3/eval_b4_humaneval/qwen25_7b__dare__humaneval.json",
+      "metric": "humaneval_pass1",
+      "metric_kwargs": {
+        "max_new_tokens": 512,
+        "timeout_s": 5.0
+      },
+      "metric_task_spec": "humaneval",
+      "n_eval_metric": 164,
+      "loader": "plain",
+      "metric_task_cfg": {
+        "name": "humaneval",
+        "dataset": "openai/openai_humaneval",
+        "config": null,
+        "split_train": "test",
+        "split_eval": "test",
+        "n_train": 0,
+        "n_eval": 164,
+        "prompt_field": "prompt",
+        "answer_field": "canonical_solution"
+      },
+      "weights": [
+        0.25,
+        0.25,
+        0.25,
+        0.25
+      ]
+    }
+  },
+  "method": "dare",
+  "method_kwargs": {
+    "density": 0.2,
+    "seed": 20260518
+  },
+  "weights": [
+    0.25,
+    0.25,
+    0.25,
+    0.25
+  ],
+  "base_model": "/home/sanjay.g/projects/rdmerge/models/Qwen2.5-7B-Instruct",
+  "adapter_dirs": [
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/gsm8k/v1",
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/alpaca/v1",
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/magicoder/v1",
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/flores/v1"
+  ],
+  "metric": "humaneval_pass1",
+  "metric_kwargs": {
+    "max_new_tokens": 512,
+    "timeout_s": 5.0
+  },
+  "metric_task": "humaneval",
+  "metric_score": 0.006097560975609756,
+  "n_eval_metric": 164,
+  "per_example": [
+    {
+      "task_id": "HumanEval/13",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp47th41pa.py\", line 27, in <module>\n    check(greatest_common_divisor)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp47th41pa.py",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/74",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpi4jtilx0.py\", line 38, in <module>\n    check(total_match)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpi4jtilx0.py\", line 22, ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/113",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpfzfu8_63.py\", line 32, in <module>\n    check(odd_count)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpfzfu8_63.py\", line 19, in",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/53",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp3ks_8lx7.py\", line 32, in <module>\n    check(add)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp3ks_8lx7.py\", line 20, in check",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/123",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp73qoissn.py\", line 33, in <module>\n    check(get_odd_collatz)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp73qoissn.py\", line ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/66",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpgdeq_ego.py\", line 35, in <module>\n    check(digitSum)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpgdeq_ego.py\", line 21, in ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/43",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp_dt_hr1x.py\", line 40, in <module>\n    check(pairs_sum_to_zero)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp_dt_hr1x.py\", lin",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/131",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpo02cmbdt.py\", line 27, in <module>\n    check(digits)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpo02cmbdt.py\", line 15, in ch",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/62",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpvoe2e155.py\", line 28, in <module>\n    check(derivative)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpvoe2e155.py\", line 20, i",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/83",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpmoo8zxka.py\", line 24, in <module>\n    check(starts_one_ends)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpmoo8zxka.py\", line ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/45",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpyth0wkzp.py\", line 22, in <module>\n    check(triangle_area)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpyth0wkzp.py\", line 16",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/81",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpj71yimdd.py\", line 44, in <module>\n    check(numerical_letter_grade)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpj71yimdd.py\"",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/37",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp7mj61bcg.py\", line 26, in <module>\n    check(sort_even)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp7mj61bcg.py\", line 20, in",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/136",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpny9v711d.py\", line 35, in <module>\n    check(largest_smallest_integers)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpny9v711d.",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/137",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp5wwt8xbd.py\", line 33, in <module>\n    check(compare_one)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp5wwt8xbd.py\", line 19, ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/152",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpzcwy92op.py\", line 32, in <module>\n    check(compare)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpzcwy92op.py\", line 22, in c",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/159",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmphap1u126.py\", line 49, in <module>\n    check(eat)\n  File \"/var/tmp/pbs.42512.jiit-master/tmphap1u126.py\", line 37, in check",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/59",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpcc1y4i4m.py\", line 26, in <module>\n    check(largest_prime_factor)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpcc1y4i4m.py\", ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/139",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp6gsaxujz.py\", line 28, in <module>\n    check(special_factorial)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp6gsaxujz.py\", lin",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/21",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpe20elkgt.py\", line 30, in <module>\n    check(rescale_to_unit)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpe20elkgt.py\", line ",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/111",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpbjf7albj.py\", line 34, in <module>\n    check(histogram)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpbjf7albj.py\", line 20, in",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/110",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4d8f6lyu.py\", line 32, in <module>\n    check(exchange)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4d8f6lyu.py\", line 20, in ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/116",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpka33cr_h.py\", line 33, in <module>\n    check(sort_array)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpka33cr_h.py\", line 19, i",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/10",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp993hvsnk.py\", line 38, in <module>\n    check(make_palindrome)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp993hvsnk.py\", line ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/8",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpxjnq4rgj.py\", line 32, in <module>\n    check(sum_product)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpxjnq4rgj.py\", line 25, ",
+      "completion_preview": "\nfrom typing import List, Tuple\n"
+    },
+    {
+      "task_id": "HumanEval/20",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp8j9spvjo.py\", line 33, in <module>\n    check(find_closest_elements)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp8j9spvjo.py\",",
+      "completion_preview": "\nfrom typing import List, Tuple\n"
+    },
+    {
+      "task_id": "HumanEval/88",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpx4376fmz.py\", line 36, in <module>\n    check(sort_array)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpx4376fmz.py\", line 23, i",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/33",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpoifesku7.py\", line 30, in <module>\n    check(sort_third)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpoifesku7.py\", line 20, i",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/93",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp7mwedh3s.py\", line 31, in <module>\n    check(encode)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp7mwedh3s.py\", line 21, in ch",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/158",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp6nqqvcl3.py\", line 32, in <module>\n    check(find_max)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp6nqqvcl3.py\", line 17, in ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/0",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp9s9vew9y.py\", line 35, in <module>\n    check(has_close_elements)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp9s9vew9y.py\", li",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/142",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpumic1vql.py\", line 37, in <module>\n    check(sum_squares)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpumic1vql.py\", line 21, ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/50",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp45p2ml50.py\", line 34, in <module>\n    check(decode_shift)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp45p2ml50.py\", line 30,",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/98",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpvco17zvw.py\", line 29, in <module>\n    check(count_upper)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpvco17zvw.py\", line 16, ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/11",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp0l2pmnad.py\", line 28, in <module>\n    check(string_xor)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp0l2pmnad.py\", line 23, i",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/78",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp6_2dbqoy.py\", line 38, in <module>\n    check(hex_key)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp6_2dbqoy.py\", line 25, in c",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/127",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmplq436sy1.py\", line 40, in <module>\n    check(intersection)\n  File \"/var/tmp/pbs.42512.jiit-master/tmplq436sy1.py\", line 27,",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/72",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp_3wwhh6p.py\", line 37, in <module>\n    check(will_it_fly)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp_3wwhh6p.py\", line 25, ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/22",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpk4n80345.py\", line 29, in <module>\n    check(filter_integers)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpk4n80345.py\", line ",
+      "completion_preview": "\nfrom typing import List, Any\n"
+    },
+    {
+      "task_id": "HumanEval/76",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpbnqgq4hw.py\", line 36, in <module>\n    check(is_simple_power)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpbnqgq4hw.py\", line ",
+      "completion_preview": "\nimport math\n"
+    },
+    {
+      "task_id": "HumanEval/129",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpde0h3l6v.py\", line 56, in <module>\n    check(minPath)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpde0h3l6v.py\", line 40, in c",
+      "completion_preview": "\nimport heapq\n"
+    },
+    {
+      "task_id": "HumanEval/46",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpjfbdud6a.py\", line 33, in <module>\n    check(fib4)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpjfbdud6a.py\", line 26, in chec",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/60",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpsr8dl672.py\", line 32, in <module>\n    check(sum_to_n)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpsr8dl672.py\", line 24, in ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/160",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp7nn9k7v8.py\", line 41, in <module>\n    check(do_algebra)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp7nn9k7v8.py\", line 32, i",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/94",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp7dlqa12y.py\", line 42, in <module>\n    check(skjkasdkd)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp7dlqa12y.py\", line 20, in",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/70",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpc_zawq1h.py\", line 33, in <module>\n    check(strange_sort_list)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpc_zawq1h.py\", lin",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/34",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpapd5t9dk.py\", line 20, in <module>\n    check(unique)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpapd5t9dk.py\", line 16, in ch",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/104",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmphrisjtnp.py\", line 29, in <module>\n    check(unique_digits)\n  File \"/var/tmp/pbs.42512.jiit-master/tmphrisjtnp.py\", line 19",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/32",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpvhj2j0kr.py\", line 51, in <module>\n    check(find_zero)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpvhj2j0kr.py\", line 47, in",
+      "completion_preview": "\nimport math\n"
+    },
+    {
+      "task_id": "HumanEval/124",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpgqyzmglr.py\", line 60, in <module>\n    check(valid_date)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpgqyzmglr.py\", line 27, i",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/2",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpgwjy2tlu.py\", line 28, in <module>\n    check(truncate_number)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpgwjy2tlu.py\", line ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/77",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpi0e1ouam.py\", line 36, in <module>\n    check(iscube)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpi0e1ouam.py\", line 22, in ch",
+      "completion_preview": "\nimport math\n"
+    },
+    {
+      "task_id": "HumanEval/97",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpycg97ag2.py\", line 31, in <module>\n    check(multiply)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpycg97ag2.py\", line 17, in ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/87",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpd72l1p5b.py\", line 58, in <module>\n    check(get_row)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpd72l1p5b.py\", line 27, in c",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/163",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp0fvm5le1.py\", line 27, in <module>\n    check(generate_integers)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp0fvm5le1.py\", lin",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/122",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpzx8tep44.py\", line 31, in <module>\n    check(add_elements)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpzx8tep44.py\", line 21,",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/39",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmplwftu18v.py\", line 38, in <module>\n    check(prime_fib)\n  File \"/var/tmp/pbs.42512.jiit-master/tmplwftu18v.py\", line 25, in",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/145",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpq73cemdo.py\", line 30, in <module>\n    check(order_by_points)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpq73cemdo.py\", line ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/119",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpzo535a74.py\", line 40, in <module>\n    check(match_parens)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpzo535a74.py\", line 22,",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/80",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpj4lbdwm8.py\", line 29, in <module>\n    check(is_happy)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpj4lbdwm8.py\", line 19, in ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/55",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp577x31sv.py\", line 28, in <module>\n    check(fib)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp577x31sv.py\", line 20, in check",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/35",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpni5yc0t0.py\", line 22, in <module>\n    check(max_element)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpni5yc0t0.py\", line 18, ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/133",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpez4rolbg.py\", line 42, in <module>\n    check(sum_squares)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpez4rolbg.py\", line 23, ",
+      "completion_preview": "\nimport math\n"
+    },
+    {
+      "task_id": "HumanEval/151",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpr7ln1n93.py\", line 34, in <module>\n    check(double_the_difference)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpr7ln1n93.py\",",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/153",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp23xhdzij.py\", line 38, in <module>\n    check(Strongest_Extension)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp23xhdzij.py\", l",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/115",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmprgjwaji9.py\", line 55, in <module>\n    check(max_fill)\n  File \"/var/tmp/pbs.42512.jiit-master/tmprgjwaji9.py\", line 44, in ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/30",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp65su63t8.py\", line 25, in <module>\n    check(get_positive)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp65su63t8.py\", line 18,",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/150",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpspcwg37c.py\", line 32, in <module>\n    check(x_or_y)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpspcwg37c.py\", line 16, in ch",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/31",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpu10mpqkr.py\", line 44, in <module>\n    check(is_prime)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpu10mpqkr.py\", line 28, in ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/91",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp3d0q12it.py\", line 33, in <module>\n    check(is_bored)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp3d0q12it.py\", line 21, in ",
+      "completion_preview": "\nimport re\n"
+    },
+    {
+      "task_id": "HumanEval/58",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpntuugbt4.py\", line 26, in <module>\n    check(common)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpntuugbt4.py\", line 19, in ch",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/9",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp_3800_z8.py\", line 29, in <module>\n    check(rolling_max)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp_3800_z8.py\", line 23, ",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/161",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpo5aflz16.py\", line 32, in <module>\n    check(solve)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpo5aflz16.py\", line 18, in che",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/117",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4yhsd8hs.py\", line 33, in <module>\n    check(select_words)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4yhsd8hs.py\", line 20,",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/155",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpn3flnntg.py\", line 29, in <module>\n    check(even_odd_count)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpn3flnntg.py\", line 1",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/107",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmptsm6drrp.py\", line 43, in <module>\n    check(even_odd_palindrome)\n  File \"/var/tmp/pbs.42512.jiit-master/tmptsm6drrp.py\", l",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/54",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpwk9na4_k.py\", line 39, in <module>\n    check(same_chars)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpwk9na4_k.py\", line 29, i",
+      "completion_preview": "\nfrom collections import Counter\n"
+    },
+    {
+      "task_id": "HumanEval/3",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp433h09za.py\", line 34, in <module>\n    check(below_zero)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp433h09za.py\", line 26, i",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/82",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpph7fsudy.py\", line 39, in <module>\n    check(prime_length)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpph7fsudy.py\", line 18,",
+      "completion_preview": "\nimport math\n"
+    },
+    {
+      "task_id": "HumanEval/6",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpm43_w22d.py\", line 30, in <module>\n    check(parse_nested_parens)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpm43_w22d.py\", l",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/49",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpcavee8gt.py\", line 34, in <module>\n    check(modp)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpcavee8gt.py\", line 24, in chec",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/84",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpxwdibcl2.py\", line 33, in <module>\n    check(solve)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpxwdibcl2.py\", line 22, in che",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/105",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpxce38o4e.py\", line 41, in <module>\n    check(by_length)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpxce38o4e.py\", line 30, in",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/109",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp8oiw2cjt.py\", line 42, in <module>\n    check(move_one_ball)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp8oiw2cjt.py\", line 34",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/17",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4gfle0df.py\", line 38, in <module>\n    check(parse_music)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4gfle0df.py\", line 31, ",
+      "completion_preview": "\nfrom typing import List\n\n"
+    },
+    {
+      "task_id": "HumanEval/143",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmplwtv8qc2.py\", line 39, in <module>\n    check(words_in_sentence)\n  File \"/var/tmp/pbs.42512.jiit-master/tmplwtv8qc2.py\", lin",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/41",
+      "score": 1,
+      "err": "",
+      "completion_preview": "def car_race_collision(n: int) -> int:\n    # Since all cars are moving at the same speed and the road is infinitely long,\n    # every car moving left to right will eventually collide with every car mo"
+    },
+    {
+      "task_id": "HumanEval/7",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpet5jv0e6.py\", line 30, in <module>\n    check(filter_by_substring)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpet5jv0e6.py\", l",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/141",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpzecdajq4.py\", line 56, in <module>\n    check(file_name_check)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpzecdajq4.py\", line ",
+      "completion_preview": "\nimport re\n"
+    },
+    {
+      "task_id": "HumanEval/44",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpkouk_hml.py\", line 33, in <module>\n    check(change_base)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpkouk_hml.py\", line 22, ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/25",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp2z69f9ms.py\", line 38, in <module>\n    check(factorize)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp2z69f9ms.py\", line 28, in",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/63",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmph3mw1f1b.py\", line 35, in <module>\n    check(fibfib)\n  File \"/var/tmp/pbs.42512.jiit-master/tmph3mw1f1b.py\", line 25, in ch",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/135",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmph3dx4pbr.py\", line 27, in <module>\n    check(can_arrange)\n  File \"/var/tmp/pbs.42512.jiit-master/tmph3dx4pbr.py\", line 17, ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/126",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp1csmcf8g.py\", line 41, in <module>\n    check(is_sorted)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp1csmcf8g.py\", line 23, in",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/73",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp21rsrqek.py\", line 31, in <module>\n    check(smallest_change)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp21rsrqek.py\", line ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/101",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpep1zkvoh.py\", line 31, in <module>\n    check(words_string)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpep1zkvoh.py\", line 19,",
+      "completion_preview": "\nimport re\n"
+    },
+    {
+      "task_id": "HumanEval/156",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpcwf8vpnk.py\", line 38, in <module>\n    check(int_to_mini_roman)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpcwf8vpnk.py\", lin",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/134",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpp_mw2g0x.py\", line 36, in <module>\n    check(check_if_last_char_is_a_letter)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpp_mw",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/12",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpeal12j3e.py\", line 32, in <module>\n    check(longest)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpeal12j3e.py\", line 28, in c",
+      "completion_preview": "\nfrom typing import List, Optional\n"
+    },
+    {
+      "task_id": "HumanEval/112",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpk6j76kqg.py\", line 28, in <module>\n    check(reverse_delete)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpk6j76kqg.py\", line 1",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/18",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpmndqel9i.py\", line 29, in <module>\n    check(how_many_times)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpmndqel9i.py\", line 2",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/24",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpw4t8h1fz.py\", line 26, in <module>\n    check(largest_divisor)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpw4t8h1fz.py\", line ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/29",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpt885gese.py\", line 28, in <module>\n    check(filter_by_prefix)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpt885gese.py\", line",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/36",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4lubhzy8.py\", line 31, in <module>\n    check(fizz_buzz)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4lubhzy8.py\", line 20, in",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/48",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpod78g4lj.py\", line 33, in <module>\n    check(is_palindrome)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpod78g4lj.py\", line 23",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/27",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmplwa53kxc.py\", line 24, in <module>\n    check(flip_case)\n  File \"/var/tmp/pbs.42512.jiit-master/tmplwa53kxc.py\", line 19, in",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/102",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmptk9hfcey.py\", line 29, in <module>\n    check(choose_num)\n  File \"/var/tmp/pbs.42512.jiit-master/tmptk9hfcey.py\", line 16, i",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/121",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpvtmfn8c9.py\", line 28, in <module>\n    check(solution)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpvtmfn8c9.py\", line 16, in ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/19",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpl4c3wln8.py\", line 31, in <module>\n    check(sort_numbers)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpl4c3wln8.py\", line 24,",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/16",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmplk601ifd.py\", line 28, in <module>\n    check(count_distinct_characters)\n  File \"/var/tmp/pbs.42512.jiit-master/tmplk601ifd.",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/118",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp0dm82s7j.py\", line 41, in <module>\n    check(get_closest_vowel)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp0dm82s7j.py\", lin",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/61",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpa__bp7cb.py\", line 39, in <module>\n    check(correct_bracketing)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpa__bp7cb.py\", li",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/130",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpxpaopbpm.py\", line 39, in <module>\n    check(tri)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpxpaopbpm.py\", line 25, in check",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/26",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp5rgmbqbp.py\", line 28, in <module>\n    check(remove_duplicates)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp5rgmbqbp.py\", lin",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/106",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpkddjok18.py\", line 21, in <module>\n    check(f)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpkddjok18.py\", line 15, in check\n ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/148",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp26ohsya8.py\", line 36, in <module>\n    check(bf)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp26ohsya8.py\", line 23, in check\n",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/100",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpyt4wb0yr.py\", line 32, in <module>\n    check(make_a_pile)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpyt4wb0yr.py\", line 21, ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/92",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpe0rww6tr.py\", line 40, in <module>\n    check(any_int)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpe0rww6tr.py\", line 25, in c",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/57",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp5lisw7lm.py\", line 31, in <module>\n    check(monotonic)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp5lisw7lm.py\", line 20, in",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/146",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmphf7_nap5.py\", line 28, in <module>\n    check(specialFilter)\n  File \"/var/tmp/pbs.42512.jiit-master/tmphf7_nap5.py\", line 15",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/67",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp1cs9aq3_.py\", line 29, in <module>\n    check(fruit_distribution)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp1cs9aq3_.py\", li",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/40",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpnz6c_trb.py\", line 40, in <module>\n    check(triples_sum_to_zero)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpnz6c_trb.py\", l",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/42",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4liqzfzq.py\", line 24, in <module>\n    check(incr_list)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4liqzfzq.py\", line 18, in",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/144",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpmsds_jcn.py\", line 38, in <module>\n    check(simplify)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpmsds_jcn.py\", line 19, in ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/95",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp1idk9fzv.py\", line 32, in <module>\n    check(check_dict_case)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp1idk9fzv.py\", line ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/64",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpepp7_1gn.py\", line 36, in <module>\n    check(vowels_count)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpepp7_1gn.py\", line 23,",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/65",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp9977iods.py\", line 26, in <module>\n    check(circular_shift)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp9977iods.py\", line 1",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/4",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpbzjlomwz.py\", line 32, in <module>\n    check(mean_absolute_deviation)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpbzjlomwz.py",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/138",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpib10ofyr.py\", line 22, in <module>\n    check(is_equal_to_sum_even)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpib10ofyr.py\", ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/96",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp1jhbigeq.py\", line 30, in <module>\n    check(count_up_to)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp1jhbigeq.py\", line 17, ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/5",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4qdtn6fx.py\", line 29, in <module>\n    check(intersperse)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4qdtn6fx.py\", line 24, ",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/162",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp2h3lupkv.py\", line 26, in <module>\n    check(string_to_md5)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp2h3lupkv.py\", line 16",
+      "completion_preview": "\nimport hashlib\n"
+    },
+    {
+      "task_id": "HumanEval/1",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp3xcemqf1.py\", line 37, in <module>\n    check(separate_paren_groups)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp3xcemqf1.py\",",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/103",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpsf7ht7mh.py\", line 36, in <module>\n    check(rounded_avg)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpsf7ht7mh.py\", line 18, ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/51",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpmxmu97kx.py\", line 37, in <module>\n    check(remove_vowels)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpmxmu97kx.py\", line 27",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/69",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp04vgelz3.py\", line 48, in <module>\n    check(search)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp04vgelz3.py\", line 18, in ch",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/128",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpauu766hp.py\", line 34, in <module>\n    check(prod_signs)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpauu766hp.py\", line 20, i",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/125",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpoj71eyo9.py\", line 26, in <module>\n    check(split_words)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpoj71eyo9.py\", line 16, ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/99",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4m8n4xa2.py\", line 35, in <module>\n    check(closest_integer)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4m8n4xa2.py\", line ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/23",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpaht_2mqf.py\", line 26, in <module>\n    check(strlen)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpaht_2mqf.py\", line 21, in ch",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/71",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpm9arwzmt.py\", line 34, in <module>\n    check(triangle_area)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpm9arwzmt.py\", line 20",
+      "completion_preview": "\nimport math\n"
+    },
+    {
+      "task_id": "HumanEval/28",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpca6hr_n7.py\", line 29, in <module>\n    check(concatenate)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpca6hr_n7.py\", line 24, ",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/140",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmprkuf0_aq.py\", line 28, in <module>\n    check(fix_spaces)\n  File \"/var/tmp/pbs.42512.jiit-master/tmprkuf0_aq.py\", line 18, i",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/132",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmprw1flghv.py\", line 39, in <module>\n    check(is_nested)\n  File \"/var/tmp/pbs.42512.jiit-master/tmprw1flghv.py\", line 20, in",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/108",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp6j094z77.py\", line 31, in <module>\n    check(count_nums)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp6j094z77.py\", line 17, i",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/56",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpy5ltr_f9.py\", line 39, in <module>\n    check(correct_bracketing)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpy5ltr_f9.py\", li",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/38",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmphl_lw17h.py\", line 37, in <module>\n    check(decode_cyclic)\n  File \"/var/tmp/pbs.42512.jiit-master/tmphl_lw17h.py\", line 33",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/157",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpzomvb3k9.py\", line 33, in <module>\n    check(right_angle_triangle)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpzomvb3k9.py\", ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/68",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp0oskehyw.py\", line 56, in <module>\n    check(pluck)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp0oskehyw.py\", line 42, in che",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/52",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp13ab3yox.py\", line 27, in <module>\n    check(below_threshold)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp13ab3yox.py\", line ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/79",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpibne3i7i.py\", line 29, in <module>\n    check(decimal_to_binary)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpibne3i7i.py\", lin",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/89",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp70bn51as.py\", line 32, in <module>\n    check(encrypt)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp70bn51as.py\", line 18, in c",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/15",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp6ts2tvab.py\", line 26, in <module>\n    check(string_sequence)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp6ts2tvab.py\", line ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/85",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpxijj_zr8.py\", line 23, in <module>\n    check(add)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpxijj_zr8.py\", line 14, in check",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/120",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp3apeg_4c.py\", line 50, in <module>\n    check(maximum)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp3apeg_4c.py\", line 34, in c",
+      "completion_preview": "\nimport heapq\n"
+    },
+    {
+      "task_id": "HumanEval/75",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpns70afvq.py\", line 27, in <module>\n    check(is_multiply_prime)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpns70afvq.py\", lin",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/149",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp9lnyneul.py\", line 34, in <module>\n    check(sorted_list_sum)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp9lnyneul.py\", line ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/47",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4z2rywtc.py\", line 26, in <module>\n    check(median)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp4z2rywtc.py\", line 18, in ch",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/154",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpoq2g6rnb.py\", line 30, in <module>\n    check(cycpattern_check)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpoq2g6rnb.py\", line",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/86",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmprp7lh85i.py\", line 32, in <module>\n    check(anti_shuffle)\n  File \"/var/tmp/pbs.42512.jiit-master/tmprp7lh85i.py\", line 20,",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/90",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpube56xa6.py\", line 31, in <module>\n    check(next_smallest)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpube56xa6.py\", line 18",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/14",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpm3yxgx1r.py\", line 27, in <module>\n    check(all_prefixes)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpm3yxgx1r.py\", line 22,",
+      "completion_preview": "\nfrom typing import List\n"
+    },
+    {
+      "task_id": "HumanEval/147",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp38_lp6h7.py\", line 26, in <module>\n    check(get_max_triples)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp38_lp6h7.py\", line ",
+      "completion_preview": ""
+    },
+    {
+      "task_id": "HumanEval/114",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpocf1oscd.py\", line 31, in <module>\n    check(minSubArraySum)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpocf1oscd.py\", line 1",
+      "completion_preview": ""
+    }
+  ],
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "42512.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

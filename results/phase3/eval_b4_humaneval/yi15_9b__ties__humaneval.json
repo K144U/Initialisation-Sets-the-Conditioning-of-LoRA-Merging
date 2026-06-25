@@ -1,0 +1,1129 @@
+{
+  "meta": {
+    "git_sha": "8d9d050b727b965fa04bdb24a2b64db7711cf7ce",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "6",
+    "pbs_jobid": "42512.jiit-master",
+    "wallclock_iso": "2026-06-24T20:01:52+0200",
+    "wallclock_unix": 1782324112.5313146,
+    "config_hash": "c7271e92e2a2ff9e",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Yi-1.5-9B-Chat",
+      "method": "ties",
+      "method_kwargs": {
+        "density": 0.2,
+        "majority_sign_method": "total"
+      },
+      "max_seq_length": 1024,
+      "seed": 20260518,
+      "min_free_gb": 25,
+      "adapter_specs": [
+        {
+          "name": "gsm8k",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/gsm8k/v1",
+          "task_cfg": {
+            "name": "gsm8k",
+            "dataset": "openai/gsm8k",
+            "config": "main",
+            "split_train": "train",
+            "split_eval": "test",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "prompt_field": "question",
+            "answer_field": "answer"
+          }
+        },
+        {
+          "name": "alpaca",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/alpaca/v1",
+          "task_cfg": {
+            "name": "alpaca",
+            "dataset": "yahma/alpaca-cleaned",
+            "config": null,
+            "split_train": "train",
+            "split_eval": "train",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "prompt_field": "instruction",
+            "answer_field": "output"
+          }
+        },
+        {
+          "name": "magicoder",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/magicoder/v1",
+          "task_cfg": {
+            "name": "magicoder",
+            "dataset": "ise-uiuc/Magicoder-OSS-Instruct-75K",
+            "config": null,
+            "split_train": "train",
+            "split_eval": "train",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "prompt_field": "problem",
+            "answer_field": "solution"
+          }
+        },
+        {
+          "name": "translation",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/flores/v1",
+          "task_cfg": {
+            "name": "translation",
+            "dataset": "wmt/wmt19",
+            "config": "de-en",
+            "split_train": "train",
+            "split_eval": "validation",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "src_lang": "en",
+            "tgt_lang": "de",
+            "streaming": true
+          }
+        }
+      ],
+      "output_path": "results/phase3/eval_b4_humaneval/yi15_9b__ties__humaneval.json",
+      "metric": "humaneval_pass1",
+      "metric_kwargs": {
+        "max_new_tokens": 512,
+        "timeout_s": 5.0
+      },
+      "metric_task_spec": "humaneval",
+      "n_eval_metric": 164,
+      "loader": "plain",
+      "metric_task_cfg": {
+        "name": "humaneval",
+        "dataset": "openai/openai_humaneval",
+        "config": null,
+        "split_train": "test",
+        "split_eval": "test",
+        "n_train": 0,
+        "n_eval": 164,
+        "prompt_field": "prompt",
+        "answer_field": "canonical_solution"
+      },
+      "weights": [
+        0.25,
+        0.25,
+        0.25,
+        0.25
+      ]
+    }
+  },
+  "method": "ties",
+  "method_kwargs": {
+    "density": 0.2,
+    "majority_sign_method": "total"
+  },
+  "weights": [
+    0.25,
+    0.25,
+    0.25,
+    0.25
+  ],
+  "base_model": "/home/sanjay.g/projects/rdmerge/models/Yi-1.5-9B-Chat",
+  "adapter_dirs": [
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/gsm8k/v1",
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/alpaca/v1",
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/magicoder/v1",
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/flores/v1"
+  ],
+  "metric": "humaneval_pass1",
+  "metric_kwargs": {
+    "max_new_tokens": 512,
+    "timeout_s": 5.0
+  },
+  "metric_task": "humaneval",
+  "metric_score": 0.10365853658536585,
+  "n_eval_metric": 164,
+  "per_example": [
+    {
+      "task_id": "HumanEval/13",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpxx50lsab.py\", line 10\n    if a == 0:\n              ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if a == 0:\n        return b\n    return greatest_common_divisor(b % a, a)\n"
+    },
+    {
+      "task_id": "HumanEval/74",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpmpibzyeg.py\", line 40, in <module>\n    check(total_match)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpmpibzyeg.py\", line 30, ",
+      "completion_preview": "def total_match(lst1, lst2):\n    return lst1 if sum(len(i) for i in lst1) < sum(len(i) for i in lst2) else lst2\n"
+    },
+    {
+      "task_id": "HumanEval/113",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp5d65esbj.py\", line 14\n    result = []\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = []\n    for i, s in enumerate(lst):\n        odd_count = sum(int(c) % 2 for c in s)\n        result.append(\"the number of odd elements {}n the str{}ng {} of the {}nput.\".format(odd_count, i, "
+    },
+    {
+      "task_id": "HumanEval/53",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp1jdnax5l.py\", line 10\n    return x + y\n                ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   return x + y\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    },
+    {
+      "task_id": "HumanEval/123",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpugwgktjw.py\", line 19\n    collatz_list = [n]\n                      ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   collatz_list = [n]\n    while n != 1:\n        if n % 2 == 0:\n            n = n // 2\n        else:\n            n = 3 * n + 1\n        collatz_list.append(n)\n    return sorted([x for x in collatz_list "
+    },
+    {
+      "task_id": "HumanEval/66",
+      "score": 1,
+      "err": "",
+      "completion_preview": "def digitSum(s):\n    return sum(ord(c) for c in s if c.isupper())\n"
+    },
+    {
+      "task_id": "HumanEval/43",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpt2zbr9oa.py\", line 19\n    for i in range(len(l)):\n                           ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   for i in range(len(l)):\n        for j in range(i+1, len(l)):\n            if l[i] + l[j] == 0:\n                return True\n    return False\n"
+    },
+    {
+      "task_id": "HumanEval/131",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp957wk2ft.py\", line 10\n    product = 1\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   product = 1\n    for digit in str(n):\n        if int(digit) % 2 == 1:\n            product *= int(digit)\n    return product\n"
+    },
+    {
+      "task_id": "HumanEval/62",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp53yh8prf.py\", line 12\n    return [i * xs[i] for i in range(1, len(xs))]\n                                                 ^\nIndentationError: unindent does not",
+      "completion_preview": "   return [i * xs[i] for i in range(1, len(xs))]\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    },
+    {
+      "task_id": "HumanEval/83",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpo6znjkwq.py\", line 7\n    count = 0\n             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   count = 0\n    for i in range(10**(n-1), 10**n):\n        if str(i)[0] == '1' or str(i)[-1] == '1':\n            count += 1\n    return count\n\n"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpk6mvsfm8.py\", line 8\n    return 0.5 * a * h\n                      ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   return 0.5 * a * h\n"
+    },
+    {
+      "task_id": "HumanEval/81",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpb7assnm_.py\", line 27\n    letter_grades = []\n                      ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   letter_grades = []\n    for grade in grades:\n        if grade == 4.0:\n            letter_grades.append('A+')\n        elif grade > 3.7:\n            letter_grades.append('A')\n        elif grade > 3.3:"
+    },
+    {
+      "task_id": "HumanEval/37",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpn_ieu5go.py\", line 12\n    even_values = [l[i] for i in range(0, len(l), 2)]\n                                                     ^\nIndentationError: unindent ",
+      "completion_preview": "   even_values = [l[i] for i in range(0, len(l), 2)]\n    even_values.sort()\n    l_prime = l.copy()\n    for i in range(0, len(l), 2):\n        l_prime[i] = even_values[i//2]\n    return l_prime\n"
+    },
+    {
+      "task_id": "HumanEval/136",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmph2xx2ids.py\", line 14\n    largest_negative = None\n                           ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   largest_negative = None\n    smallest_positive = None\n    for num in lst:\n        if num < 0 and (largest_negative is None or num > largest_negative):\n            largest_negative = num\n        elif"
+    },
+    {
+      "task_id": "HumanEval/137",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpuq0d37t2.py\", line 44, in <module>\n    check(compare_one)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpuq0d37t2.py\", line 34, ",
+      "completion_preview": "def compare_one(a, b):\n    if type(a) == str:\n        a = float(a.replace(',', '.'))\n    if type(b) == str:\n        b = float(b.replace(',', '.'))\n    if a > b:\n        return a\n    elif b > a:\n      "
+    },
+    {
+      "task_id": "HumanEval/152",
+      "score": 1,
+      "err": "",
+      "completion_preview": "def compare(game,guess):\n    return [abs(game[i]-guess[i]) for i in range(len(game))]\n"
+    },
+    {
+      "task_id": "HumanEval/159",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp9axnpz7g.py\", line 31\n    if remaining >= need:\n                         ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if remaining >= need:\n        return [number + need, remaining - need]\n    else:\n        return [number + remaining, 0]\n"
+    },
+    {
+      "task_id": "HumanEval/59",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpc7czxp37.py\", line 10\n    largest_factor = 1\n                      ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   largest_factor = 1\n    i = 2\n    while i * i <= n:\n        if n % i:\n            i += 1\n        else:\n            n //= i\n            largest_factor = i\n    if n > 1:\n        largest_factor = n\n   "
+    },
+    {
+      "task_id": "HumanEval/139",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpihx7n_v3.py\", line 14\n    result = 1\n              ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = 1\n    for i in range(1, n+1):\n        result *= factorial(i)\n    return result\n"
+    },
+    {
+      "task_id": "HumanEval/21",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpy9381qsa.py\", line 10\n    min_val = min(numbers)\n                          ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   min_val = min(numbers)\n    max_val = max(numbers)\n    return [(x - min_val) / (max_val - min_val) for x in numbers]\n\n"
+    },
+    {
+      "task_id": "HumanEval/111",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpqo8dq5d6.py\", line 15\n    histogram = {}\n                  ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   histogram = {}\n    for letter in test:\n        if letter in histogram:\n            histogram[letter] += 1\n        else:\n            histogram[letter] = 1\n    max_count = max(histogram.values())\n   "
+    },
+    {
+      "task_id": "HumanEval/110",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpnc8xd9wl.py\", line 15\n    even_in_lst1 = [x for x in lst1 if x % 2 == 0]\n                                                  ^\nIndentationError: unindent does n",
+      "completion_preview": "   even_in_lst1 = [x for x in lst1 if x % 2 == 0]\n    odd_in_lst1 = [x for x in lst1 if x % 2 != 0]\n    even_in_lst2 = [x for x in lst2 if x % 2 == 0]\n    odd_in_lst2 = [x for x in lst2 if x % 2 != 0]"
+    },
+    {
+      "task_id": "HumanEval/116",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpm6uh0a41.py\", line 13\n    return sorted(arr, key=lambda x: (bin(x).count('1'), x))\n                                                            ^\nIndentationEr",
+      "completion_preview": "   return sorted(arr, key=lambda x: (bin(x).count('1'), x))\n"
+    },
+    {
+      "task_id": "HumanEval/10",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp8n4jrf4j.py\", line 47, in <module>\n    check(make_palindrome)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp8n4jrf4j.py\", line ",
+      "completion_preview": "   # Find the longest postfix of supplied string that is a palindrome\n    for i in range(len(string)):\n        if is_palindrome(string[i:]):\n            postfix = string[i:]\n            break\n    \n   "
+    },
+    {
+      "task_id": "HumanEval/8",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpydtdkfkv.py\", line 12\n    sum_val = 0\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   sum_val = 0\n    product_val = 1\n    for num in numbers:\n        sum_val += num\n        product_val *= num\n    return (sum_val, product_val)\n\n"
+    },
+    {
+      "task_id": "HumanEval/20",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp7cy2qqdz.py\", line 12\n    min_diff = float('inf')\n                           ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   min_diff = float('inf')\n    min_pair = None\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            diff = abs(numbers[i] - numbers[j])\n            if diff < min_"
+    },
+    {
+      "task_id": "HumanEval/88",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpnb59kuji.py\", line 17\n    array_copy = array[:]\n                         ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   array_copy = array[:]\n    if (array[0] + array[-1]) % 2 == 0:\n        array_copy.sort(reverse=True)\n    else:\n        array_copy.sort()\n    return array_copy\n"
+    },
+    {
+      "task_id": "HumanEval/33",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp9jkgsh3k.py\", line 12\n    third_indices = [i for i in range(len(l)) if i % 3 == 0]\n                                                            ^\nIndentationEr",
+      "completion_preview": "   third_indices = [i for i in range(len(l)) if i % 3 == 0]\n    third_values = [l[i] for i in third_indices]\n    third_values.sort()\n    for i, v in zip(third_indices, third_values):\n        l[i] = v\n"
+    },
+    {
+      "task_id": "HumanEval/93",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp4ams_fv4.py\", line 16\n    encoded_message = \"\"\n                        ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   encoded_message = \"\"\n    for letter in message:\n        if letter.isalpha():\n            if letter.islower():\n                encoded_message += letter.upper()\n            else:\n                enc"
+    },
+    {
+      "task_id": "HumanEval/158",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpq9uoeizz.py\", line 12\n    max_unique_chars = 0\n                        ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   max_unique_chars = 0\n    max_word = \"\"\n    for word in words:\n        unique_chars = len(set(word))\n        if unique_chars > max_unique_chars:\n            max_unique_chars = unique_chars\n         "
+    },
+    {
+      "task_id": "HumanEval/0",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpvqzk7wx9.py\", line 12\n    for i in range(len(numbers) - 1):\n                                     ^\nIndentationError: unindent does not match any outer indenta",
+      "completion_preview": "   for i in range(len(numbers) - 1):\n        if abs(numbers[i] - numbers[i + 1]) < threshold:\n            return True\n    return False\n\n"
+    },
+    {
+      "task_id": "HumanEval/142",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpdgjdetcp.py\", line 15\n    sum = 0\n           ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   sum = 0\n    for i in range(len(lst)):\n        if i % 3 == 0:\n            lst[i] = lst[i]**2\n        elif i % 4 == 0 and i % 3 != 0:\n            lst[i] = lst[i]**3\n        sum += lst[i]\n    return s"
+    },
+    {
+      "task_id": "HumanEval/50",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp29vx5okn.py\", line 14\n    return \"\".join([chr(((ord(ch) - 5 - ord(\"a\")) % 26) + ord(\"a\")) for ch in s])\n                                                      ",
+      "completion_preview": "   return \"\".join([chr(((ord(ch) - 5 - ord(\"a\")) % 26) + ord(\"a\")) for ch in s])\n\n"
+    },
+    {
+      "task_id": "HumanEval/98",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpblrdu32b.py\", line 11\n    count = 0\n             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   count = 0\n    for i in range(0, len(s), 2):\n        if s[i] in 'AEIOU':\n            count += 1\n    return count\n"
+    },
+    {
+      "task_id": "HumanEval/11",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpc_nbjbgr.py\", line 10\n    result = \"\"\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = \"\"\n    for i in range(len(a)):\n        if a[i] == b[i]:\n            result += '0'\n        else:\n            result += '1'\n    return result\n\n"
+    },
+    {
+      "task_id": "HumanEval/78",
+      "score": 1,
+      "err": "",
+      "completion_preview": "def hex_key(num):\n    primes = [2, 3, 5, 7, 11, 13]\n    count = 0\n    for digit in num:\n        if digit in \"0123456789\":\n            if int(digit) in primes:\n                count += 1\n        elif d"
+    },
+    {
+      "task_id": "HumanEval/127",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp02cdzshf.py\", line 52, in <module>\n    check(intersection)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp02cdzshf.py\", line 40,",
+      "completion_preview": "def intersection(interval1, interval2):\n    start = max(interval1[0], interval2[0])\n    end = min(interval1[1], interval2[1])\n    length = end - start + 1\n    if length <= 0:\n        return \"NO\"\n    i"
+    },
+    {
+      "task_id": "HumanEval/72",
+      "score": 1,
+      "err": "",
+      "completion_preview": "def will_it_fly(q,w):\n    return q == q[::-1] and sum(q) <= w\n"
+    },
+    {
+      "task_id": "HumanEval/22",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp2f5jirda.py\", line 11\n    return [x for x in values if isinstance(x, int)]\n                                                    ^\nIndentationError: unindent do",
+      "completion_preview": "   return [x for x in values if isinstance(x, int)]\n\n"
+    },
+    {
+      "task_id": "HumanEval/76",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpntrdd01i.py\", line 14\n    if x == 1:\n              ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if x == 1:\n        return True\n    elif x < 1 or n < 1:\n        return False\n    else:\n        return x**(1/n) == int(x**(1/n))\n"
+    },
+    {
+      "task_id": "HumanEval/129",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpgf8jjyen.py\", line 32\n    def minPath(grid, k):\n                         ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   def minPath(grid, k):\n        n = len(grid)\n        visited = [[False]*n for _ in range(n)]\n        min_path = [float('inf')]*k\n        min_path_list = []\n        \n        def dfs(x, y, path, path_"
+    },
+    {
+      "task_id": "HumanEval/46",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp3d8lnfcj.py\", line 18\n    if n < 0:\n             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n    elif n == 0:\n        return 0\n    elif n == 1:\n        return 0\n    elif n == 2:\n        return 2\n    elif n == 3:\n       "
+    },
+    {
+      "task_id": "HumanEval/60",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpbzisqtp8.py\", line 16\n    return (n * (n + 1)) // 2\n                             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   return (n * (n + 1)) // 2\n"
+    },
+    {
+      "task_id": "HumanEval/160",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmposmm1ngo.py\", line 27\n    result = operand[0]\n                       ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = operand[0]\n    for i in range(len(operator)):\n        if operator[i] == '+':\n            result += operand[i+1]\n        elif operator[i] == '-':\n            result -= operand[i+1]\n        "
+    },
+    {
+      "task_id": "HumanEval/94",
+      "score": 1,
+      "err": "",
+      "completion_preview": "def skjkasdkd(lst):\n    def is_prime(n):\n        if n < 2:\n            return False\n        for i in range(2, int(n**0.5) + 1):\n            if n % i == 0:\n                return False\n        return T"
+    },
+    {
+      "task_id": "HumanEval/70",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpc_s38zw7.py\", line 13\n    if not lst:\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if not lst:\n        return []\n    lst.sort()\n    result = []\n    while lst:\n        result.append(lst.pop(0))\n        if lst:\n            result.append(lst.pop())\n    return result\n"
+    },
+    {
+      "task_id": "HumanEval/34",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpj5zlpukp.py\", line 8\n    return sorted(set(l))\n                         ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   return sorted(set(l))\n\n"
+    },
+    {
+      "task_id": "HumanEval/104",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp2mhc59pt.py\", line 14\n    result = []\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = []\n    for num in x:\n        digits = [int(d) for d in str(num)]\n        if all(d % 2 != 0 for d in digits):\n            result.append(num)\n    return sorted(result)\n"
+    },
+    {
+      "task_id": "HumanEval/32",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp0badprvs.py\", line 24\n    if len(xs) % 2 == 0:\n                        ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if len(xs) % 2 == 0:\n        return -xs[-2] / xs[-1]\n    else:\n        raise ValueError(\"The list of coefficients must have an even number of elements.\")\n\n"
+    },
+    {
+      "task_id": "HumanEval/124",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp9zh4e8wg.py\", line 22\n    import re\n             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   import re\n    \n    if not date:\n        return False\n    \n    if not re.match(r'^\\d{2}-\\d{2}-\\d{4}$', date):\n        return False\n    \n    month, day, year = map(int, date.split('-'))\n    \n    if m"
+    },
+    {
+      "task_id": "HumanEval/2",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpvtv645wl.py\", line 12\n    return number - int(number)\n                               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   return number - int(number)\n\n"
+    },
+    {
+      "task_id": "HumanEval/77",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpc2lv262f.py\", line 15\n    if a < 0:\n             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if a < 0:\n        a = -a\n    if a == 0:\n        return True\n    else:\n        return round(a ** (1. / 3)) ** 3 == a\n"
+    },
+    {
+      "task_id": "HumanEval/97",
+      "score": 1,
+      "err": "",
+      "completion_preview": "def multiply(a, b):\n    return (a % 10) * (b % 10)\n"
+    },
+    {
+      "task_id": "HumanEval/87",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp74x86opx.py\", line 22\n    coordinates = []\n                    ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   coordinates = []\n    for i, row in enumerate(lst):\n        for j, value in enumerate(row):\n            if value == x:\n                coordinates.append((i, j))\n    coordinates.sort(key=lambda x: ("
+    },
+    {
+      "task_id": "HumanEval/163",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpe1vt7s4g.py\", line 12\n    result = []\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = []\n    for i in range(a, b+1):\n        if i % 2 == 0:\n            result.append(i)\n    return sorted(result)\n"
+    },
+    {
+      "task_id": "HumanEval/122",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpq51n45y_.py\", line 16\n    sum = 0\n           ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   sum = 0\n    for i in range(k):\n        if arr[i] < 100 and arr[i] > -100:\n            sum += arr[i]\n    return sum\n"
+    },
+    {
+      "task_id": "HumanEval/39",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmprb6rvcvo.py\", line 17\n    def is_prime(n):\n                    ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   def is_prime(n):\n        if n < 2:\n            return False\n        for i in range(2, int(n**0.5) + 1):\n            if n % i == 0:\n                return False\n        return True\n\n    a, b = 0, 1\n"
+    },
+    {
+      "task_id": "HumanEval/145",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpdoko5arc.py\", line 13\n    pass\n        ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   pass\n\n"
+    },
+    {
+      "task_id": "HumanEval/119",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpein34c0l.py\", line 66, in <module>\n    check(match_parens)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpein34c0l.py\", line 57,",
+      "completion_preview": "   # Initialize a counter for open parentheses\n    open_count = 0\n    # Initialize a counter for close parentheses\n    close_count = 0\n    # Iterate over the first string\n    for char in lst[0]:\n     "
+    },
+    {
+      "task_id": "HumanEval/80",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpbrmj_omj.py\", line 14\n    if len(s) < 3:\n                  ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if len(s) < 3:\n        return False\n    for i in range(len(s) - 2):\n        if s[i] == s[i + 1] or s[i] == s[i + 2] or s[i + 1] == s[i + 2]:\n            return False\n    return True\n"
+    },
+    {
+      "task_id": "HumanEval/55",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmph955ot47.py\", line 12\n    if n == 0:\n              ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if n == 0:\n        return 0\n    elif n == 1:\n        return 1\n    else:\n        return fib(n-1) + fib(n-2)\n"
+    },
+    {
+      "task_id": "HumanEval/35",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmppqe3da8_.py\", line 10\n    return max(l)\n                 ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   return max(l)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    },
+    {
+      "task_id": "HumanEval/133",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpdrustuzw.py\", line 16\n    sum = 0\n           ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   sum = 0\n    for i in lst:\n        sum += (int(math.ceil(i))**2)\n    return sum\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    },
+    {
+      "task_id": "HumanEval/151",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpt3y3u7mx.py\", line 14\n    result = 0\n              ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = 0\n    for num in lst:\n        if num > 0 and num % 2 != 0:\n            result += num ** 2\n    return result\n"
+    },
+    {
+      "task_id": "HumanEval/153",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpxh24q5o1.py\", line 19\n    max_strength = -1\n                     ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   max_strength = -1\n    strongest_extension = None\n    for extension in extensions:\n        strength = sum(1 for c in extension if c.isupper()) - sum(1 for c in extension if c.islower())\n        if s"
+    },
+    {
+      "task_id": "HumanEval/115",
+      "score": 1,
+      "err": "",
+      "completion_preview": "   # Initialize the number of times the bucket is used\n    bucket_count = 0\n    # Iterate over the wells\n    for well in grid:\n        # Calculate the number of times the bucket is used\n        bucket"
+    },
+    {
+      "task_id": "HumanEval/30",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpycu279us.py\", line 10\n    return [x for x in l if x > 0]\n                                  ^\nIndentationError: unindent does not match any outer indentation l",
+      "completion_preview": "   return [x for x in l if x > 0]\n"
+    },
+    {
+      "task_id": "HumanEval/150",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpp_0l76__.py\", line 11\n    if n < 2:\n             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if n < 2:\n        return y\n    for i in range(2, int(n**0.5)+1):\n        if n % i == 0:\n            return y\n    return x\n"
+    },
+    {
+      "task_id": "HumanEval/31",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpjnbp6wgf.py\", line 20\n    if n < 2:\n             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if n < 2:\n        return False\n    for i in range(2, int(n**0.5) + 1):\n        if n % i == 0:\n            return False\n    return True\n"
+    },
+    {
+      "task_id": "HumanEval/91",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpapzwjor3.py\", line 14\n    boredom_count = 0\n                     ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   boredom_count = 0\n    words = S.split()\n    for i in range(len(words)):\n        if words[i] == \"I\" and i > 0 and words[i-1] in [\".\", \"?\", \"!\"]:\n            boredom_count += 1\n    return boredom_cou"
+    },
+    {
+      "task_id": "HumanEval/58",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp8vif85gj.py\", line 11\n    return sorted(list(set(l1) & set(l2)))\n                                          ^\nIndentationError: unindent does not match any out",
+      "completion_preview": "   return sorted(list(set(l1) & set(l2)))\n\n"
+    },
+    {
+      "task_id": "HumanEval/9",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpbqnwrony.py\", line 10\n    max_so_far = float('-inf')\n                              ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   max_so_far = float('-inf')\n    result = []\n    for num in numbers:\n        max_so_far = max(max_so_far, num)\n        result.append(max_so_far)\n    return result\n\n"
+    },
+    {
+      "task_id": "HumanEval/161",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpnmu58lwn.py\", line 37, in <module>\n    check(solve)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpnmu58lwn.py\", line 26, in che",
+      "completion_preview": "def solve(s):\n    if s.isalpha():\n        return s.swapcase()\n    else:\n        return s[::-1]\n"
+    },
+    {
+      "task_id": "HumanEval/117",
+      "score": 1,
+      "err": "",
+      "completion_preview": "def select_words(s, n):\n    words = s.split()\n    result = []\n    for word in words:\n        if sum(1 for c in word if c.lower() in 'bcdfghjklmnpqrstvwxyz') == n:\n            result.append(word)\n    r"
+    },
+    {
+      "task_id": "HumanEval/155",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpou4gmjo4.py\", line 9\n    even_count = 0\n                  ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   even_count = 0\n    odd_count = 0\n    for digit in str(abs(num)):\n        if int(digit) % 2 == 0:\n            even_count += 1\n        else:\n            odd_count += 1\n    return (even_count, odd_cou"
+    },
+    {
+      "task_id": "HumanEval/107",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmplmkkihii.py\", line 25\n    even_count = 0\n                  ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   even_count = 0\n    odd_count = 0\n    for i in range(1, n+1):\n        if str(i) == str(i)[::-1]:\n            if i % 2 == 0:\n                even_count += 1\n            else:\n                odd_coun"
+    },
+    {
+      "task_id": "HumanEval/54",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpqfcp6jnb.py\", line 19\n    s0 = sorted(s0)\n                   ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   s0 = sorted(s0)\n    s1 = sorted(s1)\n    return s0 == s1\n"
+    },
+    {
+      "task_id": "HumanEval/3",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpltcq9wqo.py\", line 13\n    balance = 0\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   balance = 0\n    for operation in operations:\n        balance += operation\n        if balance < 0:\n            return True\n    return False\n\n"
+    },
+    {
+      "task_id": "HumanEval/82",
+      "score": 1,
+      "err": "",
+      "completion_preview": "def prime_length(string):\n    length = len(string)\n    if length < 2:\n        return False\n    for i in range(2, length):\n        if length % i == 0:\n            return False\n    return True\n"
+    },
+    {
+      "task_id": "HumanEval/6",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpyb7haxg7.py\", line 12\n    result = []\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = []\n    for group in paren_string.split():\n        max_depth = 0\n        depth = 0\n        for char in group:\n            if char == '(':\n                depth += 1\n                max_dept"
+    },
+    {
+      "task_id": "HumanEval/49",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpzdi22w5u.py\", line 16\n    if n == 0:\n              ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if n == 0:\n        return 1\n    elif n == 1:\n        return 2\n    else:\n        return (2 * modp(n - 1, p)) % p\n"
+    },
+    {
+      "task_id": "HumanEval/84",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp76d39bw_.py\", line 16\n    binary = bin(N)[2:]\n                       ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   binary = bin(N)[2:]\n    sum_digits = sum(int(digit) for digit in binary)\n    return bin(sum_digits)[2:]\n"
+    },
+    {
+      "task_id": "HumanEval/105",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpjkkdp2ni.py\", line 24\n    result = []\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = []\n    for num in arr:\n        if 1 <= num <= 9:\n            result.append(str(num))\n    result.sort()\n    result.reverse()\n    return [\"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven"
+    },
+    {
+      "task_id": "HumanEval/109",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpwn1m00qn.py\", line 50, in <module>\n    check(move_one_ball)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpwn1m00qn.py\", line 42",
+      "completion_preview": "def move_one_ball(arr):\n    if len(arr) == 0:\n        return True\n    \n    for i in range(len(arr)):\n        if arr[i] > arr[(i+1)%len(arr)]:\n            return False\n    return True\n"
+    },
+    {
+      "task_id": "HumanEval/17",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp0tmy7ga3.py\", line 17\n    beats = []\n              ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   beats = []\n    notes = music_string.split()\n    for note in notes:\n        if note == 'o':\n            beats.append(4)\n        elif note == 'o|':\n            beats.append(2)\n        elif note == '."
+    },
+    {
+      "task_id": "HumanEval/143",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpblqfjsv8.py\", line 22\n    words = sentence.split()\n                            ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   words = sentence.split()\n    result = \"\"\n    for word in words:\n        if is_prime(len(word)):\n            result += word + \" \"\n    return result.strip()\n"
+    },
+    {
+      "task_id": "HumanEval/41",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpelxpntjh.py\", line 15\n    collisions = 0\n                  ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   collisions = 0\n    for i in range(n):\n        collisions += 1\n    return collisions\n"
+    },
+    {
+      "task_id": "HumanEval/7",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpcafp7x5m.py\", line 11\n    return [s for s in strings if substring in s]\n                                                 ^\nIndentationError: unindent does not",
+      "completion_preview": "   return [s for s in strings if substring in s]\n\n"
+    },
+    {
+      "task_id": "HumanEval/141",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpgpk908a2.py\", line 16\n    import re\n             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   import re\n    \n    if re.search(r\"^[a-zA-Z][a-zA-Z0-9]{0,2}\\.(txt|exe|dll)$\", file_name):\n        return 'Yes'\n    else:\n        return 'No'\n"
+    },
+    {
+      "task_id": "HumanEval/44",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpx4cqcy2e.py\", line 14\n    result = \"\"\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = \"\"\n    while x > 0:\n        result = str(x % base) + result\n        x = x // base\n    return result\n"
+    },
+    {
+      "task_id": "HumanEval/25",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpx4dvklel.py\", line 15\n    factors = []\n                ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   factors = []\n    i = 2\n    while i * i <= n:\n        if n % i:\n            i += 1\n        else:\n            n //= i\n            factors.append(i)\n    if n > 1:\n        factors.append(n)\n    return "
+    },
+    {
+      "task_id": "HumanEval/63",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp3kxr3keq.py\", line 17\n    if n < 0:\n             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n    elif n == 0:\n        return 0\n    elif n == 1:\n        return 0\n    elif n == 2:\n        return 1\n    else:\n        a, b, "
+    },
+    {
+      "task_id": "HumanEval/135",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmps2zuywh5.py\", line 12\n    for i in range(1, len(arr)):\n                                ^\nIndentationError: unindent does not match any outer indentation level",
+      "completion_preview": "   for i in range(1, len(arr)):\n        if arr[i] < arr[i-1]:\n            return i\n    return -1\n"
+    },
+    {
+      "task_id": "HumanEval/126",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmph60uy43j.py\", line 18\n    if len(lst) == 1:\n                     ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if len(lst) == 1:\n        return True\n    else:\n        for i in range(len(lst) - 1):\n            if lst[i] > lst[i + 1]:\n                return False\n            elif lst[i] == lst[i + 1]:\n       "
+    },
+    {
+      "task_id": "HumanEval/73",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp5y03x337.py\", line 13\n    n = len(arr)\n                ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   n = len(arr)\n    changes = 0\n    for i in range(n // 2):\n        if arr[i] != arr[n - i - 1]:\n            changes += 1\n    return changes\n"
+    },
+    {
+      "task_id": "HumanEval/101",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpcnqeo76b.py\", line 11\n    return s.split(\",\")\n                       ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   return s.split(\",\")\n"
+    },
+    {
+      "task_id": "HumanEval/156",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmplv0mlbw3.py\", line 13\n    roman_numerals = {\n                      ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   roman_numerals = {\n        1000: 'm',\n        900: 'cm',\n        500: 'd',\n        400: 'cd',\n        100: 'c',\n        90: 'xc',\n        50: 'l',\n        40: 'xl',\n        10: 'x',\n        9: 'ix'"
+    },
+    {
+      "task_id": "HumanEval/134",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp4tqceao3.py\", line 15\n    if len(txt) == 0:\n                     ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if len(txt) == 0:\n        return False\n    elif txt[-1].isalpha():\n        return True\n    else:\n        return False\n"
+    },
+    {
+      "task_id": "HumanEval/12",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpo_hciytk.py\", line 14\n    if not strings:\n                   ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if not strings:\n        return None\n    longest_string = strings[0]\n    for string in strings:\n        if len(string) > len(longest_string):\n            longest_string = string\n    return longest_s"
+    },
+    {
+      "task_id": "HumanEval/112",
+      "score": 1,
+      "err": "",
+      "completion_preview": "def reverse_delete(s,c):\n    result = \"\"\n    for i in s:\n        if i not in c:\n            result += i\n    return (result, result == result[::-1])\n"
+    },
+    {
+      "task_id": "HumanEval/18",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpubtwu1__.py\", line 12\n    count = 0\n             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   count = 0\n    for i in range(len(string)):\n        if string[i:i+len(substring)] == substring:\n            count += 1\n    return count\n"
+    },
+    {
+      "task_id": "HumanEval/24",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpi4o1q983.py\", line 8\n    for i in range(n-1, 0, -1):\n                               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   for i in range(n-1, 0, -1):\n        if n % i == 0:\n            return i\n"
+    },
+    {
+      "task_id": "HumanEval/29",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpnkxeb3ew.py\", line 11\n    return [s for s in strings if s.startswith(prefix)]\n                                                       ^\nIndentationError: unind",
+      "completion_preview": "   return [s for s in strings if s.startswith(prefix)]\n\n"
+    },
+    {
+      "task_id": "HumanEval/36",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpvn_j7sli.py\", line 12\n    count = 0\n             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   count = 0\n    for i in range(n):\n        if i % 11 == 0 or i % 13 == 0:\n            count += str(i).count('7')\n    return count\n"
+    },
+    {
+      "task_id": "HumanEval/48",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpwkqnr_nr.py\", line 15\n    text = text.lower()\n                       ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   text = text.lower()\n    return text == text[::-1]\n"
+    },
+    {
+      "task_id": "HumanEval/27",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmptsv687gf.py\", line 8\n    result = \"\"\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = \"\"\n    for char in string:\n        if char.isupper():\n            result += char.lower()\n        elif char.islower():\n            result += char.upper()\n        else:\n            result +="
+    },
+    {
+      "task_id": "HumanEval/102",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpxovusq7v.py\", line 11\n    if x % 2 == 0:\n                  ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if x % 2 == 0:\n        return x\n    elif y % 2 == 0:\n        return y\n    else:\n        return -1\n"
+    },
+    {
+      "task_id": "HumanEval/121",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp2nx8l8kf.py\", line 11\n    sum = 0\n           ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   sum = 0\n    for i in range(len(lst)):\n        if i % 2 == 0 and lst[i] % 2 != 0:\n            sum += lst[i]\n    return sum\n"
+    },
+    {
+      "task_id": "HumanEval/19",
+      "score": 1,
+      "err": "",
+      "completion_preview": "   # Create a dictionary to map words to numbers\n    num_dict = {'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9}\n    # Split the input str"
+    },
+    {
+      "task_id": "HumanEval/16",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpxlm_hdb1.py\", line 10\n    distinct_chars = set(string.lower())\n                                        ^\nIndentationError: unindent does not match any outer i",
+      "completion_preview": "   distinct_chars = set(string.lower())\n    return len(distinct_chars)\n\n"
+    },
+    {
+      "task_id": "HumanEval/118",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpvfdmiigl.py\", line 17\n    vowels = \"aeiouAEIOU\"\n                         ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   vowels = \"aeiouAEIOU\"\n    consonants = \"bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ\"\n    \n    for i in range(len(word) - 2, 0, -1):\n        if word[i] in consonants and word[i+1] in consonants and w"
+    },
+    {
+      "task_id": "HumanEval/61",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp7t1dzjh3.py\", line 16\n    stack = []\n              ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   stack = []\n    for bracket in brackets:\n        if bracket == \"(\":\n            stack.append(bracket)\n        elif bracket == \")\":\n            if not stack:\n                return False\n            "
+    },
+    {
+      "task_id": "HumanEval/130",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp562ddgqz.py\", line 19\n    if n == 0:\n              ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if n == 0:\n        return [1]\n    elif n == 1:\n        return [1, 3]\n    elif n == 2:\n        return [1, 3, 2]\n    else:\n        result = [1, 3, 2]\n        for i in range(3, n + 1):\n            if "
+    },
+    {
+      "task_id": "HumanEval/26",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpc9aw2vlt.py\", line 10\n    seen = set()\n                ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   seen = set()\n    result = []\n    for num in numbers:\n        if num not in seen:\n            seen.add(num)\n            result.append(num)\n    return result\n\n"
+    },
+    {
+      "task_id": "HumanEval/106",
+      "score": 1,
+      "err": "",
+      "completion_preview": "def f(n):\n    result = []\n    for i in range(1, n+1):\n        if i % 2 == 0:\n            result.append(1)\n            for j in range(2, i+1):\n                result[-1] *= j\n        else:\n            "
+    },
+    {
+      "task_id": "HumanEval/148",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp31jsk8gb.py\", line 18\n    planets = [\"Mercury\", \"Venus\", \"Earth\", \"Mars\", \"Jupiter\", \"Saturn\", \"Uranus\", \"Neptune\"]\n                                          ",
+      "completion_preview": "   planets = [\"Mercury\", \"Venus\", \"Earth\", \"Mars\", \"Jupiter\", \"Saturn\", \"Uranus\", \"Neptune\"]\n    planet1_index = planets.index(planet1)\n    planet2_index = planets.index(planet2)\n    if planet1_index "
+    },
+    {
+      "task_id": "HumanEval/100",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp4fz906fj.py\", line 16\n    pile = []\n             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   pile = []\n    for i in range(n):\n        if n % 2 == 0:\n            pile.append(n + 2 * i)\n        else:\n            pile.append(n + 2 * i + 1)\n    return pile\n"
+    },
+    {
+      "task_id": "HumanEval/92",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpp7_cq13v.py\", line 45, in <module>\n    check(any_int)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpp7_cq13v.py\", line 32, in c",
+      "completion_preview": "def any_int(x, y, z):\n    if x + y == z or x + z == y or y + z == x:\n        return True\n    else:\n        return False\n"
+    },
+    {
+      "task_id": "HumanEval/57",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmprkxxiqau.py\", line 12\n    if len(l) < 2:\n                  ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if len(l) < 2:\n        return True\n    increasing = all(l[i] < l[i + 1] for i in range(len(l) - 1))\n    decreasing = all(l[i] > l[i + 1] for i in range(len(l) - 1))\n    return increasing or decreas"
+    },
+    {
+      "task_id": "HumanEval/146",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpah6tttaj.py\", line 34, in <module>\n    check(specialFilter)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpah6tttaj.py\", line 23",
+      "completion_preview": "def specialFilter(nums):\n    count = 0\n    for num in nums:\n        if num > 10 and (num % 10) % 2 != 0 and (num // 10) % 2 != 0:\n            count += 1\n    return count\n"
+    },
+    {
+      "task_id": "HumanEval/67",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpums_cbdy.py\", line 15\n    apples = 0\n              ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   apples = 0\n    oranges = 0\n    for word in s.split():\n        if word == \"apples\":\n            apples = int(s.split()[s.split().index(word)-1])\n        elif word == \"oranges\":\n            oranges ="
+    },
+    {
+      "task_id": "HumanEval/40",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpaa405xl7.py\", line 20\n    for i in range(len(l)):\n                           ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   for i in range(len(l)):\n        for j in range(i+1, len(l)):\n            for k in range(j+1, len(l)):\n                if l[i] + l[j] + l[k] == 0:\n                    return True\n    return False\n"
+    },
+    {
+      "task_id": "HumanEval/42",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpxhg8xgpa.py\", line 10\n    return [x + 1 for x in l]\n                             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   return [x + 1 for x in l]\n"
+    },
+    {
+      "task_id": "HumanEval/144",
+      "score": 1,
+      "err": "",
+      "completion_preview": "def simplify(x, n):\n    x_num, x_den = map(int, x.split('/'))\n    n_num, n_den = map(int, n.split('/'))\n    return (x_num * n_num) % (x_den * n_den) == 0\n"
+    },
+    {
+      "task_id": "HumanEval/95",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpnccng1xu.py\", line 14\n    if not dict:\n                ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if not dict:\n        return False\n    \n    first_key = next(iter(dict))\n    \n    if first_key.islower():\n        for key in dict:\n            if not key.islower():\n                return False\n    "
+    },
+    {
+      "task_id": "HumanEval/64",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmppha5x6tt.py\", line 18\n    vowels = \"aeiou\"\n                    ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   vowels = \"aeiou\"\n    count = 0\n    if s[-1] == 'y':\n        count += 1\n    for char in s:\n        if char in vowels:\n            count += 1\n    return count\n"
+    },
+    {
+      "task_id": "HumanEval/65",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpkpzdn3gc.py\", line 11\n    digits = [int(d) for d in str(x)]\n                                     ^\nIndentationError: unindent does not match any outer indenta",
+      "completion_preview": "   digits = [int(d) for d in str(x)]\n    shift %= len(digits)\n    if shift > 0:\n        digits = digits[-shift:] + digits[:-shift]\n    else:\n        digits = digits[::-1]\n    return ''.join(str(d) for"
+    },
+    {
+      "task_id": "HumanEval/4",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpu35p3weg.py\", line 13\n    mean = sum(numbers) / len(numbers)\n                                      ^\nIndentationError: unindent does not match any outer inden",
+      "completion_preview": "   mean = sum(numbers) / len(numbers)\n    return sum(abs(x - mean) for x in numbers) / len(numbers)\n\n"
+    },
+    {
+      "task_id": "HumanEval/138",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpp400sl4j.py\", line 32, in <module>\n    check(is_equal_to_sum_even)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpp400sl4j.py\", ",
+      "completion_preview": "def is_equal_to_sum_even(n):\n    if n < 8:\n        return False\n    for i in range(2, n//4 + 1):\n        for j in range(i, n//3 + 1):\n            for k in range(j, n//2 + 1):\n                l = n - i"
+    },
+    {
+      "task_id": "HumanEval/96",
+      "score": 1,
+      "err": "",
+      "completion_preview": "def count_up_to(n):\n    if n < 2:\n        return []\n    primes = [2]\n    for i in range(3, n, 2):\n        is_prime = True\n        for j in range(2, int(i**0.5)+1):\n            if i % j == 0:\n         "
+    },
+    {
+      "task_id": "HumanEval/5",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp6bvkff_1.py\", line 11\n    result = []\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = []\n    for i in range(len(numbers)):\n        result.append(numbers[i])\n        if i < len(numbers) - 1:\n            result.append(delimeter)\n    return result\n\n"
+    },
+    {
+      "task_id": "HumanEval/162",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpsd4oxqn5.py\", line 9\n    import hashlib\n                  ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   import hashlib\n    if text == '':\n        return None\n    else:\n        return hashlib.md5(text.encode()).hexdigest()\n\n"
+    },
+    {
+      "task_id": "HumanEval/1",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmplxygohlo.py\", line 12\n    result = []\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = []\n    stack = []\n    current_group = \"\"\n    for char in paren_string.replace(\" \", \"\"):\n        if char == \"(\":\n            stack.append(char)\n            current_group += char\n        eli"
+    },
+    {
+      "task_id": "HumanEval/103",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpc77xmzs6.py\", line 13\n    if n > m:\n             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if n > m:\n        return -1\n    else:\n        avg = round((n + m) / 2)\n        return bin(avg)\n"
+    },
+    {
+      "task_id": "HumanEval/51",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpq1exlvs8.py\", line 19\n    vowels = 'aeiouAEIOU'\n                         ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   vowels = 'aeiouAEIOU'\n    return ''.join([char for char in text if char not in vowels])\n"
+    },
+    {
+      "task_id": "HumanEval/69",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpjuvr_89g.py\", line 63, in <module>\n    check(search)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpjuvr_89g.py\", line 36, in ch",
+      "completion_preview": "def search(lst):\n    '''\n    You are given a non-empty list of positive integers. Return the greatest integer that is greater than \n    zero, and has a frequency greater than or equal to the value of "
+    },
+    {
+      "task_id": "HumanEval/128",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpbnlypsj_.py\", line 14\n    if not arr:\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if not arr:\n        return None\n    \n    prod_signs = 1\n    sum_magnitudes = 0\n    \n    for num in arr:\n        if num < 0:\n            prod_signs *= -1\n        elif num > 0:\n            prod_signs"
+    },
+    {
+      "task_id": "HumanEval/125",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp3ogtxobo.py\", line 12\n    if ' ' in txt:\n                  ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if ' ' in txt:\n        return txt.split()\n    elif ',' in txt:\n        return txt.split(',')\n    else:\n        return sum(1 for c in txt if c.islower() and ord(c) % 2 != 0)\n"
+    },
+    {
+      "task_id": "HumanEval/99",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpb0jrujza.py\", line 46, in <module>\n    check(closest_integer)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpb0jrujza.py\", line ",
+      "completion_preview": "   # Convert the string to a float\n    value = float(value)\n    # If the value is positive, round it down\n    if value > 0:\n        return int(value)\n    # If the value is negative, round it up\n    el"
+    },
+    {
+      "task_id": "HumanEval/23",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp2ryu_9xg.py\", line 10\n    return len(string)\n                      ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   return len(string)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    },
+    {
+      "task_id": "HumanEval/71",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpr7acjqp3.py\", line 13\n    if a + b > c and a + c > b and b + c > a:\n                                             ^\nIndentationError: unindent does not match a",
+      "completion_preview": "   if a + b > c and a + c > b and b + c > a:\n        s = (a + b + c) / 2\n        area = (s * (s - a) * (s - b) * (s - c)) ** 0.5\n        return round(area, 2)\n    else:\n        return -1\n"
+    },
+    {
+      "task_id": "HumanEval/28",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpw0h635wp.py\", line 11\n    return ''.join(strings)\n                           ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   return ''.join(strings)\n\n"
+    },
+    {
+      "task_id": "HumanEval/140",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpjxethxy5.py\", line 13\n    text = text.replace(\" \", \"_\")\n                                 ^\nIndentationError: unindent does not match any outer indentation lev",
+      "completion_preview": "   text = text.replace(\" \", \"_\")\n    text = text.replace(\"__\", \"-\")\n    return text\n"
+    },
+    {
+      "task_id": "HumanEval/132",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpg0a6hbpu.py\", line 50, in <module>\n    check(is_nested)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpg0a6hbpu.py\", line 31, in",
+      "completion_preview": "def is_nested(string):\n    stack = []\n    for char in string:\n        if char == '[':\n            stack.append(char)\n        elif char == ']':\n            if stack and stack[-1] == '[':\n              "
+    },
+    {
+      "task_id": "HumanEval/108",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpqqg5g3jr.py\", line 12\n    count = 0\n             ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   count = 0\n    for num in arr:\n        if sum(int(digit) for digit in str(abs(num))) > 0:\n            count += 1\n    return count\n"
+    },
+    {
+      "task_id": "HumanEval/56",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpnpvey3oo.py\", line 16\n    stack = []\n              ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   stack = []\n    for bracket in brackets:\n        if bracket == \"<\":\n            stack.append(bracket)\n        elif bracket == \">\" and stack:\n            stack.pop()\n        else:\n            return "
+    },
+    {
+      "task_id": "HumanEval/38",
+      "score": 1,
+      "err": "",
+      "completion_preview": "   # split string to groups. Each of length 3.\n    groups = [s[(3 * i):min((3 * i + 3), len(s))] for i in range((len(s) + 2) // 3)]\n    # cycle elements in each group. Unless group has fewer elements "
+    },
+    {
+      "task_id": "HumanEval/157",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpu_9gcls9.py\", line 12\n    if a**2 + b**2 == c**2:\n                           ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   if a**2 + b**2 == c**2:\n        return True\n    else:\n        return False\n"
+    },
+    {
+      "task_id": "HumanEval/68",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpjxbbnns9.py\", line 36\n    smallest_even = float('inf')\n                                ^\nIndentationError: unindent does not match any outer indentation level",
+      "completion_preview": "   smallest_even = float('inf')\n    smallest_even_index = -1\n    for i, node in enumerate(arr):\n        if node % 2 == 0 and node < smallest_even:\n            smallest_even = node\n            smallest"
+    },
+    {
+      "task_id": "HumanEval/52",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp_0p99_b4.py\", line 10\n    for num in l:\n                 ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   for num in l:\n        if num >= t:\n            return False\n    return True\n"
+    },
+    {
+      "task_id": "HumanEval/79",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmps3rcrxbr.py\", line 14\n    binary = \"\"\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   binary = \"\"\n    while decimal > 0:\n        binary = str(decimal % 2) + binary\n        decimal = decimal // 2\n    return \"db\" + binary + \"db\"\n"
+    },
+    {
+      "task_id": "HumanEval/89",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp5rxob9c7.py\", line 13\n    result = \"\"\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = \"\"\n    for c in s:\n        if c.isalpha():\n            if c.islower():\n                result += chr((ord(c) - ord('a') + 4) % 26 + ord('a'))\n            else:\n                result += ch"
+    },
+    {
+      "task_id": "HumanEval/15",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpvzf3em8o.py\", line 10\n    return ' '.join(str(i) for i in range(n+1))\n                                               ^\nIndentationError: unindent does not mat",
+      "completion_preview": "   return ' '.join(str(i) for i in range(n+1))\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    },
+    {
+      "task_id": "HumanEval/85",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp6vfe4hnl.py\", line 9\n    result = 0\n              ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = 0\n    for i in range(1, len(lst), 2):\n        if lst[i] % 2 == 0:\n            result += lst[i]\n    return result\n\n"
+    },
+    {
+      "task_id": "HumanEval/120",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmp2pmzynz5.py\", line 53, in <module>\n    check(maximum)\n  File \"/var/tmp/pbs.42512.jiit-master/tmp2pmzynz5.py\", line 37, in c",
+      "completion_preview": "   # Sort the array in descending order\n    arr.sort(reverse=True)\n    \n    # Return the first k elements of the sorted array\n    return arr[:k]\n"
+    },
+    {
+      "task_id": "HumanEval/75",
+      "score": 1,
+      "err": "",
+      "completion_preview": "def is_multiply_prime(a):\n    def is_prime(n):\n        if n < 2:\n            return False\n        for i in range(2, int(n**0.5) + 1):\n            if n % i == 0:\n                return False\n        re"
+    },
+    {
+      "task_id": "HumanEval/149",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpyyddf7t4.py\", line 17\n    sorted_list = []\n                    ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   sorted_list = []\n    for word in lst:\n        if len(word) % 2 == 0:\n            sorted_list.append(word)\n    sorted_list.sort(key=lambda x: (len(x), x))\n    return sorted_list\n"
+    },
+    {
+      "task_id": "HumanEval/47",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpt6sp15nc.py\", line 10\n    l.sort()\n            ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   l.sort()\n    n = len(l)\n    if n % 2 == 0:\n        return (l[n//2 - 1] + l[n//2]) / 2\n    else:\n        return l[n//2]\n\n"
+    },
+    {
+      "task_id": "HumanEval/154",
+      "score": 1,
+      "err": "",
+      "completion_preview": "def cycpattern_check(a , b):\n    for i in range(len(b)):\n        if b in a:\n            return True\n        b = b[-1] + b[:-1]\n    return False\n"
+    },
+    {
+      "task_id": "HumanEval/86",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpeq75gh_u.py\", line 15\n    result = \"\"\n               ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   result = \"\"\n    words = s.split()\n    for word in words:\n        chars = list(word)\n        chars.sort()\n        result += \"\".join(chars) + \" \"\n    return result.strip()\n"
+    },
+    {
+      "task_id": "HumanEval/90",
+      "score": 0,
+      "err": "Traceback (most recent call last):\n  File \"/var/tmp/pbs.42512.jiit-master/tmpimewv937.py\", line 37, in <module>\n    check(next_smallest)\n  File \"/var/tmp/pbs.42512.jiit-master/tmpimewv937.py\", line 27",
+      "completion_preview": "def next_smallest(lst):\n    if len(lst) < 2:\n        return None\n    else:\n        lst.sort()\n        return lst[1]\n"
+    },
+    {
+      "task_id": "HumanEval/14",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpwn0x6bg5.py\", line 9\n    prefixes = []\n                 ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   prefixes = []\n    for i in range(len(string)):\n        prefixes.append(string[:i+1])\n    return prefixes\n"
+    },
+    {
+      "task_id": "HumanEval/147",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmp1s0wmgmf.py\", line 16\n    a = [i * i - i + 1 for i in range(1, n + 1)]\n                                                ^\nIndentationError: unindent does not m",
+      "completion_preview": "   a = [i * i - i + 1 for i in range(1, n + 1)]\n    mod_0, mod_1, mod_2 = 0, 0, 0\n    for num in a:\n        mod_0 += 1 if num % 3 == 0 else 0\n        mod_1 += 1 if num % 3 == 1 else 0\n        mod_2 +="
+    },
+    {
+      "task_id": "HumanEval/114",
+      "score": 0,
+      "err": "  File \"/var/tmp/pbs.42512.jiit-master/tmpaym6n1dh.py\", line 10\n    min_sum = float('inf')\n                          ^\nIndentationError: unindent does not match any outer indentation level\n",
+      "completion_preview": "   min_sum = float('inf')\n    current_sum = 0\n    for num in nums:\n        current_sum += num\n        min_sum = min(min_sum, current_sum)\n        current_sum = max(0, current_sum)\n    return min_sum\n"
+    }
+  ],
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "6",
+    "pbs_jobid": "42512.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}
