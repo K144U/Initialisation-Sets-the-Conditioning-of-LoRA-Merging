@@ -1,0 +1,62 @@
+[
+    {
+        "name": "e11b_llama31_8b_rd_encoder_a0050",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e11b_finer_alpha/llama31_8b__rd_encoder__a0050.yaml",
+        "done": "results/phase3/eval_e11b_finer_alpha/llama31_8b__rd_encoder__a0050.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e11b_llama31_8b_rd_encoder_a0075",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e11b_finer_alpha/llama31_8b__rd_encoder__a0075.yaml",
+        "done": "results/phase3/eval_e11b_finer_alpha/llama31_8b__rd_encoder__a0075.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e11b_llama31_8b_rd_encoder_a0125",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e11b_finer_alpha/llama31_8b__rd_encoder__a0125.yaml",
+        "done": "results/phase3/eval_e11b_finer_alpha/llama31_8b__rd_encoder__a0125.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e11b_llama31_8b_rd_encoder_a0150",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e11b_finer_alpha/llama31_8b__rd_encoder__a0150.yaml",
+        "done": "results/phase3/eval_e11b_finer_alpha/llama31_8b__rd_encoder__a0150.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e11b_llama31_8b_rd_encoder_a0200",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e11b_finer_alpha/llama31_8b__rd_encoder__a0200.yaml",
+        "done": "results/phase3/eval_e11b_finer_alpha/llama31_8b__rd_encoder__a0200.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e11b_llama31_8b_fisher_avg_a0050",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e11b_finer_alpha/llama31_8b__fisher_avg__a0050.yaml",
+        "done": "results/phase3/eval_e11b_finer_alpha/llama31_8b__fisher_avg__a0050.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e11b_llama31_8b_fisher_avg_a0075",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e11b_finer_alpha/llama31_8b__fisher_avg__a0075.yaml",
+        "done": "results/phase3/eval_e11b_finer_alpha/llama31_8b__fisher_avg__a0075.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e11b_llama31_8b_fisher_avg_a0125",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e11b_finer_alpha/llama31_8b__fisher_avg__a0125.yaml",
+        "done": "results/phase3/eval_e11b_finer_alpha/llama31_8b__fisher_avg__a0125.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e11b_llama31_8b_fisher_avg_a0150",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e11b_finer_alpha/llama31_8b__fisher_avg__a0150.yaml",
+        "done": "results/phase3/eval_e11b_finer_alpha/llama31_8b__fisher_avg__a0150.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e11b_llama31_8b_fisher_avg_a0200",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e11b_finer_alpha/llama31_8b__fisher_avg__a0200.yaml",
+        "done": "results/phase3/eval_e11b_finer_alpha/llama31_8b__fisher_avg__a0200.json",
+        "min_free_gb": 25.0
+    }
+]
