@@ -17,6 +17,7 @@ fires GO).
 Run every cron tick:
     python code/phase3/scripts/gpu_opportunity.py \
         --pinned 2,4,6 --threshold-gb 45 --stable-ticks 4 \
+        --excluded-gpus 0,1 \
         --state-file logs/gpu_opportunity_state.json \
         --output-file _ORCH_GPUS_DYN
 
@@ -67,9 +68,13 @@ def main() -> int:
                    help="Where to write the comma-separated final set.")
     p.add_argument("--max-extras", type=int, default=5,
                    help="Cap on how many non-pinned GPUs to promote.")
+    p.add_argument("--excluded-gpus", default="",
+                   help="Comma-separated GPUs we have no access to; never "
+                        "promoted regardless of free VRAM.")
     args = p.parse_args()
 
     pinned = sorted({int(x) for x in args.pinned.split(",") if x})
+    excluded = {int(x) for x in args.excluded_gpus.split(",") if x}
 
     state_path = PROJECT_ROOT / args.state_file
     state_path.parent.mkdir(parents=True, exist_ok=True)
@@ -89,6 +94,10 @@ def main() -> int:
     summary_parts: list[str] = []
     for g in ALL_GPUS:
         if g in pinned:
+            continue
+        if g in excluded:
+            state["counters"][str(g)] = 0
+            summary_parts.append(f"gpu{g}:excl")
             continue
         free_gb = free.get(g, 0.0)
         if free_gb >= args.threshold_gb:
