@@ -1,0 +1,50 @@
+[
+    {
+        "name": "e3b_llama31_8b_rd_ridge_gsm8k",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3b_gsm8k_rdridge/llama31_8b__rd_ridge__gsm8k_em.yaml",
+        "done": "results/phase3/eval_e3b_gsm8k_rdridge/llama31_8b__rd_ridge__gsm8k_em.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e3b_mistral_7b_rd_ridge_gsm8k",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3b_gsm8k_rdridge/mistral_7b__rd_ridge__gsm8k_em.yaml",
+        "done": "results/phase3/eval_e3b_gsm8k_rdridge/mistral_7b__rd_ridge__gsm8k_em.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e3b_qwen25_7b_rd_ridge_gsm8k",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3b_gsm8k_rdridge/qwen25_7b__rd_ridge__gsm8k_em.yaml",
+        "done": "results/phase3/eval_e3b_gsm8k_rdridge/qwen25_7b__rd_ridge__gsm8k_em.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "e3b_yi15_9b_rd_ridge_gsm8k",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_e3b_gsm8k_rdridge/yi15_9b__rd_ridge__gsm8k_em.yaml",
+        "done": "results/phase3/eval_e3b_gsm8k_rdridge/yi15_9b__rd_ridge__gsm8k_em.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4b_llama31_8b_rd_ridge_humaneval",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4b_humaneval_rdridge/llama31_8b__rd_ridge__humaneval.yaml",
+        "done": "results/phase3/eval_b4b_humaneval_rdridge/llama31_8b__rd_ridge__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4b_mistral_7b_rd_ridge_humaneval",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4b_humaneval_rdridge/mistral_7b__rd_ridge__humaneval.yaml",
+        "done": "results/phase3/eval_b4b_humaneval_rdridge/mistral_7b__rd_ridge__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4b_qwen25_7b_rd_ridge_humaneval",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4b_humaneval_rdridge/qwen25_7b__rd_ridge__humaneval.yaml",
+        "done": "results/phase3/eval_b4b_humaneval_rdridge/qwen25_7b__rd_ridge__humaneval.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "b4b_yi15_9b_rd_ridge_humaneval",
+        "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_b4b_humaneval_rdridge/yi15_9b__rd_ridge__humaneval.yaml",
+        "done": "results/phase3/eval_b4b_humaneval_rdridge/yi15_9b__rd_ridge__humaneval.json",
+        "min_free_gb": 25.0
+    }
+]

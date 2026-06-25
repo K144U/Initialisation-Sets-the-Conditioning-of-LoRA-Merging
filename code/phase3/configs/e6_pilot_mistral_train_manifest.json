@@ -1,0 +1,20 @@
+[
+    {
+        "name": "e6p_mistral_codealpaca",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e6_pilot/mistral_7b_codealpaca.yaml",
+        "done": "results/phase3/lora_train/mistral_7b_e6pilot_codealpaca.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "e6p_mistral_dolly",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e6_pilot/mistral_7b_dolly.yaml",
+        "done": "results/phase3/lora_train/mistral_7b_e6pilot_dolly.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "e6p_mistral_xsum",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_e6_pilot/mistral_7b_xsum.yaml",
+        "done": "results/phase3/lora_train/mistral_7b_e6pilot_xsum.json",
+        "min_free_gb": 40.0
+    }
+]
