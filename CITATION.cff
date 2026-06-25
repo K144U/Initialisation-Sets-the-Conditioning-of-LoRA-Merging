@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+title: "A Rate-Distortion Function for Model Merging"
+message: "If you use this code or refer to the paper, please cite the
+  paper using the metadata below."
+type: software
+authors:
+  - family-names: "Anonymous"
+    given-names: "Anonymous"
+date-released: "2027-01-01"
+preferred-citation:
+  type: conference-paper
+  title: "A Rate-Distortion Function for Model Merging"
+  authors:
+    - family-names: "Anonymous"
+      given-names: "Anonymous"
+  conference:
+    name: "International Conference on Learning Representations"
+    abbreviation: "ICLR"
+  year: 2027

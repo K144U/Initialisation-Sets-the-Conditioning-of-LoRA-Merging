@@ -1,0 +1,21 @@
+# Core training + merge stack
+torch>=2.6,<3.0
+unsloth>=2026.5
+transformers>=5.5
+peft>=0.20
+datasets>=4.0
+accelerate>=1.5
+bitsandbytes>=0.45
+sentencepiece>=0.2
+
+# Evaluation + analysis
+numpy>=1.26,<3.0
+pyyaml>=6.0
+scipy>=1.13
+matplotlib>=3.9
+
+# Code-quality + reproducibility helpers
+tqdm>=4.66
+
+# Subprocess-sandboxed HumanEval eval
+# (no extra deps; uses python subprocess + signal)
