@@ -1,0 +1,110 @@
+% DRAFT: paper §6.3 sidebar — T2 floor-estimation recipe.
+% v1 2026-06-23 (evening). Half-page operational recipe for estimating
+% the floor quantities (B^2, H_t, d_eff) from trained adapter artifacts.
+% Belongs as a boxed sidebar within §6.3 (the E5 floor-positive-regime
+% null result) so practitioners can actually compute the floor on their
+% own merged systems and decide whether their regime is algorithmic or
+% information-theoretic.
+
+\subsection*{Sidebar — Estimating the floor on trained adapters}
+\label{subsec:floor-recipe}
+
+The lower bound of \S\ref{sec:lower_bound} reads
+$\Phi^\star \geq B^2 / (4 \cdot d_{\mathrm{eff}})$, where $B$ is the
+quantization radius per coordinate and $d_{\mathrm{eff}}$ is the
+effective shared dimensionality of the $T$ task projections. To make
+the bound auditable on a deployed merge, both quantities must be
+estimable from trained-adapter artifacts. The following recipe is what
+we used in \S\ref{subsec:exp-e5-null} and what practitioners can
+re-run on their own checkpoints.
+
+\paragraph{Inputs.} For each task $t \in \{1, \dots, T\}$: a trained
+LoRA adapter $\Delta_t = \alpha_t / r_t \cdot B_t A_t \in
+\mathbb{R}^{d_{\mathrm{out}} \times d_{\mathrm{in}}}$ at every
+attention projection (we use $q, k, v, o$). The base model and
+tokenizer are not required for the floor estimate, only the adapter
+artifacts themselves.
+
+\paragraph{Step 1 --- Per-task projector $V_t$.}
+Stack the adapter's column vectors across layers and projections into
+a single matrix $M_t \in \mathbb{R}^{d \times r_t}$ where $d$ is the
+total dimensionality ($= n_{\mathrm{layers}} \times 4 \times
+d_{\mathrm{in}}$ for our standard four-projection setup) and $r_t$ is
+the LoRA rank. Compute the rank-$r_t$ orthonormal projector via thin
+QR: $V_t = \mathrm{qr}(M_t).Q$. This is the column-space basis the
+encoder operates in. Memory: one $d \times r$ float32 matrix per task,
+which for $d \approx 10^5$ and $r = 16$ is $\sim 6$ MB per task.
+
+\paragraph{Step 2 --- Stacked projector and SVD.}
+Concatenate $\mathbf{V} = [V_1, V_2, \dots, V_T] \in
+\mathbb{R}^{d \times Tr}$ and compute its singular values
+$\{\sigma_i\}$. The \emph{hard} effective dimension is the count of
+non-trivial singular values:
+\begin{equation*}
+  d_{\mathrm{eff}}^{\mathrm{hard}}
+  = \big| \{i : \sigma_i > \varepsilon \cdot \sigma_1\} \big|,
+  \qquad \varepsilon = 10^{-3}.
+\end{equation*}
+The \emph{soft} effective dimension uses the participation-ratio
+estimator $d_{\mathrm{eff}}^{\mathrm{soft}} = (\sum_i \sigma_i^2)^2 /
+\sum_i \sigma_i^4$, which is differentiable in $\sigma$ and more
+robust to a long tail near $\varepsilon$. We report both in
+\S\ref{subsec:exp-e5-null}; the gap between them is informative
+about how much overlap is "approximate" vs.\ "structural."
+
+\paragraph{Step 3 --- Per-coordinate radius $B$.}
+$B$ is the per-coordinate quantization span. For TVQ at $b$ bits with
+$\min$/$\max$ buckets, $B = \max_{i, t} |\Delta_{t,i}|$ at the chosen
+quantile (we use the $99.9^{\mathrm{th}}$ percentile of all
+$|\Delta_{t,i}|$ across tasks to ignore long-tail outliers that would
+otherwise inflate the floor). For continuous methods (TA, TIES, DARE),
+take $B$ as the same per-coordinate quantile of $|\Delta_t|$ summed
+across tasks --- this corresponds to the worst-case perturbation a
+single coordinate sees from the merge.
+
+\paragraph{Step 4 --- Floor and the algorithmic gap.}
+\begin{equation*}
+  \Phi^\star_{\mathrm{lower}}
+  = \frac{B^2}{4 \cdot d_{\mathrm{eff}}}.
+\end{equation*}
+Report alongside the measured worst-task NLL excess $\Phi^\star_{\mathrm{meas}}$
+of the merged model. The ratio $\Phi^\star_{\mathrm{meas}} /
+\Phi^\star_{\mathrm{lower}}$ is the algorithmic gap: a value near $1$
+means the encoder is information-theoretically tight, a value $\gg 1$
+means the regime is algorithmic and rd-encoder ridge or a similar
+better encoder is the right place to look (\S\ref{subsec:exp-rd-encoder}).
+
+\paragraph{Assumptions and caveats.}
+\begin{enumerate}
+\item The recipe assumes the LoRA adapters share a common base model
+  (the $V_t$ projections are comparable). If adapter cohorts come from
+  different base architectures, the stacked SVD is meaningless.
+\item $d_{\mathrm{eff}}^{\mathrm{soft}}$ is sensitive to layer-norm
+  scaling; we normalize each layer's $\Delta_t$ to unit Frobenius norm
+  before stacking when the dataset's layer-norm scale varies (e.g.,
+  Llama-3 family). The hard variant is robust to this.
+\item Per-coordinate $B$ at the $99.9^{\mathrm{th}}$ percentile is a
+  pragmatic choice. The strict max yields a tighter formal bound but
+  is dominated by 1--2 extreme coordinates in our measurements; the
+  practical floor on the per-task NLL is closer to the $99.9$-quantile
+  version. We report both in
+  Table~\ref{tab:e5-null}.
+\item The recipe is for the diagnostic floor only. It does \emph{not}
+  predict the merged model's downstream accuracy --- that requires
+  the rd-encoder construction of \S\ref{subsec:exp-rd-encoder} or an
+  empirical merge-and-eval.
+\end{enumerate}
+
+\paragraph{What this gives the practitioner.}
+A single pass over the trained adapter directories ($\lesssim 1$ CPU
+minute per task at $r = 16$) produces $(d_{\mathrm{eff}}, B,
+\Phi^\star_{\mathrm{lower}})$. Comparing $\Phi^\star_{\mathrm{lower}}$
+to the empirical worst-task excess after merging tells you whether
+your regime is floor-bound or algorithmically bound, which is the
+single most actionable diagnosis the lower-bound theorem provides.
+For our four-base, four-task setup ($r = 16$, $T = 4$, transformer
+attention only), all configurations are algorithmically bound; we
+have not yet observed a real-adapter cohort that approaches the
+floor (\S\ref{subsec:exp-e5-null}).
+
+%%% END DRAFT v1 — sidebar for §6.3, half-page %%%

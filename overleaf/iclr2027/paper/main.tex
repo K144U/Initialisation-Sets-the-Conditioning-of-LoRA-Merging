@@ -1,0 +1,103 @@
+% Main paper file for:
+% "A Rate-Distortion Lower Bound for Model Merging,
+%  with Matching Achievability via Hadamard Incoherence"
+%
+% Swap \documentclass to iclr2027.sty / neurips_2026.sty when the
+% style file is available. For now, plain article so it compiles
+% anywhere.
+
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{hyperref}
+
+% Heatmap-style cell shading shortcuts for the matrix tables.
+% \best = winner of the row (lowest NLL excess / highest accuracy).
+% \worst = loser of the row.
+\newcommand{\best}[1]{\cellcolor{green!18}\textbf{#1}}
+\newcommand{\worst}[1]{\cellcolor{red!10}#1}
+
+% Shorthand macros used throughout. Will be harmonised with
+% theory/theorem_v1.tex when that content is \input'd.
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\deff}{d_{\mathrm{eff}}}
+\newcommand{\tauH}{\bar{\tau}_H}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\range}{range}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{problem}{Problem}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\title{A Rate-Distortion Function for Model Merging}
+% Author block redacted for double-blind review (ICLR 2027). The
+% non-anonymous block is preserved below for the camera-ready
+% version; uncomment after acceptance.
+\author{Anonymous Authors\\
+  \texttt{anonymous@iclr2027.cc}}
+%\author{Sankalp Pathak\\
+%  \texttt{pathaksankalp04@gmail.com}
+%  \and
+%  Sanjay Garg\\
+%  \texttt{gargsv@gmail.com}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+\section{Introduction}
+\input{sections/intro}
+
+\section{Related Work}\label{sec:related_work}
+\input{sections/related_work}
+
+\section{Problem Setup and Preliminaries}\label{sec:setup}
+\input{sections/setup}
+
+\section{Lower Bound}\label{sec:lower}\label{sec:lower_bound}
+\input{sections/lower_bound}
+
+\section{Matching Upper Bound}\label{sec:achv}\label{sec:achievability}
+\input{sections/achievability}
+
+\section{Experiments}\label{sec:exp}\label{sec:experiments}
+\input{sections/experiments}
+
+% --- §6.2-§6.8: post-E4/E6/E10/E11 experimental writeups ---
+\input{sections/6_2_e1_real_adapters_draft}
+\input{sections/6_3_e5_arm2_null_draft}
+\input{sections/6_3b_T2_floor_recipe_draft}
+\input{sections/6_4_e7_b2_mechanism_draft}
+\input{sections/6_5_e3_downstream_metrics_draft}
+\input{sections/6_6_e6_T_scaling_draft}
+\input{sections/6_7_practical_recommendations_draft}
+\input{sections/6_8_e10_e11_baselines_bridge_draft}
+
+\section{Discussion and Limitations}\label{sec:discussion}\label{sec:future}
+\input{sections/discussion}
+
+\appendix
+\input{sections/appendix_td2_sign_election_threshold}
+
+\section*{Reproducibility Statement}
+\input{sections/reproducibility}
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

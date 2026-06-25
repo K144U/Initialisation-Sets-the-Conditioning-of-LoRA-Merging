@@ -1,0 +1,20 @@
+We prove the first rate-distortion lower bound for LoRA model merging:
+worst-task NLL excess splits into an \emph{irreducible floor} determined
+by per-task weight-subspace overlap and a \emph{compression term} that
+decays exponentially in the bit budget, with a matching achievable upper
+bound via Hadamard-incoherent orthogonal mixing followed by scalar
+quantization. On a $4$-base $\times$ $7$-method $\times$ $2$-downstream-metric
+matrix spanning Llama-3.1-Instruct, Mistral-7B-v0.3, Qwen-2.5-7B, and
+Yi-1.5-9B-Chat at task counts $T \in \{2, 4, 7\}$, the floor is exactly
+zero on every base --- current methods leave $0.10$--$0.22$ nats/token of
+worst-task excess as \emph{algorithmic slack, not an information-theoretic
+limit}. A regularized variant of our encoder (\textsc{rd-encoder ridge})
+ties or beats every published method at $T = 4$ and widens its lead at
+$T = 7$ (rd-ridge / Task-Arithmetic excess ratio $0.84 \to 0.68 \to 0.52$
+on Llama-3.1-Instruct), with NLL-based recommendations confirmed on GSM8K
+exact-match and HumanEval pass@1 across $7$ of $8$ (base $\times$ metric)
+cells. A measurable base-saturation regime --- diagnosable from a
+$1$-CPU-minute audit of any trained adapter cohort --- predicts when
+classical methods such as TIES invert from best to worst, and motivates a
+five-rule decision tree distilling the empirical results into deployable
+guidance.

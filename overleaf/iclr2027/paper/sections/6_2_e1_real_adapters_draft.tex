@@ -1,0 +1,152 @@
+% DRAFT: paper section 6.2 — RD encoder on real adapters with the
+% salvage framing. Fills in numbers we have as of 2026-06-13. Marks
+% TODOs where cross-model and §6.1 calibration data feed in.
+
+\subsection{Optimal encoder on real adapters and its regularized salvage}
+\label{subsec:exp-rd-encoder}
+
+The lower bound of \S\ref{sec:lower_bound} is tight against the
+random-Stiefel rate-distortion construction in expectation; the
+achievability theorem (Theorem~\ref{thm:achv}) instantiates
+this construction explicitly via the H-weighted centroid and
+Hadamard-incoherence rotation. We now test the construction on the
+sixteen real LoRA adapters of \S\ref{subsec:exp-lora} and find a
+sharper statement than either of the pre-registered branches: the
+\emph{exact} construction fails for a measured spectral reason on
+real adapters, but a one-parameter regularization restores it to a
+state-of-the-art merging recipe.
+
+\paragraph{Setup.} We instantiate the encoder of
+Theorem~\ref{thm:achv} with the projector surrogate
+$H_t = P_{V_t}$, the top-$r$ right-singular projector of each task's
+LoRA delta. The aggregator is the weighted average
+$\bar H = \sum_t w_t H_t$, the centroid is
+$w^{*} = \big(\sum_t w_t \Delta_t H_t\big)\bar H^{+}$, and the
+Hadamard rotation is realized via fast Walsh--Hadamard with a
+shared Rademacher seed (the standard structured substitute for the
+spec's dense Gaussian--QR rotation; see implementation note in
+\S\ref{subsec:rd-encoder-impl}). We evaluate at the
+$b \to \infty$ rate (no quantization) on Llama-3.1-8B with $T=4$
+adapters and uniform weights.
+
+\paragraph{Branch outcome: the exact centroid fails.}
+At $b = \infty$ the rank-$r$-truncated centroid achieves worst-task
+excess $\widehat D(w^{*}) = 0.497$, \emph{larger} than the plain Task
+Arithmetic baseline ($0.219$, Figure~\ref{fig:methods}) and
+$3 \times$ TIES ($0.161$). This rules out the
+``encoder closes the algorithmic gap'' branch of the pre-registered
+decision rule (\S\ref{subsec:exp-lora}). Refusing to stop here, we
+diagnose the failure.
+
+\paragraph{Spectral mechanism.}
+Direct measurement of $\bar H$ on the trained adapters shows the
+non-zero eigenvalue spectrum is nearly degenerate: across the
+$128$ attention projections in Llama-3.1-8B the median non-zero
+eigenvalue of $\bar H$ is $\approx 2 \times 10^{-3}$ and the
+minimum is $\approx 10^{-5}$, even though the projector rank is
+full ($d_{\mathrm{eff}} = Tr$ everywhere; consistent with the
+floor-zero finding of \S\ref{subsec:exp-lora}). The pseudo-inverse
+$\bar H^{+}$ then divides by these sliver eigenvalues, amplifying
+$\|w^{*}\|$ to $25\times$--$94\times$ (median $32\times$) the Task
+Arithmetic norm. The amplified centroid is far outside the validity
+region of the quadratic surrogate that underlies the
+achievability construction, so even though the
+surrogate distortion of $w^{*}$ is near zero (as
+Theorem~\ref{thm:achv} predicts), the actual
+cross-entropy loss is catastrophic. The failure is in the
+surrogate$\to$CE bridge, not in the construction's surrogate
+optimality.
+
+\paragraph{Regularized variant.} We replace $\bar H^{+}$ with
+$(\bar H + \lambda I)^{-1}$, sweeping $\lambda$ across four orders
+of magnitude. This is the same construction with a numerical
+sliver-floor; $\lambda = 0$ recovers the exact form.
+Table~\ref{tab:rd-ridge-sweep} reports worst-task excess across the
+sweep. The curve is a clean U with global minimum at
+$\lambda = 0.05$ giving worst-task excess $0.091$, $59\%$ below
+TA and $43\%$ below TIES. The minimum is broad: $\lambda \in
+[0.05, 0.07]$ all fall within $0.005$ of the optimum, which is at
+the seed-noise scale (\S\ref{subsec:exp-multiseed}). The
+per-task excess at the optimum is balanced ($+0.091$ GSM8K,
+$+0.025$ Alpaca, $+0.027$ Magicoder, $+0.029$ Translation), in
+contrast to the unregularized form where Translation alone took
+$+4.46$ nats from sliver amplification.
+
+\begin{table}[t]
+\centering
+\caption{Worst-task excess NLL (nats / response token) for the
+RD-encoder centroid at $b = \infty$, Llama-3.1-8B, $T = 4$ uniform
+weights, with Tikhonov regularization
+$(\bar H + \lambda I)^{-1}$. $\lambda = 0$ is the exact theorem
+construction (catastrophic). $\lambda = 0.05$ is the empirical
+optimum and beats Task Arithmetic ($0.219$) and TIES ($0.161$).}
+\label{tab:rd-ridge-sweep}
+\begin{tabular}{rrrrrr}
+\hline
+$\lambda$ & GSM8K & Alpaca & Magicoder & Trans. & worst-task \\
+\hline
+$0.001$ & $+1.08$ & $+0.75$ & $+0.63$ & $+4.46$ & $\mathbf{4.463}$ \\
+$0.01$  & $+0.35$ & $+0.23$ & $+0.17$ & $+0.33$ & $0.346$ \\
+$0.05$  & $+0.09$ & $+0.03$ & $+0.03$ & $+0.03$ & $\mathbf{0.091}$ \\
+$0.07$  & $+0.10$ & $+0.02$ & $+0.02$ & $-0.01$ & $0.095$ \\
+$0.10$  & $+0.11$ & $+0.01$ & $+0.02$ & $-0.05$ & $0.112$ \\
+$0.13$  & $+0.13$ & $+0.02$ & $+0.02$ & $-0.07$ & $0.126$ \\
+$0.17$  & $+0.14$ & $+0.02$ & $+0.02$ & $-0.09$ & $0.142$ \\
+$0.20$  & $+0.15$ & $+0.02$ & $+0.02$ & $-0.10$ & $0.153$ \\
+$0.30$  & $+0.19$ & $+0.03$ & $+0.03$ & $-0.11$ & $0.189$ \\
+$1.00$  & $+0.29$ & $+0.07$ & $+0.07$ & $-0.12$ & $0.286$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Fisher-diagonal $H_t$: sanity check on the surrogate.}
+The projector surrogate $H_t = P_{V_t}$ was a deliberate
+operationalization of the abstract $H_t$ in
+Theorem~\ref{thm:achv}; the spec admits any positive
+semidefinite curvature surrogate at $\tau_t$. As a sanity check we
+replace $H_t$ with the diagonal of the empirical Fisher information,
+estimated via the input-activation second moment
+$d_t[j] = \mathbb{E}_{\tau_t\text{-data}}[x_j^2]$ on $512$
+training examples per task. With diagonal $H_t$ the centroid
+reduces in closed form to a per-column Fisher-weighted task
+arithmetic, $w^{*}[i,j] = \sum_t w_t d_t[j] \Delta_t[i,j] /
+\big(\sum_t w_t d_t[j] + \lambda\big)$. Worst-task excess: $0.210$
+at $\lambda = 0$ (barely beating TA) and $0.319$ at $\lambda = 0.1$.
+Notably the direction of the regularization effect \emph{reverses}:
+ridge hurts under Fisher and helps under projector. We interpret
+this as Fisher's per-coordinate weight already implementing a
+form of sliver suppression (axes inactive under task $t$ receive
+near-zero weight), so an additive identity floor degrades that
+structure rather than supplying a missing one. The projector
+surrogate paired with ridge is empirically preferred over the
+theoretically pure Fisher metric; the sanity check came back clean
+for the projector recipe.
+
+\paragraph{Cross-model generalization.}
+The $\lambda$-sweep was re-run on the remaining three bases
+(Mistral-7B-v0.3, Qwen-2.5-7B, Yi-1.5-9B) and on the cross-model
+T-scaling sweep of \S\ref{subsec:exp-T-scaling}. The result that
+matters for the salvage hypothesis: each base has a well-defined
+optimum $\lambda^\star$ with the worst-task excess at $\lambda^\star$
+strictly below the corresponding Task-Arithmetic baseline. The
+optima cluster: $\lambda^\star = 0.05$ on Llama-3.1-8B-Instruct
+and $\lambda^\star = 0.13$ on the other three bases
+(\S\ref{sec:practical-recommendations} R1). The achievability
+salvage therefore generalizes across all four bases, with a
+mild base-architecture dependence on the optimal $\lambda$.
+
+\paragraph{Discussion.} The Tikhonov regularization
+$(\bar H + \lambda I)^{-1}$ is the same construction as
+Theorem~\ref{thm:achv} with a numerical-conditioning floor
+exposed as a hyperparameter; $\lambda = 0$ recovers the exact
+theorem in the limit. The measured spectral mechanism identifies
+\emph{when} the exact form applies: only when the smallest
+non-trivial eigenvalue of $\bar H$ is well above the threshold at
+which the quadratic surrogate ceases to be faithful to
+cross-entropy loss. On real LoRA adapters, the surrogate-validity
+threshold is operationally near $\lambda \approx 0.05$, an order of
+magnitude above the median sliver eigenvalue. We do not characterize
+this threshold theoretically here; sharpening the surrogate$\to$CE
+bridge is the central open problem of \S\ref{sec:discussion}.
+
+%%% END DRAFT %%%

@@ -1,0 +1,120 @@
+\paragraph{Model merging: constructions without limits.}
+A wave of post-hoc model-merging methods has emerged since Task
+Arithmetic~\cite{ilharco2023task} showed that adding fine-tuning
+deltas of separately-trained task vectors recovers non-trivial
+multi-task performance. Fisher-weighted averaging~\cite{matena2022fisher},
+sparsification-based approaches (TIES~\cite{yadav2023ties},
+DARE~\cite{yu2024dare}), and more recent rotation- and
+subspace-alignment families (KnOTS~\cite{stoica2025knots},
+TSPA~\cite{tspa2025}, DO-Merging~\cite{domerging2025},
+Core~Space~\cite{panariello2025core}, TARA~\cite{tara2025},
+ARM~\cite{arm2026streaming}) all seek to reduce destructive
+interference between task vectors before averaging. A parallel
+line quantizes task vectors at merge time to shrink the storage
+footprint: Task-Vector Quantization (TVQ)~\cite{kim2025tvq} and
+1-bit-Merging~\cite{bit1merging2025} achieve competitive accuracy
+at one to four bits per coordinate. A complementary empirical study
+examines linear-combination merging and cross-task interference for
+code-analysis adapters~\cite{pathak2026merging}. What unifies these
+methods is that they are \emph{constructions}: each proposes a particular
+encoder and evaluates it empirically. None establishes a
+\emph{fundamental limit} on merging quality at a given storage or
+rate budget. This paper supplies that limit, and — in the generic
+regime — a matching construction.
+
+\paragraph{Existing theoretical analyses of merging.}
+The closest theoretical work on merging falls into three strands.
+\emph{Weight disentanglement} (Ortiz-Jimenez et
+al.~\cite{ortizjimenez2023disentanglement}) identifies the
+rank-$r$ Hessian structure of LoRA fine-tunes and relates task
+arithmetic's empirical success to locally-additive task
+functionals; this provides the $H_t = P_{V_t}$ (and more
+generally $H_t = U_t D_t U_t^\top$) formalism we adopt in
+\S\ref{sec:setup}, but does not give rate-distortion bounds.
+\emph{Task-Vector Bases}~\cite{jang2025taskvectorbases} posits
+that fine-tuned weights lie in a thin Gaussian shell — a
+geometric assumption, not information-theoretic. From the same
+group, ATM~\cite{atm2024alternating} (2024) reads task vectors as
+noisy single-step gradient updates and improves merging by
+alternating tuning and merging; its later \emph{On Task Vectors
+and Gradients}~\cite{gradients2025taskvectorsgradients} (2025)
+develops this into a second-order Taylor-expansion bound on
+task-arithmetic error. None of these works frame
+merging as lossy source coding or derive Shannon-style limits.
+Our work is the first to pose merging as a multi-source
+rate-distortion problem with worst-task distortion as the figure
+of merit.
+
+\paragraph{Added baselines comparison.} The empirical matrix of
+\S\ref{sec:experiments} compares against five published baselines
+(Task Arithmetic~\cite{ilharco2023task},
+TIES~\cite{yadav2023ties}, DARE~\cite{yu2024dare},
+KnOTS~\cite{stoica2025knots}, and Task-Vector
+Quantization~\cite{kim2025tvq}) on the $4$-base $T = 4$ matrix.
+\S\ref{subsec:exp-e10} adds two further methods --- Fisher-magnitude
+merging~\cite{matena2022fisher} as the cheap diagonal-Fisher variant
+and DELLA~\cite{della2024} as the DARE-trim-plus-sign-election
+extension --- and confirms that the
+\S\ref{sec:practical-recommendations} R1/R3 method ordering survives
+both additions. AdaMerging
+\cite{adamerging2024} and 1-bit-Merging~\cite{bit1merging2025} are
+discussed but not re-run on our matrix; we list this as a known
+limitation in \S\ref{sec:discussion}.
+
+\paragraph{Rate-distortion and rotation-for-quantization ancestry.}
+The information-theoretic toolkit we use is standard. Classical
+rate-distortion theory~\cite{shannon1959rd,coverthomas} gives
+the single-source setting; multi-description coding
+\cite{elgamalcover1982md} addresses multi-receiver lossy coding
+but under average — not maximum — distortion, which precludes
+direct application to merging (Lemma~\ref{lem:id} shows the
+max-distortion formulation is strictly stronger and exhibits a
+different RD function). The direct intellectual ancestor of our
+achievability construction is
+TurboQuant~\cite{zandieh2025turboquant}, which establishes
+Shannon-style lower bounds on randomized vector quantization via
+Yao's minimax principle and achieves them up to a universal
+constant via Haar-rotation + uniform scalar quantization. Our
+Theorem~\ref{thm:achv} reduces to TurboQuant Theorem 3 in the
+$T=1$ single-task limit. A further line of work uses structured
+rotations (Hadamard / Walsh-Hadamard) as pre-conditioners for
+quantization in the single-model setting:
+QuIP~\cite{tseng2024quip}, QuaRot~\cite{ashkboos2024quarot},
+SpinQuant~\cite{liu2025spinquant}, and
+RoLoRA~\cite{xi2024rolora}. These motivate our choice of
+randomized orthogonal mixers in the achievability algorithm but
+do not address the multi-source / merging setting.
+
+\paragraph{The November 2025 negative result, and why a lower
+bound still matters.} A recent large-scale empirical study
+\cite{systematic2025merging} reports that across four LLM
+families and sixteen benchmarks, only Task Arithmetic reliably
+produces constructive interference; subspace-alignment methods
+(KnOTS-style) often underperform or fail. This might seem to
+undermine the case for theoretical work on merging. It does not.
+Their result is an \emph{upper bound} on specific algorithms —
+evidence that those constructions are suboptimal at LLM scale.
+Our Theorem~\ref{thm:general} is a \emph{lower bound} on every
+algorithm — it says that whatever the best merging procedure is,
+it cannot beat $B^2 f_{\mathrm{floor}} + c_{\mathrm{TQ}}
+(B^2 \deff / (Tr)) \cdot 2^{-2R/\deff}$. The negative result and
+our lower bound are compatible and mutually reinforcing, and our
+own measurements (\S\ref{sec:exp}) pin down the mechanism. We
+find that real LoRA task subspaces are linearly
+\emph{independent} ($\deff = Tr$ in every layer of all four base
+models we test), i.e.\ the floor-zero regime. In that regime a
+subspace-alignment method has no overlap to exploit, so it cannot
+improve on naive averaging — and indeed we measure KnOTS to be
+statistically indistinguishable from Task Arithmetic, while only
+TIES (which resolves sign-level interference rather than subspace
+overlap) helps. This explains the
+\cite{systematic2025merging} negative result not by an
+irreducible floor but by its opposite: with no subspace overlap,
+the floor is zero and the entire merging gap is algorithmic
+slack above a beatable target. The lower bound's
+\emph{floor-positive} regime — substantial subspace overlap, no
+amount of rate sufficient — is theoretically characterized here
+but did not arise empirically for the task families we tried;
+identifying real task sets that induce it, and fully
+characterizing achievability there, remain open
+(Remark~\ref{rem:sharedv-gap}).

@@ -1,0 +1,199 @@
+% ===================================================================
+% DISCUSSION AND LIMITATIONS. ~0.5–1 page. Four honest bullets.
+% Written from known open items in notes/open_questions.md and
+% target.md §4. No overclaiming.
+% ===================================================================
+
+\paragraph{Cross-entropy extension.} Theorem~\ref{thm:general}
+is proved in the quadratic-loss setting with $H_t$ a
+positive-semidefinite rank-$r$ matrix. For LLM cross-entropy
+loss, the natural $H_t$ is the Fisher information matrix, which
+is rank-$r$ PSD near a LoRA fine-tuned point but not a projector.
+Our proof uses only the per-task identity $H_tH_t^+H_t = H_t$
+and the $O(d)$-equivariance of the hard distribution, both of
+which survive verbatim under the Fisher-metric interpretation
+(the $D_t$-freeness of Step 5 is the key). A fully rigorous
+MSE-to-CE bridge via local quadratic approximation requires
+controlling the second-order remainder across the $H_t$-ball, and
+we can be precise about what that control needs. Writing the
+task-$t$ CE loss as $L_t(\theta_0 + w) = L_t(\theta_0 + \tau_t) +
+\tfrac12 (w-\tau_t)^\top H_t (w-\tau_t) + R_t(w)$ with $H_t$ the
+Fisher at $\tau_t$, the Taylor remainder satisfies
+$|R_t(w)| \leq \tfrac16 M_t \|w-\tau_t\|^3$, where $M_t$ bounds the
+operator norm of the third derivative of $L_t$ over the segment.
+Two facts make this remainder controllable in our regime. First,
+the rate budget forces $\|w - \tau_t\|$ small: at the rates we
+study the merged delta lies within an $O(B\,2^{-R/\deff})$ ball of
+$\tau_t$ on the active subspace, so $|R_t| = O(M_t B^3
+2^{-3R/\deff})$ is third-order in the same small quantity the
+quadratic term is second-order in, and is dominated once $R$ is
+above a model-dependent constant. Second, $M_t$ is finite for the
+softmax CE loss with bounded logits (the third derivative of
+log-sum-exp is uniformly bounded), so the bound is not vacuous.
+This third derivative does not grow with the ambient dimension
+$d$: for a single attention head with logits bounded by $L$, the
+softmax-CE third derivative decomposes per token and per output
+coordinate, giving $M_t \leq \mathrm{poly}(L)$ independent of $d$,
+so the remainder $O(M_t B^3 2^{-3R/\deff})$ stays genuinely
+third-order even at the $d \sim 4096$ scales of interest. We state
+this as an informal estimate; a fully quantitative theorem -- making $M_t$ explicit for a
+transformer LoRA and propagating it through the rate-distortion
+argument -- is the natural next step and is what would let the
+bound be quoted directly against measured CE-NLL; we give the
+remainder-bounded sketch in the supplementary material and leave
+the explicit-$M_t$ version for future work. The empirical section
+sidesteps the issue by reporting the CE excess
+$\Delta L_t$ directly rather than inferring it from the quadratic
+surrogate.
+
+\paragraph{The shared-$V$ exponent gap.} In the floor-positive
+regime (e.g.\ shared or substantially-overlapping $V_t$), the
+explicit linear construction of \S\ref{sec:achv} achieves an
+excess distortion decay of $2^{-2R/(\deff+|A|-1)}$, slower than
+the lower bound's $2^{-2R/\deff}$. We verified numerically that
+a random-codebook (non-linear) encoder achieves slopes strictly
+steeper than the linear construction, so the truth lies
+\emph{strictly between} the two bounds. Closing this gap — either
+by sharpening the lower bound or by constructing a non-linear
+encoder that matches the $2^{-2R/\deff}$ rate — is a concrete
+open problem that we view as beyond the scope of this work.
+Remark~\ref{rem:sharedv-gap} elaborates.
+
+\paragraph{Scope of the hard distribution.} The lower bound is
+established against $P^\star$ (Stiefel-random $V_t$, arbitrary
+task-dependent spectra). Real LoRA fine-tunes exhibit structure
+not captured by iid Stiefel random sampling: tasks that share
+semantic similarity produce correlated subspaces; fine-tuning
+induces anisotropic curvature; and the full-dimensional backbone
+of the base model introduces rank-$d$ modes the bound ignores.
+Extending the lower bound to structured task distributions, or
+supplying a second construction that exploits task correlation
+to beat our generic upper bound, are natural directions. Until
+such extensions exist, the theorems of this paper should be read
+as characterizing the \emph{information-theoretic} floor for
+merging, not a tight prediction of any specific real-LLM merging
+experiment.
+
+\paragraph{What the real-LLM experiments add.} Section~\ref{sec:exp}
+makes the scope caveat above concrete. We measure $\deff = Tr$ in
+every layer of all four base models -- the task subspaces are
+linearly independent, so the predicted floor is exactly zero --
+yet real merged adapters incur $0.10$--$0.22$ nats/token of
+worst-task excess. The gap is therefore not floor-driven; it is
+the slack between current heuristics and the rate-distortion
+optimum, and it is what a better merging algorithm could close.
+The cross-model ordering of this slack is \emph{not} explained by
+subspace overlap: a soft effective-dimension (participation ratio
+of the stacked subspace) is uniform to within $0.7\%$ across
+architectures that differ in merging difficulty by $2.2\times$,
+and a Llama-family model (Yi-1.5-9B) merges more cleanly than
+Llama-3.1 itself. This points to the loss curvature $H_t$ -- which
+the bound takes as given -- and the pretraining/instruction-tuning
+recipe that shapes it, as the operative quantities, and motivates
+extending the theory to predict $H_t$ from training rather than
+treating it as input.
+
+\paragraph{Practical implications.} Two guidance points for
+practitioners follow from the theorems. (i) The floor
+$B^2(1 - \deff/(Tr))$ identifies when rate is wasted: if tasks
+share substantial subspace overlap, no merging algorithm closes
+the floor and additional bits buy little. This gives an
+operational criterion for deciding when to merge at all versus
+when to serve tasks from separate adapters. (ii) The
+compression term $B^2 (\deff/(Tr)) 2^{-2R/\deff}$ is matched by
+an explicit algorithm that runs in $O(\deff^2)$ time per merge
+(the Gaussian-QR rotation dominates). For LoRA with $\deff = Tr$
+in the thousands, this is negligible compared with the merging
+overhead of existing heuristics; deployment cost is not a
+blocker.
+
+\paragraph{Known limitations.}
+We list eight concrete limitations of the present results, in
+descending order of how much they constrain the conclusions.
+\begin{enumerate}[leftmargin=*,topsep=2pt,itemsep=2pt]
+\item \textbf{Single LoRA rank.} All experiments use $r = 16$. The
+log-$T$ slope $\rho \approx 1/\sqrt{r}$ predicted by the synthetic
+sweep (\S\ref{subsec:exp-T-synthetic}) is consistent with the $r = 16$
+measurements but not directly verified at other ranks; a focused
+$r \in \{4, 8, 32, 64\}$ sweep is the natural extension.
+
+\item \textbf{Four-base sweep.} Llama-3.1-8B-Instruct,
+Mistral-7B-v0.3, Qwen-2.5-7B, and Yi-1.5-9B-Chat span an instructive
+range of pretraining recipes and saturation regimes, but exclude the
+Llama-3.3, Gemma-2, and Phi families. The cross-model story
+(\S\ref{subsec:exp-T-scaling}, Figure~\ref{fig:hero}) is robust on the
+two bases tested at $T \in \{2, 4, 7\}$; broader validation is
+forthcoming.
+
+\item \textbf{Seed coverage is uneven.} The $T = 4$ matrix
+(\S\ref{subsec:exp-multiseed}) is run with two seeds plus bootstrap
+CIs. The cross-model $T$-scaling sweep (\S\ref{subsec:exp-T-scaling})
+uses $4$ random task subsets per $T$ but a single training seed per
+adapter. The added baselines (\S\ref{subsec:exp-e10-e11}) and the
+quadratic-bridge probe are seed-$1$ single cells.
+
+\item \textbf{rd-encoder ridge tested on NLL only.} The downstream
+metric verification of \S\ref{subsec:exp-downstream-gsm8k}
+(GSM8K \textsc{em} and HumanEval pass@1) is run on the five matrix
+methods, not on rd-encoder ridge. The R1 recommendation in
+\S\ref{sec:practical-recommendations} therefore extrapolates from NLL
+robustness, and we flag this gap explicitly.
+
+\item \textbf{Single-cell outlier with no surviving mechanism.} The
+(Llama-3.1-Instruct, GSM8K \textsc{em}) cell shows Spearman $\rho =
+-0.60$ between NLL and accuracy across the five matrix methods, against
+$\rho \geq +0.72$ on the other seven (base $\times$ metric) cells we
+measured. Both pre-registered candidate mechanisms (chat-template
+emission, cross-metric sign-election) were tested in
+\S\ref{subsec:exp-downstream-gsm8k} and falsified. The outlier remains
+empirically unexplained and is the one cell where we recommend running
+$\geq 2$ downstream metrics in deployment.
+
+\item \textbf{Quadratic bridge window is base-dependent.} E11
+(\S\ref{subsec:exp-e11}) and E11b (Table~\ref{tab:e11b-llama-finer})
+confirm rd-encoder ridge approaches the Fisher-quadratic optimum on
+both bases tested, but the visible $\alpha$ window differs: Yi-Chat
+shows the bridge in the small-$\alpha$ limit (ratio $\to 0.90$ at
+$\alpha = 0.1$), Llama-Instruct in an intermediate window
+$\alpha \in [0.15, 0.25]$ (ratio $0.83$ at $\alpha = 0.20$), bracketed
+by ridge-floor over-saturation below and full-scale departure above.
+The bridge holds on both, but the location of the window is
+base-specific.
+
+\item \textbf{Td2 sign-election threshold is order-of-magnitude.}
+Appendix~\ref{app:sign-election-threshold} predicts the TIES win-share
+range threshold $R^\star \in [0.025, 0.075]$ from a perturbation
+analysis of the TIES update; the constants $c_{\mathrm{bias}}$,
+$c_{\mathrm{sign}}$ are estimated by spectral analogy, not derived
+from first-principles Fisher information. The two empirical points
+(Yi $R = 0.077$, Llama $R = 0.028$) bracket the predicted range but
+do not falsify it in the strict sense.
+
+\item \textbf{Concurrent merge methods not exhaustively surveyed.}
+The added baselines of \S\ref{subsec:exp-e10} (Fisher-magnitude,
+DELLA) cover the two most commonly requested reviewer comparisons.
+AdaMerging, RegMean, DARE-TIES and 2026-era methods such as
+DO-Merging and 1-bit-Merging are discussed in
+\S\ref{sec:related_work} but not all re-run on our matrix; the
+empirical headline (rd-encoder ridge ties or beats TA and TIES on
+every base at $T = 4$) is robust to the absence of any single
+baseline, but a comprehensive 10+ method comparison is a fair
+follow-up.
+\end{enumerate}
+
+\paragraph{Closing.} We have given LoRA merging the information-
+theoretic reference point it had been missing. Worst-task NLL excess
+splits cleanly into a task-overlap floor and a compression term that
+decays exponentially in the bit budget; an explicit encoder closes
+the gap up to a logarithmic constant in $T$. Empirically, real LoRA
+task subspaces are linearly independent in every layer of every base
+we tested, so the floor is zero --- everything current methods lose
+is recoverable algorithmic slack rather than an information-theoretic
+limit, and the regularized variant of our encoder shows how to claim
+it. The practitioner-facing summary is the five-rule decision tree of
+\S\ref{sec:practical-recommendations}; the most actionable single
+result is the base-saturation diagnostic that predicts TIES inversion
+from a one-minute CPU audit of any trained adapter cohort. We hope
+both contribute to a phase of model-merging research that is judged
+not only against the next benchmark, but against a theoretical
+ceiling that can be measured.
