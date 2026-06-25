@@ -45,6 +45,22 @@ Our work is the first to pose merging as a multi-source
 rate-distortion problem with worst-task distortion as the figure
 of merit.
 
+\paragraph{Added baselines comparison.} The empirical matrix of
+\S\ref{sec:experiments} compares against five published baselines
+(Task Arithmetic~\cite{ilharco2023task},
+TIES~\cite{yadav2023ties}, DARE~\cite{yu2024dare},
+KnOTS~\cite{stoica2025knots}, and Task-Vector
+Quantization~\cite{kim2025tvq}) on the $4$-base $T = 4$ matrix.
+\S\ref{subsec:exp-e10} adds two further methods --- Fisher-magnitude
+merging~\cite{matena2022fisher} as the cheap diagonal-Fisher variant
+and DELLA~\cite{della2024} as the DARE-trim-plus-sign-election
+extension --- and confirms that the
+\S\ref{sec:practical-recommendations} R1/R3 method ordering survives
+both additions. AdaMerging
+\cite{adamerging2024} and 1-bit-Merging~\cite{bit1merging2025} are
+discussed but not re-run on our matrix; we list this as a known
+limitation in \S\ref{sec:discussion}.
+
 \paragraph{Rate-distortion and rotation-for-quantization ancestry.}
 The information-theoretic toolkit we use is standard. Classical
 rate-distortion theory~\cite{shannon1959rd,coverthomas} gives
