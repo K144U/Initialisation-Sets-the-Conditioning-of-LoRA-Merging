@@ -1,0 +1,122 @@
+[
+    {
+        "name": "seed3_llama31_8b_task_arithmetic",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__task_arithmetic__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/llama31_8b__task_arithmetic__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_llama31_8b_ties",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__ties__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/llama31_8b__ties__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_llama31_8b_dare",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__dare__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/llama31_8b__dare__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_llama31_8b_knots",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__knots__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/llama31_8b__knots__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_llama31_8b_tvq_b2",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/llama31_8b__tvq_b2__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/llama31_8b__tvq_b2__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_mistral_7b_task_arithmetic",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__task_arithmetic__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/mistral_7b__task_arithmetic__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_mistral_7b_ties",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__ties__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/mistral_7b__ties__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_mistral_7b_dare",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__dare__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/mistral_7b__dare__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_mistral_7b_knots",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__knots__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/mistral_7b__knots__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_mistral_7b_tvq_b2",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/mistral_7b__tvq_b2__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/mistral_7b__tvq_b2__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_qwen25_7b_task_arithmetic",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__task_arithmetic__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/qwen25_7b__task_arithmetic__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_qwen25_7b_ties",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__ties__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/qwen25_7b__ties__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_qwen25_7b_dare",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__dare__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/qwen25_7b__dare__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_qwen25_7b_knots",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__knots__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/qwen25_7b__knots__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_qwen25_7b_tvq_b2",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/qwen25_7b__tvq_b2__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/qwen25_7b__tvq_b2__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_yi15_9b_task_arithmetic",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__task_arithmetic__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/yi15_9b__task_arithmetic__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_yi15_9b_ties",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__ties__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/yi15_9b__ties__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_yi15_9b_dare",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__dare__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/yi15_9b__dare__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_yi15_9b_knots",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__knots__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/yi15_9b__knots__seed3.json",
+        "min_free_gb": 25.0
+    },
+    {
+        "name": "seed3_yi15_9b_tvq_b2",
+        "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_matrix_seeds/yi15_9b__tvq_b2__seed3.yaml",
+        "done": "results/phase3/eval_matrix_seeds/yi15_9b__tvq_b2__seed3.json",
+        "min_free_gb": 25.0
+    }
+]

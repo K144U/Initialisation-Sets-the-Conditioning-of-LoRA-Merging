@@ -1,0 +1,98 @@
+[
+    {
+        "name": "train_seed3_llama31_8b_alpaca",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/llama31_8b_alpaca_seed3.yaml",
+        "done": "results/phase3/lora_train/llama31_8b_alpaca_v1_seed3.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "train_seed3_llama31_8b_flores",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/llama31_8b_flores_seed3.yaml",
+        "done": "results/phase3/lora_train/llama31_8b_flores_v1_seed3.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "train_seed3_llama31_8b_gsm8k",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/llama31_8b_gsm8k_seed3.yaml",
+        "done": "results/phase3/lora_train/llama31_8b_gsm8k_v1_seed3.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "train_seed3_llama31_8b_magicoder",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/llama31_8b_magicoder_seed3.yaml",
+        "done": "results/phase3/lora_train/llama31_8b_magicoder_v1_seed3.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "train_seed3_mistral_7b_alpaca",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/mistral_7b_alpaca_seed3.yaml",
+        "done": "results/phase3/lora_train/mistral_7b_alpaca_v1_seed3.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "train_seed3_mistral_7b_flores",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/mistral_7b_flores_seed3.yaml",
+        "done": "results/phase3/lora_train/mistral_7b_flores_v1_seed3.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "train_seed3_mistral_7b_gsm8k",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/mistral_7b_gsm8k_seed3.yaml",
+        "done": "results/phase3/lora_train/mistral_7b_gsm8k_v1_seed3.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "train_seed3_mistral_7b_magicoder",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/mistral_7b_magicoder_seed3.yaml",
+        "done": "results/phase3/lora_train/mistral_7b_magicoder_v1_seed3.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "train_seed3_qwen25_7b_alpaca",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/qwen25_7b_alpaca_seed3.yaml",
+        "done": "results/phase3/lora_train/qwen25_7b_alpaca_v1_seed3.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "train_seed3_qwen25_7b_flores",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/qwen25_7b_flores_seed3.yaml",
+        "done": "results/phase3/lora_train/qwen25_7b_flores_v1_seed3.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "train_seed3_qwen25_7b_gsm8k",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/qwen25_7b_gsm8k_seed3.yaml",
+        "done": "results/phase3/lora_train/qwen25_7b_gsm8k_v1_seed3.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "train_seed3_qwen25_7b_magicoder",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/qwen25_7b_magicoder_seed3.yaml",
+        "done": "results/phase3/lora_train/qwen25_7b_magicoder_v1_seed3.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "train_seed3_yi15_9b_alpaca",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/yi15_9b_alpaca_seed3.yaml",
+        "done": "results/phase3/lora_train/yi15_9b_alpaca_v1_seed3.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "train_seed3_yi15_9b_flores",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/yi15_9b_flores_seed3.yaml",
+        "done": "results/phase3/lora_train/yi15_9b_flores_v1_seed3.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "train_seed3_yi15_9b_gsm8k",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/yi15_9b_gsm8k_seed3.yaml",
+        "done": "results/phase3/lora_train/yi15_9b_gsm8k_v1_seed3.json",
+        "min_free_gb": 40.0
+    },
+    {
+        "name": "train_seed3_yi15_9b_magicoder",
+        "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_seeds/yi15_9b_magicoder_seed3.yaml",
+        "done": "results/phase3/lora_train/yi15_9b_magicoder_v1_seed3.json",
+        "min_free_gb": 40.0
+    }
+]

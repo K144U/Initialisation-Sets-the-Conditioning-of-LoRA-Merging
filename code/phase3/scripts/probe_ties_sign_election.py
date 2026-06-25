@@ -53,6 +53,15 @@ BASES = {
         "translation": "artifacts/lora/llama31_8b/flores/v1",
         "xsum": "artifacts/lora/llama31_8b/e6_pilot/xsum/v1",
     },
+    # Mistral at T=4: only the 4 v1 adapters exist; pre-registered
+    # Mistral T=7 prediction will use a separate probe after the 3
+    # pilot adapters (codealpaca, dolly, xsum) are trained on Mistral.
+    "mistral_7b_T4": {
+        "alpaca": "artifacts/lora/mistral_7b/alpaca/v1",
+        "gsm8k": "artifacts/lora/mistral_7b/gsm8k/v1",
+        "magicoder": "artifacts/lora/mistral_7b/magicoder/v1",
+        "translation": "artifacts/lora/mistral_7b/flores/v1",
+    },
 }
 
 DENSITY = 0.2  # TIES default in code/phase3/merging/ties.py
