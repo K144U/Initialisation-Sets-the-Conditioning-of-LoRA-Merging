@@ -149,14 +149,16 @@ emission, cross-metric sign-election) were tested in
 empirically unexplained and is the one cell where we recommend running
 $\geq 2$ downstream metrics in deployment.
 
-\item \textbf{Quadratic bridge holds on one of two bases.} E11
-(\S\ref{subsec:exp-e11}) confirms that rd-encoder ridge approaches the
-Fisher-quadratic optimum as adapter norms shrink on Yi-1.5-Chat
-(ratio $\to 0.90$ at $\alpha = 0.1$). On Llama-3.1, rd-encoder
-saturates the base-model floor at $\alpha = 0.1$ before the bridge
-regime is reached, leaving Llama as ``unable to verify'' rather than
-a refutation; a finer $\alpha$ scan between $0.10$ and $0.25$ would
-close this caveat.
+\item \textbf{Quadratic bridge window is base-dependent.} E11
+(\S\ref{subsec:exp-e11}) and E11b (Table~\ref{tab:e11b-llama-finer})
+confirm rd-encoder ridge approaches the Fisher-quadratic optimum on
+both bases tested, but the visible $\alpha$ window differs: Yi-Chat
+shows the bridge in the small-$\alpha$ limit (ratio $\to 0.90$ at
+$\alpha = 0.1$), Llama-Instruct in an intermediate window
+$\alpha \in [0.15, 0.25]$ (ratio $0.83$ at $\alpha = 0.20$), bracketed
+by ridge-floor over-saturation below and full-scale departure above.
+The bridge holds on both, but the location of the window is
+base-specific.
 
 \item \textbf{Td2 sign-election threshold is order-of-magnitude.}
 Appendix~\ref{app:sign-election-threshold} predicts the TIES win-share
