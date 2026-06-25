@@ -12,7 +12,14 @@
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{enumitem}
 \usepackage{graphicx}
+\usepackage[table]{xcolor}
 \usepackage{hyperref}
+
+% Heatmap-style cell shading shortcuts for the matrix tables.
+% \best = winner of the row (lowest NLL excess / highest accuracy).
+% \worst = loser of the row.
+\newcommand{\best}[1]{\cellcolor{green!18}\textbf{#1}}
+\newcommand{\worst}[1]{\cellcolor{red!10}#1}
 
 % Shorthand macros used throughout. Will be harmonised with
 % theory/theorem_v1.tex when that content is \input'd.
