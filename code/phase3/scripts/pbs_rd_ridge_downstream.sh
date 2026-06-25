@@ -26,13 +26,8 @@ export ORCH_SENTINEL=_RD_RIDGE_DOWNSTREAM_COMPLETE
 export ORCH_STATE=orchestrator_state_rd_ridge_downstream.json
 
 MANIFEST="${MANIFEST:-code/phase3/configs/rd_ridge_downstream_manifest.json}"
-if [ -f "$PROJECT_ROOT/_ORCH_GPUS_E6" ]; then
-    export GPUS=$(cat $PROJECT_ROOT/_ORCH_GPUS_E6)
-elif [ -f "$PROJECT_ROOT/_ORCH_GPUS_DYN" ]; then
-    export GPUS=$(cat $PROJECT_ROOT/_ORCH_GPUS_DYN)
-else
-    export GPUS=2,4,6
-fi
+# Pinned to GPU 6 to run in parallel with rdm_s3tr (GPUs 2,4).
+export GPUS=6
 
 echo "[$(date '+%F %T')] rdm_rrdn job=$PBS_JOBID manifest=$MANIFEST gpus=$GPUS"
 python $PROJECT_ROOT/code/phase3/scripts/orchestrator.py --manifest "$MANIFEST"
