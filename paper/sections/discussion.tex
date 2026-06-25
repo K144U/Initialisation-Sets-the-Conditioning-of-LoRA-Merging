@@ -178,3 +178,20 @@ every base at $T = 4$) is robust to the absence of any single
 baseline, but a comprehensive 10+ method comparison is a fair
 follow-up.
 \end{enumerate}
+
+\paragraph{Closing.} We have given LoRA merging the information-
+theoretic reference point it had been missing. Worst-task NLL excess
+splits cleanly into a task-overlap floor and a compression term that
+decays exponentially in the bit budget; an explicit encoder closes
+the gap up to a logarithmic constant in $T$. Empirically, real LoRA
+task subspaces are linearly independent in every layer of every base
+we tested, so the floor is zero --- everything current methods lose
+is recoverable algorithmic slack rather than an information-theoretic
+limit, and the regularized variant of our encoder shows how to claim
+it. The practitioner-facing summary is the five-rule decision tree of
+\S\ref{sec:practical-recommendations}; the most actionable single
+result is the base-saturation diagnostic that predicts TIES inversion
+from a one-minute CPU audit of any trained adapter cohort. We hope
+both contribute to a phase of model-merging research that is judged
+not only against the next benchmark, but against a theoretical
+ceiling that can be measured.
