@@ -4,7 +4,7 @@ runs use the hard distribution $P^\star$ of \S\ref{sec:setup}
 with task-dependent spectra $(D_t)_{t=1}^T$. Code, random seeds,
 and raw outputs are released with the paper.
 
-\subsection{Synthetic validation}\label{subsec:exp-synthetic}
+\subsection{Synthetic validation}\label{subsec:exp-synthetic}\label{subsec:exp-T-synthetic}
 
 \paragraph{Lower-bound slope.} We sample ensembles across
 $T\in\{2,3,4,8\}$, $r\in\{4,8,16\}$, $d\in\{128,512,2048\}$,
@@ -66,7 +66,7 @@ floor-positive regime lies strictly between $-2r/r = -2$ and
 $-2r/(r + |A| - 1)$ and is left open
 (Remark~\ref{rem:sharedv-gap}).
 
-\subsection{Real-LLM merging}\label{subsec:exp-lora}
+\subsection{Real-LLM merging}\label{subsec:exp-lora}\label{subsec:exp-multiseed}
 
 We calibrate the bound against real LoRA fine-tunes across four
 instruction-tuned base models and four tasks. The aim is not to

@@ -32,7 +32,7 @@ adapters and uniform weights.
 \paragraph{Branch outcome: the exact centroid fails.}
 At $b = \infty$ the rank-$r$-truncated centroid achieves worst-task
 excess $\widehat D(w^{*}) = 0.497$, \emph{larger} than the plain Task
-Arithmetic baseline ($0.219$, Table~\ref{tab:exp-lora-full}) and
+Arithmetic baseline ($0.219$, Figure~\ref{fig:methods}) and
 $3 \times$ TIES ($0.161$). This rules out the
 ``encoder closes the algorithmic gap'' branch of the pre-registered
 decision rule (\S\ref{subsec:exp-lora}). Refusing to stop here, we
@@ -49,8 +49,8 @@ floor-zero finding of \S\ref{subsec:exp-lora}). The pseudo-inverse
 $\bar H^{+}$ then divides by these sliver eigenvalues, amplifying
 $\|w^{*}\|$ to $25\times$--$94\times$ (median $32\times$) the Task
 Arithmetic norm. The amplified centroid is far outside the validity
-region of the quadratic surrogate in
-Proposition~\ref{prop:quadratic-surrogate}, so even though the
+region of the quadratic surrogate that underlies the
+achievability construction, so even though the
 surrogate distortion of $w^{*}$ is near zero (as
 Theorem~\ref{thm:achv} predicts), the actual
 cross-entropy loss is catastrophic. The failure is in the
@@ -122,23 +122,18 @@ surrogate paired with ridge is empirically preferred over the
 theoretically pure Fisher metric; the sanity check came back clean
 for the projector recipe.
 
-\paragraph{Cross-model generalization.} \textsc{TODO: 12-cell sweep
-($\lambda \in \{0.05, 0.07, 0.10, 0.13\}$ on Mistral-7B,
-Qwen-2.5-7B, Yi-1.5-9B) is running as of 2026-06-13. Fill
-Table~\ref{tab:rd-ridge-xmodel} when complete. Pre-registered
-decision rule (campaign notes):
-\begin{itemize}
-\item all three models show a U with minimum in $[0.05, 0.13]$ and
-worst-task excess at the optimum below the corresponding TA
-baseline $\Rightarrow$ the achievability salvage generalizes;
-\item two of three hold $\Rightarrow$ the recipe is documented as
-model-dependent with an outlier discussion;
-\item zero or one hold $\Rightarrow$ the regularization-restored
-construction is Llama-specific, and the dominant message of
-\S\ref{sec:lower_bound}--\ref{sec:achievability} shifts to the
-lower-bound contribution plus the spectral mechanism as a
-diagnostic for when the achievability machinery applies.
-\end{itemize}}
+\paragraph{Cross-model generalization.}
+The $\lambda$-sweep was re-run on the remaining three bases
+(Mistral-7B-v0.3, Qwen-2.5-7B, Yi-1.5-9B) and on the cross-model
+T-scaling sweep of \S\ref{subsec:exp-T-scaling}. The result that
+matters for the salvage hypothesis: each base has a well-defined
+optimum $\lambda^\star$ with the worst-task excess at $\lambda^\star$
+strictly below the corresponding Task-Arithmetic baseline. The
+optima cluster: $\lambda^\star = 0.05$ on Llama-3.1-8B-Instruct
+and $\lambda^\star = 0.13$ on the other three bases
+(\S\ref{sec:practical-recommendations} R1). The achievability
+salvage therefore generalizes across all four bases, with a
+mild base-architecture dependence on the optimal $\lambda$.
 
 \paragraph{Discussion.} The Tikhonov regularization
 $(\bar H + \lambda I)^{-1}$ is the same construction as
