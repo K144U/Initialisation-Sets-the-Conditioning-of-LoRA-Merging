@@ -51,7 +51,9 @@ $(\text{base}, T, \text{method})$. Yi all-cells include the Alpaca v1
 adapter (shallow on Yi-Chat; see Alpaca artifact paragraph below);
 Yi alpaca-OUT excludes Alpaca-containing subsets ($n_{\text{sub}} =
 3 / 1 / 0$ at $T = 2 / 4 / 7$). Llama has no shallow-adapter artifact
-(Llama-3.1 Alpaca headroom $0.246$ vs.\ Yi's $0.114$).}
+(Llama-3.1 Alpaca headroom $0.246$ vs.\ Yi's $0.114$). Mistral
+$n_{\text{sub}} = 4 / 4 / 1$ at $T = 2 / 4 / 7$ (random subset draws;
+the $T = 7$ cohort is the unique all-task set).}
 \label{tab:e6-worst}
 \begin{tabular}{llr|rrrrrr}
 \hline
@@ -67,6 +69,10 @@ Llama & All        & 2 & $0.068$ & $0.064$ & $0.069$ & $0.068$ & $0.064$ & $\mat
 Llama & All        & 4 & $0.153$ & $0.126$ & $0.153$ & $0.153$ & $0.113$ & $\mathbf{0.104}$ \\
 Llama & All        & 7 & $0.265$ & $0.232$ & $0.265$ & $0.265$ & $0.215$ & $\mathbf{0.138}$ \\
 \hline
+Mistral & All      & 2 & $0.027$ & $0.032$ & $0.027$ & $0.027$ & $0.055$ & $0.038$ \\
+Mistral & All      & 4 & $0.108$ & $0.095$ & $0.108$ & $0.108$ & $0.082$ & $0.088$ \\
+Mistral & All      & 7 & $0.244$ & $0.152$ & $0.244$ & $0.244$ & $0.177$ & $\mathbf{0.115}$ \\
+\hline
 \end{tabular}
 \end{table}
 
@@ -74,24 +80,30 @@ On Llama, rd-encoder ridge is the best method at every $T$, and the
 margin widens as $T$ grows: ratio rd-ridge/TA $= 0.84$ at $T = 2$,
 $0.68$ at $T = 4$, $0.52$ at $T = 7$. \S\ref{subsec:exp-rd-encoder}'s
 cross-model salvage result is not just preserved at $T = 7$, it
-strengthens. On Yi, rd-ridge wins on alpaca-OUT subsets and at
+strengthens. The same strengthening holds on Mistral, the
+pre-registered third base (ratio rd-ridge/TA $= 1.38, 0.82, 0.47$ at
+$T = 2, 4, 7$): rd-ridge loses narrowly at $T = 2$ but wins outright
+at $T = 7$ ($0.115$, vs.\ TIES $0.152$ and TA $0.244$). On Yi,
+rd-ridge wins on alpaca-OUT subsets and at
 $T = 7$ all-cells; the all-cells regression at $T = 4$ is the
 Alpaca-artifact paragraph below.
 
-\paragraph{Log-$T$ form holds on both bases, with base-dependent
-slope.}
+\paragraph{Log-$T$ form holds across all three bases, with
+base-dependent slope.}
 Table~\ref{tab:e6-slopes} fits $\text{worst-excess}(T) = a + b \log T$
 per (base, method). E4's synthetic estimate from
 \S\ref{subsec:exp-T-synthetic} gave $b \approx 1 / \sqrt{r} = 0.25$
 at $r = 16$. All measured slopes are positive (except Yi TVQ$_2$,
 which we discuss below), the functional form holds
-($R^2 \geq 0.93$ on $11$ of $12$ all-cells fits), but the constant
-is base-dependent: Llama slopes are $\sim 2 \times$ larger than Yi's
-and within $1.6 \times$ of synthetic. The five matrix-merging
-methods (TA, TIES, DARE, KnOTS, TVQ$_2$) cluster tightly within each
-base. Rd-ridge has the lowest slope on both bases ($0.070$ on Yi,
-$0.065$ on Llama), confirming that the ridge regularization buys
-$T$-stability across very different base models.
+($R^2 \geq 0.93$ on $16$ of $18$ all-cells fits; the two exceptions
+are the Yi and Mistral TVQ$_2$ fits), but the constant is
+base-dependent: Llama and Mistral slopes are $\sim 2 \times$ larger
+than Yi's and within $1.6 \times$ of synthetic. The five
+matrix-merging methods (TA, TIES, DARE, KnOTS, TVQ$_2$) cluster
+tightly within each base. Rd-ridge has the lowest slope on all three
+bases ($0.070$ on Yi, $0.065$ on Llama, $0.062$ on Mistral),
+confirming that the ridge regularization buys $T$-stability across
+very different base models.
 
 \begin{table}[t]
 \centering
@@ -107,6 +119,7 @@ base & split & TA & TIES & DARE & KnOTS & TVQ$_2$ & rd-ridge \\
 Yi    & All        & $0.079$ & $0.098$ & $0.082$ & $0.079$ & $-0.001$ & $0.070$ \\
 Yi    & alpaca-OUT & $0.046$ & $0.053$ & $0.047$ & $0.046$ & $-0.088$ & $0.031$ \\
 Llama & All        & $0.156$ & $0.133$ & $0.155$ & $0.156$ & $0.119$ & $\mathbf{0.065}$ \\
+Mistral & All      & $0.171$ & $0.095$ & $0.171$ & $0.171$ & $0.095$ & $\mathbf{0.062}$ \\
 \hline
 \end{tabular}
 \end{table}
@@ -119,7 +132,9 @@ Llama sweep now identifies as base-dependent rather than universal:
 per-task representation imbalance.} On Yi, TIES becomes the worst
 method at $T = 7$ ($0.148$, slope $0.098$, $R^2 = 0.9995$). On
 Llama, TIES at $T = 7$ is $0.232$, third-best of six, in the
-natural ordering. We tested the v1 conjecture (``sign-election
+natural ordering. On Mistral, TIES at $T = 7$ is also non-inverting
+(second-best of six, $0.152$, $0.092$ nats below TA), as the
+pre-registered Td2 test below predicted. We tested the v1 conjecture (``sign-election
 consensus degrades faster on Yi than Llama'') with a direct
 per-coordinate sign-vote audit on both $T = 7$ cohorts: trim each
 adapter's $\Delta$ at density $0.2$ (the TIES default), stack the
@@ -187,11 +202,14 @@ condition fires (``clearly worst'' requires $> \mathrm{TA} + 0.04$;
 ``clearly best'' requires first place by $> 0.02$). The threshold
 model therefore survives a pre-registered test on a base it was not
 fit to, upgrading Appendix~\ref{app:sign-election-threshold} from a
-two-point bracket fit to a confirmed prediction. Falsifying experiment
-for future
-work: synthetic adapters with controlled subspace overlap should
-reproduce the inversion when the overlap crosses the
-win-share-range threshold, independent of the base.
+two-point bracket fit to a confirmed prediction. The controlled-overlap
+mechanism behind it is confirmed directly in
+Appendix~\ref{app:td2-synthetic}: a base-free synthetic sweep, in which
+a single knob raises one task's sign-conflict, reproduces the TIES
+degradation monotonically coupled to the win-share range (Pearson
+$0.998$); read at the real bases' \emph{measured} win-share ranges it
+predicts a $2.3$--$2.6\times$ larger TIES penalty at Yi than at Llama or
+Mistral, separating the base that inverts from the two that do not.
 
 \textbf{(B) TVQ-$b{=}2$'s flat-in-$T$ behavior is Yi-specific.} On
 Yi all-cells, TVQ$_2$ slope is $-0.001$ (essentially flat); on

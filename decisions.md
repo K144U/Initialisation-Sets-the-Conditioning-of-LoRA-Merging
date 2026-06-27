@@ -1270,3 +1270,71 @@ language.
 FILES: results/phase3/mistral_t7_summary.{csv,json} (written by the
 analyzer); 54 cells in results/phase3/eval_mistral_t7/.
 ================================================================================
+
+
+================================================================================
+2026-06-27 — Td2 BASE-FREE SYNTHETIC CONFIRMATION (controlled-overlap dial)
+================================================================================
+
+Closes the §6.6 "future work" line ("synthetic adapters with controlled
+subspace overlap should reproduce the inversion ... independent of the base").
+New experiment: code/synthetic/td2_overlap_sweep.py (CPU-only, ~1.2s, 40 seeds;
+results/synthetic/td2_overlap_sweep/{summary.json,table.txt}; figure
+paper_artifacts/figures/figure_td2_synthetic_overlap.{png,pdf}). New paper
+subsection app:td2-synthetic + Figure fig:td2-synthetic in the Td2 appendix.
+
+DESIGN. T=7 synthetic task vectors on a sparse k=48-coord active support of
+R^256 sharing a high-consensus sign pattern (mirrors the ~70% unanimous-vote
+structure measured on real cohorts). Single knob rho = fraction of coords on
+which one minority task flips its sign vs consensus. Merge with the REAL
+ties.py sign election (imports _trim_topk/_elect_sign VERBATIM; trim density
+0.2, total election, disjoint sign-matched merge) and TA (mean, weights 1/T).
+Excess = max_t ||theta - tau_t||^2 (Lemma-2 isotropic quadratic surrogate).
+Win-share range = exact replica of the probe_ties_sign_election.py tally.
+
+GENERATOR ITERATION (logged for honesty — 3 generator designs, then frozen):
+  (1) iid-Gaussian tasks -> TIES worse than TA at ALL rho (random signs = ~50%
+      sign-conflict on every coord); no TIES~TA baseline -> no inversion.
+  (2) high-consensus signs, DENSE magnitudes -> still TIES>TA at baseline (the
+      top-20% trim discards ~80% of the dense signal mass).
+  (3) sparse k=48 support so the trim is lossless -> at rho=0 TIES==TA EXACTLY
+      (0.0286). FROZEN here; only the ANALYSIS was changed afterward (no further
+      generator tuning), to avoid result-fishing.
+
+RESULT (honest framing):
+  - Monotone coupling: Pearson(win-share range R, TIES-TA gap) = 0.998, R
+    monotone in rho. The win-share range is the CAUSAL control variable for
+    TIES degradation, with NO base model present.
+  - Non-circular cross-check: read the base-free curve at the win-share ranges
+    MEASURED independently on the real bases (Llama 0.028, Mistral 0.0326,
+    Yi 0.077): synthetic TIES penalty (gap) = 0.026 / 0.029 / 0.067 =
+    0.89x / 1.03x / 2.35x the baseline excess. Yi's penalty is 2.6x Llama's
+    and 2.3x Mistral's -> cleanly separates the inverting base (Yi) from the
+    two non-inverting ones (Llama, Mistral).
+  - With this jitter floor (SIGMA=0.15), the gap equals the baseline excess at
+    R ~ 0.032 -> inside the pre-registered Td2 window [0.025,0.075]. Reported
+    as ILLUSTRATIVE only (calibration-dependent).
+
+ROBUST vs CALIBRATION-DEPENDENT (stated explicitly in the paper):
+  - ROBUST (calibration-independent): the monotone coupling, and the 2.3-2.6x
+    Yi-vs-(Llama,Mistral) relative separation (a ratio of the curve at two R's,
+    independent of the baseline/jitter).
+  - CALIBRATION-DEPENDENT: the absolute overlap->R map and the "gap==baseline
+    at R~0.032" threshold value (set by SIGMA and generator details).
+  - Scope: stylized 6+1 generator; binary TA-vs-TIES comparison (= the
+    pre-registration's "clearly worst = TIES > TA + margin" operationalization,
+    not the full 6-method set). Positioned as a SUPPORTING appendix result, not
+    a headline.
+
+PAPER EDITS. (a) appendix_td2: new subsection app:td2-synthetic + figure;
+Falsification-protocol paragraph rewritten from "should show / Mistral R=0.041
+(unpublished, internal)" to the CONFIRMED third-base result (R=0.033, ambiguous
+at T=7); Limitations "third base needed" bullet updated. (b) §6.6: future-work
+line now cites app:td2-synthetic.
+
+CLEANUP FLAG (for the author): the appendix previously quoted Mistral
+R=0.041 (unpublished, internal); §6.7 R2 and the committed pre-reg (3582799)
+use R=0.0326. Reconciled the appendix to 0.033 to match the canonical value.
+Verify the exact probe/T this corresponds to if a precise Mistral T=7 win-share
+number is later wanted.
+================================================================================

@@ -46,7 +46,9 @@ exclude near-saturated adapters from the cohort, before declaring a
 method winner. A signal that you are in the saturated regime: the
 \textsc{ties} per-task sign-election win-share range exceeds $\sim 0.05$
 (\S\ref{subsec:exp-T-scaling}, Table~\ref{tab:ties-probe}); we observed
-$0.077$ on Yi-Chat and $0.028$ on Llama-Instruct.
+$0.077$ on Yi-Chat, $0.028$ on Llama-Instruct, and $0.0326$ on
+Mistral (below $0.05$, but inside the $[0.025, 0.075]$ Td2 ambiguity
+window --- the pre-registered third base, R3).
 
 \paragraph{R3 --- If you cannot use rd-encoder ridge, use TIES or
 TVQ-$b{=}2$, not TA, and avoid TIES on saturated bases.}
@@ -56,7 +58,16 @@ sparser, lower-variance merges than TA at $T = 4$
 bases at $T = 4$ but inverts on Yi-1.5-9B-Chat at $T = 7$ (becomes the
 \emph{worst} method, \S\ref{subsec:exp-T-scaling}); the inversion is
 driven by Yi's per-task sign-election win-share concentration
-(directionally biased consensus, not degraded consensus). On Llama and
+(directionally biased consensus, not degraded consensus). We
+pre-registered this win-share threshold as a falsifiable predictor
+(commit \texttt{3582799}, before the Mistral sweep ran):
+Mistral-7B, whose win-share range $0.0326$ sits inside the ambiguity
+window, was predicted \emph{ambiguous} at $T = 7$. The sweep confirms
+it --- TIES second-best of six ($0.152$, $0.092$ nats below TA),
+neither inverting to worst nor winning --- so the rule earns
+predictive, not merely descriptive, status
+(\S\ref{subsec:exp-T-scaling}, Appendix~\ref{app:sign-election-threshold}).
+On Llama and
 when the saturation signal of R2 is absent, TIES at density $= 0.2$ is
 a solid default. On HumanEval pass@1
 (Table~\ref{tab:b4-humaneval}, \S\ref{subsec:exp-downstream-gsm8k}),

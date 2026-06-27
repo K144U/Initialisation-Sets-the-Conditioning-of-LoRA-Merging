@@ -185,15 +185,69 @@ $[0.025, 0.075]$. Both are at the extreme edges, so the bracket is
 tight but the order of magnitude is correct, and the directional
 prediction (Llama below, Yi above) is unambiguous.
 
-\paragraph{Falsification protocol.}
+\paragraph{Falsification protocol and third-base confirmation.}
 The model predicts that any additional base with $R \in [0.025,
 0.075]$ should produce \emph{ambiguous} TIES behavior (no clear
-inversion, no clear win). The natural next test is a third base
-between the two observed extremes — Mistral-7B has $R$ measured by
-the probe at $0.041$ (unpublished, internal), and on the $T = 7$
-sweep it should show TIES neither clearly winning nor inverting.
-Confirming this would tighten the predicted constant. Disconfirming it
-would force a higher-order term in the perturbation model.
+inversion, no clear win). We pre-registered exactly this test on a
+third base (commit \texttt{3582799}, before the sweep ran):
+Mistral-7B-Instruct-v0.3, whose probe win-share range $R = 0.033$ falls
+inside the interval, was predicted ambiguous at $T = 7$. The $T = 7$
+sweep confirms it: TIES is second-best of six and well below Task
+Arithmetic, neither clearly winning nor inverting
+(\S\ref{subsec:exp-T-scaling}, Table~\ref{tab:e6-worst}). The prediction
+holds on a base it was not fit to; disconfirming it would have forced a
+higher-order term in the perturbation model.
+
+\subsection{Base-free synthetic confirmation}
+\label{app:td2-synthetic}
+
+The cross-model evidence above ties the inversion to a property of the
+trained adapters (the sign-election win-share range $R$), but cannot
+isolate $R$ as the \emph{cause}: real bases differ in many ways at once.
+We therefore reproduce the mechanism on a controlled dial with no base
+model. We synthesize $T = 7$ task vectors on a sparse $k = 48$-coordinate
+support of $\mathbb{R}^{256}$ that share a high-consensus sign pattern
+(mirroring the $\sim\!70\%$ unanimous-vote structure measured on real
+cohorts), and turn a single knob $\rho$: the fraction of coordinates on
+which one minority task flips its sign against the consensus. We merge
+with the \emph{same} TIES code path used throughout (trim at density
+$0.2$, total-sign election, disjoint merge) and with Task Arithmetic,
+and measure the worst-task quadratic excess
+$\max_t \lVert \theta - \tau_t \rVert^2$ and the win-share range $R$,
+over $40$ seeds.
+
+Figure~\ref{fig:td2-synthetic} shows the result. At $\rho = 0$ all tasks
+agree, $R = 0$, and TIES and TA are \emph{identical} --- the sparse
+support makes the TIES trim lossless, so TIES carries no baseline
+penalty. As $\rho$ grows, $R$ widens and TIES's worst-task excess rises
+monotonically above TA in near-perfect lockstep
+(Pearson$(R,\,\text{TIES}-\text{TA}) = 0.998$): the win-share range is
+the causal control variable, with no base model present. Reading the
+base-free curve at the win-share ranges \emph{measured} on the real
+bases gives a direct, non-circular cross-check --- the implied TIES
+penalty is $2.6\times$ larger at Yi's $R = 0.077$ than at Llama's
+$R = 0.028$, and $2.3\times$ larger than at Mistral's $R = 0.033$,
+separating the base that inverts from the two that do not. The robust
+claims are the monotone coupling and this relative separation, both
+independent of the magnitude-jitter calibration; the absolute
+overlap-to-$R$ map is setup-dependent (consistent with the
+base-dependence of the constant noted below). The experiment is
+CPU-only and reproducible from
+\texttt{code/synthetic/td2\_overlap\_sweep.py}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.62\textwidth]{../paper_artifacts/figures/figure_td2_synthetic_overlap.pdf}
+\caption{Base-free synthetic confirmation of the Td2 mechanism. A single
+sign-conflict knob $\rho$ raises the TIES sign-election win-share range
+$R$ (blue, right axis) and, in lockstep, TIES's worst-task excess (red)
+above Task Arithmetic (grey); Pearson$(R,\,\text{TIES}-\text{TA}) =
+0.998$. Dashed lines mark the $\rho$ whose synthetic $R$ matches each
+real base's measured $R$; the implied TIES penalty is $2.3$--$2.6\times$
+larger at Yi (which inverts) than at Llama/Mistral (which do not). No
+base model is used.}
+\label{fig:td2-synthetic}
+\end{figure}
 
 \subsection{Limitations}
 \label{app:td2-limitations}
@@ -209,10 +263,12 @@ would force a higher-order term in the perturbation model.
   over the trained adapters (\S\ref{subsec:exp-T-scaling} probe). This
   is a small additional cost but should be noted as a practical
   requirement of the R2 recommendation in \S\ref{sec:practical-recommendations}.
-\item Two data points (Yi, Llama) bracket but do not falsify the
-  threshold model in the strict sense. A third base measurement is
-  needed; the next-cohort test in
-  \S\ref{app:td2-comparison} is the natural one.
+\item The original two data points (Yi, Llama) only \emph{bracket} the
+  threshold. This is now strengthened by a pre-registered third base
+  (Mistral, $R = 0.033$, confirmed ambiguous at $T = 7$;
+  \S\ref{app:td2-comparison}) and by the base-free synthetic
+  confirmation of \S\ref{app:td2-synthetic} --- though the absolute
+  overlap-to-$R$ map of the latter is itself setup-dependent.
 \item The Mills's-ratio amplification $\kappa \approx 2$ assumes a
   Gaussian magnitude tail. If LoRA magnitudes are heavier-tailed
   (Pareto or Student-$t$, both plausible), $\kappa$ increases by
