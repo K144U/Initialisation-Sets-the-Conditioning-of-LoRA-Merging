@@ -1215,3 +1215,58 @@ its PBS slot, the Mistral pilot training (rdm_mpilt) will be next in
 the dispatch chain, followed by the T=7 cross-model sweep on Mistral
 that tests this pre-registration.
 ================================================================================
+
+
+================================================================================
+2026-06-26 — Mistral T=7 Td2 PRE-REGISTRATION VERDICT: AMBIGUOUS (CONFIRMED)
+================================================================================
+
+The Mistral-7B-Instruct-v0.3 T-scaling sweep is COMPLETE (54 cells:
+T in {2,4,7} x {nested, rand0, rand1, rand2, all} x {TA, TIES, DARE,
+KnOTS, TVQ_b2, rd_ridge}; _MISTRAL_T7_COMPLETE 2026-06-26 15:24). The
+pre-registered Td2 verdict (locked at commit 3582799, prediction =
+"ambiguous"; anchor R = 0.0326 inside the [0.025, 0.075] window) was
+computed by code/phase3/scripts/analyze_mistral_t7.py (V5).
+
+VERDICT: AMBIGUOUS — the pre-registered prediction HOLDS.
+
+T=7 worst-task NLL excess ranking (ascending = better):
+  1. rd_ridge   0.1145
+  2. ties       0.1516   <-- TIES (rank 2/6)
+  3. tvq_b2     0.1767
+  4. ta         0.2438
+  5. dare       0.2441
+  6. knots      0.2441
+
+TIES is NOT last (so not "clearly worst") and NOT first (so not
+"clearly best"). TIES - TA gap = -0.0922 nats (the clearly-worst
+threshold was > +0.04; TIES is 0.092 BELOW TA, i.e. clearly better
+than TA). Neither operationalized condition fires => AMBIGUOUS,
+exactly as predicted.
+
+AUDIT TRAIL: pre-registration commit 3582799 (2026-06-25) precedes
+this result; no Mistral T=7 result commit existed before it. The
+pre-registration is valid. This decisions.md entry and any result
+commit post-date 3582799.
+
+BONUS RESULT (cross-model salvage grows with T): rd_ridge salvage
+STRENGTHENS with T on Mistral, mirroring Llama. rd_ridge/TA ratio =
+1.382 (T=2, loses) -> 0.815 (T=4, wins) -> 0.470 (T=7, wins big). At
+T=7 rd_ridge worst-excess 0.1145 vs TA 0.2438 (-53%). Log-T slopes:
+rd_ridge LOWEST at 0.0618 (R2=0.986), ties 0.0953 (R2=0.999),
+TA/DARE/KnOTS ~0.17 — same ordering as Llama; rd-ridge is again the
+most T-stable method. Worst-excess is monotone increasing in T for
+all 6/6 methods.
+
+PAPER ACTION (per the pre-registration decision rule, "ambiguous"
+branch): promote Td2 from a two-point bracket fit to a pre-registered
+CONFIRMED prediction. DONE in 6_6_e6_T_scaling_draft.tex v4 (Td2
+paragraph upgraded). Still optional / deferred: add Mistral as an
+explicit third base to tab:e6-worst and tab:e6-slopes (a larger
+restructure of the "two base models" framing), and add the Mistral
+row to the Figure 1 cross-model hero; §6.7 R3 confirmed-prediction
+language.
+
+FILES: results/phase3/mistral_t7_summary.{csv,json} (written by the
+analyzer); 54 cells in results/phase3/eval_mistral_t7/.
+================================================================================

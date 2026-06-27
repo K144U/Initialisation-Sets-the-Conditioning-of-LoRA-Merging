@@ -1,4 +1,11 @@
 % DRAFT: paper §6.6 — E6 T-scaling on real adapters, cross-model.
+% v4 2026-06-26. Upgrades the Td2 threshold paragraph: the
+% pre-registered (commit 3582799) Mistral-7B third-base test is
+% CONFIRMED — Mistral T=7 verdict AMBIGUOUS (TIES 2/6, 0.092 nats
+% below TA), so the threshold model is now a confirmed prediction,
+% not a two-point bracket fit. (Mistral also salvages with T like
+% Llama: rd-ridge/TA 1.38->0.815->0.470 over T=2/4/7 — adding Mistral
+% rows to tab:e6-worst/tab:e6-slopes deferred as a larger restructure.)
 % v3 2026-06-23 (evening). Integrates the TIES sign-election probe
 % result on the T=7 cohorts: vote-split structure is nearly identical
 % Yi vs Llama (rejecting the literal v1 "consensus degrades"
@@ -167,7 +174,21 @@ derives this threshold from a perturbation model of the TIES
 update, predicting $R^\star \in [0.025, 0.075]$ for $T = 4$ at
 density $0.2$; the two empirical points (Yi $R = 0.077$, Llama
 $R = 0.028$) bracket the predicted range and respect the
-directional prediction. Falsifying experiment for future
+directional prediction. We then pre-registered an \emph{out-of-sample}
+third-base test (commit \texttt{3582799}, timestamped before the
+Mistral sweep was run): Mistral-7B-Instruct-v0.3, whose probed
+sign-election win-share range $R = 0.0326$ falls strictly inside the
+predicted window, was predicted to be \emph{ambiguous} at $T = 7$ ---
+TIES neither clearly inverting to the worst method nor clearly winning.
+The Mistral $T = 7$ sweep confirms it: TIES is second-best of six
+methods (worst-task excess $0.152$), a margin of $0.092$ nats
+\emph{below} Task Arithmetic ($0.244$), so neither operationalized
+condition fires (``clearly worst'' requires $> \mathrm{TA} + 0.04$;
+``clearly best'' requires first place by $> 0.02$). The threshold
+model therefore survives a pre-registered test on a base it was not
+fit to, upgrading Appendix~\ref{app:sign-election-threshold} from a
+two-point bracket fit to a confirmed prediction. Falsifying experiment
+for future
 work: synthetic adapters with controlled subspace overlap should
 reproduce the inversion when the overlap crosses the
 win-share-range threshold, independent of the base.
