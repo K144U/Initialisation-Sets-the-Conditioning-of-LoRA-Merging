@@ -314,3 +314,26 @@ If you want to silence them, the user has to delete those crons themselves (we c
 ---
 
 *Maintained by Claude (Opus 4.7) during the 2026-06-25 → 2026-06-26 session. Update this file when the project state materially shifts.*
+
+
+---
+
+## 18. 2026-06-27 update — Phase 1 COMPLETE, Td2 CONFIRMED (supersedes the mid-flight ⏳ above)
+
+Resuming-session reconciliation. The "⏳ in flight" statuses in §11/§12/§14 are now resolved.
+
+- **Phase 1 is COMPLETE; nothing in flight** (`qstat -u sanjay.g` empty). The §6 auto-supervision cron has expired.
+- **HEAD = `49f4e14`** ("Mistral T-scaling analyzer with Td2 pre-registration verdict"). Pre-registration commit `3582799` is present and **precedes** it — audit trail valid.
+- **🎯 Mistral T=7 Td2 verdict = AMBIGUOUS = pre-registration CONFIRMED.** TIES is 2nd of 6 (worst-task excess 0.152), **−0.092 nats below TA** → neither "clearly worst" (>TA+0.04) nor "clearly best" (first by >0.02). The +0.4–0.5 score-mover is **banked**. Bonus: rd-ridge salvage grows with T on Mistral (rd_ridge/TA 1.382→0.815→0.470 over T=2/4/7; lowest log-T slope 0.062) — a clean confirming third base. Files: `results/phase3/mistral_t7_summary.{csv,json}`; 54 cells in `results/phase3/eval_mistral_t7/`.
+- **§14 external-review tracker update:** items 3 (≥3-seed), 4 (rd-ridge downstream 8/8), 5 (RegMean+AdaMerging), 7 (Mistral T=7) all → ✓ DONE. Item 6 (Td2 constants cordon) remains ◑ partial.
+- **§11 score: ~7.5–8.0, now banked** (Td2-confirmed realized, not projected).
+
+**Remaining work (the new §12 "what's next"):**
+1. ✅ done this session (2026-06-27): the `decisions.md` verdict entry + `6_6_e6_T_scaling_draft.tex` v4 are now committed.
+2. **§6.6 restructure** (deferred inside v4): add **Mistral as an explicit third base** to `tab:e6-worst` + `tab:e6-slopes`, add the Mistral row to the **Figure 1 cross-model hero**, and add **§6.7 R3 confirmed-prediction language**.
+3. **Menu leftovers:** **I** (color-coded heatmap matrix tables), **K** (clean OSS release: README + 1-cmd repro).
+4. **Assembly:** P2 abstract/intro/related-work polish → P3 limitations/appendix → P4 anonymize + 300 dpi figs + supplementary zip → compile `main.tex` on Overleaf → submit **ICLR 2027**.
+
+Garg unavailable (family); solo. No arXiv preprint (direct ICLR). Do NOT revert the floor formula (Lemma 2 form), the title/abstract reframe, or weaken the Td2 falsifiability; no GPU 0; no force-push on `phase3-bootstrap`.
+
+*— Claude (Opus 4.8), 2026-06-27.*
