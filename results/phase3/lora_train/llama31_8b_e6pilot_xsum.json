@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "git_sha": "ca4cd8b4b2b7968c5def96abd1c826cdf34cf7e9",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "2",
+    "pbs_jobid": "41960.jiit-master",
+    "wallclock_iso": "2026-06-20T08:47:36+0200",
+    "wallclock_unix": 1781938056.6090522,
+    "config_hash": "c9580dfd5138b882",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Llama-3.1-8B-Instruct",
+      "task": {
+        "name": "xsum",
+        "dataset": "EdinburghNLP/xsum",
+        "config": null,
+        "split_train": "train",
+        "split_eval": "test",
+        "n_train": 7500,
+        "n_eval": 1000,
+        "prompt_field": "document",
+        "answer_field": "summary"
+      },
+      "lora": {
+        "r": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ]
+      },
+      "train": {
+        "epochs": 2,
+        "lr": 5e-05,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "max_seq_length": 2048,
+        "warmup_ratio": 0.03,
+        "optim": "adamw_torch",
+        "logging_steps": 10,
+        "dataset_num_proc": 4,
+        "min_free_gb": 40
+      },
+      "output": {
+        "adapter_dir": "artifacts/lora/llama31_8b/e6_pilot/xsum/v1",
+        "results_path": "results/phase3/lora_train/llama31_8b_e6pilot_xsum.json"
+      },
+      "seeds": {
+        "global": 20260615,
+        "train": 20260615
+      }
+    }
+  },
+  "metrics": {
+    "task": "xsum",
+    "base_model": "/home/sanjay.g/projects/rdmerge/models/Llama-3.1-8B-Instruct",
+    "train_runtime_s": 9516.95760512352,
+    "first_loss": 2.226157379150391,
+    "last_loss": 1.2582406997680664,
+    "n_log_steps": 47,
+    "loss_history": [
+      2.226157379150391,
+      1.6779819488525392,
+      1.483668899536133,
+      1.39483699798584,
+      1.3837006568908692,
+      1.380918598175049,
+      1.3967265129089355,
+      1.325893497467041,
+      1.320961093902588,
+      1.3350202560424804,
+      1.315975284576416,
+      1.3916265487670898,
+      1.3134357452392578,
+      1.353614902496338,
+      1.3324865341186523,
+      1.3169487953186034,
+      1.3726292610168458,
+      1.3186002731323243,
+      1.3275203704833984,
+      1.2913983345031739,
+      1.3483876228332519,
+      1.308887004852295,
+      1.31044340133667,
+      1.3226130485534668,
+      1.29168643951416,
+      1.3226019859313964,
+      1.3232683181762694,
+      1.3096166610717774,
+      1.2932597160339356,
+      1.2753636360168457,
+      1.3025067329406739,
+      1.2514519691467285,
+      1.250752830505371,
+      1.2559660911560058,
+      1.2594393730163573,
+      1.272079849243164,
+      1.2696535110473632,
+      1.3054875373840331,
+      1.2817501068115233,
+      1.2731707572937012,
+      1.2383177757263184,
+      1.2630791664123535,
+      1.273341751098633,
+      1.27061767578125,
+      1.286177921295166,
+      1.2512707710266113,
+      1.2582406997680664
+    ],
+    "adapter_size_mb": 52.03282165527344,
+    "nll_tau_on_eval": 1.2668188482119547,
+    "n_train": 7500,
+    "n_eval": 1000,
+    "adapter_dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/e6_pilot/xsum/v1"
+  },
+  "wallclock_seconds": 9848.637901067734,
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "2",
+    "pbs_jobid": "41960.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

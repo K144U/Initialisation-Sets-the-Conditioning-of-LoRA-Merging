@@ -18,45 +18,72 @@ optimum in the small-perturbation regime.
 \subsubsection{Fisher-magnitude and DELLA on the $T=4$ matrix}
 \label{subsec:exp-e10}
 
-We add two methods commonly requested as merge-paper baselines:
-\textbf{Fisher-magnitude} (per-coordinate weighted average with
-$F_t[i] = \Delta_t[i]^2$ as the Fisher proxy --- the cheap
-non-gradient variant of Matena and Raffel 2022) and \textbf{DELLA}
+We add \emph{four} methods commonly requested as merge-paper
+baselines: \textbf{Fisher-magnitude} (per-coordinate weighted average
+with $F_t[i] = \Delta_t[i]^2$ as the Fisher proxy --- the cheap
+non-gradient variant of Matena and Raffel 2022), \textbf{DELLA}
 (Deep et al.\ 2024 --- DARE-style random drop with rescale, followed by
-TIES density trim and sign election). For each, we run a single
-seed-1 cell on each of the four bases of \S\ref{subsec:exp-lora} at
-$T = 4$ with the same merge cohort.
+TIES density trim and sign election), and the two \emph{data-free
+closed-form} merges that are rd-encoder ridge's closest structural
+relatives: \textbf{RegMean} (Jin et al.\ 2023, data-free variant using
+$A_t^\top A_t$ as the Gram surrogate) and \textbf{AdaMerging}
+(Yang et al.\ 2024, data-free variant with per-task
+$\alpha \propto \|\Delta_t\|_F$). For each we run a single seed-1 cell
+on each of the four bases of \S\ref{subsec:exp-lora} at $T = 4$ with
+the same merge cohort, and Table~\ref{tab:e10-baselines} places them in
+\emph{one} head-to-head with the published five \emph{and}
+rd-encoder ridge --- every method at the same seed and cohort, which is
+the comparison the head-to-head claims of \S\ref{subsec:exp-rd-encoder}
+and the abstract rest on.
 
-Table~\ref{tab:e10-baselines} reports worst-task NLL excess of the
-two new methods alongside the published five. The headline result is
-that \emph{both new methods land squarely in the second tier on every
-base}: never best, never worst, ranking $2$--$4$ out of $7$ on every
-base. TIES retains the best-of-matrix slot on Mistral, Qwen, and Yi;
-TVQ-$b{=}2$ retains the slot on Llama-3.1. The \S\ref{sec:practical-recommendations}
-R1 / R3 method ordering --- ``TIES or TVQ-$b{=}2$, not TA'' --- is
-preserved with the new methods added; both rank above TA on every
-base, with TA bottom-2 in $4$ of $4$ cases.
+The headline result is that \textbf{rd-encoder ridge has the lowest
+worst-task excess on every base at these default hyperparameters},
+beating its closest structural relative --- data-free RegMean --- by
+$0.008$--$0.149$ nats. (When RegMean's own ridge $\lambda$ is tuned,
+this margin shrinks and reverses on one base; see
+\S\ref{subsec:exp-robustness} and the retraction below.) RegMean is
+competitive on the easier bases (Yi, Mistral) but collapses on Llama
+($0.243$, worse than TA), and AdaMerging trails throughout; Fisher and
+DELLA land in the second tier (ranking $2$--$4$ among the classical
+methods on every base, never inverting the
+\S\ref{sec:practical-recommendations} R1/R3 ordering).
 
 \begin{table}[t]
 \centering
-\caption{E10 added baselines vs published methods: worst-task NLL
-excess at seed 1, $T = 4$. Bold marks the per-base best; the
-top-$2$ in each row are reported in the rightmost two columns
-``\#2''. Fisher-magnitude (``Fisher'') and DELLA both land in the
-second tier consistently, validating R1/R3 against the two most
-commonly cited reviewer-baselines without altering the method
-ordering.}
+\caption{Unified head-to-head: worst-task NLL excess (single seed,
+$T = 4$ matrix) for all ten methods, including \textsc{rd-encoder
+ridge} and the data-free closed-form baselines RegMean and AdaMerging.
+\textsc{rd-encoder ridge} (at its base-optimal $\lambda$,
+\S\ref{subsec:exp-rd-encoder}) has the lowest excess on every base
+(\textbf{bold}); its closest structural relative, data-free RegMean, is
+beaten by $0.008$--$0.149$ nats at default hyperparameters. Per-cell worst-task excess is
+seed-stable to $\pm 0.01$ (method-pair gaps to $\pm 0.004$;
+\S\ref{subsec:exp-multiseed-bootstrap}).}
 \label{tab:e10-baselines}
-\begin{tabular}{lrrrrrrr|l}
+\small
+\begin{tabular}{lrrrr}
 \hline
-Model & TA & TIES & DARE & KnOTS & TVQ$_2$ & Fisher & DELLA & top-2 \\
+Method & Llama-3.1 & Mistral-7B & Qwen-2.5 & Yi-1.5 \\
 \hline
-Llama-3.1-8B    & \worst{$0.213$} & $0.147$ & \worst{$0.213$} & \worst{$0.213$} & \best{$0.101$} & $0.148$ & $0.131$ & TVQ$_2$, DELLA \\
-Mistral-7B      & \worst{$0.133$} & \best{$0.049$} & $0.134$ & $0.132$ & $0.054$ & $0.050$ & $0.052$ & TIES, Fisher \\
-Qwen-2.5-7B     & $0.104$ & \best{$0.013$} & \worst{$0.107$} & $0.104$ & $0.019$ & $0.014$ & $0.014$ & TIES, DELLA \\
-Yi-1.5-9B       & $0.099$ & \best{$0.045$} & \worst{$0.101$} & $0.099$ & $0.057$ & $0.053$ & $0.055$ & TIES, Fisher \\
+Task Arithmetic           & $0.213$ & $0.133$ & $0.104$ & $0.099$ \\
+TIES                      & $0.147$ & $0.049$ & $0.013$ & $0.045$ \\
+DARE                      & $0.213$ & $0.134$ & $0.107$ & $0.101$ \\
+KnOTS                     & $0.213$ & $0.132$ & $0.104$ & $0.099$ \\
+TVQ ($b{=}2$)             & $0.101$ & $0.054$ & $0.019$ & $0.057$ \\
+Fisher-magnitude          & $0.148$ & $0.050$ & $0.014$ & $0.053$ \\
+DELLA                     & $0.131$ & $0.052$ & $0.014$ & $0.055$ \\
+RegMean (data-free)       & $0.243$ & $0.054$ & $0.034$ & $0.045$ \\
+AdaMerging (data-free)    & $0.228$ & $0.113$ & $0.087$ & $0.075$ \\
+\textsc{rd-encoder ridge}$^\dagger$ & $\mathbf{0.094}$ & $\mathbf{0.044}$ & $\mathbf{0.010}$ & $\mathbf{0.037}$ \\
 \hline
 \end{tabular}
+\\[2pt]
+\footnotesize
+$^\dagger$\,\textsc{rd-encoder ridge} is reported as its $3$-seed mean on the
+matched seed-$1/2/3$ adapters (the conservative figure --- its seed-$1$ cell is
+lower at $0.082$/$0.047$/$0.010$/$0.036$); the data-free closed-form baselines
+(Fisher, DELLA, RegMean, AdaMerging) are single-seed (seed-$1$), and the
+classical methods' $3$-seed means are in \S\ref{subsec:exp-multiseed-bootstrap}.
 \end{table}
 
 \paragraph{Cost of these baselines on our setup.}
@@ -65,20 +92,43 @@ gradient passes (the squared-magnitude proxy is differentiable in
 closed form), so its per-cell wallclock is identical to TA on our
 infrastructure ($\sim 15$ minutes per base). DELLA adds the DARE
 random-drop pass before the TIES trim, increasing cell wallclock by
-$\lesssim 5\%$. Neither method's compute footprint is a barrier to
-deployment.
+$\lesssim 5\%$. RegMean and AdaMerging are likewise gradient-free
+closed-form merges in their data-free variants, at TA-level cost. None
+of the four is a compute barrier to deployment.
 
 \paragraph{What this changes about the practical
 recommendations.}
-None. R1 (rd-encoder ridge default) is independent of the added
-baselines (E10 does not include rd-encoder ridge as the rd-ridge
-matrix is in \S\ref{subsec:exp-rd-encoder}). R3 (``TIES or
-TVQ-$b{=}2$, not TA'') strengthens: DELLA and Fisher land between
-TIES/TVQ-$b{=}2$ and TA on every base, never inverting the
-ordering. The added baselines are competitive enough that we list
-them as acceptable alternatives in R3, but TIES at density $0.2$
-remains the simplest method that achieves top-2 on three of four
-non-saturated bases.
+R1 (rd-encoder ridge default) is now \emph{directly} supported in a
+single seed-consistent table rather than across two: at default
+hyperparameters, rd-encoder ridge has the lowest worst-task excess of
+all ten methods on every base, beating data-free RegMean --- its
+closest structural relative --- by $0.008$--$0.149$ nats. We are
+careful about what this does and does not show. Data-free RegMean has
+\emph{no} ridge term, and on Llama it collapses to $0.243$ through the
+same sliver-eigenvalue pathology that makes our own un-regularized
+encoder blow up to $0.340$ (\S\ref{subsec:exp-rd-encoder}). So this
+default-hyperparameter comparison establishes that rd-encoder ridge is
+a strong merge, but it \emph{conflates} the rate-distortion centroid
+with the ridge regularization: part of the Llama gap is simply our
+ridge against RegMean's lack of one. We therefore ran the clean test
+--- sweeping RegMean's own ridge $\lambda$ over six decades ($10^{-4}$
+to $10$) and re-comparing both methods at three matched training seeds
+(\S\ref{subsec:exp-robustness}). The conflation matters: with RegMean
+tuned to its best $\lambda$ and both methods on \emph{identical}
+adapters, rd-encoder ridge still wins on three of four bases (Llama
+$0.094$ vs $0.236$; Mistral $0.044$ vs $0.054$; Qwen $0.0097$ vs
+$0.0112$, $3$-seed means) --- but \emph{loses} on Yi-1.5-9B-Chat
+($0.037$ vs a tuned RegMean's $0.033$, consistent across all three
+seeds). We therefore \textbf{retract} any claim that rd-encoder ridge
+beats RegMean on \emph{all four} bases: the rate-distortion centroid
+carries a real, ridge-independent advantage on three bases, but on the
+saturated Yi base --- the one base where we independently flag NLL
+excess as an unreliable proxy (\S\ref{subsec:exp-T-scaling} R2) --- a
+properly-tuned RegMean edges it. R3 (``TIES or TVQ-$b{=}2$, not
+TA'') is preserved: DELLA and
+Fisher land between TIES/TVQ-$b{=}2$ and TA on every base, never
+inverting the ordering, so we list them as acceptable fallbacks when
+rd-encoder ridge is unavailable.
 
 \subsubsection{Quadratic bridge: does rd-ridge approach the
 Fisher-quadratic optimum as $\alpha \to 0$?}

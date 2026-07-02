@@ -30,13 +30,16 @@ bootstrap in which the shared per-task baseline cancels.
 Point estimates were reproduced across two independent
 evaluation runs and agreed to within $0.001$ nats/token; we
 report the second run, which additionally logs per-example
-values. Results use a single training seed, and we are explicit
-that the reported intervals quantify evaluation uncertainty
-rather than seed variance.
+values. The headline $T = 4$ matrix is run with \emph{three}
+independent training seeds; \S\ref{subsec:exp-multiseed-bootstrap}
+reports paired-bootstrap $95\%$ CIs on the method-pair gaps (all
+Confident). The $T$-scaling sweep (\S\ref{subsec:exp-T-scaling}) and
+the downstream accuracy cells use a single training seed, as stated in
+their sections; per-cell worst-task excess is seed-stable to
+$\pm 0.01$ and the method-pair gaps to $\pm 0.004$.
 
-A chronological log of design decisions, intermediate negative
-results, and a data-handling correction made during the study
-accompanies the camera-ready version, in the interest of full
+A chronological log of design decisions and intermediate negative
+results accompanies the camera-ready version, in the interest of full
 methodological transparency.
 
 \paragraph{Per-experiment manifest.}

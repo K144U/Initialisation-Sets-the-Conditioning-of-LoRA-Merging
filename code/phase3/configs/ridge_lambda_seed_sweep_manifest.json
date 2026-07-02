@@ -1,0 +1,182 @@
+[
+  {
+    "name": "rls_llama31_8b__ridge_l0p001__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p001__seed1.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p001__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p01__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p01__seed1.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p01__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p05__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p05__seed1.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p05__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p07__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p07__seed1.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p07__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p1__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p1__seed1.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p1__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p13__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p13__seed1.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p13__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p17__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p17__seed1.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p17__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p2__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p2__seed1.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p2__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p3__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p3__seed1.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p3__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l1__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l1__seed1.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l1__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p001__seed2",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p001__seed2.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p001__seed2.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p01__seed2",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p01__seed2.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p01__seed2.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p05__seed2",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p05__seed2.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p05__seed2.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p07__seed2",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p07__seed2.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p07__seed2.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p1__seed2",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p1__seed2.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p1__seed2.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p13__seed2",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p13__seed2.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p13__seed2.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p17__seed2",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p17__seed2.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p17__seed2.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p2__seed2",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p2__seed2.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p2__seed2.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p3__seed2",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p3__seed2.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p3__seed2.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l1__seed2",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l1__seed2.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l1__seed2.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p001__seed3",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p001__seed3.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p001__seed3.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p01__seed3",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p01__seed3.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p01__seed3.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p05__seed3",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p05__seed3.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p05__seed3.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p07__seed3",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p07__seed3.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p07__seed3.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p1__seed3",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p1__seed3.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p1__seed3.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p13__seed3",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p13__seed3.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p13__seed3.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p17__seed3",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p17__seed3.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p17__seed3.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p2__seed3",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p2__seed3.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p2__seed3.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l0p3__seed3",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l0p3__seed3.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l0p3__seed3.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "rls_llama31_8b__ridge_l1__seed3",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_ridge_seed/llama31_8b__ridge_l1__seed3.yaml",
+    "done": "results/phase3/eval_ridge_seed/llama31_8b__ridge_l1__seed3.json",
+    "min_free_gb": 25.0
+  }
+]

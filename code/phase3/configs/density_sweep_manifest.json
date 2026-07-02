@@ -1,0 +1,194 @@
+[
+  {
+    "name": "dens_llama31_8b__ties__d0p05__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/llama31_8b__ties__d0p05__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/llama31_8b__ties__d0p05__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_llama31_8b__ties__d0p1__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/llama31_8b__ties__d0p1__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/llama31_8b__ties__d0p1__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_llama31_8b__ties__d0p3__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/llama31_8b__ties__d0p3__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/llama31_8b__ties__d0p3__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_llama31_8b__ties__d0p5__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/llama31_8b__ties__d0p5__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/llama31_8b__ties__d0p5__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_llama31_8b__dare__d0p05__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/llama31_8b__dare__d0p05__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/llama31_8b__dare__d0p05__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_llama31_8b__dare__d0p1__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/llama31_8b__dare__d0p1__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/llama31_8b__dare__d0p1__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_llama31_8b__dare__d0p3__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/llama31_8b__dare__d0p3__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/llama31_8b__dare__d0p3__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_llama31_8b__dare__d0p5__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/llama31_8b__dare__d0p5__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/llama31_8b__dare__d0p5__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_mistral_7b__ties__d0p05__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/mistral_7b__ties__d0p05__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/mistral_7b__ties__d0p05__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_mistral_7b__ties__d0p1__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/mistral_7b__ties__d0p1__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/mistral_7b__ties__d0p1__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_mistral_7b__ties__d0p3__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/mistral_7b__ties__d0p3__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/mistral_7b__ties__d0p3__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_mistral_7b__ties__d0p5__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/mistral_7b__ties__d0p5__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/mistral_7b__ties__d0p5__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_mistral_7b__dare__d0p05__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/mistral_7b__dare__d0p05__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/mistral_7b__dare__d0p05__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_mistral_7b__dare__d0p1__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/mistral_7b__dare__d0p1__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/mistral_7b__dare__d0p1__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_mistral_7b__dare__d0p3__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/mistral_7b__dare__d0p3__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/mistral_7b__dare__d0p3__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_mistral_7b__dare__d0p5__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/mistral_7b__dare__d0p5__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/mistral_7b__dare__d0p5__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_qwen25_7b__ties__d0p05__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/qwen25_7b__ties__d0p05__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/qwen25_7b__ties__d0p05__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_qwen25_7b__ties__d0p1__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/qwen25_7b__ties__d0p1__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/qwen25_7b__ties__d0p1__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_qwen25_7b__ties__d0p3__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/qwen25_7b__ties__d0p3__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/qwen25_7b__ties__d0p3__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_qwen25_7b__ties__d0p5__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/qwen25_7b__ties__d0p5__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/qwen25_7b__ties__d0p5__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_qwen25_7b__dare__d0p05__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/qwen25_7b__dare__d0p05__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/qwen25_7b__dare__d0p05__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_qwen25_7b__dare__d0p1__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/qwen25_7b__dare__d0p1__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/qwen25_7b__dare__d0p1__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_qwen25_7b__dare__d0p3__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/qwen25_7b__dare__d0p3__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/qwen25_7b__dare__d0p3__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_qwen25_7b__dare__d0p5__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/qwen25_7b__dare__d0p5__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/qwen25_7b__dare__d0p5__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_yi15_9b__ties__d0p05__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/yi15_9b__ties__d0p05__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/yi15_9b__ties__d0p05__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_yi15_9b__ties__d0p1__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/yi15_9b__ties__d0p1__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/yi15_9b__ties__d0p1__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_yi15_9b__ties__d0p3__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/yi15_9b__ties__d0p3__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/yi15_9b__ties__d0p3__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_yi15_9b__ties__d0p5__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/yi15_9b__ties__d0p5__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/yi15_9b__ties__d0p5__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_yi15_9b__dare__d0p05__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/yi15_9b__dare__d0p05__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/yi15_9b__dare__d0p05__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_yi15_9b__dare__d0p1__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/yi15_9b__dare__d0p1__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/yi15_9b__dare__d0p1__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_yi15_9b__dare__d0p3__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/yi15_9b__dare__d0p3__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/yi15_9b__dare__d0p3__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "dens_yi15_9b__dare__d0p5__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_density_sweep/yi15_9b__dare__d0p5__seed1.yaml",
+    "done": "results/phase3/eval_density_sweep/yi15_9b__dare__d0p5__seed1.json",
+    "min_free_gb": 25.0
+  }
+]

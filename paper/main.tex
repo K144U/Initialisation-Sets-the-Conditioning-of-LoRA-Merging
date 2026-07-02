@@ -1,6 +1,5 @@
 % Main paper file for:
-% "A Rate-Distortion Lower Bound for Model Merging,
-%  with Matching Achievability via Hadamard Incoherence"
+% "Predicting When LoRA Merging Fails: A Rate-Distortion View"
 %
 % Swap \documentclass to iclr2027.sty / neurips_2026.sty when the
 % style file is available. For now, plain article so it compiles
@@ -41,16 +40,11 @@
 \newtheorem{remark}[theorem]{Remark}
 
 \title{Predicting When LoRA Merging Fails: A Rate-Distortion View}
-% Author block redacted for double-blind review (ICLR 2027). The
-% non-anonymous block is preserved below for the camera-ready
-% version; uncomment after acceptance.
+% Author block redacted for double-blind review (ICLR 2027).
+% The non-anonymous block is kept out of this file entirely; restore
+% author names only in the camera-ready version after acceptance.
 \author{Anonymous Authors\\
   \texttt{anonymous@iclr2027.cc}}
-%\author{Sankalp Pathak\\
-%  \texttt{pathaksankalp04@gmail.com}
-%  \and
-%  Sanjay Garg\\
-%  \texttt{gargsv@gmail.com}}
 \date{}
 
 \begin{document}
@@ -72,7 +66,7 @@
 \section{Lower Bound}\label{sec:lower}\label{sec:lower_bound}
 \input{sections/lower_bound}
 
-\section{Matching Upper Bound}\label{sec:achv}\label{sec:achievability}
+\section{Achievability: A Rate-Matching Upper Bound}\label{sec:achv}\label{sec:achievability}
 \input{sections/achievability}
 
 \section{Experiments}\label{sec:exp}\label{sec:experiments}
@@ -87,6 +81,7 @@
 \input{sections/6_6_e6_T_scaling_draft}
 \input{sections/6_7_practical_recommendations_draft}
 \input{sections/6_8_e10_e11_baselines_bridge_draft}
+\input{sections/6_8b_robustness_sweeps_draft}
 \input{sections/6_9_multiseed_bootstrap_draft}
 
 \section{Discussion and Limitations}\label{sec:discussion}\label{sec:future}

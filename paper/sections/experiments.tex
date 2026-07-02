@@ -23,17 +23,27 @@ Theorem~\ref{thm:general}. The floor term $B^2(1 - \E[\deff]/
 (Tr))$ is reproduced to four to five digits of precision in
 the common-$D_0$ and task-dependent-$D_t$ regimes.
 
-\paragraph{Achievability constant.} We measure the ratio
+\paragraph{Achievability constant and its $T$-dependence.} We measure
+the ratio
 $\mathbb{E}_{P^\star}[\max_t D_t(w^\star)] / (c_{\mathrm{TQ}}
 B^2 2^{-2R/(Tr)})$ of empirical upper bound to the Stiefel
 lower bound of Theorem~\ref{thm:general} at $c_{\mathrm{TQ}} = 1$.
 The ratio is constant in $R$ — a necessary condition for the UB
-to match the LB in order — and lies in $[11, 13]$ across
-$T\in\{2,3\}$, $r = 4$, $d = 128$, for isotropic and
-task-mismatched anisotropic spectra. This is consistent with
-the analytical constant $C = Tc^2/3 \approx 17$ at $T=2$,
-$c=5$, combined with $c_{\mathrm{TQ}} \approx 1$ from
-TurboQuant~\cite{zandieh2025turboquant}.
+to match the LB in order — and starts near $11$ at $T = 2$
+($r = 4$, $d = 128$, isotropic and task-mismatched anisotropic
+spectra), consistent with $C = Tc^2/3 \approx 17$ at $c = 5$ combined
+with $c_{\mathrm{TQ}} \approx 1$ from
+TurboQuant~\cite{zandieh2025turboquant}. Sweeping
+$T \in \{2, 4, 8, 16\}$ ($1000$ trials/cell) settles the
+$T$-dependence flagged in Remark~\ref{rem:tgap}: the constant grows
+\emph{logarithmically}, not linearly --- a $\log T$ fit gives
+$R^2 \geq 0.998$ against $R^2 \approx 0.91$ for a linear fit, and the
+$T{=}16$ value is only $1.77\times$ the $T{=}2$ value, far below the
+$8\times$ a strictly linear-$T$ factor would give. The linear $T$ in
+$C = Tc^2/3$ is thus an artifact of the crude
+$\max_t \leq T\,\mathrm{avg}$ step (Remark~\ref{rem:tgap}), not
+intrinsic to the rate-distortion function; the matching $\log T$
+achievability constant is stated as a conjecture.
 
 \paragraph{Shared-$V$ regime.} For the floor-positive regime
 we implement the null-space-aware bit allocation of
@@ -127,12 +137,18 @@ Yi-1.5-9B       & 0.387 & 0.840 & 0.229 & 0.763 \\
 \paragraph{Merging methods.} We merge the four adapters with
 uniform weights using five methods: Task Arithmetic (TA;
 structure-blind averaging), TIES, DARE (both at density $0.2$),
-KnOTS (linear inner merge), and task-vector quantization (TVQ;
+KnOTS\footnote{We run KnOTS's linear inner-merge (shared-subspace
+projection then average), not the full SVD-tie alignment of the
+original; our KnOTS$\,\approx\,$TA finding is therefore stated for this
+variant, though at the zero subspace overlap we measure the theory
+predicts no method that exploits overlap can gain, SVD-tie included.},
+and task-vector quantization (TVQ;
 uniform scalar quantization at $b \in \{1,2,4,8,16,32\}$ bits
 per parameter). This is $10$ merge configurations per model,
 $40$ in total.
 
-\paragraph{Finding 1: a non-vanishing floor on every architecture.}
+\paragraph{Finding 1: a non-vanishing worst-task excess on every
+architecture (and the theoretical floor is zero).}
 At the no-quantization rate ($b=32$), worst-task excess is
 strictly positive and bootstrap-significant for all four models:
 Llama $0.218$ $[0.213, 0.224]$, Mistral $0.146$ $[0.141, 0.151]$,
@@ -152,7 +168,7 @@ $P^\star$, and real task vectors are more benign than $P^\star$,
 leaving headroom that better algorithms could close.
 
 \paragraph{Finding 2: merging difficulty is governed by training,
-not attention design.} The worst-task floors order the models
+not attention design.} The worst-task excesses order the models
 \textbf{Llama $>$ Mistral $>$ Qwen $>$ Yi} (hardest to easiest;
 all adjacent gaps have non-overlapping $95\%$ CIs). This ordering
 cuts across attention design: the GQA model (Qwen) is neither the
@@ -180,7 +196,8 @@ dependence is left to future work.
 \paragraph{Finding 3: structure-respecting merging helps only via
 the bottleneck task.} TIES is the only method that meaningfully
 improves on Task Arithmetic: it reduces worst-task excess by
-$27\%$ (Llama), $61\%$ (Mistral), $54\%$ (Yi), and $87\%$ (Qwen),
+$30\%$ (Llama), $62\%$ (Mistral), $54\%$ (Yi), and $88\%$ (Qwen)
+against the $3$-seed means (\S\ref{subsec:exp-multiseed-bootstrap}),
 with non-overlapping CIs in every case. A paired bootstrap of the
 per-task differences (the shared $\tau_t$ baseline cancels) shows
 the win is concentrated on \emph{the bottleneck task}: on GSM8K,
@@ -191,16 +208,21 @@ destructive interference where it matters most -- on the
 worst-case task -- at a small cost elsewhere. By contrast, KnOTS
 and DARE are statistically and practically indistinguishable from
 TA (paired differences $\leq 0.002$ and $\leq 0.003$ nats
-respectively, split in both directions). This is consistent with
+respectively, split in both directions). DARE's near-identity to TA
+is expected rather than a no-op bug: at drop rate $0.2$ with the
+standard inverse-keep rescaling, DARE is an \emph{unbiased} estimate
+of the TA task vector, so a single draw concentrates near TA on
+continuous NLL (its paired differences are nonzero but sign-split) and
+can round \emph{exactly} equal on the discrete pass@1 metric of
+\S\ref{subsec:exp-downstream-gsm8k}. This is consistent with
 the theory: KnOTS's subspace alignment is predicted to help only
 when subspaces overlap ($\deff < Tr$), and we measure $\deff = Tr$
 everywhere, so there is no overlap for it to exploit. Adopting a
 practical-significance threshold of $0.005$ nats, only TIES
 separates from the structure-blind cluster
-(Figure~\ref{fig:methods}). A separate empirical study of
-code-analysis adapter merging reports a consistent pattern, with
-sparsification-based merges (TIES, DARE) trading off interference
-unevenly across tasks~\cite{pathak2026merging}.
+(Figure~\ref{fig:methods}); this rests on our own measurements (see
+also~\cite{concurrent2026merging}, a concurrent code-analysis study,
+which we cite for context rather than as corroboration).
 
 \paragraph{Finding 4: a universal ``less is more'' rate at
 $b=2$.} The TVQ rate sweep is non-monotone on every model: $2$-bit
@@ -269,31 +291,58 @@ we attribute to under-training of the single-task translation
 adapter ($7500$ WMT19 pairs). This does not affect the headline
 worst-task metric since GSM8K is the bottleneck on every model, but
 the per-task translation row should be read with caution. The full
-set of scope items including the single-seed caveat and the
+set of scope items including the
 translation under-training caveat is enumerated in
 \S\ref{sec:discussion}.
 
 \paragraph{Closing the $0.10$--$0.22$ gap.} The achievability
 construction of \S\ref{sec:achv} is what
 \S\ref{subsec:exp-rd-encoder} now runs on the real adapters; it
-closes the gap to $0.091$ on Llama-3.1-8B-Instruct (Figure
-\ref{fig:salvage}), and the regularized variant ties or beats every
-published baseline on every base we tested.
+closes the gap to $0.094$ on Llama-3.1-8B-Instruct ($3$-seed mean;
+Figure \ref{fig:salvage}), and the regularized variant has the lowest
+worst-task excess of every method at its default hyperparameters on
+every base we tested.
 
-\paragraph{Robustness of the qualitative findings to the single
-seed.} All adapters are trained with one seed, so the CIs above
-quantify evaluation, not training, uncertainty. We nonetheless
-expect the three structural findings to be seed-robust. The
+\paragraph{Seed robustness, now measured
+(\S\ref{subsec:exp-multiseed-bootstrap}).} The CIs above quantify
+evaluation, not training, uncertainty. The
 floor finding ($\deff = Tr$) is a \emph{rank} statement about
 $T=4$ rank-$16$ subspaces (a $64$-dimensional span) inside
-$\geq 4096$-dimensional layers: by dimension counting, independently
-trained subspaces are in general position almost surely, so
-$\deff = Tr$ is essentially certain regardless of seed -- and we
-indeed observe it in $100\%$ of layers across four independently
-pretrained models. The model ordering and the $b=2$ dip are
+$\geq 4096$-dimensional layers. We are careful here: \emph{random}
+$64$-dimensional subspaces in a $\geq 4096$-dimensional space are in
+general position almost surely, but trained LoRA subspaces are
+\emph{optimized}, not random, so $\deff = Tr$ is an \emph{empirical}
+finding --- we observe it in $100\%$ of layers across four
+independently pretrained models --- not a theorem. The large ambient
+dimension makes accidental overlap unlikely, which is why we expect it
+to be seed-stable, but we do not dress it as inevitable. The model ordering and the $b=2$ dip are
 large-margin effects (adjacent-model floor gaps and the
 $b{=}2$-vs-$b{=}4$ ratios all have non-overlapping $95\%$ CIs,
-\S\ref{subsec:exp-lora}), so a single re-seed would have to move
-point estimates by several CI-widths to overturn them. A
-multi-seed study would still strengthen the per-task breakdowns
-and is the natural complement to (iv) above.
+\S\ref{subsec:exp-lora}), so a single re-seed cannot overturn them.
+We confirm this directly in \S\ref{subsec:exp-multiseed-bootstrap}:
+retraining the $T=4$ matrix at \emph{three} independent seeds leaves
+all $20$ method-pair gaps that drive our recommendations
+\emph{Confident} (sign-stable, $95\%$ CI bounded away from zero).
+
+\paragraph{Two adapter cohorts; reading the numbers across
+\S\ref{sec:experiments}.} Two cohorts recur below and are \emph{not}
+cross-comparable. The \emph{$T=4$ matrix} (GSM8K, Alpaca, Magicoder,
+FLORES translation) underlies
+\S\ref{subsec:exp-rd-encoder}--\S\ref{subsec:exp-downstream-gsm8k}
+and \S\ref{subsec:exp-e10}; the \emph{$T$-scaling pool} (those four
+plus CodeAlpaca, Dolly, XSum) underlies \S\ref{subsec:exp-T-scaling},
+where merges draw $T \in \{2,4,7\}$ subsets. A base's worst-task
+excess differs between cohorts because the task set differs: Llama
+Task Arithmetic is $\approx 0.22$ on the $T=4$ matrix but $0.153$ on
+a $T=4$ pool subset (\S\ref{subsec:exp-T-scaling}), and the two must
+not be cross-read. Within the $T=4$ matrix, single-seed point
+estimates (quoted in \S\ref{subsec:exp-rd-encoder},
+\S\ref{subsec:exp-downstream-gsm8k}, \S\ref{subsec:exp-e10}) and the
+$3$-seed means (\S\ref{subsec:exp-multiseed-bootstrap}) agree to
+within a $\pm 0.01$ seed band on the point estimates (widest for
+TVQ$_2$, whose seed-1 cell sits $\sim 0.009$ below its $3$-seed mean;
+Llama TA spans $0.213$--$0.220$, TIES $0.147$--$0.161$), while the
+\emph{method-pair gaps} that drive the recommendations are tighter
+($\pm 0.004$, \S\ref{subsec:exp-multiseed-bootstrap}). The multi-seed
+bootstrap of \S\ref{subsec:exp-multiseed-bootstrap} is the canonical
+reference for the matrix.

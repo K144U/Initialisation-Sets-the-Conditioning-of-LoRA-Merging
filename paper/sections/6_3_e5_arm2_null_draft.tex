@@ -40,7 +40,7 @@ do not induce shared LoRA subspaces.
 On the same Qwen-2.5-7B base we then trained the four task
 adapters at rank $r = 64$ (vs.\ $r = 16$ in the main matrix),
 giving $T \cdot r = 256$. Hard $d_{\mathrm{eff}}/(Tr)$: mean $0.997$,
-min $0.867$, $0/112$ layers below the pre-registered $0.8$
+min $0.867$, $0/112$ layers below the pre-specified $0.8$
 threshold. The single most-bottlenecked layer drops to
 $\approx 0.867$, but the floor formula still evaluates to zero in
 the majority of layers and is operationally negligible across the

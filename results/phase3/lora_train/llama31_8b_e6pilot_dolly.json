@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "git_sha": "ca4cd8b4b2b7968c5def96abd1c826cdf34cf7e9",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "2",
+    "pbs_jobid": "41960.jiit-master",
+    "wallclock_iso": "2026-06-20T06:03:07+0200",
+    "wallclock_unix": 1781928187.042264,
+    "config_hash": "42b46a8c47dec77d",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Llama-3.1-8B-Instruct",
+      "task": {
+        "name": "dolly",
+        "dataset": "databricks/databricks-dolly-15k",
+        "config": null,
+        "split_train": "train",
+        "split_eval": "train",
+        "n_train": 7500,
+        "n_eval": 1000,
+        "prompt_field": "instruction",
+        "answer_field": "response"
+      },
+      "lora": {
+        "r": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ]
+      },
+      "train": {
+        "epochs": 2,
+        "lr": 5e-05,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "max_seq_length": 2048,
+        "warmup_ratio": 0.03,
+        "optim": "adamw_torch",
+        "logging_steps": 10,
+        "dataset_num_proc": 4,
+        "min_free_gb": 40
+      },
+      "output": {
+        "adapter_dir": "artifacts/lora/llama31_8b/e6_pilot/dolly/v1",
+        "results_path": "results/phase3/lora_train/llama31_8b_e6pilot_dolly.json"
+      },
+      "seeds": {
+        "global": 20260615,
+        "train": 20260615
+      }
+    }
+  },
+  "metrics": {
+    "task": "dolly",
+    "base_model": "/home/sanjay.g/projects/rdmerge/models/Llama-3.1-8B-Instruct",
+    "train_runtime_s": 2252.3463492393494,
+    "first_loss": 2.1955144882202147,
+    "last_loss": 1.6736618041992188,
+    "n_log_steps": 47,
+    "loss_history": [
+      2.1955144882202147,
+      1.901268196105957,
+      1.90856876373291,
+      1.8451059341430665,
+      1.8301620483398438,
+      1.7980001449584961,
+      1.814554214477539,
+      1.8447975158691405,
+      1.9363533020019532,
+      1.7633296966552734,
+      1.8425788879394531,
+      1.8279386520385743,
+      1.8046737670898438,
+      1.771688461303711,
+      1.7081548690795898,
+      1.812830352783203,
+      1.7231786727905274,
+      1.8172155380249024,
+      1.8402122497558593,
+      1.7608318328857422,
+      1.8826005935668946,
+      1.727851104736328,
+      1.8233983993530274,
+      1.8535369873046874,
+      1.8251422882080077,
+      1.759382438659668,
+      1.7324491500854493,
+      1.8680265426635743,
+      1.9257322311401368,
+      1.7535921096801759,
+      1.7991592407226562,
+      1.7219038009643555,
+      1.7812801361083985,
+      1.7650115966796875,
+      1.762310791015625,
+      1.7533346176147462,
+      1.7804033279418945,
+      1.7418418884277345,
+      1.8591455459594726,
+      1.7261865615844727,
+      1.7576318740844727,
+      1.8072717666625977,
+      1.721125030517578,
+      1.754514503479004,
+      1.7048511505126953,
+      1.9099859237670898,
+      1.6736618041992188
+    ],
+    "adapter_size_mb": 52.03282165527344,
+    "nll_tau_on_eval": 1.8164085076490333,
+    "n_train": 7500,
+    "n_eval": 1000,
+    "adapter_dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/e6_pilot/dolly/v1"
+  },
+  "wallclock_seconds": 2415.0807588100433,
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "2",
+    "pbs_jobid": "41960.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

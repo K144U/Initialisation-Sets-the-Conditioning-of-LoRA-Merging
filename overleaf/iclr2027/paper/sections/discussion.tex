@@ -122,28 +122,37 @@ Mistral-7B-v0.3, Qwen-2.5-7B, and Yi-1.5-9B-Chat span an instructive
 range of pretraining recipes and saturation regimes, but exclude the
 Llama-3.3, Gemma-2, and Phi families. The cross-model story
 (\S\ref{subsec:exp-T-scaling}, Figure~\ref{fig:hero}) is robust on the
-two bases tested at $T \in \{2, 4, 7\}$; broader validation is
+three bases tested at $T \in \{2, 4, 7\}$ (Yi-Chat, Llama-Instruct, and
+the pre-registered Mistral-7B-v0.3); broader validation is
 forthcoming.
 
 \item \textbf{Seed coverage is uneven.} The $T = 4$ matrix
-(\S\ref{subsec:exp-multiseed}) is run with two seeds plus bootstrap
-CIs. The cross-model $T$-scaling sweep (\S\ref{subsec:exp-T-scaling})
-uses $4$ random task subsets per $T$ but a single training seed per
-adapter. The added baselines (\S\ref{subsec:exp-e10-e11}) and the
-quadratic-bridge probe are seed-$1$ single cells.
+(\S\ref{subsec:exp-multiseed}) is run with three independent
+training seeds plus bootstrap CIs on the five key method-pair gaps
+(\S\ref{subsec:exp-multiseed-bootstrap}); all $20$ gaps come back
+\emph{Confident}. The cross-model $T$-scaling sweep
+(\S\ref{subsec:exp-T-scaling}) uses $4$ random task subsets per $T$
+but a single training seed per adapter. The added baselines
+(\S\ref{subsec:exp-e10-e11}) and the quadratic-bridge probe are
+seed-$1$ single cells.
 
-\item \textbf{rd-encoder ridge tested on NLL only.} The downstream
-metric verification of \S\ref{subsec:exp-downstream-gsm8k}
-(GSM8K \textsc{em} and HumanEval pass@1) is run on the five matrix
-methods, not on rd-encoder ridge. The R1 recommendation in
-\S\ref{sec:practical-recommendations} therefore extrapolates from NLL
-robustness, and we flag this gap explicitly.
+\item \textbf{rd-encoder ridge downstream accuracy is strong but not
+uniform.} \S\ref{subsec:exp-downstream-gsm8k} evaluates rd-encoder
+ridge on both accuracy metrics over three adapter seeds. It is the best
+of six methods on five of the eight (base $\times$ metric) cells, but
+is seed-unstable and \emph{not} best on two --- worst of six on
+Llama-3.1 GSM8K and third on Mistral HumanEval, the two cells whose
+across-seed SD is an order of magnitude larger than the rest. The
+recommendation behind R1 therefore rests on the NLL worst-task-excess
+win, not on downstream dominance; the accuracy transfer is a
+majority-of-cells result with a documented high-variance failure mode.
+COMET-22 and IFEval extensions are future work.
 
 \item \textbf{Single-cell outlier with no surviving mechanism.} The
 (Llama-3.1-Instruct, GSM8K \textsc{em}) cell shows Spearman $\rho =
--0.60$ between NLL and accuracy across the five matrix methods, against
-$\rho \geq +0.72$ on the other seven (base $\times$ metric) cells we
-measured. Both pre-registered candidate mechanisms (chat-template
+-0.60$ between NLL and accuracy across the five matrix methods, while
+the other seven (base $\times$ metric) cells are positive
+($\rho \geq 0.7$ on five, moderate on the two Mistral cells). Both pre-registered candidate mechanisms (chat-template
 emission, cross-metric sign-election) were tested in
 \S\ref{subsec:exp-downstream-gsm8k} and falsified. The outlier remains
 empirically unexplained and is the one cell where we recommend running
@@ -165,20 +174,23 @@ Appendix~\ref{app:sign-election-threshold} predicts the TIES win-share
 range threshold $R^\star \in [0.025, 0.075]$ from a perturbation
 analysis of the TIES update; the constants $c_{\mathrm{bias}}$,
 $c_{\mathrm{sign}}$ are estimated by spectral analogy, not derived
-from first-principles Fisher information. The two empirical points
-(Yi $R = 0.077$, Llama $R = 0.028$) bracket the predicted range but
-do not falsify it in the strict sense.
+from first-principles Fisher information. The three cross-model points
+(Yi $R = 0.077$ above the window inverts; Llama $R = 0.028$ and Mistral
+$R = 0.0326$ inside it stay ambiguous) all match the model, but its
+\emph{below}-window prediction (TIES wins outright for $R < 0.025$) is
+untested --- no cohort we measured drops below $R = 0.028$ --- so the
+lower threshold is confirmed only as an open edge.
 
 \item \textbf{Concurrent merge methods not exhaustively surveyed.}
-The added baselines of \S\ref{subsec:exp-e10} (Fisher-magnitude,
-DELLA) cover the two most commonly requested reviewer comparisons.
-AdaMerging, RegMean, DARE-TIES and 2026-era methods such as
-DO-Merging and 1-bit-Merging are discussed in
-\S\ref{sec:related_work} but not all re-run on our matrix; the
-empirical headline (rd-encoder ridge ties or beats TA and TIES on
-every base at $T = 4$) is robust to the absence of any single
-baseline, but a comprehensive 10+ method comparison is a fair
-follow-up.
+The unified head-to-head of \S\ref{subsec:exp-e10}
+(Table~\ref{tab:e10-baselines}) re-runs ten methods on our matrix at a
+single seed, including Fisher-magnitude, DELLA, and the two data-free
+closed-form relatives RegMean and AdaMerging. DARE-TIES and 2026-era
+methods such as DO-Merging and 1-bit-Merging are discussed in
+\S\ref{sec:related_work} but not re-run; the empirical headline
+(rd-encoder ridge has the lowest worst-task excess of all ten on every
+base at $T = 4$) is robust to the absence of any single further
+baseline, but additional 2026-era comparisons are a fair follow-up.
 \end{enumerate}
 
 \paragraph{Closing.} We have given LoRA merging the information-

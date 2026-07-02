@@ -1,6 +1,5 @@
 % APPENDIX (Td2): Derivation of the TIES sign-election win-share-range
-% threshold. v1 2026-06-24. Self-derived without Prof. Garg (T1 deferred
-% indefinitely owing to his unavailability).
+% threshold. v1 2026-06-24. (T1 deferred indefinitely.)
 %
 % Goal: convert the empirical "TIES inverts when per-task win-share range
 % R > ~0.05" claim of §6.6 v3 into a first-principles prediction that
@@ -170,27 +169,36 @@ $R^\star \in [0.025, 0.075]$.
 
 Table~\ref{tab:ties-probe} in the main text reports:
 \begin{itemize}
-\item \textbf{Llama-3.1-8B-Instruct}: $R = 0.028$. Predicted: $R <
-  R^\star_{\mathrm{lo}} = 0.025$ would not invert; $R > 0.025$ is
-  inside the prediction interval, ambiguous. \emph{Observed}: TIES
-  wins (no inversion). Consistent with the lower edge of the predicted
-  range.
-\item \textbf{Yi-1.5-9B-Chat}: $R = 0.077$. Predicted: $R >
-  R^\star_{\mathrm{hi}} = 0.075$ would invert. \emph{Observed}: TIES
-  becomes worst method ($\Phi^{\mathrm{TIES}}_{T=7} = 0.341$ vs.\ TA
-  $0.265$). Consistent with the upper edge of the predicted range.
+\item \textbf{Llama-3.1-8B-Instruct}: $R = 0.028$, \emph{inside} the
+  window ($R > R^\star_{\mathrm{lo}} = 0.025$). Predicted: ambiguous
+  --- TIES neither inverts to worst nor wins outright.
+  \emph{Observed}: at $T = 7$ TIES is mid-pack
+  ($\Phi^{\mathrm{TIES}}_{T=7} = 0.232$, third of six: rd-ridge
+  $0.138$ and TVQ$_2$ $0.215$ beat it, while TA/DARE/KnOTS $0.265$ are
+  worse). Matches the in-window ambiguous prediction.
+\item \textbf{Yi-1.5-9B-Chat}: $R = 0.077$, \emph{above} the window
+  ($R > R^\star_{\mathrm{hi}} = 0.075$). Predicted: TIES inverts to
+  worst. \emph{Observed}: TIES
+  becomes the worst method ($\Phi^{\mathrm{TIES}}_{T=7} = 0.148$ vs.\ TA
+  $0.128$). Matches the above-window inversion prediction.
 \end{itemize}
-The two empirical points \emph{bracket} the predicted threshold range
-$[0.025, 0.075]$. Both are at the extreme edges, so the bracket is
-tight but the order of magnitude is correct, and the directional
-prediction (Llama below, Yi above) is unambiguous.
+Across the three cross-model points --- Llama ($R = 0.028$) and
+Mistral ($R = 0.0326$) inside the window, Yi ($R = 0.077$) above it
+--- every observed outcome matches the model: two in-window ambiguous,
+one above-window inversion. We are careful \emph{not} to call this a
+``bracket'': the model's \emph{below}-window prediction (TIES wins
+outright for $R < R^\star_{\mathrm{lo}} = 0.025$) is \emph{untested},
+since no cohort we measured has $R < 0.025$ (our smallest is Llama at
+$0.028$). The lower threshold is therefore an honest open edge rather
+than a confirmed one; what the three points confirm is the upper
+threshold and the in-window ambiguous interior.
 
 \paragraph{Falsification protocol and third-base confirmation.}
 The model predicts that any additional base with $R \in [0.025,
 0.075]$ should produce \emph{ambiguous} TIES behavior (no clear
 inversion, no clear win). We pre-registered exactly this test on a
 third base (commit \texttt{3582799}, before the sweep ran):
-Mistral-7B-Instruct-v0.3, whose probe win-share range $R = 0.033$ falls
+Mistral-7B-Instruct-v0.3, whose probe win-share range $R = 0.0326$ falls
 inside the interval, was predicted ambiguous at $T = 7$. The $T = 7$
 sweep confirms it: TIES is second-best of six and well below Task
 Arithmetic, neither clearly winning nor inverting
@@ -226,7 +234,7 @@ the causal control variable, with no base model present. Reading the
 base-free curve at the win-share ranges \emph{measured} on the real
 bases gives a direct, non-circular cross-check --- the implied TIES
 penalty is $2.6\times$ larger at Yi's $R = 0.077$ than at Llama's
-$R = 0.028$, and $2.3\times$ larger than at Mistral's $R = 0.033$,
+$R = 0.028$, and $2.3\times$ larger than at Mistral's $R = 0.0326$,
 separating the base that inverts from the two that do not. The robust
 claims are the monotone coupling and this relative separation, both
 independent of the magnitude-jitter calibration; the absolute
@@ -255,7 +263,7 @@ base model is used.}
 \begin{enumerate}
 \item The constants $c_{\mathrm{bias}}, c_{\mathrm{sign}}$ are
   estimated by spectral analogy, not derived from first-principles
-  Fisher information. A future paper with Prof.\ Garg (deferred) would
+  Fisher information. Future work would
   replace this with the exact Fisher-quadratic constants and produce a
   point estimate rather than a bracket.
 \item The model assumes the per-task win-share $q_t$ is observable on
@@ -265,7 +273,7 @@ base model is used.}
   requirement of the R2 recommendation in \S\ref{sec:practical-recommendations}.
 \item The original two data points (Yi, Llama) only \emph{bracket} the
   threshold. This is now strengthened by a pre-registered third base
-  (Mistral, $R = 0.033$, confirmed ambiguous at $T = 7$;
+  (Mistral, $R = 0.0326$, confirmed ambiguous at $T = 7$;
   \S\ref{app:td2-comparison}) and by the base-free synthetic
   confirmation of \S\ref{app:td2-synthetic} --- though the absolute
   overlap-to-$R$ map of the latter is itself setup-dependent.

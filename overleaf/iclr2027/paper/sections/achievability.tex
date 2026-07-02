@@ -100,18 +100,19 @@ isotropic in $\range(\bar H)$ the $T$ per-task projections are
 equal in expectation. The $\max_t \leq T\,\mathrm{avg}$ step thus
 loses the full factor $T$ only when one task's projection
 dominates, and $\approx 1$ in the typical, concentrated case. The
-synthetic measurements fit this benign reading: the achievability
-constant stays flat at $11$--$13$ across $T \in \{2,3\}$
-(\S\ref{subsec:exp-synthetic}) rather than growing $\sim\!1.5\times$
-as a strictly linear-$T$ constant would. We therefore do not
-settle whether the linear $T$-dependence is intrinsic to the
-rate-distortion function or an artifact of this analysis -- the
-flat empirical constant hints at the latter, and a measurement at
-$T \in \{4,8\}$ would decide it; tightening the bound -- by a
-sharper achievability step or a $T$-dependent lower bound -- is
-open. Consequently the floor-zero
-``$\Theta(B^2 2^{-2R/(Tr)})$'' conclusion should be read as
-``$\Theta$ up to factors of $T$.''
+synthetic measurements decide this in favour of the benign reading:
+sweeping $T \in \{2,4,8,16\}$ ($1000$ trials/cell,
+\S\ref{subsec:exp-synthetic}) the achievability constant grows
+\emph{logarithmically}, not linearly --- a $\log T$ fit gives
+$R^2 \geq 0.998$ against $R^2 \approx 0.91$ for a linear fit, and the
+$T{=}16$ constant is only $1.77\times$ the $T{=}2$ value rather than
+the $8\times$ a strictly linear-$T$ factor predicts. The linear
+$T$-dependence is therefore an artifact of this analysis (the crude
+Step~3 bound), not intrinsic to the rate-distortion function;
+tightening the upper bound to a $\log T$ (or $T$-free) constant is the
+open problem, which we state as a conjecture. Consequently the
+floor-zero ``$\Theta(B^2 2^{-2R/(Tr)})$'' conclusion should be read as
+``$\Theta$ up to a $\log T$ factor.''
 \end{remark}
 
 \paragraph{Proof sketch.} Five steps.

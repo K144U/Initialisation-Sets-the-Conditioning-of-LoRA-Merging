@@ -9,10 +9,17 @@
 \subsection*{Sidebar — Estimating the floor on trained adapters}
 \label{subsec:floor-recipe}
 
-The lower bound of \S\ref{sec:lower_bound} reads
-$\Phi^\star \geq B^2 / (4 \cdot d_{\mathrm{eff}})$, where $B$ is the
-quantization radius per coordinate and $d_{\mathrm{eff}}$ is the
-effective shared dimensionality of the $T$ task projections. To make
+The lower bound of \S\ref{sec:lower_bound} (Lemma~\ref{lem:floor-general})
+reads
+$\Phi^\star \geq B^2 \left(1 - d_{\mathrm{eff}} / (Tr)\right)$,
+where $B$ is the per-coordinate quantization radius, $r$ is the LoRA
+rank, $T$ the number of tasks, and $d_{\mathrm{eff}}$ the effective
+shared dimensionality of the $T$ task projections. In the floor-zero
+regime $d_{\mathrm{eff}} = Tr$ that all our measurements occupy the
+floor vanishes identically; the recipe below is for auditing whether
+\emph{any} new adapter cohort sits in that regime, and for quantifying
+the algorithmic gap between the empirical worst-task excess and the
+floor (which is the entire excess, in the floor-zero regime). To make
 the bound auditable on a deployed merge, both quantities must be
 estimable from trained-adapter artifacts. The following recipe is what
 we used in \S\ref{subsec:exp-e5-null} and what practitioners can
@@ -25,32 +32,35 @@ attention projection (we use $q, k, v, o$). The base model and
 tokenizer are not required for the floor estimate, only the adapter
 artifacts themselves.
 
-\paragraph{Step 1 --- Per-task projector $V_t$.}
-Stack the adapter's column vectors across layers and projections into
-a single matrix $M_t \in \mathbb{R}^{d \times r_t}$ where $d$ is the
-total dimensionality ($= n_{\mathrm{layers}} \times 4 \times
-d_{\mathrm{in}}$ for our standard four-projection setup) and $r_t$ is
-the LoRA rank. Compute the rank-$r_t$ orthonormal projector via thin
-QR: $V_t = \mathrm{qr}(M_t).Q$. This is the column-space basis the
-encoder operates in. Memory: one $d \times r$ float32 matrix per task,
-which for $d \approx 10^5$ and $r = 16$ is $\sim 6$ MB per task.
+\paragraph{Step 1 --- Per-task, per-layer projector $V_t^\ell$.}
+The effective dimension is fundamentally a \emph{per-layer} quantity
+--- it is the quantity in Finding~1 and in the mechanical barrier
+$r > d_{\mathrm{in}}/T$ --- so the recipe computes it per layer, not by
+stacking across layers. For each attention projection in each layer
+$\ell$, form the adapter's column matrix $M_t^\ell \in
+\mathbb{R}^{d_{\mathrm{in}} \times r_t}$ and its rank-$r_t$ orthonormal
+projector $V_t^\ell = \mathrm{qr}(M_t^\ell).Q$. (A single global stack
+across all layers would force $d_{\mathrm{eff}} = Tr$ trivially, since
+$Tr = 64 \ll n_{\mathrm{layers}} \cdot d_{\mathrm{in}}$, and would
+obscure exactly the per-layer geometry the barrier depends on.)
 
-\paragraph{Step 2 --- Stacked projector and SVD.}
-Concatenate $\mathbf{V} = [V_1, V_2, \dots, V_T] \in
-\mathbb{R}^{d \times Tr}$ and compute its singular values
-$\{\sigma_i\}$. The \emph{hard} effective dimension is the count of
-non-trivial singular values:
+\paragraph{Step 2 --- Per-layer stacked projector and SVD.}
+For each layer, concatenate
+$\mathbf{V}^\ell = [V_1^\ell, V_2^\ell, \dots, V_T^\ell] \in
+\mathbb{R}^{d_{\mathrm{in}} \times Tr}$ and take its singular values
+$\{\sigma_i\}$. The \emph{hard} per-layer effective dimension is the
+count of non-trivial singular values:
 \begin{equation*}
-  d_{\mathrm{eff}}^{\mathrm{hard}}
+  d_{\mathrm{eff}}^{\mathrm{hard}, \ell}
   = \big| \{i : \sigma_i > \varepsilon \cdot \sigma_1\} \big|,
-  \qquad \varepsilon = 10^{-3}.
+  \qquad \varepsilon = 10^{-3},
 \end{equation*}
-The \emph{soft} effective dimension uses the participation-ratio
-estimator $d_{\mathrm{eff}}^{\mathrm{soft}} = (\sum_i \sigma_i^2)^2 /
-\sum_i \sigma_i^4$, which is differentiable in $\sigma$ and more
-robust to a long tail near $\varepsilon$. We report both in
-\S\ref{subsec:exp-e5-null}; the gap between them is informative
-about how much overlap is "approximate" vs.\ "structural."
+and the \emph{soft} version uses the participation-ratio
+estimator $(\sum_i \sigma_i^2)^2 / \sum_i \sigma_i^4$. We report the
+distribution across layers (min and mean) in
+\S\ref{subsec:exp-e5-null}; the floor below uses the per-layer
+$d_{\mathrm{eff}}^\ell$, and $d_{\mathrm{eff}}^\ell = Tr$ in every
+layer is what makes the floor identically zero throughout.
 
 \paragraph{Step 3 --- Per-coordinate radius $B$.}
 $B$ is the per-coordinate quantization span. For TVQ at $b$ bits with
@@ -65,14 +75,25 @@ single coordinate sees from the merge.
 \paragraph{Step 4 --- Floor and the algorithmic gap.}
 \begin{equation*}
   \Phi^\star_{\mathrm{lower}}
-  = \frac{B^2}{4 \cdot d_{\mathrm{eff}}}.
+  = B^2 \left(1 - \frac{d_{\mathrm{eff}}}{T r}\right).
 \end{equation*}
-Report alongside the measured worst-task NLL excess $\Phi^\star_{\mathrm{meas}}$
-of the merged model. The ratio $\Phi^\star_{\mathrm{meas}} /
-\Phi^\star_{\mathrm{lower}}$ is the algorithmic gap: a value near $1$
-means the encoder is information-theoretically tight, a value $\gg 1$
-means the regime is algorithmic and rd-encoder ridge or a similar
-better encoder is the right place to look (\S\ref{subsec:exp-rd-encoder}).
+This is the Lemma~\ref{lem:floor-general} form of the floor instantiated
+on the audited cohort, evaluated per layer. In the regime where the
+per-layer stacked-projector
+spectrum gives $d_{\mathrm{eff}}^\ell = Tr$ the floor is identically zero,
+so any non-zero measured worst-task NLL excess
+$\Phi^\star_{\mathrm{meas}}$ is the \emph{entire algorithmic gap}
+between the deployed encoder and the rate-distortion optimum. This is
+the regime our experiments occupy
+(\S\ref{subsec:exp-multiseed}, \S\ref{subsec:exp-e5-null}):
+$\Phi^\star_{\mathrm{lower}} = 0$, and the $0.10$--$0.22$ nats/token
+of measured excess is recoverable headroom that a better encoder ---
+e.g.\ rd-encoder ridge of \S\ref{subsec:exp-rd-encoder} --- can claim.
+For an audited cohort with $d_{\mathrm{eff}} < Tr$ the floor is
+strictly positive and bounds the smallest excess achievable by any
+encoder at any rate; the difference
+$\Phi^\star_{\mathrm{meas}} - \Phi^\star_{\mathrm{lower}}$ is the
+algorithmic gap.
 
 \paragraph{Assumptions and caveats.}
 \begin{enumerate}

@@ -1,0 +1,124 @@
+{
+  "meta": {
+    "git_sha": "0b572a954469f52f154e87b35825e74ceac79f36",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "3",
+    "pbs_jobid": "41484.jiit-master",
+    "wallclock_iso": "2026-06-11T22:18:53+0200",
+    "wallclock_unix": 1781209133.843817,
+    "config_hash": "bddc780c566b2c3d",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Yi-1.5-9B-Chat",
+      "task": {
+        "name": "gsm8k",
+        "dataset": "openai/gsm8k",
+        "config": "main",
+        "split_train": "train",
+        "split_eval": "test",
+        "n_train": 7500,
+        "n_eval": 200,
+        "prompt_field": "question",
+        "answer_field": "answer"
+      },
+      "lora": {
+        "r": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ]
+      },
+      "train": {
+        "epochs": 2,
+        "lr": 5e-05,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "max_seq_length": 2048,
+        "warmup_ratio": 0.03,
+        "optim": "adamw_torch",
+        "logging_steps": 10,
+        "dataset_num_proc": 1,
+        "min_free_gb": 35
+      },
+      "output": {
+        "adapter_dir": "artifacts/lora/yi15_9b/gsm8k/seed2",
+        "results_path": "results/phase3/lora_train/yi15_9b_gsm8k_v1_seed2.json"
+      },
+      "seeds": {
+        "global": 2,
+        "train": 2
+      }
+    }
+  },
+  "metrics": {
+    "task": "gsm8k",
+    "base_model": "/home/sanjay.g/projects/rdmerge/models/Yi-1.5-9B-Chat",
+    "train_runtime_s": 4387.131161212921,
+    "first_loss": 0.9509003639221192,
+    "last_loss": 0.366668176651001,
+    "n_log_steps": 46,
+    "loss_history": [
+      0.9509003639221192,
+      0.5970652580261231,
+      0.4692345142364502,
+      0.4079392433166504,
+      0.41210451126098635,
+      0.4014438629150391,
+      0.3851229429244995,
+      0.39617438316345216,
+      0.3975698232650757,
+      0.3945714235305786,
+      0.37682650089263914,
+      0.3851860761642456,
+      0.39445369243621825,
+      0.3827765226364136,
+      0.3778971195220947,
+      0.3892301321029663,
+      0.3839508056640625,
+      0.3894289255142212,
+      0.3788390874862671,
+      0.37348432540893556,
+      0.3829108953475952,
+      0.3927817106246948,
+      0.38657679557800295,
+      0.3688875675201416,
+      0.3571357488632202,
+      0.36114423274993895,
+      0.3553508758544922,
+      0.3787086963653564,
+      0.34933459758758545,
+      0.359106707572937,
+      0.34797799587249756,
+      0.37822513580322265,
+      0.35189156532287597,
+      0.36958634853363037,
+      0.38891842365264895,
+      0.3570530652999878,
+      0.36840362548828126,
+      0.370598292350769,
+      0.339847469329834,
+      0.37164983749389646,
+      0.35939247608184816,
+      0.366593337059021,
+      0.3640012741088867,
+      0.3680506944656372,
+      0.3634029388427734,
+      0.366668176651001
+    ],
+    "adapter_size_mb": 75.04920959472656,
+    "nll_tau_on_eval": 0.38385616588417776,
+    "n_train": 7473,
+    "n_eval": 200,
+    "adapter_dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/gsm8k/seed2"
+  },
+  "wallclock_seconds": 4458.21315741539,
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "3",
+    "pbs_jobid": "41484.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

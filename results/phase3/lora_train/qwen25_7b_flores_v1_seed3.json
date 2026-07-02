@@ -1,0 +1,126 @@
+{
+  "meta": {
+    "git_sha": "feb5ea2b428e44c8c08d7aaac6a014bceb50c9b0",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "42592.jiit-master",
+    "wallclock_iso": "2026-06-25T10:47:59+0200",
+    "wallclock_unix": 1782377279.893838,
+    "config_hash": "c8502f33146b5fa8",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Qwen2.5-7B-Instruct",
+      "task": {
+        "name": "translation",
+        "dataset": "wmt/wmt19",
+        "config": "de-en",
+        "split_train": "train",
+        "split_eval": "validation",
+        "n_train": 7500,
+        "n_eval": 200,
+        "src_lang": "en",
+        "tgt_lang": "de",
+        "streaming": true
+      },
+      "lora": {
+        "r": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ]
+      },
+      "train": {
+        "epochs": 2,
+        "lr": 5e-05,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "max_seq_length": 2048,
+        "warmup_ratio": 0.03,
+        "optim": "adamw_torch",
+        "logging_steps": 10,
+        "dataset_num_proc": 1,
+        "min_free_gb": 40
+      },
+      "output": {
+        "adapter_dir": "artifacts/lora/qwen25_7b/flores/seed3",
+        "results_path": "results/phase3/lora_train/qwen25_7b_flores_v1_seed3.json"
+      },
+      "seeds": {
+        "global": 3,
+        "train": 3
+      }
+    }
+  },
+  "metrics": {
+    "task": "translation",
+    "base_model": "/home/sanjay.g/projects/rdmerge/models/Qwen2.5-7B-Instruct",
+    "train_runtime_s": 454.3930013179779,
+    "first_loss": 1.8740659713745118,
+    "last_loss": 1.032071876525879,
+    "n_log_steps": 47,
+    "loss_history": [
+      1.8740659713745118,
+      1.5815869331359864,
+      1.2182994842529298,
+      1.1436820030212402,
+      1.109198760986328,
+      1.0959358215332031,
+      1.090588092803955,
+      1.0947120666503907,
+      1.074894332885742,
+      1.058342170715332,
+      1.0580639839172363,
+      1.0900251388549804,
+      1.048151397705078,
+      1.097597599029541,
+      1.0871101379394532,
+      1.0411905288696288,
+      1.0602420806884765,
+      1.0760281562805176,
+      1.0588869094848632,
+      1.0346529960632325,
+      1.0638887405395507,
+      1.0352181434631347,
+      1.0377642631530761,
+      1.0242265701293944,
+      1.050535297393799,
+      1.0269750595092773,
+      1.0776769638061523,
+      1.0143367767333984,
+      1.0135302543640137,
+      1.0270197868347168,
+      1.0019316673278809,
+      1.037367343902588,
+      1.0442353248596192,
+      1.0572830200195313,
+      1.0063902854919433,
+      1.0401987075805663,
+      1.0197054862976074,
+      1.0348698616027832,
+      1.0086712837219238,
+      1.0149593353271484,
+      1.0347432136535644,
+      1.0296181678771972,
+      1.018291187286377,
+      1.0293797492980956,
+      1.0420342445373536,
+      1.0017082214355468,
+      1.032071876525879
+    ],
+    "adapter_size_mb": 38.52863311767578,
+    "nll_tau_on_eval": 0.794067867134985,
+    "n_train": 7500,
+    "n_eval": 200,
+    "adapter_dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/flores/seed3"
+  },
+  "wallclock_seconds": 502.7321455478668,
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "42592.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

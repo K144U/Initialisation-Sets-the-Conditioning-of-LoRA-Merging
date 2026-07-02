@@ -15,7 +15,7 @@ footprint: Task-Vector Quantization (TVQ)~\cite{kim2025tvq} and
 1-bit-Merging~\cite{bit1merging2025} achieve competitive accuracy
 at one to four bits per coordinate. A complementary empirical study
 examines linear-combination merging and cross-task interference for
-code-analysis adapters~\cite{pathak2026merging}. What unifies these
+code-analysis adapters~\cite{concurrent2026merging}. What unifies these
 methods is that they are \emph{constructions}: each proposes a particular
 encoder and evaluates it empirically. None establishes a
 \emph{fundamental limit} on merging quality at a given storage or
@@ -41,9 +41,39 @@ and Gradients}~\cite{gradients2025taskvectorsgradients} (2025)
 develops this into a second-order Taylor-expansion bound on
 task-arithmetic error. None of these works frame
 merging as lossy source coding or derive Shannon-style limits.
-Our work is the first to pose merging as a multi-source
-rate-distortion problem with worst-task distortion as the figure
-of merit.
+Our work is, to our knowledge, the first to pose merging as a
+multi-source rate-distortion problem with worst-task distortion as the
+figure of merit.
+
+\paragraph{Closed-form merging lineage.} The encoder of
+\S\ref{sec:achievability} sits in a long line of closed-form merge
+constructions that invert a per-task surrogate of curvature.
+RegMean~\cite{jin2023regmean} solves
+$W^\star = (\sum_t \tfrac{1}{N_t} Z_t^\top Z_t)^{-1}
+ \sum_t \tfrac{1}{N_t} (Z_t^\top Z_t) W_t$ with $Z_t$ the per-task
+\emph{input activations}, which makes it data-dependent and requires
+forward passes to collect $Z_t^\top Z_t$. LoRM~\cite{lorm2024}
+generalizes RegMean to low-rank adapters, and
+RegMean++~\cite{regmeanpp2025} refines the regularization. Our
+construction differs structurally in three ways. First, it is
+\emph{data-free}: the per-task projector $V_t$ is computed from the
+adapter factors $A_t$ alone, no forward passes. Second, it is derived
+from a worst-task rate-distortion lower bound
+(\S\ref{sec:lower_bound}) rather than from an empirical
+least-squares fit. Third, the Tikhonov regularization $\lambda^\star$
+that produces the headline encoder in \S\ref{subsec:exp-rd-encoder}
+emerges as the numerical-conditioning floor of
+Theorem~\ref{thm:achv} exposed as a single hyperparameter rather
+than as a defensive shrinkage on the Gram. We benchmark directly
+against a \emph{data-free} variant of RegMean (using $A_t^\top A_t$ as
+the per-task Gram surrogate) in \S\ref{subsec:exp-e10}, and rd-encoder
+ridge beats it on all four bases (Table~\ref{tab:e10-baselines}). We do
+not over-read this: data-free RegMean lacks the ridge term, so the
+comparison conflates the rate-distortion centroid with the
+regularization rather than isolating the centroid; the clean
+ridge-regularized-RegMean control is left to future work. The full
+data-dependent RegMean is structurally closer to LoRM and out of scope
+for a data-free baseline.
 
 \paragraph{Added baselines comparison.} The empirical matrix of
 \S\ref{sec:experiments} compares against five published baselines
@@ -98,7 +128,8 @@ Our Theorem~\ref{thm:general} is a \emph{lower bound} on every
 algorithm — it says that whatever the best merging procedure is,
 it cannot beat $B^2 f_{\mathrm{floor}} + c_{\mathrm{TQ}}
 (B^2 \deff / (Tr)) \cdot 2^{-2R/\deff}$. The negative result and
-our lower bound are compatible and mutually reinforcing, and our
+our lower bound are complementary rather than contradictory --- we
+resolve an apparent tension in their method ordering below --- and our
 own measurements (\S\ref{sec:exp}) pin down the mechanism. We
 find that real LoRA task subspaces are linearly
 \emph{independent} ($\deff = Tr$ in every layer of all four base
@@ -107,9 +138,21 @@ subspace-alignment method has no overlap to exploit, so it cannot
 improve on naive averaging — and indeed we measure KnOTS to be
 statistically indistinguishable from Task Arithmetic, while only
 TIES (which resolves sign-level interference rather than subspace
-overlap) helps. This explains the
+overlap) helps. This last point is also where our ordering and theirs
+visibly differ --- \cite{systematic2025merging} single out Task
+Arithmetic as uniquely reliable, whereas we find TIES beats it --- and
+we read this as a difference of metric and setup, not a contradiction.
+Their study scores \emph{average} constructive interference (does the
+merge improve over the source models?) across $16$ heterogeneous
+benchmarks, on which TIES's aggressive trimming is higher-variance and
+can net-hurt; we score \emph{worst-task} NLL excess on a controlled
+$4$-task matrix, where TIES's sign-election consistently relieves the
+bottleneck task. Average gain and worst-case degradation need not rank
+methods the same way, and on the one method both analyses single out
+--- subspace alignment (KnOTS-style) --- we agree it fails. With that
+caveat, the two results are complementary: theirs explains the
 \cite{systematic2025merging} negative result not by an
-irreducible floor but by its opposite: with no subspace overlap,
+irreducible floor but by its opposite --- with no subspace overlap,
 the floor is zero and the entire merging gap is algorithmic
 slack above a beatable target. The lower bound's
 \emph{floor-positive} regime — substantial subspace overlap, no

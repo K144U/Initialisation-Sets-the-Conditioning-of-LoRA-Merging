@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "git_sha": "5c8e5a74f7bb9d3a3e1dcd1ccff9fe8a33ed4d92",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "6",
+    "pbs_jobid": "41614.jiit-master",
+    "wallclock_iso": "2026-06-15T13:21:12+0200",
+    "wallclock_unix": 1781522472.9862037,
+    "config_hash": "f5035c4de5326d0b",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Yi-1.5-9B-Chat",
+      "task": {
+        "name": "xsum",
+        "dataset": "EdinburghNLP/xsum",
+        "config": null,
+        "split_train": "train",
+        "split_eval": "test",
+        "n_train": 7500,
+        "n_eval": 1000,
+        "prompt_field": "document",
+        "answer_field": "summary"
+      },
+      "lora": {
+        "r": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ]
+      },
+      "train": {
+        "epochs": 2,
+        "lr": 5e-05,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "max_seq_length": 2048,
+        "warmup_ratio": 0.03,
+        "optim": "adamw_torch",
+        "logging_steps": 10,
+        "dataset_num_proc": 4,
+        "min_free_gb": 40
+      },
+      "output": {
+        "adapter_dir": "artifacts/lora/yi15_9b/e6_pilot/xsum/v1",
+        "results_path": "results/phase3/lora_train/yi15_9b_e6pilot_xsum.json"
+      },
+      "seeds": {
+        "global": 20260615,
+        "train": 20260615
+      }
+    }
+  },
+  "metrics": {
+    "task": "xsum",
+    "base_model": "/home/sanjay.g/projects/rdmerge/models/Yi-1.5-9B-Chat",
+    "train_runtime_s": 10691.891595363617,
+    "first_loss": 2.835706329345703,
+    "last_loss": 1.2836060523986816,
+    "n_log_steps": 47,
+    "loss_history": [
+      2.835706329345703,
+      1.7653770446777344,
+      1.506352138519287,
+      1.413975429534912,
+      1.4171206474304199,
+      1.420179843902588,
+      1.4246978759765625,
+      1.3678122520446778,
+      1.325973129272461,
+      1.3648504257202148,
+      1.3397345542907715,
+      1.4138502120971679,
+      1.3591126441955566,
+      1.3777168273925782,
+      1.3767748832702638,
+      1.373420810699463,
+      1.3966779708862305,
+      1.3491460800170898,
+      1.3593384742736816,
+      1.3296267509460449,
+      1.396621036529541,
+      1.3430561065673827,
+      1.3461928367614746,
+      1.3765869140625,
+      1.3553305625915528,
+      1.355567169189453,
+      1.3374621391296386,
+      1.3301533699035644,
+      1.3222951889038086,
+      1.3225489616394044,
+      1.3363825798034668,
+      1.2911378860473632,
+      1.2875517845153808,
+      1.29507474899292,
+      1.3314817428588868,
+      1.3116637229919434,
+      1.2949489593505858,
+      1.3371870040893554,
+      1.34545841217041,
+      1.2860087394714355,
+      1.2846528053283692,
+      1.2917798042297364,
+      1.3294772148132323,
+      1.3200502395629883,
+      1.3216089248657226,
+      1.307614803314209,
+      1.2836060523986816
+    ],
+    "adapter_size_mb": 75.04920959472656,
+    "nll_tau_on_eval": 1.5559895609291388,
+    "n_train": 7500,
+    "n_eval": 1000,
+    "adapter_dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/yi15_9b/e6_pilot/xsum/v1"
+  },
+  "wallclock_seconds": 10984.34949851036,
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "6",
+    "pbs_jobid": "41614.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

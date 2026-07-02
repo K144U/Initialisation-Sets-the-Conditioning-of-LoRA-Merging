@@ -1,0 +1,127 @@
+{
+  "meta": {
+    "git_sha": "415a29b865f57e1cf64eb2c6087575f8bbd6b90d",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "41561.jiit-master",
+    "wallclock_iso": "2026-06-14T06:25:13+0200",
+    "wallclock_unix": 1781411113.8307862,
+    "config_hash": "9457de67a7d4e557",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Qwen2.5-7B-Instruct",
+      "task": {
+        "name": "translation",
+        "dataset": "wmt/wmt19",
+        "config": "de-en",
+        "split_train": "train",
+        "split_eval": "validation",
+        "n_train": 7500,
+        "n_eval": 1000,
+        "src_lang": "en",
+        "tgt_lang": "de",
+        "streaming": true,
+        "train_jsonl": "artifacts/e5_pilot_data/qwen25_7b/translation__alpha90.jsonl"
+      },
+      "lora": {
+        "r": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ]
+      },
+      "train": {
+        "epochs": 2,
+        "lr": 5e-05,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "max_seq_length": 2048,
+        "warmup_ratio": 0.03,
+        "optim": "adamw_torch",
+        "logging_steps": 10,
+        "dataset_num_proc": 4,
+        "min_free_gb": 40
+      },
+      "output": {
+        "adapter_dir": "artifacts/lora/qwen25_7b/e5_pilot/translation__alpha90/v1",
+        "results_path": "results/phase3/lora_train/qwen25_7b_e5pilot_translation_alpha90.json"
+      },
+      "seeds": {
+        "global": 20260614,
+        "train": 20260614
+      }
+    }
+  },
+  "metrics": {
+    "task": "translation",
+    "base_model": "/home/sanjay.g/projects/rdmerge/models/Qwen2.5-7B-Instruct",
+    "train_runtime_s": 2942.2530059814453,
+    "first_loss": 1.0831411361694336,
+    "last_loss": 0.5277352809906006,
+    "n_log_steps": 47,
+    "loss_history": [
+      1.0831411361694336,
+      0.8976032257080078,
+      0.69525146484375,
+      0.5581171989440918,
+      0.5473416805267334,
+      0.5201828956604004,
+      0.5427793502807617,
+      0.5183940887451172,
+      0.5268159866333008,
+      0.6013129234313965,
+      0.5360102176666259,
+      0.5382351398468017,
+      0.5462589740753174,
+      0.5280145645141602,
+      0.5175482273101807,
+      0.525538969039917,
+      0.48082537651062013,
+      0.48278326988220216,
+      0.5081291198730469,
+      0.5411376953125,
+      0.527407455444336,
+      0.5018887996673584,
+      0.5046221733093261,
+      0.5254459381103516,
+      0.5852065563201905,
+      0.5208248615264892,
+      0.511616849899292,
+      0.4832794666290283,
+      0.48580121994018555,
+      0.5102815628051758,
+      0.52328519821167,
+      0.523142147064209,
+      0.49070234298706056,
+      0.47153100967407224,
+      0.4815859317779541,
+      0.4643826484680176,
+      0.5350078105926513,
+      0.5255034446716309,
+      0.5149504184722901,
+      0.542257833480835,
+      0.49557785987854003,
+      0.49708032608032227,
+      0.509837007522583,
+      0.48894262313842773,
+      0.4870114803314209,
+      0.5114812850952148,
+      0.5277352809906006
+    ],
+    "adapter_size_mb": 38.52863311767578,
+    "nll_tau_on_eval": 0.7935148816764704,
+    "n_train": 7500,
+    "n_eval": 1000,
+    "adapter_dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/e5_pilot/translation__alpha90/v1"
+  },
+  "wallclock_seconds": 3060.8721544742584,
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "41561.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

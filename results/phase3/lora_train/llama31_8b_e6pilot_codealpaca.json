@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "git_sha": "ca4cd8b4b2b7968c5def96abd1c826cdf34cf7e9",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "2",
+    "pbs_jobid": "41960.jiit-master",
+    "wallclock_iso": "2026-06-20T05:22:30+0200",
+    "wallclock_unix": 1781925750.9296803,
+    "config_hash": "867f297d503edc98",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Llama-3.1-8B-Instruct",
+      "task": {
+        "name": "codealpaca",
+        "dataset": "sahil2801/CodeAlpaca-20k",
+        "config": null,
+        "split_train": "train",
+        "split_eval": "train",
+        "n_train": 7500,
+        "n_eval": 1000,
+        "prompt_field": "instruction",
+        "answer_field": "output"
+      },
+      "lora": {
+        "r": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ]
+      },
+      "train": {
+        "epochs": 2,
+        "lr": 5e-05,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "max_seq_length": 2048,
+        "warmup_ratio": 0.03,
+        "optim": "adamw_torch",
+        "logging_steps": 10,
+        "dataset_num_proc": 4,
+        "min_free_gb": 40
+      },
+      "output": {
+        "adapter_dir": "artifacts/lora/llama31_8b/e6_pilot/codealpaca/v1",
+        "results_path": "results/phase3/lora_train/llama31_8b_e6pilot_codealpaca.json"
+      },
+      "seeds": {
+        "global": 20260615,
+        "train": 20260615
+      }
+    }
+  },
+  "metrics": {
+    "task": "codealpaca",
+    "base_model": "/home/sanjay.g/projects/rdmerge/models/Llama-3.1-8B-Instruct",
+    "train_runtime_s": 1954.9945495128632,
+    "first_loss": 1.2787062644958496,
+    "last_loss": 0.5927764892578125,
+    "n_log_steps": 47,
+    "loss_history": [
+      1.2787062644958496,
+      0.899419116973877,
+      0.7221116542816162,
+      0.6737411499023438,
+      0.6923962593078613,
+      0.6593760490417481,
+      0.6744345188140869,
+      0.6448120594024658,
+      0.6453712463378907,
+      0.6518712520599366,
+      0.636473560333252,
+      0.60607008934021,
+      0.6742778301239014,
+      0.5889903545379639,
+      0.5987702369689941,
+      0.6351323604583741,
+      0.616688585281372,
+      0.5957054138183594,
+      0.5550404548645019,
+      0.5619726657867432,
+      0.6097791194915771,
+      0.622322940826416,
+      0.6114793300628663,
+      0.5517996311187744,
+      0.5892021656036377,
+      0.6456812381744385,
+      0.6109724044799805,
+      0.5782465934753418,
+      0.6089239120483398,
+      0.595949649810791,
+      0.6050000190734863,
+      0.6089743614196778,
+      0.6109028816223144,
+      0.5919561862945557,
+      0.5536416530609131,
+      0.6212508201599121,
+      0.5945035457611084,
+      0.6107482433319091,
+      0.5963686466217041,
+      0.616492509841919,
+      0.6131792545318604,
+      0.5466155052185059,
+      0.5938670635223389,
+      0.5900572776794434,
+      0.5760912895202637,
+      0.5734250545501709,
+      0.5927764892578125
+    ],
+    "adapter_size_mb": 52.03282165527344,
+    "nll_tau_on_eval": 0.6147297945089305,
+    "n_train": 7500,
+    "n_eval": 1000,
+    "adapter_dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/e6_pilot/codealpaca/v1"
+  },
+  "wallclock_seconds": 2108.439101934433,
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "2",
+    "pbs_jobid": "41960.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

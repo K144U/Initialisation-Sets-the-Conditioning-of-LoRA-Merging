@@ -1,8 +1,11 @@
 """Generates Figure 1: cross-model T-scaling hero plot.
 
-A 1x2 panel showing worst-task NLL excess vs T for the 5 matrix methods
-on Yi-1.5-9B-Chat (left, saturated base — TIES inverts at T=7) and
-Llama-3.1-8B-Instruct (right, non-saturated — TIES stays low,
+A 1x3 panel showing worst-task NLL excess vs T for the matrix methods,
+ordered left-to-right by per-task sign-election win-share range R:
+Yi-1.5-9B-Chat (left, saturated base, R=0.077 — TIES inverts at T=7),
+Mistral-7B-Instruct-v0.3 (middle, the pre-registered third base,
+R=0.0326 — TIES ambiguous, as pre-registered), and
+Llama-3.1-8B-Instruct (right, non-saturated, R=0.028 — TIES stays low,
 rd_ridge widens its lead).
 
 Output: paper_artifacts/figures/figure1_cross_model_T_scaling.{png,pdf}.
@@ -16,17 +19,20 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-ROOT = Path("/home/sanjay.g/projects/rdmerge")
+# Portable root: .../code/phase3/scripts/make_figure1_hero.py -> repo root.
+ROOT = Path(__file__).resolve().parents[3]
 OUT_DIR = ROOT / "paper_artifacts/figures"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 SUMMARY = {
     "yi15_9b": ROOT / "results/phase3/e6_T_scaling_summary.json",
+    "mistral_7b": ROOT / "results/phase3/mistral_t7_summary.json",
     "llama31_8b": ROOT / "results/phase3/e6_T_scaling_summary_llama31_8b.json",
 }
 TITLE = {
-    "yi15_9b": "Yi-1.5-9B-Chat (saturated base)",
-    "llama31_8b": "Llama-3.1-8B-Instruct (non-saturated)",
+    "yi15_9b": "Yi-1.5-9B-Chat (saturated, $R{=}0.077$)",
+    "mistral_7b": "Mistral-7B-v0.3 (pre-registered, $R{=}0.0326$)",
+    "llama31_8b": "Llama-3.1-8B-Instruct (non-saturated, $R{=}0.028$)",
 }
 METHODS_PLOT = ["ta", "ties", "tvq_b2", "rd_ridge"]
 METHOD_LABEL = {
@@ -76,9 +82,9 @@ def main() -> int:
         "axes.facecolor": "white",
     })
 
-    fig, axes = plt.subplots(1, 2, figsize=(9.5, 3.6), sharey=False)
+    fig, axes = plt.subplots(1, 3, figsize=(14, 3.6), sharey=False)
 
-    for ax, base in zip(axes, ["yi15_9b", "llama31_8b"]):
+    for ax, base in zip(axes, ["yi15_9b", "mistral_7b", "llama31_8b"]):
         arms = load_arms(base)
         for m in METHODS_PLOT:
             xs, means, mins, maxs = [], [], [], []

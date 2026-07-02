@@ -8,44 +8,91 @@ KnOTS~\cite{stoica2025knots}, DO-Merging~\cite{domerging2025},
 Core~Space~\cite{panariello2025core}, Task-Vector
 Quantization~\cite{kim2025tvq}, and 1-bit-Merging~\cite{bit1merging2025}
 all compete on this problem; each proposes an encoder, tunes
-hyper-parameters, and reports benchmark numbers. None answers the
-prior question: at a given storage budget, what is the best
-\emph{possible} merging algorithm -- and how far from it are the
-methods we use today?
+hyper-parameters, and reports benchmark numbers. Two operational
+questions go unanswered. First, \emph{how much room is left}: a
+method's benchmark score says nothing about whether a better merger
+could still halve its error or whether it is already near optimal.
+Second, \emph{when a method will fail}: a merger that wins on one base
+can invert to worst-of-the-matrix on another with no warning. Both
+reduce to a prior question no method addresses --- at a given storage
+budget, what is the best \emph{possible} merging algorithm, and how far
+from it are the methods we use today?
 
 \paragraph{Contribution in one sentence.} \emph{Using a worst-task
 rate-distortion analysis of LoRA merging as a lens, we build a merge
-encoder (\textsc{rd-encoder ridge}) that ties or beats every published
-method on every base we test, and a one-CPU-minute audit of any
+encoder (\textsc{rd-encoder ridge}) with the lowest worst-task NLL
+excess of every method at its default hyperparameters on every base we
+test, and a one-CPU-minute audit of any
 trained adapter cohort that predicts when classical methods such as
-TIES invert from best to worst --- with the threshold confirmed on the
-two bases that bracket it and pre-registered on a third.}
+TIES invert from best to worst --- with the threshold's upper edge and
+ambiguous interior confirmed on three bases (one above the window
+inverts, two inside stay ambiguous), one of them a pre-registered\footnote{Throughout,
+\emph{pre-registered} means the prediction was committed to our
+timestamped, version-controlled experiment log \emph{before} the
+corresponding compute was run; the audit trail of
+\S\ref{subsec:exp-T-scaling} shows no result commit predating the
+registration.} out-of-sample third.}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.92\textwidth]{../paper_artifacts/figures/figure1_cross_model_T_scaling.pdf}
 \caption{\textbf{Same merge methods, opposite outcomes across bases.}
-Worst-task NLL excess vs.\ task count $T \in \{2, 4, 7\}$ on a saturated
-base (left, Yi-1.5-9B-Chat) and a non-saturated base (right,
-Llama-3.1-8B-Instruct), shaded by per-subset min/max across $4$ random
-task subsets per $T$. On Yi, TIES rises sharply at $T = 7$ to become
-the \emph{worst} method, an inversion we trace to per-task sign-election
-win-share concentration on saturated bases
-(\S\ref{subsec:exp-T-scaling}; theoretical threshold derived in
-Appendix~\ref{app:sign-election-threshold}). On Llama,
+Worst-task NLL excess vs.\ task count $T \in \{2, 4, 7\}$ on three bases
+ordered by per-task sign-election win-share range $R$: a saturated base
+(left, Yi-1.5-9B-Chat, $R = 0.077$), the pre-registered third base
+(middle, Mistral-7B-v0.3, $R = 0.0326$), and a non-saturated base
+(right, Llama-3.1-8B-Instruct, $R = 0.028$); shaded by per-subset
+min/max across the random task subsets per $T$. On Yi, TIES rises
+sharply at $T = 7$ to become the \emph{worst} method, an inversion we
+trace to per-task sign-election win-share concentration on saturated
+bases (\S\ref{subsec:exp-T-scaling}; theoretical threshold derived in
+Appendix~\ref{app:sign-election-threshold}). On Mistral, whose $R$ sits
+inside the pre-registered ambiguity window $[0.025, 0.075]$, TIES is
+neither best nor worst at $T = 7$, exactly as pre-registered. On Llama,
 \textsc{rd-encoder ridge} (ours) widens its lead from a ratio of
 $0.84$ at $T = 2$ to $0.52$ at $T = 7$ over Task Arithmetic, the
-cleanest cross-$T$ signal in our matrix.}
+cleanest cross-$T$ signal in our matrix; the same salvage strengthens
+on Mistral ($1.38 \to 0.82 \to 0.47$).}
 \label{fig:hero}
 \end{figure}
 
-\paragraph{What we prove, in one paragraph.} We treat merging as a
+\paragraph{Two deliverables, one analysis.} We answer both questions
+with a single rate-distortion analysis of merging, and the payoff is
+operational before it is theoretical. \emph{A method.} The analysis
+comes with an exact-construction encoder; on real adapters that exact
+construction fails for a measured spectral reason, but a one-line
+Tikhonov ridge salvages it into \textsc{rd-encoder ridge}, a merge
+method that ties or beats every published baseline at $T = 4$ on the
+$4$-base $\times$ $7$-method matrix we evaluate and \emph{widens} its
+lead as the task count grows (excess ratio vs.\ Task Arithmetic
+$0.84 \to 0.68 \to 0.52$ over $T \in \{2, 4, 7\}$ on
+Llama-3.1-Instruct; Figure~\ref{fig:hero}). \emph{An audit.} The same
+analysis yields a one-CPU-minute diagnostic that predicts \emph{when} a
+classical method will fail: a perturbation derivation of the TIES
+sign-election update gives a closed-form ambiguity window
+$R^\star \in [0.025, 0.075]$ on a cohort's per-task win-share range,
+and TIES inverts from best to worst exactly when a cohort rises above
+it. The window predicts inversion above it and ambiguity inside it:
+Yi-Chat ($R = 0.077$, above) inverts, while Llama-Instruct
+($R = 0.028$) and a pre-registered Mistral-7B-v0.3 ($R = 0.0326$),
+both inside, stay ambiguous --- TIES neither inverting nor winning.
+The below-window regime (where the model predicts TIES wins outright)
+is untested.
+Compressed into a five-rule decision tree
+(\S\ref{sec:practical-recommendations}), the audit tells a practitioner
+which merger to use and which task sets not to merge at all. We now
+describe the analysis these come from.
+
+\paragraph{The lens: merging as compression.} Both deliverables come
+from treating merging as a
 compression problem: $T$ task-specific weight updates must be encoded
 into a single model within a storage budget, and quality is the loss
 inflation on the \emph{worst}-affected task (a merged model that
 collapses on one task is not a useful deployment target). For this
-problem we prove matching lower and upper bounds -- a rate-distortion
-theorem -- with a closed-form answer that separates worst-task error
+problem we prove lower and upper bounds that match in their rate
+exponent (up to a factor in $T$ in the constant, conjectured tight)
+-- a rate-distortion theorem -- with a closed-form answer that
+separates worst-task error
 into two parts with different cures. The first is an
 \textbf{irreducible floor} set entirely by the geometry of the tasks:
 if the tasks' weight subspaces overlap, no encoder at any bit budget
@@ -69,14 +116,23 @@ model. The floor is exactly zero; practical merging lives entirely in
 the algorithm-limited regime. This turns the theorem into a measured
 verdict on current practice: the five standard methods we evaluate
 leave $0.10$--$0.22$ nats/token of worst-task error on the table
-(bootstrap $95\%$ CIs), and \emph{all of it is in principle
-recoverable} -- it is distance from the optimum, not an unavoidable
-cost of merging. Zero overlap also predicts which methods can work:
-subspace-alignment merging (KnOTS~\cite{stoica2025knots}) has nothing
-to exploit and is statistically indistinguishable from naive
-averaging, exactly as the theory says, while TIES -- which attacks
-sign-level interference instead -- is the only method that separates
-from the baseline.
+(bootstrap $95\%$ CIs), and \emph{none of it is an
+information-theoretic floor} -- the bound's floor is zero, so the gap
+is distance from the optimum, not an unavoidable cost of merging. (How much of that slack a \emph{practical} encoder
+reclaims is the achievability question of
+\S\ref{subsec:exp-rd-encoder}, where the exact optimal construction
+in fact fails on real adapters and a one-line regularized variant
+reclaims a measurable fraction.) Zero overlap also predicts which
+methods can work: subspace-alignment merging
+(KnOTS~\cite{stoica2025knots}) has nothing to exploit and is
+statistically indistinguishable from naive averaging, exactly as the
+theory says, while TIES -- which attacks sign-level interference
+instead -- is the only method that separates from the baseline. What
+\S\ref{sec:exp} validates on real LLMs is thus the regime
+\emph{diagnosis} and its qualitative consequences --- which methods
+can work --- not the quantitative rate-distortion curve, whose
+compression slope is operationally invisible at the bit budgets
+merging uses (\S\ref{subsec:exp-lora}).
 
 \emph{A worked example.} A Llama-3.1-8B base with $T{=}4$ rank-$16$
 LoRAs has $\deff \leq Tr = 64$ relevant dimensions per layer. The
@@ -116,6 +172,18 @@ almost surely in the random-subspace model.
 
 \paragraph{Contributions.}
 \begin{enumerate}[leftmargin=*,topsep=2pt,itemsep=2pt]
+\item \textbf{A merge method and a cohort audit, both falling out of
+the bound (\S\ref{sec:exp}, \S\ref{sec:practical-recommendations}).}
+\textsc{rd-encoder ridge} --- the achievability construction
+regularized by one Tikhonov ridge term to survive a measured spectral
+failure on real adapters --- matches or beats every published baseline
+(within CI), including data-free RegMean, on every base we test. A
+perturbation analysis of the TIES sign-election
+yields a one-CPU-minute audit and a five-rule decision tree that
+predict when classical mergers invert from best to worst, with the
+upper threshold and ambiguous interior confirmed on three bases (one
+inverting above the window, two ambiguous inside, one pre-registered).
+
 \item \textbf{A reduction identity (Lemma~\ref{lem:id}).} For every
 admissible $(\tau, H)$ and every $w$: worst-task distortion is at
 least a quantization term around the $H$-weighted centroid plus a
@@ -136,7 +204,8 @@ beats floor plus $c_{\mathrm{TQ}} \cdot (B^2 \deff / (Tr)) \cdot
 proof composes Yao's minimax principle, Lemma~\ref{lem:id}, a
 reduction to $\range(\bar H)$, and an $O(d)$-equivariance argument.
 
-\item \textbf{A matching explicit algorithm (Theorem~\ref{thm:achv}).}
+\item \textbf{A rate-exponent-matching explicit algorithm
+(Theorem~\ref{thm:achv}).}
 In the floor-zero regime, randomized orthogonal mixing of the
 $\bar H^{1/2}$-scaled centroid plus uniform scalar quantization
 achieves the same $2^{-2R/(Tr)}$ decay, so
@@ -176,7 +245,7 @@ floor-positive regime an explicit linear encoder achieves exponent
 $2^{-2R/(\deff + |A| - 1)}$ and closing the gap to $2^{-2R/\deff}$
 appears to require non-linear encoders
 (Remark~\ref{rem:sharedv-gap}). The achievability constant's
-$T$-dependence is now measured (logarithmic, contribution 5) but not
+$T$-dependence is now measured (logarithmic, contribution 6) but not
 yet proved; tightening $Tc^2/3$ to match is open. The theory is
 stated for quadratic loss; the bridge to cross-entropy via local
 Fisher-quadratic approximation, and its measured residual, are

@@ -1338,3 +1338,36 @@ use R=0.0326. Reconciled the appendix to 0.033 to match the canonical value.
 Verify the exact probe/T this corresponds to if a precise Mistral T=7 win-share
 number is later wanted.
 ================================================================================
+
+---
+
+## 2026-07-01 — Matched seed1/2/3 re-run complete; §6.5 honest reframe
+
+Resolves the v1-vs-seed1 adapter mismatch (rd-ridge headline used v1 adapters,
+baselines used seed1/2/3). All rd-ridge numbers re-run apples-to-apples on
+matched seed1/2/3. Compute: eval_ridge_seed (30/30), eval_e1_seed (3/3, lambda=0
+exact), eval_{e3_gsm8k,b4_humaneval,e3b_gsm8k_rdridge,b4b_humaneval_rdridge}_seed
+(144/144). Self-healing keeper (rerun_keeper.sh) recovered 2 walltime deaths.
+
+**§6.2 (salvage arc), matched 3-seed means:** lambda*=0.05 -> worst-task 0.094
+(v1 0.091); lambda=0.13 -> 0.125; lambda=0 exact collapse -> 0.340 (v1 0.497 was
+a pessimistic single draw, sd across seeds only 0.011). Baselines harmonized to
+3-seed means (TA 0.220, TIES 0.154). Below-TIES band narrowed [0.03,0.20]->
+[0.03,0.18]. Figure regenerated. Analyzer analyze_ridge_lambda_seed.py.
+
+**§6.5 (downstream) — MAJOR HONEST REFRAME.** The v4 claim "rd-ridge best-or-
+tied on all 8 (base x metric) cells" was a v1 single-draw artifact and is
+RETRACTED. Matched 3-seed: rd-ridge best on 5/8; WORST of six on Llama-3.1 GSM8K
+(0.201, was 0.364) and 3rd on Mistral HumanEval (0.191, was 0.311). Verified NOT
+a bug (identical lambda/config). Cause: rd-ridge is seed-unstable on exactly
+those two cells (across-seed SD 0.074, 0.084; per-seed 0.14-0.31, 0.08-0.28) vs
+<=0.015 elsewhere -- the norm-amplifying ridge construction yields degenerate
+greedy generations on some adapter draws. NLL worst-task-excess win UNAFFECTED
+(seed-stable) = the robust claim. rho: GSM8K {L -0.60, M +0.67, Q +1.00, Y +0.90}
+HE {L +1.00, M +0.60, Q +0.87, Y +0.72} -> 7/8 positive, 5/8 >=0.7. Analyzer
+analyze_downstream_seed.py. Propagated to §6.2, §6.5, §6.7 (R1/R3/R4),
+discussion, experiments, intro, §6.8. Overleaf snapshot rebuilt.
+
+NO theory changes (Lemma 2 floor / achievability untouched). Score impact:
+CLAUDE.md §11 "rd-ridge verified on downstream +0.2" weakened toward neutral;
+caught pre-submission, paper now honest.

@@ -1,0 +1,74 @@
+[
+  {
+    "name": "s3_qwen25_7b__rd_ridge__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_seed_rdridge_regmean/qwen25_7b__rd_ridge__seed1.yaml",
+    "done": "results/phase3/eval_seed_rdridge_regmean/qwen25_7b__rd_ridge__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "s3_qwen25_7b__regmean__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_seed_rdridge_regmean/qwen25_7b__regmean__seed1.yaml",
+    "done": "results/phase3/eval_seed_rdridge_regmean/qwen25_7b__regmean__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "s3_qwen25_7b__rd_ridge__seed2",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_seed_rdridge_regmean/qwen25_7b__rd_ridge__seed2.yaml",
+    "done": "results/phase3/eval_seed_rdridge_regmean/qwen25_7b__rd_ridge__seed2.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "s3_qwen25_7b__regmean__seed2",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_seed_rdridge_regmean/qwen25_7b__regmean__seed2.yaml",
+    "done": "results/phase3/eval_seed_rdridge_regmean/qwen25_7b__regmean__seed2.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "s3_qwen25_7b__rd_ridge__seed3",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_seed_rdridge_regmean/qwen25_7b__rd_ridge__seed3.yaml",
+    "done": "results/phase3/eval_seed_rdridge_regmean/qwen25_7b__rd_ridge__seed3.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "s3_qwen25_7b__regmean__seed3",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_seed_rdridge_regmean/qwen25_7b__regmean__seed3.yaml",
+    "done": "results/phase3/eval_seed_rdridge_regmean/qwen25_7b__regmean__seed3.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "s3_yi15_9b__rd_ridge__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_seed_rdridge_regmean/yi15_9b__rd_ridge__seed1.yaml",
+    "done": "results/phase3/eval_seed_rdridge_regmean/yi15_9b__rd_ridge__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "s3_yi15_9b__regmean__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_seed_rdridge_regmean/yi15_9b__regmean__seed1.yaml",
+    "done": "results/phase3/eval_seed_rdridge_regmean/yi15_9b__regmean__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "s3_yi15_9b__rd_ridge__seed2",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_seed_rdridge_regmean/yi15_9b__rd_ridge__seed2.yaml",
+    "done": "results/phase3/eval_seed_rdridge_regmean/yi15_9b__rd_ridge__seed2.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "s3_yi15_9b__regmean__seed2",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_seed_rdridge_regmean/yi15_9b__regmean__seed2.yaml",
+    "done": "results/phase3/eval_seed_rdridge_regmean/yi15_9b__regmean__seed2.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "s3_yi15_9b__rd_ridge__seed3",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_seed_rdridge_regmean/yi15_9b__rd_ridge__seed3.yaml",
+    "done": "results/phase3/eval_seed_rdridge_regmean/yi15_9b__rd_ridge__seed3.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "s3_yi15_9b__regmean__seed3",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_seed_rdridge_regmean/yi15_9b__regmean__seed3.yaml",
+    "done": "results/phase3/eval_seed_rdridge_regmean/yi15_9b__regmean__seed3.json",
+    "min_free_gb": 25.0
+  }
+]

@@ -4,8 +4,9 @@
 % CONFIRMED — Mistral T=7 verdict AMBIGUOUS (TIES 2/6, 0.092 nats
 % below TA), so the threshold model is now a confirmed prediction,
 % not a two-point bracket fit. (Mistral also salvages with T like
-% Llama: rd-ridge/TA 1.38->0.815->0.470 over T=2/4/7 — adding Mistral
-% rows to tab:e6-worst/tab:e6-slopes deferred as a larger restructure.)
+% Llama: rd-ridge/TA 1.38->0.815->0.470 over T=2/4/7.)
+% v5 2026-06-28. Restructure landed: Mistral is now an explicit third
+% base in the Setup, tab:e6-worst, and tab:e6-slopes; cell count 108->162.
 % v3 2026-06-23 (evening). Integrates the TIES sign-election probe
 % result on the T=7 cohorts: vote-split structure is nearly identical
 % Yi vs Llama (rejecting the literal v1 "consensus degrades"
@@ -22,11 +23,13 @@
 The matrix of \S\ref{subsec:exp-lora}--\S\ref{subsec:exp-rd-encoder}
 fixes $T=4$. To test whether the algorithmic ordering and the
 ridge-encoder salvage survive as $T$ grows on real LoRA adapters, we
-run a $T$-sweep on \emph{two} base models across $T \in \{2, 4, 7\}$:
-Yi-1.5-9B-Chat (E1's easiest base, $\lambda = 0.13$) and
-Llama-3.1-8B-Instruct (E1's hardest base, $\lambda = 0.05$). The
-sweeps are the real-data complement to E4's synthetic prediction of
-log-$T$ growth with slope $\rho \approx 1 / \sqrt{r}$.
+run a $T$-sweep on \emph{three} base models across $T \in \{2, 4, 7\}$:
+Yi-1.5-9B-Chat (E1's easiest base, $\lambda = 0.13$),
+Llama-3.1-8B-Instruct (E1's hardest base, $\lambda = 0.05$), and
+Mistral-7B-Instruct-v0.3 (the pre-registered third base, $\lambda =
+0.13$; see the Td2 test below). The sweeps are the real-data
+complement to E4's synthetic prediction of log-$T$ growth with slope
+$\rho \approx 1 / \sqrt{r}$.
 
 \paragraph{Setup.} For each base, we trained three new rank-$16$ LoRA
 adapters (CodeAlpaca, Dolly, XSum) and merged them with the four
@@ -37,7 +40,7 @@ base-optimal $\lambda$ of \S\ref{subsec:exp-rd-encoder}. For each $T$
 we draw one fixed nested chain plus three random subsets at
 $T \in \{2, 4\}$ and use the all-$7$-tasks subset at $T = 7$. Each
 cell evaluates worst-task NLL excess at $n_{\text{eval}} = 1000$.
-Total: $108$ merge cells ($54$ per base, identical subset
+Total: $162$ merge cells ($54$ per base, identical subset
 composition for cross-base comparison).
 
 \paragraph{Headline: ordering holds, rd-ridge salvage grows with $T$.}
@@ -82,7 +85,8 @@ $0.68$ at $T = 4$, $0.52$ at $T = 7$. \S\ref{subsec:exp-rd-encoder}'s
 cross-model salvage result is not just preserved at $T = 7$, it
 strengthens. The same strengthening holds on Mistral, the
 pre-registered third base (ratio rd-ridge/TA $= 1.38, 0.82, 0.47$ at
-$T = 2, 4, 7$): rd-ridge loses narrowly at $T = 2$ but wins outright
+$T = 2, 4, 7$, computed from unrounded excess; the three-decimal table
+entries round these slightly): rd-ridge loses narrowly at $T = 2$ but wins outright
 at $T = 7$ ($0.115$, vs.\ TIES $0.152$ and TA $0.244$). On Yi,
 rd-ridge wins on alpaca-OUT subsets and at
 $T = 7$ all-cells; the all-cells regression at $T = 4$ is the
@@ -152,7 +156,10 @@ identical between Yi and Llama, rejecting the literal v1
 however, is $2.8 \times$ wider on Yi: instruction-following tasks
 dominate the elected signs while the code adapter (Magicoder) and
 the saturated Alpaca adapter are systematically outvoted. On Llama
-all $7$ tasks are nearly equally represented.}
+all $7$ tasks are nearly equally represented. Win-share ranges are
+computed from unrounded shares (Llama: $0.8323 - 0.8045 = 0.0278 \to
+0.028$, above the $R^\star_{\mathrm{lo}} = 0.025$ edge; the $3$-decimal
+endpoints shown round to a $0.027$ difference).}
 \label{tab:ties-probe}
 \begin{tabular}{lcc}
 \hline
@@ -187,22 +194,30 @@ where adapter $\Delta$ tensors share a dominant
 instruction-following direction}. Appendix~\ref{app:sign-election-threshold}
 derives this threshold from a perturbation model of the TIES
 update, predicting $R^\star \in [0.025, 0.075]$ for $T = 4$ at
-density $0.2$; the two empirical points (Yi $R = 0.077$, Llama
-$R = 0.028$) bracket the predicted range and respect the
-directional prediction. We then pre-registered an \emph{out-of-sample}
+density $0.2$. The model makes three regime predictions: $R > 0.075$
+inverts, $R < 0.025$ TIES wins outright, and $0.025 \leq R \leq 0.075$
+ambiguous. Our two original points sit on different sides: Yi
+($R = 0.077$, above the window) inverts, and Llama ($R = 0.028$,
+\emph{inside} the window) is ambiguous --- at $T = 7$ TIES is mid-pack
+($0.232$, third of six; rd-ridge and TVQ$_2$ beat it, TA/DARE/KnOTS
+are worse), neither inverting nor winning. We then pre-registered an
+\emph{out-of-sample}
 third-base test (commit \texttt{3582799}, timestamped before the
 Mistral sweep was run): Mistral-7B-Instruct-v0.3, whose probed
-sign-election win-share range $R = 0.0326$ falls strictly inside the
+sign-election win-share range $R = 0.0326$ also falls strictly inside the
 predicted window, was predicted to be \emph{ambiguous} at $T = 7$ ---
 TIES neither clearly inverting to the worst method nor clearly winning.
 The Mistral $T = 7$ sweep confirms it: TIES is second-best of six
 methods (worst-task excess $0.152$), a margin of $0.092$ nats
 \emph{below} Task Arithmetic ($0.244$), so neither operationalized
 condition fires (``clearly worst'' requires $> \mathrm{TA} + 0.04$;
-``clearly best'' requires first place by $> 0.02$). The threshold
-model therefore survives a pre-registered test on a base it was not
-fit to, upgrading Appendix~\ref{app:sign-election-threshold} from a
-two-point bracket fit to a confirmed prediction. The controlled-overlap
+``clearly best'' requires first place by $> 0.02$). Across all three
+bases the observed outcomes match the model (two in-window ambiguous,
+one above-window inversion), upgrading
+Appendix~\ref{app:sign-election-threshold} from a two-point fit to a
+prediction confirmed out of sample --- with the honest caveat that the
+\emph{below}-window prediction (TIES wins outright for $R < 0.025$)
+remains untested, as no cohort we measured drops below $R = 0.028$. The controlled-overlap
 mechanism behind it is confirmed directly in
 Appendix~\ref{app:td2-synthetic}: a base-free synthetic sweep, in which
 a single knob raises one task's sign-conflict, reproduces the TIES
@@ -250,14 +265,16 @@ rd-encoder ridge from "ties at best" (Yi all-cells $T = 7$) to
 
 \paragraph{What this changes for the paper.}
 Four updates to v1.
-(i) The $T$-scaling form holds on both bases ($R^2 \geq 0.93$ for
-$11$ of $12$ all-cells fits); the slope is base-dependent: Yi
-$\in [0.07, 0.10]$, Llama $\in [0.12, 0.16]$. We report this as a
+(i) The $T$-scaling form holds on all three bases ($R^2 \geq 0.93$ for
+$16$ of $18$ all-cells fits); the slope is base-dependent: Yi
+$\in [0.07, 0.10]$, with Llama and Mistral matrix-method slopes
+$\sim 2\times$ larger. We report this as a
 quantitative refinement of E4's $\rho \cdot \log T$, with the
 empirical $\rho$ between half and two-thirds of the synthetic
 $1 / \sqrt{r}$ estimate.
 (ii) Rd-encoder ridge is the only method whose log-$T$ slope is
-nearly base-invariant ($0.070$ on Yi, $0.065$ on Llama), and on
+nearly base-invariant ($0.070$ on Yi, $0.065$ on Llama, $0.062$ on
+Mistral), and on
 Llama it dominates TA by an increasing margin as $T$ grows
 ($16\% \to 32\% \to 48\%$ improvements). This promotes the ridge
 result from "salvage at $T = 4$" to "the $T$-stable method on

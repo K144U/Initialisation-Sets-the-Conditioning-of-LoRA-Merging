@@ -17,15 +17,28 @@ the empirical results of \S\ref{subsec:exp-lora}--\S\ref{subsec:exp-T-scaling}.
 $\lambda$.}
 On every base we tested (\S\ref{subsec:exp-rd-encoder}, \S\ref{subsec:exp-T-scaling}),
 rd-encoder ridge ties or beats Task Arithmetic and the TIES family at
-$T = 4$ on NLL excess, and \emph{strictly} beats them at $T = 7$ on
-Llama-3.1-8B with a widening margin (ratio rd-ridge/TA $= 0.84 \to
-0.68 \to 0.52$ at $T = 2, 4, 7$). The base-optimal $\lambda$ shifts
+$T = 4$ on the matrix's NLL excess (the one exception is the saturated
+Yi-Chat \emph{pool}, where the Alpaca headroom artifact of R2 must be
+renormalized first; \S\ref{subsec:exp-T-scaling}), and \emph{strictly}
+beats them at $T = 7$ on Llama-3.1-8B with a widening margin (ratio rd-ridge/TA $= 0.84 \to
+0.68 \to 0.52$ at $T = 2, 4, 7$). On downstream \emph{accuracy} the picture is strong but not a clean
+sweep: rd-encoder ridge is the best of six methods on GSM8K \textsc{em}
+for Mistral, Qwen, and Yi and on HumanEval pass@1 for Llama-3.1 and Yi
+(five of eight base$\times$metric cells), but is seed-unstable and
+\emph{not} best on Llama-3.1 GSM8K or Mistral HumanEval
+(\S\ref{subsec:exp-downstream-gsm8k},
+Tables~\ref{tab:e3-gsm8k}--\ref{tab:b4-humaneval}); the robust win is
+on NLL worst-task excess, not accuracy. The base-optimal $\lambda$ shifts
 mildly with architecture: $\lambda = 0.05$ for Llama-3.1, $\lambda =
-0.13$ for Mistral-7B, Qwen-2.5-7B, and Yi-1.5-9B. Re-tuning is one
-inexpensive log-scale sweep ($\sim 30$ minutes for $5$ values per
-base). The rd-encoder log-$T$ slope is nearly base-invariant
+0.13$ for Mistral-7B, Qwen-2.5-7B, and Yi-1.5-9B. If you cannot afford
+even one sweep, the fixed global $\lambda = 0.13$ beats TIES and TA on
+all four bases with \emph{no} per-base tuning
+(Table~\ref{tab:rd-ridge-heldout}, a leave-one-base-out check); the
+per-base log-scale sweep ($\sim 30$ minutes for $5$ values) is a
+refinement that mainly helps Llama. The rd-encoder log-$T$ slope is nearly base-invariant
 ($0.070$ on Yi, $0.065$ on Llama; Table~\ref{tab:e6-slopes}), making
-it the most $T$-stable method we observed.
+it the most $T$-stable method we observed ($0.062$ on Mistral
+completes the near-base-invariant picture).
 
 \paragraph{R2 --- Audit the base-saturation regime before trusting
 \textsc{nll}-based method comparisons.}
@@ -46,7 +59,9 @@ exclude near-saturated adapters from the cohort, before declaring a
 method winner. A signal that you are in the saturated regime: the
 \textsc{ties} per-task sign-election win-share range exceeds $\sim 0.05$
 (\S\ref{subsec:exp-T-scaling}, Table~\ref{tab:ties-probe}); we observed
-$0.077$ on Yi-Chat and $0.028$ on Llama-Instruct.
+$0.077$ on Yi-Chat, $0.028$ on Llama-Instruct, and $0.0326$ on
+Mistral (below $0.05$, but inside the $[0.025, 0.075]$ Td2 ambiguity
+window --- the pre-registered third base, R3).
 
 \paragraph{R3 --- If you cannot use rd-encoder ridge, use TIES or
 TVQ-$b{=}2$, not TA, and avoid TIES on saturated bases.}
@@ -56,13 +71,26 @@ sparser, lower-variance merges than TA at $T = 4$
 bases at $T = 4$ but inverts on Yi-1.5-9B-Chat at $T = 7$ (becomes the
 \emph{worst} method, \S\ref{subsec:exp-T-scaling}); the inversion is
 driven by Yi's per-task sign-election win-share concentration
-(directionally biased consensus, not degraded consensus). On Llama and
+(directionally biased consensus, not degraded consensus). We
+pre-registered this win-share threshold as a falsifiable predictor
+(commit \texttt{3582799}, before the Mistral sweep ran):
+Mistral-7B, whose win-share range $0.0326$ sits inside the ambiguity
+window, was predicted \emph{ambiguous} at $T = 7$. The sweep confirms
+it --- TIES second-best of six ($0.152$, $0.092$ nats below TA),
+neither inverting to worst nor winning. We do not over-read this:
+``ambiguous'' (mid-pack in a six-method field) is the prior-likely
+outcome for almost any method, the window's constants were fit to the
+in-sample Yi/Llama points, and the below-window regime is untested. We
+therefore offer R3 as a \emph{calibrated heuristic} with one
+out-of-sample consistency check, not a validated law
+(\S\ref{subsec:exp-T-scaling}, Appendix~\ref{app:sign-election-threshold}).
+On Llama and
 when the saturation signal of R2 is absent, TIES at density $= 0.2$ is
 a solid default. On HumanEval pass@1
 (Table~\ref{tab:b4-humaneval}, \S\ref{subsec:exp-downstream-gsm8k}),
-TVQ-$b{=}2$ is the \emph{best} method on three of four bases
-(Llama-3.1, Qwen, Yi), with TIES best on Mistral; TA is the \emph{worst}
-method on every base by a factor of $2$--$100\times$. The R3 ordering
+TVQ-$b{=}2$ is the \emph{best} of the five baselines on three of four
+bases (Llama-3.1, Qwen, Yi), with TIES best on Mistral; the low-density
+baselines TA, DARE, and KnOTS cluster at the bottom on every base. The R3 ordering
 ``TIES or TVQ-$b{=}2$, not TA'' therefore holds on both NLL and
 pass@1.
 
@@ -70,11 +98,12 @@ pass@1.
 metrics before deploying.}
 Across $4 \text{ bases} \times 2 \text{ metrics} = 8$
 (base $\times$ metric) cells we measured, NLL ranking predicts
-accuracy ranking with Spearman $\rho \geq +0.72$ on $7$ cells
+accuracy ranking with positive Spearman on $7$ cells, meeting the
+$\rho \geq 0.7$ threshold on $5$
 (\S\ref{subsec:exp-downstream-gsm8k}, Table~\ref{tab:b4-humaneval}).
-The single outlier is (Llama-3.1-Instruct, GSM8K \textsc{em})
+The single inversion is (Llama-3.1-Instruct, GSM8K \textsc{em})
 at $\rho = -0.60$; the same matrix on HumanEval pass@1
-shows $\rho = +0.89$ on Llama-3.1, so the inversion does not
+shows $\rho = +1.00$ on Llama-3.1, so the inversion does not
 generalize across metrics. Both pre-registered mechanism
 candidates for the outlier (H1 chat-template emission, H3
 sign-election cross-metric contamination) were tested and
@@ -89,17 +118,20 @@ metric.
 \paragraph{R5 --- Estimate the floor before assuming you are
 algorithm-bound.}
 Use the recipe of \S\ref{subsec:floor-recipe} on your trained adapter
-artifacts to compute $\Phi^\star_{\mathrm{lower}} = B^2 / (4 \cdot
-d_{\mathrm{eff}})$. If the measured worst-task excess is within
-$2\times$ of the floor, the regime is information-theoretically near-
-optimal and no encoder change will help materially. If it is $\gg
-2\times$ above the floor (the typical case in our measurements: all
-four bases sit at least $10\times$ above), the regime is algorithmic
-and switching to rd-encoder ridge from TA is the highest-yield change
-available. We have not yet seen a real-adapter cohort that approaches
-the floor; the floor-positive regime
-(\S\ref{subsec:exp-e5-null}) appears to require $r > d_{\mathrm{in}} /
-T$, which lies outside the practical LoRA rank range for current
+artifacts to compute $\Phi^\star_{\mathrm{lower}} = B^2 (1 -
+d_{\mathrm{eff}} / (Tr))$. If the audited cohort is in the floor-zero
+regime ($d_{\mathrm{eff}} = Tr$) --- as every cohort in our
+measurements is --- the floor vanishes and the entire measured
+worst-task excess is recoverable algorithmic slack; rd-encoder ridge
+from TA is the highest-yield change available. If the cohort has
+$d_{\mathrm{eff}} < Tr$ the floor is strictly positive and bounds the
+smallest excess any encoder at any rate can achieve; the gap
+$\Phi^\star_{\mathrm{meas}} - \Phi^\star_{\mathrm{lower}}$ is the
+algorithmic gap, and only the gap is recoverable. We have not yet
+seen a real-adapter cohort with $d_{\mathrm{eff}} < Tr$; the
+floor-positive regime (\S\ref{subsec:exp-e5-null}) requires
+$r > d_{\mathrm{in}} / T$, which lies outside the practical LoRA rank
+range for current
 LLMs.
 
 \paragraph{Summary table.}
@@ -122,7 +154,7 @@ $T \leq 4$, saturated cohort     & rd-encoder ridge + headroom renorm    & R1+R2
 $T \geq 7$, no saturation        & rd-encoder ridge (winning margin grows) & R1+\S\ref{subsec:exp-T-scaling} Llama result \\
 $T \geq 7$, saturated cohort     & rd-encoder ridge, fall back to TVQ$_2$ if rank too low for $V_t$ stack & R3, TIES inverts \\
 rd-encoder unavailable, $T \leq 4$ & TIES (density $0.2$) on non-saturated; TVQ$_2$ otherwise & R3 \\
-near-floor ($\Phi^\star_{\mathrm{meas}} \leq 2 \Phi^\star_{\mathrm{lower}}$) & any method, change won't help; pursue a better cohort instead & R5, regime-bound \\
+floor-positive ($d_{\mathrm{eff}} < Tr$; not seen in our cohorts) & any method, change won't help; pursue a better cohort instead & R5, regime-bound \\
 \hline
 \end{tabular}
 \end{table}

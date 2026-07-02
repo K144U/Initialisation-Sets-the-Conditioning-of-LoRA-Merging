@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "git_sha": "feb5ea2b428e44c8c08d7aaac6a014bceb50c9b0",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "42651.jiit-master",
+    "wallclock_iso": "2026-06-25T20:55:34+0200",
+    "wallclock_unix": 1782413734.4821866,
+    "config_hash": "169cb68b44e76c84",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Mistral-7B-Instruct-v0.3",
+      "task": {
+        "name": "dolly",
+        "dataset": "databricks/databricks-dolly-15k",
+        "config": null,
+        "split_train": "train",
+        "split_eval": "train",
+        "n_train": 7500,
+        "n_eval": 1000,
+        "prompt_field": "instruction",
+        "answer_field": "response"
+      },
+      "lora": {
+        "r": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ]
+      },
+      "train": {
+        "epochs": 2,
+        "lr": 5e-05,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "max_seq_length": 2048,
+        "warmup_ratio": 0.03,
+        "optim": "adamw_torch",
+        "logging_steps": 10,
+        "dataset_num_proc": 4,
+        "min_free_gb": 40
+      },
+      "output": {
+        "adapter_dir": "artifacts/lora/mistral_7b/e6_pilot/dolly/v1",
+        "results_path": "results/phase3/lora_train/mistral_7b_e6pilot_dolly.json"
+      },
+      "seeds": {
+        "global": 20260615,
+        "train": 20260615
+      }
+    }
+  },
+  "metrics": {
+    "task": "dolly",
+    "base_model": "/home/sanjay.g/projects/rdmerge/models/Mistral-7B-Instruct-v0.3",
+    "train_runtime_s": 480.52117943763733,
+    "first_loss": 2.594020462036133,
+    "last_loss": 1.4295290946960448,
+    "n_log_steps": 47,
+    "loss_history": [
+      2.594020462036133,
+      2.069737434387207,
+      1.7276573181152344,
+      1.6053939819335938,
+      1.5890474319458008,
+      1.5616968154907227,
+      1.5847865104675294,
+      1.6169363021850587,
+      1.6605863571166992,
+      1.5237187385559081,
+      1.5809300422668457,
+      1.5745689392089843,
+      1.5589190483093263,
+      1.5146610260009765,
+      1.4668820381164551,
+      1.5637706756591796,
+      1.5018447875976562,
+      1.5694576263427735,
+      1.5844707489013672,
+      1.5276516914367675,
+      1.6321269989013671,
+      1.4946032524108888,
+      1.5881714820861816,
+      1.5949082374572754,
+      1.5589367866516113,
+      1.5016925811767579,
+      1.4785889625549316,
+      1.5862601280212403,
+      1.6460739135742188,
+      1.5012713432312013,
+      1.5324390411376954,
+      1.473015594482422,
+      1.5164727210998534,
+      1.509568214416504,
+      1.5042572021484375,
+      1.4917105674743651,
+      1.5209157943725586,
+      1.4955507278442384,
+      1.5872275352478027,
+      1.4697033882141113,
+      1.5095232009887696,
+      1.5373897552490234,
+      1.4713510513305663,
+      1.5037940979003905,
+      1.4386940002441406,
+      1.6343229293823243,
+      1.4295290946960448
+    ],
+    "adapter_size_mb": 52.03282165527344,
+    "nll_tau_on_eval": 1.6449820854538781,
+    "n_train": 7500,
+    "n_eval": 1000,
+    "adapter_dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/mistral_7b/e6_pilot/dolly/v1"
+  },
+  "wallclock_seconds": 545.1400644779205,
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "42651.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

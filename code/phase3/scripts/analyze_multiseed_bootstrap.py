@@ -21,7 +21,8 @@ import random
 import sys
 from pathlib import Path
 
-ROOT = Path("/home/sanjay.g/projects/rdmerge")
+# Portable root: .../code/phase3/scripts/analyze_multiseed_bootstrap.py -> repo root.
+ROOT = Path(__file__).resolve().parents[3]
 MATRIX = ROOT / "results/phase3/eval_matrix_seeds"
 OUT = ROOT / "results/phase3/multiseed_bootstrap_summary.json"
 N_BOOT = 10000

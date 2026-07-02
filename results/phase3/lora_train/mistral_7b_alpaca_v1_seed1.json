@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "git_sha": "0b572a954469f52f154e87b35825e74ceac79f36",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "5",
+    "pbs_jobid": "41484.jiit-master",
+    "wallclock_iso": "2026-06-11T16:35:28+0200",
+    "wallclock_unix": 1781188528.8553278,
+    "config_hash": "77c6b5c840b11966",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Mistral-7B-Instruct-v0.3",
+      "task": {
+        "name": "alpaca",
+        "dataset": "yahma/alpaca-cleaned",
+        "config": null,
+        "split_train": "train",
+        "split_eval": "train",
+        "n_train": 7500,
+        "n_eval": 200,
+        "prompt_field": "instruction",
+        "answer_field": "output"
+      },
+      "lora": {
+        "r": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ]
+      },
+      "train": {
+        "epochs": 2,
+        "lr": 5e-05,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "max_seq_length": 2048,
+        "warmup_ratio": 0.03,
+        "optim": "adamw_torch",
+        "logging_steps": 10,
+        "dataset_num_proc": 1,
+        "min_free_gb": 30
+      },
+      "output": {
+        "adapter_dir": "artifacts/lora/mistral_7b/alpaca/seed1",
+        "results_path": "results/phase3/lora_train/mistral_7b_alpaca_v1_seed1.json"
+      },
+      "seeds": {
+        "global": 1,
+        "train": 1
+      }
+    }
+  },
+  "metrics": {
+    "task": "alpaca",
+    "base_model": "/home/sanjay.g/projects/rdmerge/models/Mistral-7B-Instruct-v0.3",
+    "train_runtime_s": 3643.865866422653,
+    "first_loss": 1.1517889976501465,
+    "last_loss": 0.8377978324890136,
+    "n_log_steps": 47,
+    "loss_history": [
+      1.1517889976501465,
+      1.1316847801208496,
+      0.9483325958251954,
+      0.879672908782959,
+      0.8902071952819824,
+      0.8585431098937988,
+      0.8549126625061035,
+      0.8910618782043457,
+      0.902010154724121,
+      0.8969571113586425,
+      0.8601489067077637,
+      0.8802453994750976,
+      0.863591480255127,
+      0.8605462074279785,
+      0.859650993347168,
+      0.8129831314086914,
+      0.8378576278686524,
+      0.8544744491577149,
+      0.8623086929321289,
+      0.8461531639099121,
+      0.8590888023376465,
+      0.8078569412231446,
+      0.8527887344360352,
+      0.869059944152832,
+      0.845643138885498,
+      0.8596888542175293,
+      0.8285364151000977,
+      0.8204364776611328,
+      0.8068707466125489,
+      0.8284465789794921,
+      0.8250718116760254,
+      0.8105852127075195,
+      0.8230449676513671,
+      0.8182790756225586,
+      0.8399099349975586,
+      0.8288455009460449,
+      0.8105048179626465,
+      0.7984544277191162,
+      0.8322707176208496,
+      0.8286510467529297,
+      0.8147118568420411,
+      0.826327896118164,
+      0.8349769592285157,
+      0.8272313117980957,
+      0.8102812767028809,
+      0.8351218223571777,
+      0.8377978324890136
+    ],
+    "adapter_size_mb": 52.03282165527344,
+    "nll_tau_on_eval": 0.9031921012401365,
+    "n_train": 7500,
+    "n_eval": 200,
+    "adapter_dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/mistral_7b/alpaca/seed1"
+  },
+  "wallclock_seconds": 3707.400275707245,
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "5",
+    "pbs_jobid": "41484.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

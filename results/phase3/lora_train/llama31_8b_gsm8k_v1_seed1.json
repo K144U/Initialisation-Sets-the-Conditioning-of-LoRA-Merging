@@ -1,0 +1,124 @@
+{
+  "meta": {
+    "git_sha": "0b572a954469f52f154e87b35825e74ceac79f36",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "3",
+    "pbs_jobid": "41484.jiit-master",
+    "wallclock_iso": "2026-06-11T15:33:24+0200",
+    "wallclock_unix": 1781184804.9840946,
+    "config_hash": "daa9611e84c01d96",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Llama-3.1-8B-Instruct",
+      "task": {
+        "name": "gsm8k",
+        "dataset": "openai/gsm8k",
+        "config": "main",
+        "split_train": "train",
+        "split_eval": "test",
+        "n_train": 7500,
+        "n_eval": 200,
+        "prompt_field": "question",
+        "answer_field": "answer"
+      },
+      "lora": {
+        "r": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ]
+      },
+      "train": {
+        "epochs": 2,
+        "lr": 5e-05,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "max_seq_length": 2048,
+        "warmup_ratio": 0.03,
+        "optim": "adamw_torch",
+        "logging_steps": 10,
+        "dataset_num_proc": 1,
+        "min_free_gb": 40
+      },
+      "output": {
+        "adapter_dir": "artifacts/lora/llama31_8b/gsm8k/seed1",
+        "results_path": "results/phase3/lora_train/llama31_8b_gsm8k_v1_seed1.json"
+      },
+      "seeds": {
+        "global": 1,
+        "train": 1
+      }
+    }
+  },
+  "metrics": {
+    "task": "gsm8k",
+    "base_model": "/home/sanjay.g/projects/rdmerge/models/Llama-3.1-8B-Instruct",
+    "train_runtime_s": 3914.2143199443817,
+    "first_loss": 1.0900395393371582,
+    "last_loss": 0.41575374603271487,
+    "n_log_steps": 46,
+    "loss_history": [
+      1.0900395393371582,
+      0.7027429580688477,
+      0.517207670211792,
+      0.4639686107635498,
+      0.44400863647460936,
+      0.4529732704162598,
+      0.4558091640472412,
+      0.44609556198120115,
+      0.44437971115112307,
+      0.4683992862701416,
+      0.44520816802978513,
+      0.46616277694702146,
+      0.42412004470825193,
+      0.42972607612609864,
+      0.4389219284057617,
+      0.4298713684082031,
+      0.4349514961242676,
+      0.4080852508544922,
+      0.43393821716308595,
+      0.4316819667816162,
+      0.4328815460205078,
+      0.45156288146972656,
+      0.4176163673400879,
+      0.46352109909057615,
+      0.4417562961578369,
+      0.4170445442199707,
+      0.4134397029876709,
+      0.4189723014831543,
+      0.42524285316467286,
+      0.4224526405334473,
+      0.4094106197357178,
+      0.3999462604522705,
+      0.4222743988037109,
+      0.4248073577880859,
+      0.41561188697814944,
+      0.417246150970459,
+      0.4102199077606201,
+      0.427441930770874,
+      0.4245079517364502,
+      0.4403512477874756,
+      0.4282632350921631,
+      0.4218111991882324,
+      0.42574353218078614,
+      0.409178352355957,
+      0.4161666393280029,
+      0.41575374603271487
+    ],
+    "adapter_size_mb": 52.03282165527344,
+    "nll_tau_on_eval": 0.4616545928495537,
+    "n_train": 7473,
+    "n_eval": 200,
+    "adapter_dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/gsm8k/seed1"
+  },
+  "wallclock_seconds": 3996.460136413574,
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "3",
+    "pbs_jobid": "41484.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

@@ -26,14 +26,15 @@ ROOT = Path("/home/sanjay.g/projects/rdmerge")
 OUT = ROOT / "paper_artifacts/figures"
 OUT.mkdir(parents=True, exist_ok=True)
 
-# Numbers from §6.2 Table tab:rd-ridge-sweep on Llama-3.1-8B-Instruct, T=4
+# Numbers from §6.2 Table tab:rd-ridge-sweep on Llama-3.1-8B-Instruct, T=4.
+# MATCHED seed1/2/3 3-seed means (2026-07-01); replaces the legacy v1 numbers.
 LAMBDAS = [0.001, 0.01, 0.05, 0.07, 0.10, 0.13, 0.17, 0.20, 0.30, 1.00]
-WORST_EXCESS = [4.463, 0.346, 0.091, 0.095, 0.112, 0.126, 0.142, 0.153, 0.189, 0.286]
-TA_EXCESS = 0.219
-TIES_EXCESS = 0.161
-EXACT_EXCESS = 0.497  # rd-encoder with λ = 0 (catastrophic exact construction)
+WORST_EXCESS = [2.879, 0.389, 0.094, 0.095, 0.110, 0.125, 0.143, 0.155, 0.191, 0.289]
+TA_EXCESS = 0.220   # 3-seed mean (was single-seed 0.219)
+TIES_EXCESS = 0.154  # 3-seed mean (was single-seed 0.161)
+EXACT_EXCESS = 0.340  # rd-encoder λ=0 exact construction, matched 3-seed mean (v1 was 0.497)
 LAMBDA_STAR = 0.05
-RIDGE_STAR = 0.091
+RIDGE_STAR = 0.094
 
 plt.rcParams.update({
     "font.size": 11,

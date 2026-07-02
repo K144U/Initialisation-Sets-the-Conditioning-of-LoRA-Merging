@@ -1,0 +1,126 @@
+{
+  "meta": {
+    "git_sha": "415a29b865f57e1cf64eb2c6087575f8bbd6b90d",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "6",
+    "pbs_jobid": "41561.jiit-master",
+    "wallclock_iso": "2026-06-14T05:47:09+0200",
+    "wallclock_unix": 1781408829.3947806,
+    "config_hash": "7d09e1b0cbb63288",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Qwen2.5-7B-Instruct",
+      "task": {
+        "name": "magicoder",
+        "dataset": "ise-uiuc/Magicoder-OSS-Instruct-75K",
+        "config": null,
+        "split_train": "train",
+        "split_eval": "train",
+        "n_train": 7500,
+        "n_eval": 1000,
+        "prompt_field": "problem",
+        "answer_field": "solution",
+        "train_jsonl": "artifacts/e5_pilot_data/qwen25_7b/magicoder__alpha90.jsonl"
+      },
+      "lora": {
+        "r": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ]
+      },
+      "train": {
+        "epochs": 2,
+        "lr": 5e-05,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "max_seq_length": 2048,
+        "warmup_ratio": 0.03,
+        "optim": "adamw_torch",
+        "logging_steps": 10,
+        "dataset_num_proc": 4,
+        "min_free_gb": 40
+      },
+      "output": {
+        "adapter_dir": "artifacts/lora/qwen25_7b/e5_pilot/magicoder__alpha90/v1",
+        "results_path": "results/phase3/lora_train/qwen25_7b_e5pilot_magicoder_alpha90.json"
+      },
+      "seeds": {
+        "global": 20260614,
+        "train": 20260614
+      }
+    }
+  },
+  "metrics": {
+    "task": "magicoder",
+    "base_model": "/home/sanjay.g/projects/rdmerge/models/Qwen2.5-7B-Instruct",
+    "train_runtime_s": 4451.609194993973,
+    "first_loss": 0.9139724731445312,
+    "last_loss": 0.4259451389312744,
+    "n_log_steps": 47,
+    "loss_history": [
+      0.9139724731445312,
+      0.8268495559692383,
+      0.6020309448242187,
+      0.5223389625549316,
+      0.43756885528564454,
+      0.4985360145568848,
+      0.5090673923492431,
+      0.4284478187561035,
+      0.47881650924682617,
+      0.46343512535095216,
+      0.4624202251434326,
+      0.41019816398620607,
+      0.48804759979248047,
+      0.40834388732910154,
+      0.4792620658874512,
+      0.503467321395874,
+      0.42097973823547363,
+      0.468735408782959,
+      0.45084896087646487,
+      0.4232191562652588,
+      0.46714200973510744,
+      0.4888020038604736,
+      0.4433199405670166,
+      0.4799044609069824,
+      0.48578529357910155,
+      0.42087397575378416,
+      0.4441224098205566,
+      0.47973880767822263,
+      0.4353678226470947,
+      0.516761302947998,
+      0.47411184310913085,
+      0.43729486465454104,
+      0.4164558410644531,
+      0.43716907501220703,
+      0.4790093421936035,
+      0.4530386447906494,
+      0.42718191146850587,
+      0.46525187492370607,
+      0.4462916374206543,
+      0.4460159778594971,
+      0.504422950744629,
+      0.4330273628234863,
+      0.45885343551635743,
+      0.4181063652038574,
+      0.44972729682922363,
+      0.4292312145233154,
+      0.4259451389312744
+    ],
+    "adapter_size_mb": 38.52863311767578,
+    "nll_tau_on_eval": 0.25218609761631483,
+    "n_train": 7500,
+    "n_eval": 1000,
+    "adapter_dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/qwen25_7b/e5_pilot/magicoder__alpha90/v1"
+  },
+  "wallclock_seconds": 4729.93879199028,
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "6",
+    "pbs_jobid": "41561.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "git_sha": "feb5ea2b428e44c8c08d7aaac6a014bceb50c9b0",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "42651.jiit-master",
+    "wallclock_iso": "2026-06-25T21:31:30+0200",
+    "wallclock_unix": 1782415890.2878985,
+    "config_hash": "f375b742c7fa5b82",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Mistral-7B-Instruct-v0.3",
+      "task": {
+        "name": "xsum",
+        "dataset": "EdinburghNLP/xsum",
+        "config": null,
+        "split_train": "train",
+        "split_eval": "test",
+        "n_train": 7500,
+        "n_eval": 1000,
+        "prompt_field": "document",
+        "answer_field": "summary"
+      },
+      "lora": {
+        "r": 16,
+        "alpha": 32,
+        "dropout": 0.05,
+        "target_modules": [
+          "q_proj",
+          "k_proj",
+          "v_proj",
+          "o_proj"
+        ]
+      },
+      "train": {
+        "epochs": 2,
+        "lr": 5e-05,
+        "batch_size": 8,
+        "grad_accum": 4,
+        "max_seq_length": 2048,
+        "warmup_ratio": 0.03,
+        "optim": "adamw_torch",
+        "logging_steps": 10,
+        "dataset_num_proc": 4,
+        "min_free_gb": 40
+      },
+      "output": {
+        "adapter_dir": "artifacts/lora/mistral_7b/e6_pilot/xsum/v1",
+        "results_path": "results/phase3/lora_train/mistral_7b_e6pilot_xsum.json"
+      },
+      "seeds": {
+        "global": 20260615,
+        "train": 20260615
+      }
+    }
+  },
+  "metrics": {
+    "task": "xsum",
+    "base_model": "/home/sanjay.g/projects/rdmerge/models/Mistral-7B-Instruct-v0.3",
+    "train_runtime_s": 2036.2576818466187,
+    "first_loss": 3.7921730041503907,
+    "last_loss": 1.0316373825073242,
+    "n_log_steps": 47,
+    "loss_history": [
+      3.7921730041503907,
+      2.5492448806762695,
+      1.4621959686279298,
+      1.1792257308959961,
+      1.1790637016296386,
+      1.1657710075378418,
+      1.1684568405151368,
+      1.1161782264709472,
+      1.1008245468139648,
+      1.1167284011840821,
+      1.1140618324279785,
+      1.174483299255371,
+      1.0989800453186036,
+      1.1350081443786622,
+      1.1357666015625,
+      1.1255767822265625,
+      1.1594654083251954,
+      1.124064064025879,
+      1.1276821136474608,
+      1.0910349845886231,
+      1.1622893333435058,
+      1.1137253761291503,
+      1.0994678497314454,
+      1.1092893600463867,
+      1.0858903884887696,
+      1.0807607650756836,
+      1.072103500366211,
+      1.060610866546631,
+      1.0454169273376466,
+      1.0475317001342774,
+      1.075751495361328,
+      1.0234807014465332,
+      1.0224527359008788,
+      1.0367868423461915,
+      1.0519163131713867,
+      1.0453887939453126,
+      1.0375397682189942,
+      1.0634081840515137,
+      1.0494107246398925,
+      1.0291135787963868,
+      1.020627212524414,
+      1.0435341835021972,
+      1.0534459114074708,
+      1.050955104827881,
+      1.0659339904785157,
+      1.0266815185546876,
+      1.0316373825073242
+    ],
+    "adapter_size_mb": 52.03282165527344,
+    "nll_tau_on_eval": 1.3470294487761973,
+    "n_train": 7500,
+    "n_eval": 1000,
+    "adapter_dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/mistral_7b/e6_pilot/xsum/v1"
+  },
+  "wallclock_seconds": 2135.8697652816772,
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "4",
+    "pbs_jobid": "42651.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "name": "e1s_llama31_8b__rd_b32__seed1",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1_seed/llama31_8b__rd_b32__seed1.yaml",
+    "done": "results/phase3/eval_e1_seed/llama31_8b__rd_b32__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "e1s_llama31_8b__rd_b32__seed2",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1_seed/llama31_8b__rd_b32__seed2.yaml",
+    "done": "results/phase3/eval_e1_seed/llama31_8b__rd_b32__seed2.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "e1s_llama31_8b__rd_b32__seed3",
+    "cmd": "python code/phase3/eval/run_eval_cell.py --config code/phase3/configs/eval_e1_seed/llama31_8b__rd_b32__seed3.yaml",
+    "done": "results/phase3/eval_e1_seed/llama31_8b__rd_b32__seed3.json",
+    "min_free_gb": 25.0
+  }
+]
