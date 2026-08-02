@@ -78,6 +78,25 @@ def train_one_lora(cfg: dict, project_root: Path) -> dict:
         random_state=cfg["seeds"]["train"],
     )
 
+    # Data-shuffle seed, decoupled from the LoRA-init seed. Defaults to
+    # seeds.global so every existing config behaves exactly as before.
+    #
+    # Two reasons it exists (2026-08-02):
+    #  1. The A1 independent-init experiment varies the LoRA init per task. If
+    #     that also moved the data shuffle, a change in subspace geometry could
+    #     not be attributed to the init, which is the whole point of the test.
+    #  2. load_task_split only guarantees train/eval disjointness when the
+    #     TRAINING run and the EVAL cell shuffle with the SAME seed (it slices
+    #     one shuffled split into [0:n_train] and [n_train:n_train+n_eval]).
+    #     Training used seeds.global (1/2/3) while eval cells use seed 20260518,
+    #     so for alpaca and magicoder, whose eval split IS the train split, the
+    #     "held-out" set overlapped training by roughly 14.5% and 10%. Setting
+    #     seeds.data to the eval cell's seed closes that.
+    data_seed = int(cfg["seeds"].get("data", cfg["seeds"]["global"]))
+    if data_seed != cfg["seeds"]["global"]:
+        print(f"[train:{task_name}] data-shuffle seed {data_seed} "
+              f"(init seed {cfg['seeds']['global']})", flush=True)
+
     # E5 hook: if task.train_jsonl is set, load mixed training data from disk
     # (built by gen_e5_pilot_datasets.py). Eval ALWAYS comes from
     # load_task_split so all alphas share the same target-task held-out set.
@@ -88,10 +107,10 @@ def train_one_lora(cfg: dict, project_root: Path) -> dict:
         jp = _P(str(project_root) + "/" + train_jsonl) if not _P(train_jsonl).is_absolute() else _P(train_jsonl)
         print(f"[train:{task_name}] loading TRAIN from JSONL: {jp}", flush=True)
         train_data = [json.loads(line) for line in open(jp) if line.strip()]
-        _, eval_data = load_task_split(task, seed=cfg["seeds"]["global"])
+        _, eval_data = load_task_split(task, seed=data_seed)
     else:
         print(f"[train:{task_name}] loading {task['dataset']} ({task.get('config') or '-'})", flush=True)
-        train_data, eval_data = load_task_split(task, seed=cfg["seeds"]["global"])
+        train_data, eval_data = load_task_split(task, seed=data_seed)
     print(f"[train:{task_name}] train={len(train_data)}  eval={len(eval_data)}", flush=True)
 
     ds_train = _build_sft_dataset(train_data, tokenizer)
