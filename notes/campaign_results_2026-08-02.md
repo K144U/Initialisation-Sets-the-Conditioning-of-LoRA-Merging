@@ -127,6 +127,65 @@ a live, verified baseline rather than a remembered number.
 
 ---
 
+## Result 5 (W1/V1): THE BIG ONE. A tuned scalar on TA matches the method on Llama
+
+Seed-1 matched, identical adapters, 19/52 W1 cells in (Llama complete, Mistral
+all but alpha=1.0, Qwen and Yi pending):
+
+| base | TA @ alpha=0.25 (paper's default) | best TA | at alpha | rd-ridge | TIES | gap | reading |
+|---|---|---|---|---|---|---|---|
+| Llama-3.1 | 0.2139 | **0.0839** | 0.75 | 0.0823 | 0.1471 | +0.0016 | **TIE within seed noise** |
+| Mistral-7B | 0.1328 | 0.0631 | 0.50 | 0.0473 | 0.0494 | +0.0157 | rd-ridge wins |
+
+Llama sweep: `0.10=0.3181  0.15=0.2779  0.25=0.2139  0.35=0.1642  0.50=0.1184
+0.75=0.0839  1.00=0.1025`
+Mistral sweep: `0.10=0.3575  0.15=0.2455  0.25=0.1328  0.35=0.0875  0.50=0.0631
+0.75=0.0965`
+
+### What this means
+
+**On Llama-3.1, the paper's flagship base, one tuned scalar on Task Arithmetic
+reproduces the entire method.** 0.0839 vs 0.0823 is a gap of 0.0016 against a
+seed-noise floor of about 0.004, i.e. a tie.
+
+The paper's headline is "rd-encoder ridge attains 0.094, **57% below TA**
+(0.220)". That 57% is measured against TA pinned at alpha = 1/T = 0.25. Against
+TA at its own optimum the reduction is roughly **2%**. The margin was the merge
+coefficient, not the rate-distortion construction.
+
+Knock-on effects, all on Llama:
+- §6.2 finding (3), "only TIES separates from the structure-blind cluster":
+  tuned TA (0.0839) beats TIES (0.1471) outright. TA is not structure-blind
+  once its one free parameter is set.
+- Figure 2's salvage arc (0.340 -> 0.094) is measured against the same
+  undertuned TA reference line.
+- R1 "Default to rd-encoder ridge" has no margin left on this base.
+
+**What survives.** rd-ridge still wins on Mistral by 0.0157, about 4x seed
+noise, which is a real effect. Qwen and Yi are pending. So the honest current
+claim is "ties a tuned TA on one base, beats it on another, two unknown".
+
+**The fairness framing that is defensible.** Both methods get exactly one
+tuned scalar: rd-ridge gets lambda, TA gets alpha. Under that symmetric rule
+the comparison is legitimate, and the paper must report it. What is not
+defensible is a swept lambda against a pinned alpha, which is what shipped.
+
+**Both W1 sub-results now agree.** V2 said the norm is load-bearing (renorm to
+TA's norm costs +0.14 nats). V1 now says TA at the matching norm gets there on
+its own. The two are the same finding seen from opposite directions: on Llama,
+scale is doing most of the work.
+
+### Caveats before this is written into the paper
+
+1. Seed-1 only. Needs the 3-seed TA-tuned comparison before any claim is
+   restated in either direction.
+2. best-alpha TA is selected on the same worst-task NLL it is scored on, which
+   is exactly the objection the paper answers for lambda in App. G. The same
+   held-out-alpha treatment is now owed to TA.
+3. The alpha response is U-shaped with an interior optimum on both bases
+   (0.75 on Llama, 0.50 on Mistral), so these are genuine optima, not grid
+   edges. Unlike the lambda sweep on Mistral/Qwen/Yi, which sat at the edge.
+
 ## In flight
 
 | job | what | cells | status |
