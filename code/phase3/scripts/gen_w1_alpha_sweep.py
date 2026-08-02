@@ -80,7 +80,7 @@ def main() -> int:
 
     def emit(name: str, cfg: dict) -> None:
         out_json = OUT_RES / f"{name}.json"
-        cfg["output_path"] = str(out_json)
+        cfg["output_path"] = out_json.as_posix()
         cfg_p = OUT_CFG / f"{name}.yaml"
         cfg_p.parent.mkdir(parents=True, exist_ok=True)
         cfg_p.write_text(yaml.safe_dump(cfg, sort_keys=False))
