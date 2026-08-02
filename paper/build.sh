@@ -34,10 +34,15 @@ build_one () {
     pdflatex -interaction=nonstopmode -output-directory "$OUT" "${target}.tex"
   fi
   echo "--- $OUT/${target}.pdf"
-  # Surface the things that actually bite: overfull boxes, undefined refs.
+  # Surface the things that actually bite. Match LaTeX's own warning
+  # wording, not a bare "undefined": the log always carries a cosmetic
+  # "Font shape `T1/ptm/m/scit' undefined" line (Times has no small-caps
+  # italic), which is expected and must not be counted as a broken ref.
   if [ -f "$OUT/${target}.log" ]; then
-    echo "    overfull hboxes: $(grep -c 'Overfull \\hbox' "$OUT/${target}.log" || true)"
-    echo "    undefined refs : $(grep -c 'undefined' "$OUT/${target}.log" || true)"
+    echo "    overfull hboxes  : $(grep -c 'Overfull \\hbox' "$OUT/${target}.log" || true)"
+    echo "    undefined refs   : $(grep -c 'Reference.*undefined' "$OUT/${target}.log" || true)"
+    echo "    undefined cites  : $(grep -c 'Citation.*undefined' "$OUT/${target}.log" || true)"
+    echo "    rerun needed     : $(grep -c 'Rerun to get' "$OUT/${target}.log" || true)"
   fi
 }
 
