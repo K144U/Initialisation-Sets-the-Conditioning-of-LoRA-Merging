@@ -1,5 +1,10 @@
 # rdmerge (P5) — project-level CLAUDE.md
 
+> **START HERE: `HANDOFF_2026-08-03.md`.** It supersedes this file's
+> experimental status. A 276-cell campaign is running on the cluster,
+> and several headline claims did not survive the 2026-08-02 audit.
+> Do not act on §11's score estimate or §14's tracker without reading it.
+
 Project memory for the rdmerge / P5 paper targeting **ICLR 2027** (deadline ~September 2026). Read this fully on first invocation in this directory; it captures everything load-bearing about the project state that is NOT obvious from the code.
 
 The canonical user-facing project doc is `~/projects/rdmerge/context.md` — read both. The chronological scientific log is `decisions.md` at the repo root.

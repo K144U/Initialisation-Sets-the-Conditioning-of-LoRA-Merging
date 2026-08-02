@@ -190,7 +190,9 @@ unverified until each entry is checked against a real record.
 | `zandieh2025turboquant` | **verified** | arXiv:2504.19874, Google + NYU. Title exact. Substantively right too: the method is random rotation then per-coordinate optimal scalar quantization, which is the construction §5 builds on. This is the load-bearing citation and it holds. |
 | `tspa2025` | **real, metadata incomplete** | title exact, OpenReview `iE0dWuv6jU`. Currently `@misc` with no venue or eprint; fill them in. |
 | `concurrent2026merging` | **real, self-citation** | anonymized `pathak2026merging` (Research Square, DOI `10.21203/rs.3.rs-9189872/v1`). Not a placeholder. See audit C1: it is uncited, so it anonymizes nothing, and `Anonymous / Anonymous preprint` is more conspicuous than an ordinary third-person self-citation. |
-| remaining 28 | **unchecked** | priority: `tara2025` (2025 key vs `year = {2026}`, claims CVPR), `arm2026streaming` (2602.03237), `panariello2025core` (2509.17786), `kim2025tvq`, `stoica2025knots`, `systematic2025merging`. |
+| `tara2025` | **real, key/year mismatch** | arXiv:2603.26299, "Preference-Aligned LoRA Merging: Preserving Subspace Coverage and Addressing Directional Anisotropy". Title exact. Rename the key to `tara2026` or set `year = {2025}`; it currently claims CVPR 2026, which still needs confirming. |
+| `domerging2025` | **verified** | arXiv:2505.15875, "Decouple and Orthogonalize: A Data-Free Framework for LoRA Merging". Title and eprint both exact. |
+| remaining 26 | **unchecked** | priority: `arm2026streaming` (2602.03237), `panariello2025core` (2509.17786), `kim2025tvq`, `stoica2025knots`, `systematic2025merging`, `jang2025taskvectorbases`, `atm2024alternating`, `gradients2025taskvectorsgradients`. |
 
 Pattern so far: the fabricated pair both had a hand-written `note` field
 editorialising about a paper's contribution ("Anticipated 2025 refinement…",
