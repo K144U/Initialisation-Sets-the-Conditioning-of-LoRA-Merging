@@ -31,6 +31,7 @@ log "campaign keeper started pid $$ (cap ${MAXJOBS} concurrent)"
 # name | pbs jobname | script | glob of done-files | target count
 STAGES=(
   "w1|rdm_w1a|pbs_w1_alpha_sweep.sh|results/phase3/eval_w1_alpha/*.json|52"
+  "w1s|rdm_w1s|pbs_w1_alphastar_3seed.sh|results/phase3/eval_w1_alpha3s/*.json|8"
   "w5|rdm_w5rs|pbs_w5_rescore.sh|results/phase3/eval_downstream_v2/*.json|144"
   "a1tr|rdm_a1tr|pbs_a1_indep_train.sh|results/phase3/lora_train/*indep1*.json|16"
   "a2|rdm_a2kt|pbs_a2_knots_ties.sh|results/phase3/eval_a2_knots_ties/*.json|12"
