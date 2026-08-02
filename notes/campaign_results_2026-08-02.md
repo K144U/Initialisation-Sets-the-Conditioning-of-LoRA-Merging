@@ -175,6 +175,67 @@ TA's norm costs +0.14 nats). V1 now says TA at the matching norm gets there on
 its own. The two are the same finding seen from opposite directions: on Llama,
 scale is doing most of the work.
 
+### FINAL, all four bases (2026-08-02 22:25)
+
+| base | TA @ 0.25 | best TA | alpha\* | rd-ridge seed1 | rd-ridge 3-seed | TIES 3-seed | gap vs seed1 | gap vs 3-seed |
+|---|---|---|---|---|---|---|---|---|
+| Llama-3.1 | 0.2139 | 0.0839 | 0.75 | 0.0823 | 0.0945 | 0.1539 | +0.0016 | **−0.0106** |
+| Mistral-7B | 0.1328 | 0.0631 | 0.50 | 0.0473 | 0.0441 | 0.0527 | +0.0157 | +0.0190 |
+| Qwen-2.5 | 0.1041 | 0.0159 | 0.50 | 0.0100 | 0.0097 | 0.0132 | +0.0058 | +0.0061 |
+| Yi-1.5 | 0.0990 | 0.0530 | 0.50 | 0.0356 | 0.0366 | 0.0464 | +0.0175 | +0.0164 |
+
+**Verdict: W1 upheld on 1 of 4 bases.** Below the pre-registered ">= 2 bases"
+threshold, so the contribution does *not* need wholesale restating. rd-encoder
+ridge survives as a method on Mistral, Qwen and Yi. But Llama is the flagship
+base, and against the paper's own published 3-seed rd-ridge number a tuned TA
+**wins there by 0.0106**, about 2.5x the seed-noise floor.
+
+### The margin claims do not survive anywhere
+
+| base | paper: rd-ridge below TA@0.25 | honest: rd-ridge below *tuned* TA |
+|---|---|---|
+| Llama-3.1 | 56% | **−13%** (worse) |
+| Mistral-7B | 67% | 30% |
+| Qwen-2.5 | 91% | 39% |
+| Yi-1.5 | 63% | 31% |
+
+TA's optimum is alpha = 0.50 on three bases and 0.75 on Llama; the paper's
+fixed 1/T = 0.25 is undertuned on **all four**. Every "X% below TA" figure in
+the paper is inflated by that choice. The abstract's "lowest worst-task loss of
+the ten methods we benchmark, on all four base models" becomes "on three of
+four, by 30 to 39% rather than 56 to 91%".
+
+### "Only TIES separates from the structure-blind cluster" (§6.2 finding 3)
+
+| base | tuned TA | TIES | holds? |
+|---|---|---|---|
+| Llama-3.1 | 0.0839 | 0.1539 | **NO, tuned TA beats TIES** |
+| Mistral-7B | 0.0631 | 0.0527 | yes |
+| Qwen-2.5 | 0.0159 | 0.0132 | yes |
+| Yi-1.5 | 0.0530 | 0.0464 | yes |
+
+TA is not "structure-blind"; it has one free parameter the paper never turned.
+On Llama, turning it beats the method the paper says is the only separator.
+
+### The defensible reframe
+
+The paper's App. G argument is "a single globally-fixed lambda = 0.13 beats TA
+and TIES on all four bases". The symmetric statement for TA is a single
+globally-fixed alpha. At alpha = 0.50 (the modal optimum):
+
+| base | TA @ 0.50 | rd-ridge @ lambda = 0.13 |
+|---|---|---|
+| Llama-3.1 | **0.1184** | 0.1250 |
+| Mistral-7B | 0.0631 | 0.0441 |
+| Qwen-2.5 | 0.0159 | 0.0097 |
+| Yi-1.5 | 0.0530 | 0.0366 |
+
+Even under the symmetric global-constant rule, rd-ridge loses Llama and wins
+the other three. So Llama is where the method is weakest relative to TA under
+*every* framing, not just the per-base-tuned one. Whatever the paper claims, it
+cannot claim it on Llama, which is exactly the base Figure 2's salvage arc and
+the 0.22 -> 0.094 headline are built on.
+
 ### Caveats before this is written into the paper
 
 1. Seed-1 only. Needs the 3-seed TA-tuned comparison before any claim is
