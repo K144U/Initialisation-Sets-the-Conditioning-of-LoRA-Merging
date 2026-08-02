@@ -16,9 +16,13 @@ from pathlib import Path
 ROOT = Path(os.environ.get("RDMERGE_ROOT", "/home/sanjay.g/projects/rdmerge"))
 RES = ROOT / "results/phase3"
 
-# Published references this smoke run is checked against.
+# Published references this smoke run is checked against. Every smoke cell is
+# seed1, so each reference must be a seed1 cell too. (First version of this
+# file compared the seed1 b=4 cell against the 3-seed rd-ridge mean 0.0945 and
+# would have reported a spurious FAIL: seed1 b=inf is 0.0822, and seed1 is the
+# lowest of the three seeds.)
 TA_SEED1 = 0.2132        # Table 1 TA, Llama, seed1
-RD_INF = 0.0945          # rd-ridge 3-seed mean, Llama (b -> inf)
+RD_INF_SEED1 = 0.0822    # eval_ridge_seed llama l0p05 seed1 (b -> inf)
 RD_L0_B4 = 0.4051        # eval_e1 lambda=0 b=4, Llama
 GSM8K_FAIL_PUB = 0.611   # published extraction-failure rate, Llama TA
 
@@ -41,7 +45,8 @@ def main() -> int:
                        f"excess {v:.4f} vs published {TA_SEED1:.4f} "
                        f"(bar |d| < 0.005)"))
 
-    # 2. renorm="ta" runs and actually rescaled.
+    # 2. renorm="ta" runs and actually rescaled. This is a PATH check, not a
+    # performance bar: the cell answers W1's V2 and either answer is a result.
     d = load(RES / "eval_w1_alpha/llama31_8b__rd_renorm__seed1.json")
     if d is None:
         checks.append(("rd_renorm runs", None, "cell missing"))
@@ -49,9 +54,11 @@ def main() -> int:
         v = d["worst_task_excess"]
         kw = d.get("method_kwargs", {})
         ok = kw.get("renorm") == "ta" and v == v and v < 5.0
+        note = ("scale is load-bearing" if v > RD_INF_SEED1 + 0.01
+                else "direction carries it")
         checks.append(("rd_renorm runs", ok,
-                       f"excess {v:.4f}, renorm={kw.get('renorm')!r} "
-                       f"(bar: finite, renorm applied)"))
+                       f"excess {v:.4f} vs unrenormed {RD_INF_SEED1:.4f} "
+                       f"-> {note} (bar: path runs)"))
 
     # 3. KnOTS-TIES must differ from TA. Published knots-linear sits 0.00014 away.
     a = load(RES / "eval_a2_knots_ties/llama31_8b__knots_ties__seed1.json")
@@ -71,10 +78,14 @@ def main() -> int:
         checks.append(("rd_ridge_b4 runs", None, "cell missing"))
     else:
         v = d["worst_task_excess"]
-        ok = RD_INF <= v <= RD_L0_B4 * 1.5
+        # Quantizing can only add distortion, so b=4 must sit at or above the
+        # seed1 b=inf cell, and far below the lambda=0 b=4 collapse.
+        ok = RD_INF_SEED1 - 0.002 <= v <= RD_L0_B4 * 1.5
+        q = v - RD_INF_SEED1
         checks.append(("rd_ridge_b4 runs", ok,
-                       f"excess {v:.4f} (bar: between b=inf {RD_INF:.4f} "
-                       f"and 1.5x the lambda=0 b=4 cell {RD_L0_B4:.4f})"))
+                       f"excess {v:.4f}, quantization cost q(4) = {q:+.4f} "
+                       f"(bar: >= seed1 b=inf {RD_INF_SEED1:.4f}, "
+                       f"<= 1.5x lambda=0 b=4 {RD_L0_B4:.4f})"))
 
     # 5. fixed GSM8K scorer: extraction failures must fall sharply.
     d = load(RES / "eval_downstream_v2/llama31_8b__ta__gsm8k_em__seed1.json")

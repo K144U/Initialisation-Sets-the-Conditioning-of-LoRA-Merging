@@ -104,6 +104,37 @@ def test_knots_ties_differs_from_plain_ties():
         f"KnOTS-TIES is indistinguishable from plain TIES (rel diffs {diffs})")
 
 
+def test_inner_merge_ties_creates_no_off_device_tensors():
+    """Device-safety check that works on a CPU-only box.
+
+    The GPU failure of 2026-08-02 was `w_t = torch.tensor(weights, ...)` with
+    no device=, which lands on cpu while `stacked` is cuda. CPU unit tests
+    cannot see that: on CPU the mismatch is a no-op. So instead of needing a
+    GPU, patch torch.tensor and assert every tensor the function constructs
+    was given an explicit device.
+    """
+    from merging import knots as knots_mod
+
+    real_tensor = torch.tensor
+    offenders = []
+
+    def spy(*args, **kwargs):
+        if "device" not in kwargs:
+            offenders.append(args[0] if args else None)
+        return real_tensor(*args, **kwargs)
+
+    coeffs = [torch.randn(8, 6) for _ in range(3)]
+    torch.tensor = spy
+    try:
+        knots_mod._inner_merge_ties(coeffs, [1 / 3] * 3, density=0.5)
+    finally:
+        torch.tensor = real_tensor
+
+    assert not offenders, (
+        f"_inner_merge_ties built {len(offenders)} tensor(s) without an "
+        f"explicit device=; that raises on GPU. Offending values: {offenders}")
+
+
 def test_knots_rejects_unknown_inner_combination():
     m = _make_model()
     try:

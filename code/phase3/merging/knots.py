@@ -56,7 +56,13 @@ def _inner_merge_ties(
     elected = _elect_sign(stacked, "total")
     sign_t = torch.sign(stacked)
     match = ((sign_t == elected.unsqueeze(0)) & (elected.unsqueeze(0) != 0)).to(stacked.dtype)
-    w_t = torch.tensor(weights, dtype=stacked.dtype).view(-1, 1, 1)
+    # device= is required: on GPU `stacked` is cuda and a bare torch.tensor()
+    # lands on cpu, so the multiply below raises. merge_ties() in ties.py has
+    # always passed device; this path never did, because inner_combination
+    # ="ties" had never actually been run on a GPU. Caught by the smoke gate
+    # 2026-08-02. CPU unit tests cannot catch this: on CPU it is a no-op.
+    w_t = torch.tensor(weights, dtype=stacked.dtype,
+                       device=stacked.device).view(-1, 1, 1)
     num = (stacked * match * w_t).sum(dim=0)
     den = (match * w_t).sum(dim=0).abs().clamp_min(1e-12)
     return torch.where(den > 1e-12, num / den, torch.zeros_like(num))
