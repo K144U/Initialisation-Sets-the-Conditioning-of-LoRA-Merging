@@ -33,31 +33,53 @@ _GSM8K_FINAL_PATTERNS = [
     re.compile(r"####\s*([-+]?\d[\d,]*(?:\.\d+)?)"),         # "#### 123"
     re.compile(r"answer\s+is\s+\$?([-+]?\d[\d,]*(?:\.\d+)?)", re.IGNORECASE),
     re.compile(r"=\s*\$?([-+]?\d[\d,]*(?:\.\d+)?)\s*[.,!?]?\s*$"),  # ending equation
-    re.compile(r"\$?([-+]?\d[\d,]*(?:\.\d+)?)\s*[.,!?]?\s*$"),       # last number
+    re.compile(r"\$?([-+]?\d[\d,]*(?:\.\d+)?)\s*[.,!?]?\s*$"),       # number at end
 ]
+
+# Fallback: the last number appearing ANYWHERE in the text, the standard
+# GSM8K harness convention. Deliberately last, so the structured patterns
+# above still win when present.
+#
+# Why this exists (2026-08-02): the four patterns above are all anchored at
+# end-of-string, so any answer closing with words ("Thus, 12 students are
+# good at math.") extracted None and scored 0. Measured failure rates on the
+# shipped runs were 60% to 81% on three of four bases and strongly
+# method-dependent (Llama rd-ridge 0.693 vs Mistral rd-ridge 0.107), which
+# made EM a measure of output formatting rather than arithmetic. Do not
+# remove this fallback.
+_GSM8K_ANY_NUMBER = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?")
+
+
+def _normalize_number(s: str) -> str:
+    """Commas stripped, integral floats collapsed: "3" == "3.0" == "3.00"."""
+    s = s.replace(",", "").strip()
+    try:
+        v = float(s)
+        if abs(v - round(v)) < 1e-9:
+            return str(int(round(v)))
+        return str(v)
+    except ValueError:
+        return s
 
 
 def gsm8k_extract_answer(text: str) -> str | None:
     """Extract a normalized final numeric answer from generated text.
 
     GSM8K's gold-answer convention is `#### <number>`. We accept that, plus
-    several common chat-output variants (`The answer is X`, `= X` at end,
-    or just the last number in the response). Returns a normalized string
-    (commas stripped, trailing `.0` stripped) or None if extraction failed.
+    common chat-output variants (`The answer is X`, `= X` at end, a number at
+    end), and finally the last number anywhere in the text. Returns None only
+    when the text contains no number at all.
     """
+    if not text:
+        return None
     text = text.strip()
     for pat in _GSM8K_FINAL_PATTERNS:
         m = pat.search(text)
         if m:
-            s = m.group(1).replace(",", "").strip()
-            # Normalize floating point: "3" == "3.0" == "3.00"
-            try:
-                v = float(s)
-                if abs(v - round(v)) < 1e-9:
-                    return str(int(round(v)))
-                return str(v)
-            except ValueError:
-                return s
+            return _normalize_number(m.group(1))
+    matches = _GSM8K_ANY_NUMBER.findall(text)
+    if matches:
+        return _normalize_number(matches[-1])
     return None
 
 
@@ -123,7 +145,10 @@ def evaluate_gsm8k_em(model, tokenizer, eval_data: list[dict],
             "score": score,
             "pred": gsm8k_extract_answer(gen),
             "gold": gsm8k_extract_answer(ex["answer"]),
-            "gen_text": gen[:200],   # truncated for storage
+            # Full text, not a preview. The old 200-char cap made offline
+            # re-scoring impossible, so a scorer bug cost a whole GPU re-run.
+            # About 1 KB per example, 0.5 MB per cell.
+            "gen_text": gen,
         })
         if (i + 1) % progress_every == 0:
             acc_so_far = correct / (i + 1)
@@ -134,18 +159,64 @@ def evaluate_gsm8k_em(model, tokenizer, eval_data: list[dict],
 
 
 def _strip_humaneval_completion(text: str) -> str:
-    """Truncate generated text at the boundary of the next top-level
-    definition or class. HumanEval expects the model to complete a single
-    function; trailing extra functions/classes/imports are noise that
-    breaks the test harness."""
+    """Reduce a generation to the completion body to append to the prompt.
+
+    Bug fixed 2026-08-02: the old version tested
+    `if out and line.startswith(("def ", ...))`, so a generation beginning
+    with a blank line followed by a top-level `def` broke on line 2 with
+    `out == [""]` and returned "". That is every markdown-fenced answer,
+    because the fence strip in the caller leaves a leading newline. The
+    candidate file was then the bare prompt, a body-less function, which
+    fails every assertion. It silently discarded 122 to 130 of 164
+    completions for TA/DARE/KnOTS versus 0 to 11 for TIES/TVQ2/rd-ridge,
+    making pass@1 a measure of markdown habits rather than code quality.
+
+    Handles the four shapes models actually emit:
+      1. body only, indented          -> kept as-is
+      2. full function, leading `def` -> kept (redefines the prompt's stub;
+                                         Python resolves to the second)
+      3. prose, then a full function  -> prose dropped, function kept
+      4. nothing usable               -> ""
+    """
     lines = text.split("\n")
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    if not lines:
+        return ""
+
+    # A second def/class ends the completion, but the FIRST one does not: an
+    # import or decorator preamble legitimately precedes it. Test scaffolding
+    # ends the completion whether or not a def has been seen.
+    DEF_BOUNDARY = ("def ", "class ")
+    TEST_BOUNDARY = ("if __name__", "print(", "assert ", "# Test")
+
+    # Shape 3: a top-level `def` appears but not on the first line, and what
+    # precedes it is not code. That preamble is prose; drop it.
+    first_def = next((i for i, l in enumerate(lines) if l.startswith("def ")), None)
+    if first_def is not None and first_def > 0:
+        preamble_is_code = any(
+            l.strip() and l.startswith((" ", "\t", "@", "import ", "from "))
+            for l in lines[:first_def]
+        )
+        if not preamble_is_code:
+            lines = lines[first_def:]
+
     out: list[str] = []
-    for line in lines:
-        # Stop at next top-level definition (column-0 def/class/if __name__)
-        if out and line.startswith(("def ", "class ", "if __name__",
-                                     "print(", "assert ", "# Test")):
+    started = False
+    seen_def = False
+    for i, line in enumerate(lines):
+        if i > 0 and started and line.startswith(TEST_BOUNDARY):
+            break
+        if i > 0 and seen_def and line.startswith(DEF_BOUNDARY):
             break
         out.append(line)
+        if line.strip():
+            started = True
+        if line.startswith(DEF_BOUNDARY):
+            seen_def = True
+
+    while out and not out[-1].strip():
+        out.pop()
     return "\n".join(out)
 
 
@@ -232,7 +303,8 @@ def evaluate_humaneval_pass1(model, tokenizer, eval_data: list[dict],
             "task_id": ex.get("task_id", f"hu{i}"),
             "score": int(passed),
             "err": err if not passed else "",
-            "completion_preview": body[:200],
+            "completion_preview": body,   # full; see the gen_text note above
+            "gen_raw": gen,               # pre-strip, to debug the stripper
         })
         if (i + 1) % progress_every == 0:
             acc = correct / (i + 1)
@@ -321,8 +393,8 @@ def evaluate_gsm8k_special_token_probe(model, tokenizer,
             "gold": gsm8k_extract_answer(ex["answer"]),
             "n_special_emitted": emit,
             "n_tokens": len(gen_ids),
-            "gen_text_raw": gen_text_raw[:300],  # truncated; specials preserved
-            "gen_text_clean": gen_text_clean[:200],
+            "gen_text_raw": gen_text_raw,     # full; specials preserved
+            "gen_text_clean": gen_text_clean,
         })
         total_emit += emit
         if (i + 1) % progress_every == 0:
@@ -342,22 +414,74 @@ METRIC_FNS: dict[str, Callable] = {
 }
 
 
-# --- Quick unit tests for GSM8K extraction ------------------------------
+# --- Unit tests for answer extraction and completion stripping ----------
 
 
 def _self_test() -> None:
-    cases = [
+    fails: list[str] = []
+
+    def chk(label, got, want):
+        if got != want:
+            fails.append(f"{label}: got {got!r}, want {want!r}")
+
+    extraction_cases = [
         ("Let's see... 5+3 = 8. #### 8", "8"),
         ("The answer is 42", "42"),
         ("After computing: 2 + 2 = 4.", "4"),
         ("So the result is 1.5\n#### 1.5", "1.5"),
         ("I have no idea.", None),
+        ("", None),
         ("Answer: $3,200", "3200"),
+        # Regression 2026-08-02: answer stated mid-sentence, text ending on a
+        # word. The end-anchored patterns returned None, scoring 0, which
+        # turned EM into a formatting metric.
+        ("There are 20 - 5 - 8 = 7 students.\n"
+         "So, there are 5 + 7 = 12 students good at math.", "12"),
+        ("Thus, 12 students are good at math.", "12"),
+        ("The number of pounds not used is 200 - 80 = 120 pounds", "120"),
+        # Structured patterns must still beat the last-number fallback.
+        ("#### 7\nsome trailing chatter 999 words", "7"),
     ]
-    for text, want in cases:
-        got = gsm8k_extract_answer(text)
-        assert got == want, f"extract({text!r}) = {got!r}, want {want!r}"
-    print("downstream_metrics._self_test: OK")
+    for text, want in extraction_cases:
+        chk(f"extract({text[:30]!r})", gsm8k_extract_answer(text), want)
+
+    chk("score match", gsm8k_score("Thus, 12 students are good at math.",
+                                   "#### 12"), 1)
+    chk("score mismatch", gsm8k_score("Thus, 11 students.", "#### 12"), 0)
+
+    strip_cases = [
+        ("body only", "    return x + 1", "    return x + 1"),
+        ("full func", "def add(x, y):\n    return x + y",
+         "def add(x, y):\n    return x + y"),
+        # Regression 2026-08-02: the caller's markdown-fence strip leaves a
+        # leading newline, which used to yield an empty completion and a
+        # guaranteed fail, discarding up to 79% of some methods' generations.
+        ("leading blank", "\ndef add(x, y):\n    return x + y",
+         "def add(x, y):\n    return x + y"),
+        ("prose then func",
+         "Here is the function:\n\ndef add(x, y):\n    return x + y",
+         "def add(x, y):\n    return x + y"),
+        ("cuts second def",
+         "def add(x, y):\n    return x + y\n\ndef other():\n    pass",
+         "def add(x, y):\n    return x + y"),
+        ("cuts trailing tests", "    return x + 1\n\nassert add(1,2) == 3",
+         "    return x + 1"),
+        ("keeps import preamble",
+         "import math\n\ndef f(x):\n    return math.sqrt(x)",
+         "import math\n\ndef f(x):\n    return math.sqrt(x)"),
+        ("empty", "", ""),
+        ("blank only", "\n\n  \n", ""),
+    ]
+    for label, text, want in strip_cases:
+        chk(f"strip[{label}]", _strip_humaneval_completion(text), want)
+
+    if fails:
+        print("downstream_metrics._self_test: FAILURES")
+        for f in fails:
+            print("  " + f)
+        raise SystemExit(1)
+    print(f"downstream_metrics._self_test: OK "
+          f"({len(extraction_cases) + len(strip_cases) + 2} cases)")
 
 
 if __name__ == "__main__":
