@@ -1,0 +1,35 @@
+% arXiv preprint build (non-anonymous, venue-neutral).
+% Compile from the paper/ directory:  ./build.sh arxiv
+%
+% Deliberately mentions no venue and vendors no conference asset, so the
+% arXiv source tarball carries no ICLR-named file. Bibliography uses
+% plainnat, which ships with every TeX distribution.
+
+\PassOptionsToPackage{table}{xcolor}
+
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{times}
+\usepackage[round,authoryear]{natbib}
+
+\input{preamble}
+
+\title{Predicting When LoRA Merging Fails:\\A Rate-Distortion View}
+
+% TODO before uploading: fill in the two email placeholders. The 2026-05
+% draft used pathaksankalp04@gmail.com / gargsv@gmail.com with no
+% institution line, if those are still current.
+\author{
+Sankalp Pathak \\
+\texttt{[EMAIL PLACEHOLDER]}
+\and
+Sanjay Garg \\
+\texttt{[EMAIL PLACEHOLDER]}
+}
+\date{\today}
+
+\bibliographystyle{plainnat}
+
+\begin{document}
+\input{main}
+\end{document}

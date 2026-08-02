@@ -86,3 +86,6 @@ _RIDGE_XMODEL_COMPLETE
 
 # Editor working files
 _docedit*.py
+
+# paper build output
+paper/out/

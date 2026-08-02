@@ -1,0 +1,32 @@
+% ICLR 2027 submission build (double-blind).
+% Compile from the paper/ directory:  ./build.sh iclr
+%
+% Style: iclr2026_conference.sty with the running header patched to
+% "ICLR 2027". Swap in the official iclr2027 files when the CFP releases
+% them (historically a drop-in rename); update \usepackage and
+% \bibliographystyle together.
+
+% MUST be the first line: the style file loads eso-pic, which loads xcolor.
+% Without this, the later \usepackage[table]{xcolor} option-clashes, [table]
+% is dropped, \cellcolor is never defined, and every \best/\worst cell
+% prints a literal "green!18". Do not remove or move below the sty.
+\PassOptionsToPackage{table}{xcolor}
+
+\documentclass{article}
+\usepackage{iclr2026_conference,times}
+% \iclrfinalcopy  % uncomment for camera-ready (de-anonymizes)
+
+\input{preamble}
+
+\title{Predicting When LoRA Merging Fails:\\A Rate-Distortion View}
+
+% The ICLR style file replaces this with "Anonymous authors" until
+% \iclrfinalcopy is set; real names are kept out of this file regardless.
+\author{Anonymous authors\\
+Paper under double-blind review}
+
+\bibliographystyle{iclr2026_conference}
+
+\begin{document}
+\input{main}
+\end{document}

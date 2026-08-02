@@ -1,0 +1,42 @@
+% Shared preamble: everything both the ICLR and the arXiv build need.
+% Venue-specific bits (documentclass, style file, title block, bib style)
+% live in build/iclr2027.tex and build/arxiv.tex.
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{url}
+\usepackage{hyperref}
+
+% Heatmap-style cell shading for the matrix tables.
+% \best = winner of the row (lowest NLL excess / highest accuracy).
+% \worst = loser of the row.
+% NOTE: these need colortbl, i.e. xcolor's [table] option. Each build file
+% issues \PassOptionsToPackage{table}{xcolor} on its FIRST line, because the
+% ICLR style file pulls in eso-pic -> xcolor and would otherwise option-clash,
+% silently leaving \cellcolor undefined and printing a literal "green!18".
+\newcommand{\best}[1]{\cellcolor{green!18}\textbf{#1}}
+\newcommand{\worst}[1]{\cellcolor{red!10}#1}
+
+% Shorthand macros used throughout.
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\deff}{d_{\mathrm{eff}}}
+\newcommand{\tauH}{\bar{\tau}_H}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\range}{range}
+
+% Shared theorem counter: Lemmas 1-2, Theorems 3-4, Remarks 5-6.
+% Prose references depend on this numbering; do not split the counters.
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{problem}{Problem}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}

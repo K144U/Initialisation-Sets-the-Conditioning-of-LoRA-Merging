@@ -1,53 +1,10 @@
-% Main paper file for:
-% "Predicting When LoRA Merging Fails: A Rate-Distortion View"
+% Shared document body. Identical for every build target; the only things
+% that vary between ICLR and arXiv are in build/*.tex (documentclass, style
+% file, title block, bibliography style).
 %
-% Swap \documentclass to iclr2027.sty / neurips_2026.sty when the
-% style file is available. For now, plain article so it compiles
-% anywhere.
+% This file is \input from inside \begin{document}. It must not contain
+% \documentclass, preamble packages, or \begin{document}/\end{document}.
 
-\documentclass{article}
-
-\usepackage[utf8]{inputenc}
-\usepackage{amsmath,amssymb,amsthm}
-\usepackage{enumitem}
-\usepackage{graphicx}
-\usepackage[table]{xcolor}
-\usepackage{hyperref}
-
-% Heatmap-style cell shading shortcuts for the matrix tables.
-% \best = winner of the row (lowest NLL excess / highest accuracy).
-% \worst = loser of the row.
-\newcommand{\best}[1]{\cellcolor{green!18}\textbf{#1}}
-\newcommand{\worst}[1]{\cellcolor{red!10}#1}
-
-% Shorthand macros used throughout. Will be harmonised with
-% theory/theorem_v1.tex when that content is \input'd.
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\E}{\mathbb{E}}
-\newcommand{\deff}{d_{\mathrm{eff}}}
-\newcommand{\tauH}{\bar{\tau}_H}
-\DeclareMathOperator{\rank}{rank}
-\DeclareMathOperator{\range}{range}
-
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{corollary}[theorem]{Corollary}
-\newtheorem{proposition}[theorem]{Proposition}
-\theoremstyle{definition}
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{problem}{Problem}
-\theoremstyle{remark}
-\newtheorem{remark}[theorem]{Remark}
-
-\title{Predicting When LoRA Merging Fails: A Rate-Distortion View}
-% Author block redacted for double-blind review (ICLR 2027).
-% The non-anonymous block is kept out of this file entirely; restore
-% author names only in the camera-ready version after acceptance.
-\author{Anonymous Authors\\
-  \texttt{anonymous@iclr2027.cc}}
-\date{}
-
-\begin{document}
 \maketitle
 
 \begin{abstract}
@@ -70,30 +27,43 @@
 \input{sections/achievability}
 
 \section{Experiments}\label{sec:exp}\label{sec:experiments}
-\input{sections/experiments}
-
-% --- §6.2-§6.8: post-E4/E6/E10/E11 experimental writeups ---
-\input{sections/6_2_e1_real_adapters_draft}
-\input{sections/6_3_e5_arm2_null_draft}
-\input{sections/6_3b_T2_floor_recipe_draft}
-\input{sections/6_4_e7_b2_mechanism_draft}
-\input{sections/6_5_e3_downstream_metrics_draft}
-\input{sections/6_6_e6_T_scaling_draft}
-\input{sections/6_7_practical_recommendations_draft}
-\input{sections/6_8_e10_e11_baselines_bridge_draft}
-\input{sections/6_8b_robustness_sweeps_draft}
-\input{sections/6_9_multiseed_bootstrap_draft}
+\input{sections/experiments_main}
 
 \section{Discussion and Limitations}\label{sec:discussion}\label{sec:future}
 \input{sections/discussion}
 
-\appendix
-\input{sections/appendix_td2_sign_election_threshold}
-
-\section*{Reproducibility Statement}
+\subsubsection*{Reproducibility Statement}
 \input{sections/reproducibility}
 
-\bibliographystyle{plain}
 \bibliography{references}
 
-\end{document}
+\appendix
+\section{Synthetic Validation Details}\label{app:synthetic}
+\input{sections/app_synthetic}
+
+\section{The Floor-Positive Regime Does Not Arise Naturally}\label{app:e5}
+\input{sections/app_e5_floor}
+
+\section{What Drives the $b=2$ Dip}\label{app:b2}
+\input{sections/app_b2_mechanism}
+
+\section{$T$-Scaling: Probe Details and Base-Specific Artifacts}\label{app:tscaling}
+\input{sections/app_tscaling_details}
+
+\section{Downstream Accuracy: Falsification Tests and Seed Stability}\label{app:downstream}
+\input{sections/app_downstream_details}
+
+\section{Added Baselines and the Quadratic Bridge}\label{app:baselines}
+\input{sections/app_baselines_bridge}
+
+\section{Robustness: Tuning the Closest Competitors}\label{app:robustness}
+\input{sections/app_robustness}
+
+\section{Multi-Seed Bootstrap of the $T=4$ Matrix}\label{app:multiseed}
+\input{sections/app_multiseed}
+
+\section{Sign-Election Threshold for TIES Inversion}\label{app:sign-election-threshold}
+\input{sections/app_td2}
+
+\section{Practical Decision Table and Experiment Manifest}\label{app:manifest}
+\input{sections/app_manifest}

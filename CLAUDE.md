@@ -127,10 +127,9 @@ Target counts:
 | `~/projects/rdmerge/CLAUDE.md` | this file |
 | `~/projects/rdmerge/context.md` | project-level user-facing doc |
 | `~/projects/rdmerge/decisions.md` | chronological scientific log (append-only) |
-| `~/projects/rdmerge/paper/main.tex` | paper entry point |
-| `~/projects/rdmerge/paper/sections/` | 19 section fragments incl. §6.2–§6.9 + Td2 appendix |
+| `~/projects/rdmerge/paper/` | **the only paper tree** (see §19); build roots `iclr2027.tex` / `arxiv.tex`, shared body `main.tex`, `./build.sh` |
+| `~/projects/rdmerge/paper/sections/` | 19 section files: main text §1–§7 + appendices A–J |
 | `~/projects/rdmerge/paper/references.bib` | bibliography |
-| `~/projects/rdmerge/overleaf/iclr2027/paper/` | Overleaf-ready snapshot (paths rewritten so it compiles from any cwd) |
 | `~/projects/rdmerge/code/phase3/merging/` | 11 merge method impls including `rd_encoder`, `fisher_avg`, `della`, `regmean`, `adamerging` |
 | `~/projects/rdmerge/code/phase3/eval/` | `run_eval_cell.py` (NLL) + `run_downstream_cell.py` (GSM8K/HE/etc.) |
 | `~/projects/rdmerge/code/phase3/scripts/` | analyzers, figure makers, PBS launchers, orchestrator |
@@ -246,7 +245,7 @@ Triggered by the cron's "Phase 1 complete" PushNotification:
 - **The `prop:quadratic-surrogate` and `tab:exp-lora-full` references** were removed from §6.2 during P1 because they pointed to non-existent labels. If anyone re-introduces them, they need supporting content.
 - **Adapter dirs vs eval seeds**: `seed1`/`seed2`/`seed3` in `artifacts/lora/{base}/{task}/seedN/` are *training* seeds (different adapter init); the eval cell's top-level `seed:` field is the *eval data shuffle* seed. The two are independent — the seed3 eval configs use `seed: 20260520` for eval data and `seed3` adapter dirs.
 - **Phase 1 cron jobname → GPU pin mapping is asymmetric**: `_ORCH_GPUS_E6` controls `rdm_s3tr/s3ev/mpilt`; `rdm_rrdn/e12bl` use the inline `export GPUS=6` in their PBS scripts. If you change one, check the other.
-- **The Overleaf snapshot `overleaf/iclr2027/paper/` is derived**, not canonical. Edit `paper/`, then run the rebuild script in `overleaf/iclr2027/README.md` to refresh the snapshot.
+- **There is exactly one paper tree now: `paper/`.** No Overleaf snapshot, no `ICLR/`, no `arxiv/` to keep in sync. Upload `paper/` to Overleaf directly and set the main document to `iclr2027.tex`.
 - **`models/` (111 GB) and `cache/` (22 GB) are gitignored**. They're re-downloadable from HuggingFace. Only `artifacts/lora/` (~18 GB) is irreplaceable.
 - **The 27 GB session archive** is at `~/rdmerge_complete_2026-06-25.tar` (md5 `f9322d67f00f999dd5a76db018ae9936`) — the everything-minus-base-models snapshot the user requested.
 
@@ -337,3 +336,63 @@ Resuming-session reconciliation. The "⏳ in flight" statuses in §11/§12/§14 
 Garg unavailable (family); solo. No arXiv preprint (direct ICLR). Do NOT revert the floor formula (Lemma 2 form), the title/abstract reframe, or weaken the Td2 falsifiability; no GPU 0; no force-push on `phase3-bootstrap`.
 
 *— Claude (Opus 4.8), 2026-06-27.*
+
+---
+
+## 19. 2026-08-02 — paper trees consolidated to one; audit filed
+
+**Five paper trees became one.** `ICLR/`, `arxiv/v1/`, `arxiv/v2/`,
+`overleaf/iclr2027/` and `paper/updates/` are deleted. `paper/` is now the
+single source of truth and carries the 2026-07-05 text verbatim (sections,
+figures and references.bib were byte-identical to `ICLR/`'s when copied).
+
+```
+paper/iclr2027.tex   ICLR root   (anonymous byline, iclr2026_conference.sty)
+paper/arxiv.tex      arXiv root  (real names, plain article, no venue named)
+paper/preamble.tex   shared packages/macros/theorem counter
+paper/main.tex       shared body: \maketitle -> appendices
+paper/sections/      19 shared section files
+./build.sh {iclr|arxiv|both}  ->  paper/out/*.pdf
+```
+
+The two roots differ only in documentclass, style packages, title block and
+`\bibliographystyle`, so a prose edit lands in both builds automatically.
+Layout is deliberately flat: tectonic resolves `\input` against the source
+file's directory while pdflatex resolves against the CWD, so a `build/`
+subdirectory breaks one or the other. Do not reintroduce one.
+
+Verified with tectonic 0.16.9: ICLR 25 pp, **0 overfull**, 0 undefined
+refs/citations, main text still ends bottom of p10. arXiv 29 pp with 6
+overfull boxes, pre-existing (that build was assembled 2026-07-07 and never
+compiled) and caused by the wider 1in/11pt geometry. Details and the
+remaining pre-submission to-dos are in `paper/README.md`.
+
+**Recovery:** the pre-cleanup state is commit `d15fa8e` on branch
+`paper-consolidation`; the deleted trees are also in `1c502e2` and earlier.
+
+**Audit filed:** `notes/audit_2026-08-02_code_and_claims.md` checks the paper
+against the shipped code and results. Five A-severity findings, and the first
+one should gate any further writing:
+
+1. All T adapters per cohort share one LoRA `A` init (`train_lora.py` seeds
+   from `seeds.global`, identical across the four task configs), so the task
+   subspaces are near-identical (principal cosines median 0.996; soft
+   d_eff ~ 16 of Tr = 64). `hard d_eff = Tr` holds only because the rank
+   tolerance is ~1e-3·sigma_1. This **inverts** the floor-zero regime claim.
+2. `merging/knots.py` with the default `inner_combination="linear"` is
+   algebraically Task Arithmetic (V V^T = I cancels). The paper cites
+   "KnOTS ~ TA" as evidence *for* the theory in four places.
+3. Headline rd-ridge cells use `realize="rank_deff"` (rank 64) while every
+   baseline uses rank 16, and the lambda=0 comparison cell is rank 16 too.
+4. HumanEval harness returns an empty completion for markdown-fenced output:
+   122-130 of 164 empty for TA/DARE/KnOTS vs 0-11 for TIES/TVQ2/rd-ridge.
+5. GSM8K extractor requires the answer at end-of-string; it fails on 60-81%
+   of generations, method-dependently. Likely explains the "unexplained"
+   Llama GSM8K rho = -0.60 outlier.
+
+Also: train/eval overlap ~14.5% (alpaca) / 10% (magicoder), because training
+shuffles with `seeds.global` (1/2/3) but eval cells shuffle with
+`seed: 20260518`. The Reproducibility Statement's zero-overlap claim is
+false as written.
+
+*— Claude (Opus 5), 2026-08-02.*
