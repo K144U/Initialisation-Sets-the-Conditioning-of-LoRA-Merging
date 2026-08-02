@@ -124,6 +124,7 @@ def merge_rd_encoder(
     ridge_lambda: float = 0.0,
     h_t_mode: str = "projector",
     fisher_data: dict | None = None,
+    renorm: str | None = None,
     **_kwargs,
 ) -> None:
     """The paper's encoder as a registry merge method. bits >= 32 = no
@@ -154,6 +155,16 @@ def merge_rd_encoder(
                   arithmetic with ridge floor. bits<32 quantization with
                   this mode is not yet supported (would inflate rate by
                   in_dim/d_eff vs projector); enforced via assertion.
+    renorm:
+      None (default) leave W* as the construction produces it.
+      "ta"  rescale W* per layer so ||W*||_F == ||sum_t w_t Delta_t||_F,
+            i.e. strip the construction's norm advantage over Task
+            Arithmetic while keeping its direction. This is the control
+            for the objection that the ridge is a disguised merge-coefficient:
+            at lambda* the measured ||W*||/||TA|| is 1.3x to 2.4x, so if the
+            win is really about scale it should vanish under renorm.
+            Applied before SVD truncation, and to the rank_deff factors too
+            (scaling eta scales W* by the same factor).
     full_rank_patch (v2) is RETIRED: mutating base weights does not
     propagate coherently through unsloth-patched forward paths (measured
     +10 nats, 2026-06-12); kept only for the fake-model unit test."""
@@ -220,6 +231,19 @@ def merge_rd_encoder(
                           if bits < 32 else None)
             denom_cond = float(S_eff.max() / S_eff.min().clamp_min(1e-30))
 
+        renorm_factor = 1.0
+        if renorm is not None:
+            if renorm != "ta":
+                raise ValueError(f"unknown renorm {renorm!r} (expected 'ta' or None)")
+            # N is the Task Arithmetic delta at these weights in both branches.
+            ta_norm = float(N.norm())
+            w_norm = float(W_star.norm())
+            if w_norm > 1e-20:
+                renorm_factor = ta_norm / w_norm
+                W_star = W_star * renorm_factor
+                if h_t_mode == "projector":
+                    eta = eta * renorm_factor   # keeps the rank_deff factors consistent
+
         A_new, B_new = svd_truncate_to_rank(W_star, r)
         truncated = B_new.to(torch.float32) @ A_new.to(torch.float32)
         total = float((W_star ** 2).sum())
@@ -230,6 +254,9 @@ def merge_rd_encoder(
             "trunc_mass_frac": max(0.0, 1.0 - kept / total) if total > 0 else 0.0,
             "rate_bits": rate_layer,
             "denom_cond": denom_cond,
+            # <1 means the construction was amplifying vs TA and got shrunk.
+            "renorm_factor": renorm_factor,
+            "w_over_ta_norm": (1.0 / renorm_factor) if renorm_factor > 0 else None,
         }
         if full_rank_patch:
             residual = (W_star - truncated)

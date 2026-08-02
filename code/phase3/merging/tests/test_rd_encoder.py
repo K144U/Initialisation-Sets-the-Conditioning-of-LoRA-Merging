@@ -188,3 +188,61 @@ def test_fisher_diag_rejects_unsupported_combos():
         assert False, "expected AssertionError for rank_deff"
     except AssertionError:
         pass
+
+
+def test_renorm_ta_matches_task_arithmetic_norm():
+    """renorm='ta' must leave direction alone and set ||W*||_F == ||TA||_F."""
+    m = _make_model()
+    w = [1 / T] * T
+    merge_rd_encoder(m, _names(), w, "plain", bits=32, ridge_lambda=0.05,
+                     realize="rank_deff")
+    merge_rd_encoder(m, _names(), w, "renormed", bits=32, ridge_lambda=0.05,
+                     realize="rank_deff", renorm="ta")
+    for layer in m.layer_topology:
+        ta = sum(wt * m.get_delta(f"task{t}", layer).to(torch.float32)
+                 for t, wt in enumerate(w))
+        plain = m.get_delta("plain", layer).to(torch.float32)
+        renormed = m.get_delta("renormed", layer).to(torch.float32)
+        # norm matches TA (rank_deff carries W* exactly, so this is tight)
+        rel = abs(float(renormed.norm()) - float(ta.norm())) / float(ta.norm())
+        assert rel < 1e-4, f"{layer}: renormed norm off by {rel}"
+        # direction is unchanged: renormed is a positive multiple of plain
+        cos = float((plain * renormed).sum()
+                    / (plain.norm() * renormed.norm()))
+        assert cos > 1 - 1e-5, f"{layer}: renorm rotated the solution, cos={cos}"
+
+
+def test_renorm_rejects_unknown_value():
+    m = _make_model()
+    try:
+        merge_rd_encoder(m, _names(), [1 / T] * T, "x", bits=32, renorm="nope")
+        assert False, "expected ValueError for unknown renorm"
+    except ValueError:
+        pass
+
+
+def main() -> int:
+    """No pytest in the conda env; run the module as a script."""
+    import traceback
+    tests = [(n, f) for n, f in sorted(globals().items())
+             if n.startswith("test_") and callable(f)]
+    n_pass, failures = 0, []
+    for name, fn in tests:
+        try:
+            fn()
+            print(f"  PASS  {name}")
+            n_pass += 1
+        except Exception:
+            print(f"  FAIL  {name}")
+            failures.append((name, traceback.format_exc()))
+    print(f"\nSUMMARY: {n_pass} passed, {len(failures)} failed")
+    for name, tb in failures:
+        print(f"--- TRACEBACK {name} ---\n{tb}")
+    if failures:
+        return 1
+    print("ALL_TESTS_GREEN")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
