@@ -403,8 +403,18 @@ synthetically.
 
 ## C. Smaller items
 
-- **C1** `references.bib` has `concurrent2026merging` (`journal = {Anonymous preprint}`),
-  never cited — delete. `regmeanpp2025` and `lorm2024` and `tspa2025` have no eprint/venue.
+- **C1** ~~`references.bib` has `concurrent2026merging` (`journal = {Anonymous preprint}`),
+  never cited — delete.~~ **CORRECTED 2026-08-02**: this is not a leftover
+  placeholder. The cluster checkout carries an uncommitted diff renaming
+  `pathak2026merging` to `concurrent2026merging` and stripping the authors
+  (Pathak, Garg) and DOI (`10.21203/rs.3.rs-9189872/v1`) from the authors' own
+  Research Square preprint, deliberately, for double-blind review. Do not
+  delete it. Two real issues remain: it is currently **uncited**, so it is
+  anonymizing nothing; and an `Anonymous / Anonymous preprint` entry is *more*
+  conspicuous to a reviewer than an ordinary third-person self-citation, which
+  is the accepted way to cite your own prior work under double-blind. Either
+  cite it in third person with full metadata, or drop it.
+  `regmeanpp2025` and `lorm2024` and `tspa2025` have no eprint/venue.
   `tara2025` has key-year 2025 but `year = {2026}`. `NOTES.md` already flags three 2026
   concurrent works to add (2603.09463 merging-collapse w/ rate-distortion, 2601.22285,
   2606.19549); 2603.09463 in particular needs differentiating — it reportedly uses the same

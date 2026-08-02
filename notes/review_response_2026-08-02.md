@@ -179,10 +179,23 @@ Both entries and the §2 sentence describing them are **fixed** as of commit
 `410593f`. The `note = {Anticipated 2025 refinement...}` field was the tell.
 
 Two of two spot-checks were fabricated, so treat the whole bibliography as
-unverified until each entry is checked against a real record. Priority
-suspects from the audit: `tspa2025` (no eprint), `concurrent2026merging`
-(`journal = {Anonymous preprint}`, uncited, delete it), `tara2025` (2025 key,
-`year = {2026}`), `arm2026streaming`.
+unverified until each entry is checked against a real record.
+
+### Verification log (33 entries; update as they are checked)
+
+| key | status | note |
+|---|---|---|
+| `lorm2024` | **was fabricated, FIXED** | real: Salami et al., arXiv:2410.17961. Wrong title, authors, venue and setting. |
+| `regmeanpp2025` | **was fabricated, FIXED** | real: Nguyen, Huu-Tien, Suzuki, Nguyen, arXiv:2508.03121, TMLR. Contribution is cross-layer dependencies, not the Tikhonov term. |
+| `zandieh2025turboquant` | **verified** | arXiv:2504.19874, Google + NYU. Title exact. Substantively right too: the method is random rotation then per-coordinate optimal scalar quantization, which is the construction §5 builds on. This is the load-bearing citation and it holds. |
+| `tspa2025` | **real, metadata incomplete** | title exact, OpenReview `iE0dWuv6jU`. Currently `@misc` with no venue or eprint; fill them in. |
+| `concurrent2026merging` | **real, self-citation** | anonymized `pathak2026merging` (Research Square, DOI `10.21203/rs.3.rs-9189872/v1`). Not a placeholder. See audit C1: it is uncited, so it anonymizes nothing, and `Anonymous / Anonymous preprint` is more conspicuous than an ordinary third-person self-citation. |
+| remaining 28 | **unchecked** | priority: `tara2025` (2025 key vs `year = {2026}`, claims CVPR), `arm2026streaming` (2602.03237), `panariello2025core` (2509.17786), `kim2025tvq`, `stoica2025knots`, `systematic2025merging`. |
+
+Pattern so far: the fabricated pair both had a hand-written `note` field
+editorialising about a paper's contribution ("Anticipated 2025 refinement…",
+"Successor of RegMean adapted to…"). Any remaining entry carrying such a note,
+or lacking an eprint/DOI, should be checked first.
 
 **Also surfaced while checking:** close concurrent work the paper does not cite.
 arXiv:2606.03723 "Compress then Merge: From Multiple LoRAs into One Low-Rank
