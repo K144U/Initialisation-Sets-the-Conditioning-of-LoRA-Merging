@@ -14,9 +14,10 @@ Prerequisite on the cluster, once:
 ```sh
 cd ~/projects/rdmerge
 git fetch && git checkout paper-consolidation      # or merge into phase3-bootstrap
-python -c "import sys; sys.path.insert(0,'code/phase3'); \
-  from eval.downstream_metrics import _self_test; _self_test()"   # 22 cases
-python code/phase3/merging/tests/test_rd_encoder.py               # 10 cases
+python code/phase3/eval/downstream_metrics.py       # 22 cases
+python code/phase3/merging/tests/test_rd_encoder.py # 10 cases
+python code/phase3/merging/tests/test_knots.py      #  4 cases
+python code/phase3/merging/tests/test_synthetic.py  # 17 property checks
 ```
 
 ---
@@ -110,17 +111,59 @@ train/eval overlap (audit B1).
 
 ---
 
+## Stage 4 — A2, KnOTS with a working inner merge (12 cells, ~1 h)
+
+```sh
+python code/phase3/scripts/gen_a2_knots_ties.py
+qsub code/phase3/scripts/pbs_a2_knots_ties.sh        # aborts if test_knots fails
+python code/phase3/scripts/analyze_a2_knots_ties.py
+```
+
+As shipped, `inner_combination="linear"` makes KnOTS algebraically Task
+Arithmetic, because `Delta_t V V^T = Delta_t`. Published |KnOTS − TA| is 0.00003
+to 0.00031 nats across the four bases, i.e. float noise. The paper cites that
+agreement as evidence *for* its theory in four places (intro, §6.2 finding 3,
+related work, App. J). This runs KnOTS-TIES, the variant the KnOTS paper
+headlines, on the T=4 matrix at matched seeds.
+
+Both outcomes force a rewrite. K1: if KnOTS-TIES differs from TA by more than
+0.005 nats on 3+ bases, the published agreement was an implementation artifact
+and all four claims go. K2: if it still tracks TA, the conclusion survives but
+its evidence must be re-cited to these cells rather than to a no-op.
+
+Not covered here: the T-scaling pool also carries KnOTS cells (App. D, "tracks
+TA exactly at T = 7"). Same treatment needed before that sentence can stand.
+
+## Stage 5 — W3, finite-rate sweep (24 cells, ~2 h)
+
+```sh
+python code/phase3/scripts/gen_w3_rate_sweep.py
+qsub code/phase3/scripts/pbs_w3_rate_sweep.sh
+python code/phase3/scripts/analyze_w3_rate.py
+```
+
+rd-ridge at b in {1,2,3,4,8,16} at each base's lambda\*, `realize="rank_deff"`,
+seed1; b=32 already exists. rank_deff deliberately: truncating to rank 16 adds a
+rate-independent error floor that would flatten the very slope being measured.
+
+The encoder quantizes eta, which is (out x d_eff), at b bits per entry, so
+2^{-2R/n} reduces to **2^{-2b}**: excess should fall 4x per bit, slope −2 in
+log2 against b, matching the synthetic −2.00 ± 0.01. The analyzer fits the
+quantization contribution `excess(b) − excess(inf)`, not raw excess, since
+excess(inf) is the merge error and does not vanish with rate. b=1 is reported
+but excluded from the fit as clipping-dominated.
+
+Slope in [−2.4, −1.6] on 3+ bases gives the paper its first real-data
+confirmation of the achievability exponent. Otherwise the abstract's implication
+that the rate machinery does empirical work has to be withdrawn rather than
+qualified. For contrast the analyzer also prints the published lambda=0 sweep
+from `eval_e1/`, non-monotone on 4 of 4 bases and 9-11 nats on Mistral, which
+has never appeared in the paper as a rate curve.
+
 ## Not yet scheduled
 
-Needed for the review but not in these three stages:
+Needed for the review but not in these five stages:
 
-- **W3** rd-ridge at finite `b` in {1,2,4,8,inf}, 4 bases, 20 cells. The only
-  real-data rate evidence today is `eval_e1/` at lambda=0, which is non-monotone
-  on 4 of 4 bases and broken outright on Mistral. Nothing tests the rate axis
-  with the ridge on.
-- **A2** KnOTS with `inner_combination="ties"`, 20 cells. As shipped, the
-  default `"linear"` makes KnOTS algebraically Task Arithmetic, and the paper
-  cites "KnOTS ~ TA" as evidence *for* its theory in four places.
 - **W4** three extra 7-task subsets per base, 54 cells. Every T=7 point today is
   a single merge cell with one seed, and the Yi inversion gap (0.0197) is the
   size of the T=4 subset-to-subset range on the same base.

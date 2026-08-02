@@ -12,6 +12,24 @@ For each layer:
   7. SVD-truncate Δ_merged to rank-r LoRA factors.
 
 The "Knots-Ties" variant uses TIES as the inner merge instead of linear.
+
+WARNING (2026-08-02): `inner_combination="linear"` is algebraically Task
+Arithmetic and carries NO information about subspace alignment.
+`torch.linalg.svd(..., full_matrices=False)` returns a V whose columns span at
+least the row space of every Delta_t, so the projection round trip is the
+identity there:
+
+    Delta_merged = (sum_t w_t Delta_t) V V^T = sum_t w_t Delta_t
+
+Verified to 3e-06 in merging/tests/test_knots.py. Every shipped KnOTS cell used
+this default, which is why they matched TA to 3-4 decimals, and the paper read
+that agreement as evidence that "subspace alignment has nothing to exploit at
+zero overlap" in four places. It is not evidence of anything.
+
+Use `inner_combination="ties"` for a method that actually differs: sign
+election in the rotated basis is not sign election in the original basis, and
+KnOTS-TIES is the variant the KnOTS paper headlines. The registry default is
+left at "linear" so historical cells stay reproducible; pick "ties" explicitly.
 """
 
 from __future__ import annotations

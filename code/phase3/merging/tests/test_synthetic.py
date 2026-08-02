@@ -169,7 +169,20 @@ def main() -> int:
     n_fail = 0
     failures: list[tuple[str, str]] = []
 
-    for method, fn in REGISTRY.items():
+    # The registry grew (fisher_avg, della, regmean, adamerging, rd_encoder,
+    # magnitude_prune) without these kwarg tables growing with it, so the loop
+    # died on the first unlisted method with a KeyError and every property
+    # check after it silently stopped running. Cover what is declared and name
+    # what is not, instead of crashing.
+    covered = [m for m in REGISTRY
+               if m in method_kwargs_default and m in method_kwargs_for_identity]
+    uncovered = [m for m in REGISTRY if m not in covered]
+    if uncovered:
+        print(f"NOTE: no kwargs declared, not property-checked: "
+              f"{', '.join(sorted(uncovered))}")
+        print()
+
+    for method, fn in [(m, REGISTRY[m]) for m in covered]:
         for prop_name, check_fn, kwargs in [
             ("P1_zero_idempotence",
              lambda fn=fn, m=method: check_zero_idempotence(m, fn, **method_kwargs_default[m]),

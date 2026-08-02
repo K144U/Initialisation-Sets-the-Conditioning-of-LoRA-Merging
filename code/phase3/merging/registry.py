@@ -48,6 +48,10 @@ DEFAULT_KWARGS = {
     "task_arithmetic": {},
     "ties": {"density": 0.2, "majority_sign_method": "total"},
     "dare": {"density": 0.2, "seed": 20260518},
+    # WARNING: "linear" is algebraically Task Arithmetic (see knots.py and
+    # tests/test_knots.py). Kept as the default only so historical cells stay
+    # reproducible. For a KnOTS that differs from TA, pass
+    # inner_combination="ties" explicitly.
     "knots": {"inner_combination": "linear"},
     "tvq": {"rate_bits": 32},
     "rd_encoder": {"bits": 32, "c": 5.0, "seed": 20260611},
