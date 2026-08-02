@@ -30,8 +30,11 @@ distortion as the figure of merit.
 closed-form merges that invert a per-task curvature surrogate.
 RegMean~\citep{jin2023regmean} solves a least-squares system in the
 per-task input-activation Grams (data-dependent, forward passes
-required); LoRM~\citep{lorm2024} extends it to low-rank adapters and
-RegMean++~\citep{regmeanpp2025} refines the regularization. Ours differs
+required); LoRM~\citep{lorm2024} carries the closed form over to LoRA
+modules in federated continual learning, and
+RegMean++~\citep{regmeanpp2025} adds cross-layer dependencies to
+RegMean's objective so that merged earlier layers are accounted for
+when merging deeper ones. Ours differs
 in three ways: it is \emph{data-free} (the projector comes from the
 adapter factors alone); it is derived from a worst-task rate-distortion
 lower bound rather than an empirical fit; and its Tikhonov $\lambda$ is
