@@ -1,0 +1,69 @@
+\subsection{Practical decision table}
+
+Table~\ref{tab:practical-tree} compresses rules R1--R5 of
+\S\ref{sec:practical-recommendations} into a single decision flow.
+
+\begin{table}[h]
+\centering
+\caption{Practical method-choice tree. ``Regime'' is determined from
+(a) per-task NLL headroom (saturation $=$ headroom $< 0.15$ on
+$\geq 1$ task), (b) base size, and (c) target $T$.}
+\label{tab:practical-tree}
+\small
+\begin{tabular}{p{1.55in}p{2.0in}p{1.45in}}
+\hline
+Regime & Recommendation & Why \\
+\hline
+$T \leq 4$, no saturation        & rd-encoder ridge ($\lambda$-tuned)   & R1, tightest empirical excess \\
+$T \leq 4$, saturated cohort     & rd-encoder ridge + headroom renorm    & R1+R2, prevents Alpaca-style artifact \\
+$T \geq 7$, no saturation        & rd-encoder ridge (margin grows) & R1 + \S\ref{subsec:exp-T-scaling} \\
+$T \geq 7$, saturated cohort     & rd-encoder ridge; fall back to TVQ$_2$ & R3, TIES inverts \\
+rd-encoder unavailable, $T \leq 4$ & TIES (density $0.2$) if non-saturated; TVQ$_2$ otherwise & R3 \\
+floor-positive ($\deff < Tr$; not seen) & no method helps; change the cohort & R5, regime-bound \\
+\hline
+\end{tabular}
+\end{table}
+
+We deliberately do not recommend DARE without a TA fallback (it tracks
+TA to three decimals on our matrix) or KnOTS for new cohorts (its
+performance is indistinguishable from TA at $T = 4$ and tracks TA
+exactly at $T = 7$ on Llama); both remain useful baselines for the
+algorithmic comparison but offer no practical advantage over TA in the
+cohorts we tested.
+
+\subsection{Experiment manifest}
+
+Table~\ref{tab:repro-manifest} enumerates every experiment with the
+count of evaluation cells, the reproducer script in the released code,
+and per-cell wallclock on a single NVIDIA A100-80GB.
+
+\begin{table}[h]
+\centering
+\caption{Experiment manifest. All training uses bf16; scripts are
+under the released code's \texttt{scripts/} directory.}
+\label{tab:repro-manifest}
+\small
+\begin{tabular}{lrll}
+\hline
+Experiment (\S) & cells & reproducer script & cell wallclock \\
+\hline
+Multi-seed $T{=}4$ matrix (\S\ref{subsec:exp-lora})       & $40$ & \texttt{run\_eval\_cell.py} & 12--18 min \\
+Floor-positive null (App.~\ref{app:e5})                   & $12$ & \texttt{run\_eval\_cell.py} & 10--14 min \\
+$b{=}2$ mechanism (App.~\ref{app:b2})                     & $24$ & \texttt{run\_eval\_cell.py} & 12--16 min \\
+GSM8K accuracy (\S\ref{subsec:exp-downstream-gsm8k})      & $24$ & \texttt{run\_downstream\_cell.py} & 18--25 min \\
+HumanEval pass@1 (\S\ref{subsec:exp-downstream-gsm8k})    & $24$ & \texttt{run\_downstream\_cell.py} & 10--20 min \\
+Chat-template probe (App.~\ref{app:downstream})           & $5$  & \texttt{run\_downstream\_cell.py} & 8--10 min \\
+$T$-scaling, per base (\S\ref{subsec:exp-T-scaling})      & $3 \times 54$ & orchestrator & 8--12 min \\
+Sign-election probe (App.~\ref{app:tscaling})             & $3$  & \texttt{probe\_sign\_election.py} & minutes, CPU \\
+Added baselines (App.~\ref{app:baselines})                & $16$ & orchestrator & 10--15 min \\
+Robustness sweeps (App.~\ref{app:robustness})             & $52$ & orchestrator & 10--15 min \\
+Quadratic bridge (App.~\ref{app:baselines})               & $26$ & orchestrator & 8--12 min \\
+Td2 synthetic sweep (App.~\ref{app:td2-synthetic})        & ---  & \texttt{td2\_overlap\_sweep.py} & minutes, CPU \\
+\hline
+\end{tabular}
+\end{table}
+
+The total compute footprint of the empirical results is approximately
+$80$--$120$ GPU-hours on a single A100-80GB, plus LoRA training of the
+adapter cohorts (three seeds of the $T = 4$ matrix and the seven-task
+pool per base; each adapter $7500$ examples, $\sim 25$ min).

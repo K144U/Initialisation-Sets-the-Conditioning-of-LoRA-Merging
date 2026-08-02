@@ -1,0 +1,138 @@
+This appendix collects the $T$-scaling details behind
+\S\ref{subsec:exp-T-scaling}: the sweep setup, the log-$T$ slope fits,
+the TIES sign-election probe, and the three Yi-specific artifacts the
+cross-model sweep resolves.
+
+\paragraph{Setup.} For each base we trained three additional rank-$16$
+adapters (CodeAlpaca, Dolly, XSum) and merged them with the four
+$T = 4$-matrix adapters. Six methods span the matrix: TA, TIES, DARE,
+KnOTS, TVQ$_2$, and rd-encoder ridge at the base-optimal $\lambda$. For
+each $T$ we draw one fixed nested chain plus three random subsets at
+$T \in \{2, 4\}$ and the all-$7$-tasks subset at $T = 7$; each cell
+evaluates worst-task NLL excess at $n_{\text{eval}} = 1000$. Total:
+$162$ merge cells ($54$ per base, identical subset composition across
+bases).
+
+\paragraph{Log-$T$ slopes.} Table~\ref{tab:e6-slopes} fits
+$\text{worst-excess}(T) = a + b\log T$ per (base, method). The
+synthetic estimate (\S\ref{subsec:exp-setup}) gives
+$b \approx 1/\sqrt{r} = 0.25$ at $r = 16$; measured slopes are
+positive with the functional form holding at $R^2 \geq 0.93$ on $16$
+of $18$ all-cells fits (the exceptions are the Yi and Mistral TVQ$_2$
+fits), with the empirical $\rho$ between half and two-thirds of the
+synthetic estimate on Llama/Mistral. Rd-ridge has the lowest and most
+base-invariant slope.
+
+\begin{table}[h]
+\centering
+\caption{Log-$T$ slope $b$ in $\text{worst-excess} = a + b\log T$ per
+(base, method). Yi alpaca-OUT uses $T \in \{2, 4\}$ only (no $T = 7$
+subset is Alpaca-free).}
+\label{tab:e6-slopes}
+\begin{tabular}{lr|rrrrrr}
+\hline
+base & split & TA & TIES & DARE & KnOTS & TVQ$_2$ & rd-ridge \\
+\hline
+Yi    & All        & $0.079$ & $0.098$ & $0.082$ & $0.079$ & $-0.001$ & $0.070$ \\
+Yi    & alpaca-OUT & $0.046$ & $0.053$ & $0.047$ & $0.046$ & $-0.088$ & $0.031$ \\
+Llama & All        & $0.156$ & $0.133$ & $0.155$ & $0.156$ & $0.119$ & $\mathbf{0.065}$ \\
+Mistral & All      & $0.171$ & $0.095$ & $0.171$ & $0.171$ & $0.095$ & $\mathbf{0.062}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Full worst-task excess table.} Table~\ref{tab:e6-worst}
+gives the numbers behind Figure~\ref{fig:hero}, including the
+Alpaca-excluded Yi splits (no $T = 7$ subset is Alpaca-free).
+
+\begin{table}[h]
+\centering
+\caption{Worst-task NLL excess (mean across $n$ subsets) per
+$(\text{base}, T, \text{method})$, $T$-scaling pool. Yi all-cells
+include the Alpaca adapter, which is near-saturated on Yi-Chat
+(headroom $0.114$ vs.\ $0.236$--$0.554$ for the others); alpaca-OUT
+excludes Alpaca-containing subsets. Llama has no shallow-adapter
+artifact.}
+\label{tab:e6-worst}
+\small
+\begin{tabular}{llr|rrrrrr}
+\hline
+base & split & $T$ & TA & TIES & DARE & KnOTS & TVQ$_2$ & rd-ridge \\
+\hline
+Yi    & All        & 2 & $0.027$ & $0.025$ & $0.027$ & $0.027$ & $0.111$ & $0.028$ \\
+Yi    & All        & 4 & $0.067$ & $0.095$ & $0.067$ & $0.066$ & $0.101$ & $0.084$ \\
+Yi    & All        & 7 & $0.128$ & $0.148$ & $0.130$ & $0.128$ & $0.111$ & $\mathbf{0.115}$ \\
+Yi    & alpaca-OUT & 2 & $0.024$ & $0.021$ & $0.023$ & $0.024$ & $0.126$ & $0.023$ \\
+Yi    & alpaca-OUT & 4 & $0.056$ & $0.058$ & $0.056$ & $0.056$ & $0.064$ & $\mathbf{0.045}$ \\
+\hline
+Llama & All        & 2 & $0.068$ & $0.064$ & $0.069$ & $0.068$ & $0.064$ & $\mathbf{0.057}$ \\
+Llama & All        & 4 & $0.153$ & $0.126$ & $0.153$ & $0.153$ & $0.113$ & $\mathbf{0.104}$ \\
+Llama & All        & 7 & $0.265$ & $0.232$ & $0.265$ & $0.265$ & $0.215$ & $\mathbf{0.138}$ \\
+\hline
+Mistral & All      & 2 & $0.027$ & $0.032$ & $0.027$ & $0.027$ & $0.055$ & $0.038$ \\
+Mistral & All      & 4 & $0.108$ & $0.095$ & $0.108$ & $0.108$ & $0.082$ & $0.088$ \\
+Mistral & All      & 7 & $0.244$ & $0.152$ & $0.244$ & $0.244$ & $0.177$ & $\mathbf{0.115}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{The TIES sign-election probe.} To test the conjecture that
+sign-election consensus degrades faster on Yi than Llama, we ran a
+per-coordinate sign-vote audit on both $T = 7$ cohorts: trim each
+adapter's $\Delta$ at density $0.2$ (the TIES default), stack the
+trimmed deltas, and tally per-coordinate votes plus per-task win-share
+(fraction of coordinates where that task's sign matches the elected
+sign). Table~\ref{tab:ties-probe} reports the result: vote-split
+structure is nearly identical between the bases (rejecting the
+literal ``consensus degrades'' conjecture) but the \emph{per-task
+win-share range} is $2.8\times$ wider on Yi. The refined mechanism is
+a \emph{directionally biased} consensus, not a degraded one: on
+Yi-Chat, six adapters sharing instruction-following structure vote in
+a common subspace, and the code adapter (Magicoder, win share $0.776$)
+and the near-saturated Alpaca adapter ($0.785$) are systematically
+outvoted; on Llama the per-task votes are nearly uniform
+($0.805$--$0.832$). The probe is CPU-only and takes a few minutes per
+cohort.
+
+\begin{table}[h]
+\centering
+\caption{TIES sign-election audit on the $T = 7$ cohorts. Win-share
+ranges are computed from unrounded shares (Llama:
+$0.8323 - 0.8045 = 0.0278 \to 0.028$, above the
+$R^\star_{\mathrm{lo}} = 0.025$ edge).}
+\label{tab:ties-probe}
+\begin{tabular}{lcc}
+\hline
+metric & Yi-1.5-9B-Chat & Llama-3.1-8B-Instruct \\
+\hline
+mean vote margin & $0.748$ & $0.753$ \\
+unanimous coords & $69.75\%$ & $70.43\%$ \\
+thin-split ($\pm 1$) & $27.27\%$ & $26.80\%$ \\
+wide-split ($> 1$) & $2.98\%$ & $2.77\%$ \\
+per-task win-share range & $\mathbf{0.077}$ & $\mathbf{0.028}$ \\
+win-share min (task) & $0.776$ (Magicoder) & $0.805$ (GSM8K) \\
+win-share max (task) & $0.853$ (GSM8K) & $0.832$ (CodeAlpaca) \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Three Yi-specific artifacts the cross-model sweep rules
+out.} \textbf{(A) The TIES inversion at $T = 7$ is Yi-specific,}
+driven by the win-share concentration above; on Llama TIES at $T = 7$
+is third-best of six and on Mistral second-best, as the pre-registered
+threshold test of \S\ref{subsec:exp-T-scaling} predicted.
+\textbf{(B) TVQ-$b{=}2$'s flat-in-$T$ behavior is Yi-specific:} slope
+$-0.001$ on Yi all-cells vs.\ $+0.119$ on Llama; the
+Appendix~\ref{app:b2} dip is not a $T$-robust mechanism in general.
+\textbf{(C) The Alpaca shallow-adapter artifact is Yi-specific:} Yi's
+$T = 4$ all-cells rd-ridge regression ($0.084$ vs.\ TA $0.067$) is
+driven entirely by Alpaca, whose base-to-$\tau$ headroom on Yi-Chat is
+just $0.114$ (vs.\ $0.236$--$0.554$ for the other adapters), so any
+merge perturbation is large \emph{relative} to that headroom; per-layer
+$\Delta$-cosine analysis confirms Alpaca is the most isolated adapter
+of the cohort (mean cosine $0.028$). On Llama the same adapter has
+headroom $0.246$ and no artifact appears. All three are symptoms of
+one condition, \emph{Yi-Chat is near-saturated on
+instruction-following tasks}, which is the basis of recommendation
+R2: renormalize excess by per-task headroom, or exclude near-saturated
+adapters, before comparing methods on a heavily chat-tuned base.

@@ -1,0 +1,157 @@
+\subsection{The $\lambda$-sweep and held-out $\lambda$ check}
+\label{app:lambda-sweep}
+
+Table~\ref{tab:rd-ridge-sweep} reports the full Tikhonov sweep on
+Llama-3.1-8B behind Figure~\ref{fig:salvage}. The curve is a clean U
+with a broad minimum: $\lambda \in [0.05, 0.07]$ all fall within
+$0.005$ of the optimum, at the seed-noise scale. At the optimum the
+per-task excess is balanced ($+0.094$ GSM8K, $+0.024$ Alpaca, $+0.032$
+Magicoder, $+0.018$ Translation), versus the near-unregularized form
+($\lambda = 0.001$) where Translation alone took $+2.88$ nats from
+sliver amplification.
+
+\begin{table}[h]
+\centering
+\caption{Worst-task excess NLL (nats/response token) for the
+RD-encoder centroid at $b = \infty$, Llama-3.1-8B, $T = 4$, with
+Tikhonov regularization $(\bar H + \lambda I)^{-1}$. $\lambda = 0$ is
+the exact theorem construction ($0.340$, omitted from the table). All
+figures are $3$-seed means.}
+\label{tab:rd-ridge-sweep}
+\begin{tabular}{rrrrrr}
+\hline
+$\lambda$ & GSM8K & Alpaca & Magicoder & Trans. & worst-task \\
+\hline
+$0.001$ & $+1.02$ & $+0.63$ & $+0.60$ & $+2.88$ & $\mathbf{2.879}$ \\
+$0.01$  & $+0.39$ & $+0.21$ & $+0.19$ & $+0.33$ & $0.389$ \\
+$0.05$  & $+0.09$ & $+0.02$ & $+0.03$ & $+0.02$ & $\mathbf{0.094}$ \\
+$0.07$  & $+0.09$ & $+0.01$ & $+0.02$ & $-0.02$ & $0.095$ \\
+$0.10$  & $+0.11$ & $+0.01$ & $+0.02$ & $-0.06$ & $0.110$ \\
+$0.13$  & $+0.13$ & $+0.01$ & $+0.02$ & $-0.08$ & $0.125$ \\
+$0.17$  & $+0.14$ & $+0.02$ & $+0.02$ & $-0.10$ & $0.143$ \\
+$0.20$  & $+0.16$ & $+0.02$ & $+0.02$ & $-0.10$ & $0.155$ \\
+$0.30$  & $+0.19$ & $+0.03$ & $+0.03$ & $-0.12$ & $0.191$ \\
+$1.00$  & $+0.29$ & $+0.07$ & $+0.08$ & $-0.12$ & $0.289$ \\
+\hline
+\end{tabular}
+\end{table}
+
+A fair objection to any swept hyperparameter is that $\lambda^\star$
+is selected on the same worst-task NLL we report the win on. Two
+answers. First, the win is robust across the entire band, not a tuned
+needle: rd-encoder ridge sits below the $3$-seed TIES mean for every
+$\lambda \in [0.03, 0.18]$ on Llama, and the sweep is
+monotone-then-flat on the other three bases. Second, a single
+globally-fixed $\lambda = 0.13$, the leave-one-base-out choice
+(modal optimum of the other three bases) with no per-base selection,
+already beats TA and TIES on all four bases
+(Table~\ref{tab:rd-ridge-heldout}); per-base tuning is a refinement
+that helps only Llama.
+
+\begin{table}[h]
+\centering
+\caption{Held-out $\lambda$ check (worst-task NLL excess, $T = 4$
+matrix, $3$-seed means).}
+\label{tab:rd-ridge-heldout}
+\begin{tabular}{lrrrrr}
+\hline
+Base & $\lambda^\star$ & rd-ridge $(\lambda^\star)$ & rd-ridge $(\lambda{=}0.13)$ & TIES & TA \\
+\hline
+Llama-3.1-8B    & $0.05$ & $\mathbf{0.094}$ & $0.125$ & $0.154$ & $0.220$ \\
+Mistral-7B-v0.3 & $0.13$ & $\mathbf{0.044}$ & $0.044$ & $0.053$ & $0.140$ \\
+Qwen-2.5-7B     & $0.13$ & $\mathbf{0.010}$ & $0.010$ & $0.013$ & $0.107$ \\
+Yi-1.5-9B       & $0.13$ & $\mathbf{0.037}$ & $0.037$ & $0.046$ & $0.100$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Fisher-diagonal $H_t$: sanity check on the surrogate.}
+Replacing the projector surrogate with the diagonal of the empirical
+Fisher (input-activation second moment on $512$ training examples per
+task), the centroid reduces in closed form to a per-column
+Fisher-weighted task arithmetic. Worst-task excess: $0.210$ at
+$\lambda = 0$ (barely beating TA) and $0.319$ at $\lambda = 0.1$:
+the regularization effect \emph{reverses}. We read this as Fisher's
+per-coordinate weight already implementing a form of sliver
+suppression, so an additive identity floor degrades that structure
+rather than supplying a missing one; the projector surrogate paired
+with ridge is empirically preferred.
+
+\subsection{Tuning the closest competitors}
+\label{subsec:exp-robustness}
+
+Table~\ref{tab:e10-baselines} compares every method at its default
+hyperparameter (TIES/DARE density $0.2$, RegMean ridge
+$\lambda = 10^{-3}$). We sweep the single key hyperparameter of each
+of the three closest competitors and compare rd-encoder ridge against
+each method's \emph{best} setting per base, holding rd-encoder ridge
+at its $3$-seed mean (the conservative figure; its seed-$1$ cells are
+lower).
+
+\paragraph{Density sweep (TIES, DARE).} Sweeping density over
+$\{0.05, 0.1, 0.2, 0.3, 0.5\}$ on all four bases (seed-$1$, $32$
+cells; Table~\ref{tab:density-sweep}): rd-encoder ridge retains the
+lowest worst-task excess on Llama, Mistral, and Qwen against each
+method's tuned density; on Yi, TIES at its best density ($0.1$)
+reaches $0.036$, edging rd-encoder ridge's $0.037$ by a margin far
+inside the $\pm 0.004$ seed-noise floor, a statistical tie. The
+default $0.2$ is near-optimal for TIES on three of four bases, so the
+main matrix did not materially sandbag it.
+
+\begin{table}[h]
+\centering
+\caption{Density sweep: best-density worst-task NLL excess for TIES
+and DARE (seed-$1$) versus rd-encoder ridge ($3$-seed mean).}
+\label{tab:density-sweep}
+\begin{tabular}{lrrrr}
+\hline
+ & Llama-3.1 & Mistral-7B & Qwen-2.5 & Yi-1.5 \\
+\hline
+TIES (best density)       & $0.142_{@0.3}$ & $0.048_{@0.3}$ & $0.013_{@0.2}$ & $0.036_{@0.1}$ \\
+DARE (best density)       & $0.213_{@0.2}$ & $0.133_{@0.5}$ & $0.104_{@0.5}$ & $0.099_{@0.5}$ \\
+\textsc{rd-encoder ridge} & $\mathbf{0.094}$ & $\mathbf{0.044}$ & $\mathbf{0.010}$ & $0.037$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{RegMean ridge-$\lambda$ sweep.} RegMean is rd-encoder
+ridge's closest structural relative (both are data-free,
+ridge-regularized centroids with different projectors), so we sweep
+its $\lambda$ over six decades $\{10^{-4}, \dots, 10\}$ on all four
+bases; the response is U-shaped with a minimum at
+$\lambda \in [10^{-3}, 10^{-2}]$. With RegMean tuned
+(Table~\ref{tab:regmean-lambda}), rd-encoder ridge still wins on
+Llama, Mistral, and Qwen, but \emph{loses} on Yi-1.5-9B-Chat.
+
+\begin{table}[h]
+\centering
+\caption{RegMean ridge-$\lambda$ sweep: best-$\lambda$ worst-task NLL
+excess versus rd-encoder ridge. Qwen/Yi rows use $3$-seed means for
+both methods (matched adapters); Llama/Mistral RegMean is the
+best-$\lambda$ seed-$1$ cell (margins $\gg$ seed noise).}
+\label{tab:regmean-lambda}
+\begin{tabular}{lrrrr}
+\hline
+ & Llama-3.1 & Mistral-7B & Qwen-2.5 & Yi-1.5 \\
+\hline
+RegMean (best $\lambda$)  & $0.236_{@.01}$ & $0.054_{@.001}$ & $0.011_{@.01}$ & $\mathbf{0.033}_{@.01}$ \\
+\textsc{rd-encoder ridge} & $\mathbf{0.094}$ & $\mathbf{0.044}$ & $\mathbf{0.010}$ & $0.037$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Three matched seeds settle the close calls.} The Qwen and
+Yi margins are small, so we re-ran rd-encoder ridge and best-$\lambda$
+RegMean at three matched training seeds on identical adapters. Both
+verdicts are confident, with all three seeds agreeing in sign: on
+Qwen-2.5-7B rd-encoder ridge wins ($0.0097$ vs.\ $0.0112$) on every
+seed; on Yi-1.5-9B-Chat tuned RegMean wins ($0.0328$ vs.\ $0.0366$;
+per-seed gap $-0.003$ to $-0.005$) on every seed.
+
+\paragraph{Conclusion.} rd-encoder ridge's advantage is robust to
+competitor hyperparameter tuning on three of four bases; on saturated
+Yi-Chat, the one base where we independently flag NLL excess as an
+unreliable proxy (R2), it is merely competitive: a tuned RegMean
+beats it and a tuned TIES ties it. We claim the strongest data-free
+merge \emph{robustly on the non-saturated bases}, and
+competitive-but-not-dominant on the saturated one.

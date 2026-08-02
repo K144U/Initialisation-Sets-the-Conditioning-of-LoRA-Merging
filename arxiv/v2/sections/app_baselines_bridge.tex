@@ -1,0 +1,117 @@
+\subsection{The added closed-form baselines}
+\label{subsec:exp-e10}\label{subsec:exp-e10-e11}
+
+The unified head-to-head of Table~\ref{tab:e10-baselines} (main text)
+adds four methods commonly requested as merge-paper baselines:
+\textbf{Fisher-magnitude} (per-coordinate weighted average with
+$F_t[i] = \Delta_t[i]^2$ as the Fisher proxy, the cheap non-gradient
+variant of~\citet{matena2022fisher}), \textbf{DELLA}~\citep{della2024}
+(DARE-style random drop with rescale, then TIES density trim and sign
+election), and the two data-free closed-form relatives of rd-encoder
+ridge: \textbf{RegMean}~\citep{jin2023regmean} (data-free variant using
+$A_t^\top A_t$ as the Gram surrogate) and
+\textbf{AdaMerging}~\citep{adamerging2024} (data-free variant with
+per-task $\alpha \propto \|\Delta_t\|_F$). Each runs a seed-$1$ cell on
+each base at $T = 4$ with the same merge cohort. RegMean is competitive
+on the easier bases but collapses on Llama ($0.243$, worse than TA)
+through the same sliver-eigenvalue pathology that breaks our own
+unregularized encoder ($0.340$, \S\ref{subsec:exp-rd-encoder});
+AdaMerging trails throughout; Fisher and DELLA land in the second tier,
+never inverting the R1/R3 ordering. All four are gradient-free
+closed-form merges at TA-level cost, so none is a compute barrier.
+Because the default-hyperparameter comparison conflates the
+rate-distortion centroid with the ridge regularization, the clean
+control (sweeping RegMean's own ridge $\lambda$ on matched seeds)
+is run in Appendix~\ref{app:robustness}; with RegMean tuned, rd-encoder
+ridge still wins on Llama, Mistral, and Qwen but \emph{loses} on
+Yi-1.5-9B-Chat ($0.037$ vs.\ $0.033$), so we do not claim a
+four-base sweep against tuned RegMean.
+
+\subsection{Quadratic bridge: does rd-ridge approach the
+Fisher-quadratic optimum?}
+\label{subsec:exp-e11}
+
+In the limit of small adapter perturbations, the local loss landscape
+is near-quadratic and the worst-task-optimal merge under the diagonal
+Fisher proxy collapses to the Fisher-magnitude average. This predicts:
+shrinking all adapter norms by a common factor $\alpha$, the ratio
+$R(\alpha) = \Phi^{\mathrm{ridge}}(\alpha)/\Phi^{\mathrm{Fisher}}(\alpha)$
+should approach $1$. We scale every adapter's LoRA \verb|scaling| by
+$\alpha$ before merging and run both methods on the $T = 4$ cohort on
+two bases spanning the saturation regime.
+
+\begin{table}[h]
+\centering
+\caption{Quadratic-bridge probe: worst-task NLL excess at scaled
+adapter perturbations. $^*$At $\alpha = 0.1$ on Llama the rd-encoder
+excess collapses to $\sim 10^{-4}$, making the ratio floating-point
+noise.}
+\label{tab:e11-quadbridge}
+\begin{tabular}{lrrrr|r}
+\hline
+Base & $\alpha=1.0$ & $\alpha=0.5$ & $\alpha=0.25$ & $\alpha=0.1$ & trend \\
+\hline
+\multicolumn{6}{l}{\textit{Llama-3.1-8B-Instruct} ($\lambda^\star = 0.05$):} \\
+\quad rd-encoder $\Phi^\star$       & $0.085$ & $0.119$ & $0.179$ & $-0.000^*$ & --- \\
+\quad Fisher-magnitude $\Phi^\star$ & $0.148$ & $0.213$ & $0.225$ & $0.051$  & --- \\
+\quad ratio $R(\alpha)$             & $0.58$  & $0.56$  & $0.80$  & $-0.01^*$ & partial \\
+\hline
+\multicolumn{6}{l}{\textit{Yi-1.5-9B-Chat} ($\lambda^\star = 0.13$):} \\
+\quad rd-encoder $\Phi^\star$       & $0.036$ & $0.032$ & $0.064$ & $0.058$  & --- \\
+\quad Fisher-magnitude $\Phi^\star$ & $0.053$ & $0.048$ & $0.088$ & $0.064$  & --- \\
+\quad ratio $R(\alpha)$             & $0.67$  & $0.65$  & $0.73$  & $\mathbf{0.90}$ & holds \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Yi-1.5-9B-Chat: the prediction holds cleanly.} The ratio
+progresses $0.67 \to 0.65 \to 0.73 \to 0.90$ as $\alpha$ shrinks,
+landing inside the $[0.8, 1.2]$ window at $\alpha = 0.1$
+(Table~\ref{tab:e11-quadbridge}): the rd-encoder ridge solution
+approaches the Fisher-quadratic diagonal optimum in the
+small-perturbation regime.
+
+\paragraph{Llama-3.1: the bridge has a measurable sweet spot.} The
+four-point scan is inconclusive at $\alpha = 0.1$ (excess
+$\sim 10^{-4}$, floating-point dominated), so we re-ran with five
+additional $\alpha$ values (Table~\ref{tab:e11b-llama-finer}). Below
+$\alpha = 0.125$ rd-encoder \emph{over}-saturates the base-model floor
+(negative excess; the local-quadratic approximation has broken down on
+the other side). In $\alpha \in [0.15, 0.25]$ the ratios are $0.78$,
+$0.83$, $0.80$, within $20\%$ of the prediction. Above
+$\alpha = 0.25$ the ratio drifts back to $\approx 0.56$ at full scale
+as the large-perturbation regime takes over.
+
+\begin{table}[h]
+\centering
+\caption{Finer-$\alpha$ scan on Llama-3.1-8B-Instruct. The bridge
+ratio is non-monotone: over-saturation below $\alpha = 0.125$, within
+$20\%$ of $R = 1$ on $[0.15, 0.25]$, degrading above.}
+\label{tab:e11b-llama-finer}
+\begin{tabular}{rrrr}
+\hline
+$\alpha$ & rd-encoder $\Phi^\star$ & Fisher-magnitude $\Phi^\star$ & $R(\alpha)$ \\
+\hline
+$0.050$ & $-0.007$ & $\phantom{-}0.009$ & $-0.84$ \\
+$0.075$ & $-0.010$ & $\phantom{-}0.025$ & $-0.42$ \\
+$0.100$ & $\phantom{-}0.000$ & $\phantom{-}0.051$ & $-0.01$ \\
+$0.125$ & $\phantom{-}0.051$ & $\phantom{-}0.091$ & $\phantom{-}0.56$ \\
+$0.150$ & $\phantom{-}0.111$ & $\phantom{-}0.143$ & $\phantom{-}0.78$ \\
+$\mathbf{0.200}$ & $\mathbf{0.173}$ & $\mathbf{0.208}$ & $\mathbf{0.83}$ \\
+$0.250$ & $\phantom{-}0.179$ & $\phantom{-}0.225$ & $\phantom{-}0.80$ \\
+$0.500$ & $\phantom{-}0.119$ & $\phantom{-}0.213$ & $\phantom{-}0.56$ \\
+$1.000$ & $\phantom{-}0.085$ & $\phantom{-}0.148$ & $\phantom{-}0.58$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{What we cautiously claim.} Both bases provide a positive
+instance of a quadratic-bridge prediction the lower-bound theorem makes
+implicitly: where adapter perturbations are large enough to escape the
+ridge-floor and small enough that the local-quadratic model holds, the
+rd-encoder ridge merge is within $\sim 20\%$ of the Fisher-quadratic
+optimum. The window's location is base-dependent (the small-$\alpha$
+limit on compressed-headroom Yi-Chat, an intermediate band on
+larger-headroom Llama-Instruct), consistent with the saturation
+framing of \S\ref{subsec:exp-T-scaling}. Running the $9$-point scan is
+a one-line audit of any new base.

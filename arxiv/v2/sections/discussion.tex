@@ -1,0 +1,63 @@
+\paragraph{Cross-entropy extension.} Theorem~\ref{thm:general} is
+proved for quadratic loss with $H_t$ rank-$r$ PSD; for LLM
+cross-entropy the natural $H_t$ is the Fisher information at $\tau_t$,
+and the proof uses only $H_tH_t^+H_t = H_t$ and the
+$O(d)$-equivariance of the hard distribution, both of which survive
+verbatim. A fully rigorous MSE-to-CE bridge must control the Taylor
+remainder across the $H_t$-ball; the rate budget makes the remainder
+third-order in the quantity the quadratic term is second-order in, and
+$M_t \leq \mathrm{poly}(L)$ for softmax-CE with bounded logits. We
+state this as an informal, remainder-bounded estimate (sketch in the
+supplementary material); the empirical sections measure CE excess
+directly, and the E11 probe (Appendix~\ref{app:baselines}) confirms
+rd-ridge approaches the Fisher-quadratic diagonal optimum to within
+$\sim 20\%$ in a base-dependent $\alpha$ window.
+
+\paragraph{Scope of the hard distribution.} The lower bound is
+established against $P^\star$; real fine-tunes exhibit structure iid
+Stiefel sampling does not capture (semantically correlated subspaces,
+anisotropic curvature), so the theorems characterize the floor for
+merging, not a tight prediction of any specific real-LLM experiment.
+What the real-LLM study adds is the
+measured regime: floor zero in every layer of every base, so the
+$0.10$--$0.22$ nats of excess is distance from the optimum; the
+cross-model ordering of that slack is unexplained by subspace
+geometry, pointing to the loss curvature $H_t$ and the training
+recipe as the operative quantities.
+
+\paragraph{Known limitations (in descending order of constraint).}
+\textbf{(1) Single LoRA rank:} all experiments use $r = 16$; the
+$\rho \approx 1/\sqrt{r}$ slope prediction is consistent with but not
+verified beyond it.
+\textbf{(2) Four bases:} Llama-3.1, Mistral-7B, Qwen-2.5, Yi-1.5 span
+an instructive range of recipes and saturation regimes but exclude,
+e.g., Gemma and Phi.
+\textbf{(3) Uneven seed coverage:} the $T = 4$ matrix has three
+training seeds (all $20$ method-pair gaps Confident); the $T$-scaling
+sweep and added baselines use one.
+\textbf{(4) rd-encoder ridge downstream accuracy is strong but not
+uniform:} best on five of eight cells, seed-unstable and not best on
+two (\S\ref{subsec:exp-downstream-gsm8k}); R1 rests on the NLL win.
+\textbf{(5) One unexplained outlier cell:} the (Llama-3.1, GSM8K
+\textsc{em}) inversion survives both pre-specified mechanism tests
+(Appendix~\ref{app:downstream}).
+\textbf{(6) The quadratic-bridge window is base-dependent}
+(small-$\alpha$ on Yi, $\alpha \in [0.15, 0.25]$ on Llama;
+Appendix~\ref{app:baselines}).
+\textbf{(7) The Td2 threshold is order-of-magnitude:} its constants
+are estimated by spectral analogy, not first-principles Fisher
+information, and the below-window edge is untested
+(Appendix~\ref{app:sign-election-threshold}).
+\textbf{(8) Not an exhaustive method survey:} DARE-TIES and the newest
+2026-era methods are discussed but not re-run; the headline is robust
+to the absence of any single further baseline.
+
+\paragraph{Closing.} We have given LoRA merging the
+information-theoretic reference point it was missing: worst-task NLL
+excess splits into a task-overlap floor and a compression term, an
+explicit encoder closes the gap up to a logarithmic constant in $T$,
+and on every real cohort we tested the floor is zero: what current
+methods lose is recoverable slack, a measurable fraction of which our
+regularized encoder claims. Merging research can now be judged not
+only against the next benchmark, but against a measurable theoretical
+ceiling.

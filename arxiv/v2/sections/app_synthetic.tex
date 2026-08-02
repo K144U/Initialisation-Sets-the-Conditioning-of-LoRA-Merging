@@ -1,0 +1,66 @@
+All runs use the hard distribution $P^\star$ of \S\ref{sec:setup} with
+task-dependent spectra $(D_t)_{t=1}^T$. Code, random seeds, and raw
+outputs are released with the paper.
+
+\paragraph{Lower-bound slope.} We sample ensembles across
+$T\in\{2,3,4,8\}$, $r\in\{4,8,16\}$, $d\in\{128,512,2048\}$, with both
+isotropic spectra ($D_t = I_r$) and four heavy-anisotropy families
+(geometric, linear, two-scale, and mixed; spectra spread across
+$[2^{-1}, 2^1]$). For each configuration we measure the excess
+$\E_{P^\star}[\|\bar H^{1/2}w^\star - \eta\|^2]$ of the Gaussian-QR +
+uniform scalar quantization algorithm of \S\ref{sec:achv} as a function
+of $R = b\deff$ bits, and fit a linear regression of
+$\log_2\E[\text{excess}]$ against $b = R/\deff$. Across all tested
+configurations the empirical slope is $-2.00 \pm 0.01$ ($95\%$
+bootstrap CI across $1000$ trials per configuration), matching the
+prediction $-2R/\deff$ of Theorem~\ref{thm:general}. The floor term
+$B^2(1 - \E[\deff]/(Tr))$ is reproduced to four to five digits of
+precision in the common-$D_0$ and task-dependent-$D_t$ regimes.
+
+\paragraph{Achievability constant and its $T$-dependence.} We measure
+the ratio $\E_{P^\star}[\max_t D_t(w^\star)] / (c_{\mathrm{TQ}} B^2
+2^{-2R/(Tr)})$ of empirical upper bound to the Stiefel lower bound at
+$c_{\mathrm{TQ}} = 1$. The ratio is constant in $R$ (a necessary
+condition for the upper bound to match the lower bound in order) and
+starts near $11$ at $T = 2$ ($r = 4$, $d = 128$), consistent with
+$C = Tc^2/3 \approx 17$ at $c = 5$ combined with
+$c_{\mathrm{TQ}} \approx 1$ from
+TurboQuant~\citep{zandieh2025turboquant}. Sweeping
+$T \in \{2, 4, 8, 16\}$ ($1000$ trials/cell) settles the $T$-dependence
+flagged in Remark~\ref{rem:tgap}: the constant grows
+\emph{logarithmically}, not linearly; a $\log T$ fit gives
+$R^2 \geq 0.998$ against $R^2 \approx 0.91$ for a linear fit, and the
+$T{=}16$ value is only $1.77\times$ the $T{=}2$ value, far below the
+$8\times$ a strictly linear-$T$ factor would give. The linear $T$ in
+$C = Tc^2/3$ is thus an artifact of the crude
+$\max_t \leq T\,\mathrm{avg}$ step, not intrinsic to the
+rate-distortion function; the matching $\log T$ achievability constant
+is stated as a conjecture.
+
+\paragraph{Shared-$V$ regime.} For the floor-positive regime we
+implement the null-space-aware bit allocation of \S\ref{subsec:sharedv}
+with per-coordinate fractional bits and a locked clip
+$c = 11.5\sigma_{\mathrm{pc}}$ (tuned once, applied across all
+configurations). At $T = 2$, $r = 4$, across five anisotropy mixes
+(iso+iso, iso+geom, geom+twoscale, lin+twoscale, geom+iso), the
+empirical slope of excess over $\mathrm{cheb}^2$ is $-1.60 \pm 0.10$ at
+$n_{\mathrm{trials}} = 1000$, matching the theoretical prediction
+$-2r/(r + |A| - 1) = -8/5$ with bootstrap $95\%$ CI $\pm 0.010$ per
+cell. The $\pm 0.10$ spread reflects structural anisotropy: iso+iso
+tracks closer to the scalar-quantization limit $-2$; geom+twoscale
+undershoots due to $H_t$-metric distortion on the perpendicular
+subspace. Extending to $T = 3, 4$ via a SOCP Chebyshev solver with
+Gauss--Newton KKT refinement (residual $\sim 10^{-15}$), the null-space
+split continues to track the theoretical prediction across mixed
+anisotropies.
+
+\paragraph{Random-codebook comparison.} As a sanity check on the
+tightness of the linear construction in the shared-$V$ regime, we ran
+a valid rate-$R$ random-codebook encoder ($2^R$ iid Gaussian
+codewords, encoder picks the one minimizing $\max_t D_t$,
+$R \leq 18$). At $T = 3$, $r = 3$, the random-codebook slope is
+$-1.45$, strictly steeper than the explicit linear construction's
+$-1.20$. This rules out sharpening the lower bound to match the linear
+upper-bound exponent; the true rate-distortion function in the
+floor-positive regime lies strictly between $-2r/r = -2$ and
+$-2r/(r + |A| - 1)$ and is left open (Remark~\ref{rem:sharedv-gap}).
