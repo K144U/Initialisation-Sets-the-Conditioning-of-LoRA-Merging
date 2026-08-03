@@ -1486,3 +1486,63 @@ counts queued+running so it stays legal, but only two stages progress at
 once. Cells ran on GPUs 1,2,4,6, confirming the GPU override is live and
 CLAUDE.md §5's "only 2,4,6" is stale. The keeper EXITS DELIBERATELY when all
 stages reach target; a liveness check that ignores this false-alarms.
+================================================================================
+
+---
+
+## 2026-08-03 (later) — STEP 0: the A1 merge matrix, read under pre-registration
+
+Rules fixed in notes/prereg_a1_matrix_2026-08-03.md and committed at 8dad101
+BEFORE any cell was read. Analyzer code/phase3/scripts/analyze_a1_matrix.py,
+output results/phase3/a1_matrix_summary.json. Full tables in
+notes/campaign_results_2026-08-03.md.
+
+Q1 rd-ridge vs best of five baselines on the properly initialised cohort:
+VERDICT WEAKENED. 1 win (llama +0.0334 over tvq_b2), 2 ties (mistral -0.0032,
+qwen +0.0001), 1 LOSS (yi -0.0145 to ties). Against TIES specifically the rd
+family falls from 3 wins + 1 tie on the degenerate cohort to 1 win + 2 ties +
+1 loss on the proper one; same for rd_ridge and rd_rank16, so not a rank
+artifact. PRE-REGISTERED CONSEQUENCE APPLIED: report rd-encoder ridge as
+COMPETITIVE RATHER THAN WINNING, with cohort dependence part of the claim.
+Clearly best on Llama, indistinguishable from TIES elsewhere. A reviewer will
+reasonably say TIES is simpler.
+
+Q2 do rankings change by cohort: VERDICT RANKINGS CHANGE MATERIALLY (top-1
+2/4, top-3 set 1/4). READ WITH THE CAVEAT that the rule counts a top-1 swap
+without requiring it to exceed 0.005. Yi is DECISIVE (rd_ridge 0.0356 leads by
+0.0093 on shared; ties 0.0482 leads by 0.0145 on indep1; top-3 set also
+changes). Mistral is a NOISE-LEVEL SWAP (rd_ridge ahead 0.0021 on shared,
+behind 0.0032 on indep1, both inside threshold). Rule NOT changed after the
+fact; the verdict rests on one decisive case plus one coin flip and any paper
+claim must say so.
+
+POST HOC, labelled as such: the rd family is the most cohort-sensitive method
+in the set. On Yi it degrades +0.0272 (rd_ridge) / +0.0278 (rd_rank16) when
+the init is fixed, while all five baselines move within +/-0.005. Qwen same
+sign at +0.0039. This magnitude story is cleaner than the rank-swap framing
+but is NOT pre-registered.
+
+Q3 is the salvage arc rank-confounded: VERDICT RANK IS IMMATERIAL, within
+0.005 on 3 of 4 (llama +0.0085, inside its own 2sd band of 0.013). AUDIT
+FINDING A3 IS NOT BORNE OUT and comes off the fix list.
+
+DEFECT IN THE FIRST RUN, DISCLOSED. Shared rd_ridge first resolved to
+eval_ridge_seed/, which is Llama-only, so rd_ridge was silently absent from Q2
+on three bases (n=6). Fixed by adopting the fallback chain w1_verdict_3seed.py
+already uses (eval_seed_rdridge_regmean/ first). Adds an erroneously excluded
+method; NO threshold changed. The correction improved integrity rather than
+favourability: under the buggy run the two top-1 changes were Qwen (0.0002, a
+coin flip) and Yi; with rd_ridge restored Qwen shows NO change and Mistral
+takes its place. Verdict unchanged.
+
+LIMITATIONS. One seed per indep1 cell; Llama's measured per-seed sd (0.0064)
+exceeds the Mistral and Qwen gaps outright. lambda* was tuned on the shared
+cohort so rd_ridge is arguably handicapped on indep1. Seed replication
+(indep2, indep3) queued 2026-08-03.
+
+NET EFFECT ON THE PAPER. The method contribution is materially reduced: on
+properly initialised adapters rd-encoder ridge is competitive with TIES, not
+dominant over it. Combined with W5 (downstream correlation unmeasurable) and
+W3 (rate exponent falsified), the case for an ICLR method paper is weak. The
+cohort-dependence result is supported in magnitude but only weakly in ranking,
+and needs the seed replication before it could headline anything.

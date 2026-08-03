@@ -306,3 +306,117 @@ field-level finding.
   minutes on one occasion. The keeper and PBS jobs are unaffected, since both run
   on the cluster. Diagnostic: if `ping 8.8.8.8` succeeds and the routing table
   has no `172.16.x` route, the VPN is down, not the cluster.
+
+---
+
+# STEP 0: the A1 merge matrix
+
+Run 2026-08-03 under the rules fixed in `prereg_a1_matrix_2026-08-03.md`, which
+was committed at `8dad101` **before** any cell was read. Analyzer:
+`code/phase3/scripts/analyze_a1_matrix.py`. Output:
+`results/phase3/a1_matrix_summary.json`.
+
+## The matrix, worst-task NLL excess
+
+```
+shared_seed1 (degenerate cohort, the one every published result used)
+base          task_arithm        ties        dare       knots      tvq_b2    rd_ridge   rd_rank16
+llama31_8b         0.2132      0.1471      0.2127      0.2130      0.1013      0.0823      0.0857
+mistral_7b         0.1325      0.0494      0.1342      0.1320      0.0537      0.0473      0.0497
+qwen25_7b          0.1036      0.0130      0.1066      0.1040      0.0192      0.0100      0.0104
+yi15_9b            0.0989      0.0449      0.1012      0.0990      0.0574      0.0356      0.0361
+
+indep1 (properly initialised cohort)
+llama31_8b         0.2221      0.1351      0.2228      0.2214      0.1049      0.0714      0.0799
+mistral_7b         0.1430      0.0543      0.1451      0.1423      0.0586      0.0575      0.0547
+qwen25_7b          0.1040      0.0141      0.1067      0.1036      0.0165      0.0140      0.0143
+yi15_9b            0.0960      0.0482      0.0979      0.0959      0.0524      0.0627      0.0638
+
+delta = indep1 - shared (positive = worse on the proper cohort)
+llama31_8b        +0.0089     -0.0120     +0.0100     +0.0085     +0.0036     -0.0109     -0.0058
+mistral_7b        +0.0106     +0.0049     +0.0109     +0.0103     +0.0049     +0.0102     +0.0049
+qwen25_7b         +0.0004     +0.0011     +0.0000     -0.0004     -0.0027     +0.0039     +0.0039
+yi15_9b           -0.0029     +0.0033     -0.0033     -0.0031     -0.0050     +0.0272     +0.0278
+```
+
+## Q1: WEAKENED
+
+rd-ridge against the best of the five baselines: **1 win, 2 ties, 1 loss.**
+
+```
+base           rd_ridge   best baseline    name       gap  result
+llama31_8b       0.0714          0.1049  tvq_b2   +0.0334  WINS
+mistral_7b       0.0575          0.0543    ties   -0.0032  TIES
+qwen25_7b        0.0140          0.0141    ties   +0.0001  TIES
+yi15_9b          0.0627          0.0482    ties   -0.0145  LOSES
+```
+
+Against TIES specifically, the rd family goes from **3 wins and 1 tie** on the
+degenerate cohort to **1 win, 2 ties and 1 loss** on the proper one. The same
+pattern holds for both rd_ridge and rd_rank16, so it is not a rank artifact.
+
+Pre-registered consequence, applied: report rd-encoder ridge as **competitive
+rather than winning**, with cohort dependence part of the claim. On properly
+initialised adapters it is clearly best on Llama and indistinguishable from TIES
+elsewhere. A reviewer will reasonably observe that TIES is simpler.
+
+## Q2: RANKINGS CHANGE MATERIALLY (with a caveat about the rule)
+
+top-1 changes 2 of 4 (Mistral, Yi), top-3 set changes 1 of 4 (Yi).
+
+**The rule as written is weak and should be read with this in mind.** It counts a
+top-1 change without requiring the swap to exceed the 0.005 threshold. Of the two
+changes it counts:
+
+- **Yi is decisive.** Shared: rd_ridge 0.0356 clearly best, ahead of ties 0.0449
+  by 0.0093. indep1: ties 0.0482 clearly ahead of rd_ridge 0.0627 by 0.0145. Both
+  gaps exceed threshold, and the top-3 set changes too (rd_rank16 out, tvq_b2 in).
+  This is a genuine reversal.
+- **Mistral is a noise-level swap.** rd_ridge leads ties by 0.0021 on shared and
+  trails by 0.0032 on indep1. Both are inside the 0.005 threshold, so the
+  ordering was never resolved in either cohort.
+
+Per the pre-registration the rule is not being changed after the fact. But the
+verdict rests on **one decisive case plus one coin flip**, and any paper claim
+must say so.
+
+**The cleaner statement, labelled post hoc:** the rd family is the most
+cohort-sensitive method in the set. On Yi it degrades by +0.027 nats when the
+initialisation is fixed while all five baselines move within ±0.005, a five-fold
+larger shift concentrated entirely on the rd methods. Qwen shows the same sign at
++0.0039. This is descriptive, not a pre-registered finding.
+
+## Q3: RANK IS IMMATERIAL
+
+```
+base           rd_ridge   rd_rank16      diff
+llama31_8b       0.0714      0.0799   +0.0085   rank16 worse
+mistral_7b       0.0575      0.0547   -0.0029   within threshold
+qwen25_7b        0.0140      0.0143   +0.0003   within threshold
+yi15_9b          0.0627      0.0638   +0.0011   within threshold
+```
+
+Within threshold on 3 of 4. **Audit finding A3's confound is not borne out** and
+comes off the fix list. Llama's +0.0085 exceeds 0.005 but sits inside its own
+2 sd provisional band of 0.013.
+
+## Defect in the first run, disclosed
+
+The first execution resolved the shared-cohort `rd_ridge` cell to
+`eval_ridge_seed/`, which is **Llama-only**, so rd_ridge was silently absent from
+Q2 on three bases (`n=6`). Fixed by adopting the same fallback chain
+`w1_verdict_3seed.py` already uses (`eval_seed_rdridge_regmean/` first). This
+**adds** an erroneously excluded method and changes no threshold.
+
+The correction materially improved the result's integrity rather than its
+favourability: under the buggy run the two top-1 changes were Qwen (a 0.0002 nat
+coin flip) and Yi. With rd_ridge restored, Qwen shows **no** top-1 change and
+Mistral takes its place. The verdict is unchanged.
+
+## Standing limitations
+
+One seed per indep1 cell, so no seed statistics are possible. Llama's measured
+per-seed sd on the shared cohort is 0.0064, which exceeds the Mistral (-0.0032)
+and Qwen (+0.0001) gaps outright. `lambda*` was tuned on the shared cohort, so
+rd_ridge is arguably handicapped on indep1; that argues for a follow-up sweep,
+not for adjusting anything now. Seed replication (indep2, indep3) is queued.
