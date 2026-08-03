@@ -68,13 +68,28 @@ The Mistral T=7 TIES inversion prediction is **pre-registered** in `decisions.md
 From `~/context.md`:
 
 - **No sudo** — never run as root, even if a command suggests it
-- **Max 3 concurrent PBS jobs** (`qstat -u sanjay.g` to verify)
+- ~~Max 3 concurrent PBS jobs~~ **CORRECTED 2026-08-03: the `gpu` queue allows
+  2 RUNNING jobs per user.** A third may sit queued. Measured directly:
+  `comment = Not Running: User has reached queue gpu running job limit` on a
+  queued job while two ran, with 2 TB memory and 26/96 CPUs free on the node, so
+  it is a queue policy and not a resource limit. Only two stages progress at
+  once; plan dispatch chains accordingly (`qstat -u sanjay.g` to verify)
 - **Required env**: `PYTHONNOUSERSITE=1` on every rdmerge job
 - **Git author MUST be forced** (this account has empty git identity):
   ```
   git -c user.name=K144U -c user.email=95154157+K144U@users.noreply.github.com commit ...
   ```
-- **P5 GPU pins**: only GPUs **2, 4, 6** are accessible. Don't add GPU 0.
+- ~~P5 GPU pins: only GPUs 2, 4, 6. Don't add GPU 0.~~ **CORRECTED 2026-08-03:
+  the pin set is `0,1,2,3,4,6`**, authorised by the user and encoded in the PBS
+  scripts. Verified live during the campaign: cells ran on GPUs 1, 2, 4 and 6 on
+  `jiit-gpu01` (8x A100-80GB). Still gate every cell on **25 GB free**; each eval
+  cell holds 18-21 GiB. GPUs 5 and 7 remain outside the set.
+- **Connect as `sanjay.g` explicitly.** `~/.ssh/config` maps the bare IP
+  `CLUSTER-HOST` to the student account `STUDENT-ACCOUNT`, and both accounts share
+  the same key, so `ssh CLUSTER-HOST` succeeds onto the *wrong* account, where
+  the queue looks empty and `~/projects/rdmerge` does not exist. Use
+  `sanjay.g@CLUSTER-HOST` or the `jiit` alias. The student account also needs
+  including in the W8 anonymisation sweep.
 - **GPU partitioning** (this session): for parallel jobs, `_ORCH_GPUS_E6` file controls `_E6`-tier pin set (currently `2,4`); rdm_rrdn/e12bl have `GPUS=6` hardcoded in their PBS scripts as a single-lane override.
 - **Memory**: jobs request 60 GB by default. Node has ~250 GB. The user's JEPA `iso_*` jobs can claim 120 GB each; coordinate.
 
@@ -199,10 +214,20 @@ All methods are SVD-truncated back to rank r after the merge.
 
 ## 11. Score estimate
 
+> **VOID as of 2026-08-03.** The banked ~7.5-8.0 below assumed the downstream
+> case held. It does not: every published downstream number was re-scored and the
+> NLL-to-accuracy correlation turns out unmeasurable at n = 5-6 methods, which
+> removes the support for the 2026-06 operational reframe. The rate exponent is
+> also falsified on real adapters. The honest read is that the paper as written
+> is **not ICLR-level**, and that one unread result (the 28-cell
+> `eval_a1_indep/` matrix) decides how much of the method contribution survives.
+> Do not quote a number from this table. See `HANDOFF_2026-08-03.md` §7 and
+> `notes/campaign_results_2026-08-03.md`.
+
 | Phase | Score | Notes |
 |---|---|---|
 | Session start | ~6.5 | Honest baseline after external review caught the floor bug |
-| Post-Phase-1 (projected) | **~7.5–8.0** | Depends on Mistral T=7 verdict |
+| Post-Phase-1 (projected) | ~~**~7.5–8.0**~~ | VOID, see above |
 
 What moves the score:
 - Td2 holding on Mistral (pre-registration confirmed) → +0.4–0.5 (the big one)

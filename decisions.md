@@ -1371,3 +1371,118 @@ discussion, experiments, intro, §6.8. Overleaf snapshot rebuilt.
 NO theory changes (Lemma 2 floor / achievability untouched). Score impact:
 CLAUDE.md §11 "rd-ridge verified on downstream +0.2" weakened toward neutral;
 caught pre-submission, paper now honest.
+================================================================================
+
+---
+
+## 2026-08-03 — 276-cell review-response campaign complete; five verdicts
+
+Campaign launched 2026-08-02, completed 15:18 IST 2026-08-03. All stages at
+target: w1 52/52, w1s 8/8, w5 144/144, a1tr 16/16, a2 12/12, w3 24/24,
+a1ev 28/28. Full verbatim analyzer output in
+notes/campaign_results_2026-08-03.md. Every rule below was fixed BEFORE its
+cells ran; none were re-tuned after seeing results.
+
+W1s (rule: d = TA3(a*) - rd3 on Llama; <-0.005 rewrite, |d|<=0.005 tie,
+>+0.005 four-base win). VERDICT TIE, d = -0.0035. TA(0.75) 3-seed 0.0910
+(per-seed 0.0839/0.0964/0.0926, sd 0.0064, SE ~0.0037) vs rd-ridge 0.0945.
+Final tally rd-ridge 3 wins / 1 tie / 0 losses; tuned TA wins 0 of 4, against
+a pre-registered threshold where 2 would have forced restating the
+contribution. THE 2026-08-02 ALARM WAS A SEED ARTIFACT: the original
+comparison used TA seed1 = 0.0839, the BEST of three seeds, against a 3-seed
+rd-ridge mean. Honest margins vs a TUNED TA: llama -4%, mistral 34%,
+qwen 39%, yi 32%. The paper's 56-91% was measured against TA pinned at
+1/T = 0.25, undertuned on all four bases (optima 0.50-0.75). §6.2 finding (3)
+"only TIES separates from the structure-blind cluster" STILL FAILS on Llama
+(tuned TA 0.0910 beats TIES 0.1539).
+
+A2 (rule: |KnOTS-TIES - TA| > 0.005 nats on >=3 of 4 => not a no-op).
+VERDICT differs from TA on 4/4. Published |KnOTS - TA| = 0.00003-0.00031 nats
+(algebraic identity, Delta_t V V^T = Delta_t under inner_combination=linear);
+with a real inner merge, 0.026-0.068 nats. The four sites citing "KnOTS ~ TA"
+as evidence FOR the theory must be rewritten: the claim was that a
+subspace-alignment method lands in the structure-blind cluster, and once
+KnOTS actually runs it does not. rd-ridge beats KnOTS-TIES on 4/4.
+OPEN AND LOAD-BEARING: NOT established that this is a defect in the PUBLISHED
+KnOTS rather than a misconfiguration in our reimplementation. The official
+implementation has not been checked. Until it is, write A2 as an erratum
+about our baseline, NOT a finding about KnOTS.
+
+W3 (rule: slope in [-2.4,-1.6] on >=3 of 4 => exponent holds).
+VERDICT FALSIFIED, 0 of 2 fittable bases in band (mistral -0.10 R2 0.433,
+qwen -0.21 R2 0.436). Llama and Yi unfittable: excess at finite b falls BELOW
+the b=inf value (llama 0.082 at b=8 vs 0.094 at inf; yi 0.036 vs 0.037), so
+log2 of the difference is undefined. With the ridge on the curve is flat from
+b=2 up on all four bases: 2 bits buys the whole effect, 16 adds nothing.
+Keep as an OPERATIONAL finding (connects to §6.4 TVQ b=2 dip); it is not the
+theoretical claim. CAVEAT seed1 only. Published lambda=0 sweep (eval_e1/,
+never in the paper) non-monotone on 4/4 and pinned at 9.1-11.7 nats on
+Mistral. Do not retrofit the threshold.
+
+A1 geometry (cohort indep1). VERDICT the floor-zero regime is REAL for
+properly initialised cohorts. cos 0.047-0.050 (was 0.996), |dA|/|A| 1.41 =
+sqrt(2) (was 0.16-0.20), sigma_max 1.10-1.13 (was 1.999 ~ sqrt(T)), soft
+d_eff 63.1-63.3 of Tr=64 (was 16.3), soft floor 0.0000-0.0003 B^2 (was
+0.745 B^2), and hard d_eff = Tr now STABLE at every eps from 1e-6 to 1e-1
+(was only at ~1e-3 sigma_1). DISSOLVES reviewer W2: rank was the wrong
+stability class for the DEGENERATE cohort, and is a stable one here. The
+2026-08-02 audit finding stands (the shipped cohort was degenerate); what
+changes is the conclusion drawn from it. UNRESOLVED: every headline result
+(W1, A2, W3, W5, the 4x7 matrix) was measured on the degenerate cohort.
+
+W5 (downstream re-score, both scorers fixed). All discard rates -> 0.00 (were
+0.61-0.81 GSM8K and 0.72-0.78 HumanEval for ta/dare/knots). EVERY PUBLISHED
+DOWNSTREAM NUMBER IS VOID: llama GSM8K TA 0.315 -> 0.778, finally consistent
+with Llama-3.1-8B-Instruct's known ability. rho HumanEval flips sign on 4/4
+(+1.00/+0.60/+0.80/+0.80 -> -0.90/-0.60/-0.90/-0.20); GSM8K mixed
+(-0.50/+0.20/+0.70/-0.60). DO NOT write this up as "the correlation
+inverted". These rho are over 5-6 methods, and SD(rho) under the null =
+1/sqrt(n-1) = 0.45 at n=6, 0.50 at n=5, so rho = -0.60 is 1.3 SD from zero
+and the published +0.60/+0.90 were never evidence either (W6 caught a symptom:
+at n=5 rho can only take 1 - sum(d^2)/20, so the published Mistral +0.67 is
+not attainable). THE HONEST STATEMENT IS THAT THIS DESIGN CANNOT MEASURE THE
+CORRELATION AT ALL. Fix is ~25+ points per base (sweep alpha, T, method,
+seed), not a different conclusion from n=6. This removes the support for the
+2026-06 reframe, whose centerpiece was "a 1-CPU-minute audit that predicts
+when merging fails". D2: llama GSM8K instability was an ARTIFACT (SD 0.074 ->
+0.005), mistral HumanEval is REAL (0.084 -> 0.049).
+
+CORRECTIONS TO OUR OWN EARLIER CLAIMS.
+  - "The theory is untouched and still stands" (handoff §7): NO LONGER
+    ACCURATE after W3. The rate exponent does not appear on real adapters.
+    The mathematics may be sound with the regime simply unreachable, but a
+    prediction that cannot be observed is a weakness for a paper claiming
+    operational relevance.
+  - Llama "tuned TA wins, -0.0106": SUPERSEDED, tie at -0.0035.
+  - The Llama rho = -0.60 outlier is "likely an artifact" of the scorer:
+    REFUTED, it survives re-scoring at -0.50.
+  - Audit A1 "inverts the headline regime diagnosis": HALF RIGHT. The cohort
+    was degenerate; the regime claim itself is correct.
+  - _strip_humaneval_completion and the GSM8K extractor are OUR code in
+    downstream_metrics.py. These are LOCAL BUGS. "We fixed two scorer bugs"
+    is a disclosure, not a contribution; do not write it as a field-level
+    finding.
+
+WHAT SURVIVES AS A FIELD-LEVEL CLAIM: W1 only. Across four bases the
+conventional 1/T merge coefficient is undertuned, TA's optimum is 0.50-0.75,
+and tuning that one scalar closes most of the gap published methods claim
+over it. Supported by 52 cells plus an 8-cell 3-seed confirmation.
+
+NEXT (step 0): read the 28-cell eval_a1_indep/ merge matrix, which is the
+only campaign result with NO pre-registered rule. Rule written first in
+notes/prereg_a1_matrix_2026-08-03.md, before looking. It tests both whether
+rd-ridge's advantage survives on a properly initialised cohort AND whether
+method RANKINGS change between cohorts; the latter is potentially the
+strongest result available, since PEFT-style LoRA training seeds A globally
+and starts B at zero, so shared-A cohorts may be common in the literature.
+
+NO theory changes to Lemma 1, Lemma 2, Theorem 1 or Theorem 2. Score impact:
+CLAUDE.md §11's banked ~7.5-8.0 is void; see the honest reassessment there.
+
+OPERATIONAL. PBS gpu queue enforces 2 RUNNING jobs per user, not the
+documented 3 (comment = "User has reached queue gpu running job limit" while
+two ran and the node had 2 TB mem and 26/96 cpus free); keeper MAXJOBS=3
+counts queued+running so it stays legal, but only two stages progress at
+once. Cells ran on GPUs 1,2,4,6, confirming the GPU override is live and
+CLAUDE.md §5's "only 2,4,6" is stale. The keeper EXITS DELIBERATELY when all
+stages reach target; a liveness check that ignores this false-alarms.
