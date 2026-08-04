@@ -1571,9 +1571,16 @@ hard d_eff = Tr stable at every epsilon from 1e-6 to 1e-1. The floor-zero regime
 claim and the answer to reviewer W2 are now three-cohort results, not one.
 
 THE VALUES ARE HIGHLY REPRODUCIBLE ACROSS INIT DRAWS. Per-cell sd across the
-three cohorts is 0.0001 to 0.0034 nats, an order of magnitude below the
-0.0064 per-seed sd measured on the shared-init cohort in W1s. The noise gate
-therefore downgraded nothing: every call below is outside 2 x SE.
+three cohorts is 0.0001 to 0.0034 nats. The noise gate therefore downgraded
+nothing: every call below is outside 2 x SE.
+
+NOT COMPARABLE TO THE W1s SD, DO NOT TREAT IT AS ONE. The 0.0064 Llama per-seed
+sd from W1s varies `seeds.global`, which drives BOTH the init draw AND the
+training data shuffle. The cohort sd here varies the init draw only, with the
+data seed pinned at 20260518 by design. The indep sd is therefore a strict
+subset of the W1s sd's sources and is expected to be smaller for that reason
+alone. It bounds init sensitivity, not total run-to-run variance, and the noise
+gate above should be read as a gate on init sensitivity only.
 
 Q1' DOES NOT SURVIVE (1 win, 1 tie, 2 losses).
 
