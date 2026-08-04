@@ -77,9 +77,30 @@ def stats(d: list[float]) -> tuple[float, float, float]:
 def main() -> int:
     missing = [f"{b}/{t}/{c}" for b in BASES for _, t in DENS for c in COHORTS
                if dt(b, t, c) is None]
+
+    # A verdict computed from absent cells is worse than no verdict: it prints
+    # in the same format as a real one and gets believed later. The first dry
+    # run of this script, against zero results, happily reported
+    # "Q1 VERDICT: MIXED" and the full consequence text. Refuse instead.
+    primary_missing = [f"{b}/{c}" for b in BASES for c in COHORTS
+                       if dt(b, PRIMARY_TAG, c) is None]
+    if primary_missing:
+        print("=" * 100)
+        print("INCOMPLETE: no verdict will be computed.")
+        print(f"  {len(missing)} of {len(BASES) * len(DENS) * len(COHORTS)} "
+              f"dare_ties cells are missing, including "
+              f"{len(primary_missing)} of {len(BASES) * len(COHORTS)} at the "
+              f"primary density {PRIMARY_TAG}.")
+        print(f"  missing at primary: {', '.join(primary_missing[:12])}")
+        print("  Q1 needs every base x cohort cell at the primary density.")
+        print("  Re-run once the sweep has landed.")
+        print("=" * 100)
+        return 2
     if missing:
-        print(f"[warn] {len(missing)} dare_ties cells missing: "
+        print(f"[warn] {len(missing)} non-primary dare_ties cells missing: "
               f"{', '.join(missing[:8])}")
+        print("[warn] Q1 is unaffected (primary density is complete); Q2 and Q3 "
+              "will report per-base incompleteness.")
 
     print("=" * 100)
     print("DARE-TIES vs TIES, worst-task NLL excess (nats)")
