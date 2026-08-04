@@ -1639,6 +1639,10 @@ density 0.2 with rescaling is the same kind of observation and has not been
 verified against the published DARE implementation. Until it is, the effective
 baseline set is three methods, not five.
 
+    CORRECTED THE SAME DAY, see the 2026-08-04 DARE entry below. The sentence
+    above is WRONG about DARE. It is not the same kind of observation as KnOTS
+    and the effective baseline set is four methods, not three.
+
 NET EFFECT ON THE PAPER. Worse than step 0 indicated. The method does not beat
 the baselines on properly initialised cohorts; the initialisation claim that was
 going to replace it is withdrawn by our own pre-registered control; and W5 and
@@ -1648,3 +1652,74 @@ geometry), the W1 result that the conventional 1/T coefficient is undertuned,
 the disclosure of two scorer bugs, and a reproducibility finding that
 single-seed merge-method rankings do not hold up. That is a solid workshop or
 TMLR contribution and it is not an ICLR method paper.
+
+---
+
+## 2026-08-04 (later) — DARE checked against the official implementation; not a second KnOTS
+
+Full write-up in `notes/audit_dare_2026-08-04.md`. Triggered by the post-hoc
+observation earlier today that task_arithmetic, dare and knots agree to within
+0.0025 nats on all four bases across three cohorts.
+
+RETRACTION FIRST. That post-hoc note said DARE collapsing onto TA was "the same
+kind of observation" as the KnOTS no-op. That is WRONG and is annotated in place
+above. KnOTS under `inner_combination="linear"` is exactly TA algebraically
+(published |KnOTS - TA| 0.00003 to 0.00031). DARE is a large real perturbation
+of the merged delta that the metric barely feels. The effective baseline set is
+four distinct methods, not three.
+
+IMPLEMENTATION IS FAITHFUL. Checked against `yule-BUAA/MergeLM`,
+`model_merging_methods/mask_weights_utils.py`. Official masks with drop
+probability `mask_rate` and divides survivors by `1 - mask_rate`; ours keeps with
+probability `density` and divides by `density`, and `density = 1 - mask_rate`.
+Masks are drawn per (layer, adapter) from one advancing generator, so they are
+independent across tasks as DARE requires. Our merge is mask + task_arithmetic,
+which is the official `mask_merging` wrapper with
+`mask_apply_method="task_arithmetic"`. Independent check: DARE's injected
+perturbation should have relative norm `sqrt((1-density)/density)`, and measured
+on real adapters it reproduces 2.000/3.000/4.359/9.950 to three decimals on all
+four bases at densities 0.20/0.10/0.05/0.01.
+
+TWO HYPOTHESES PROPOSED AND BOTH REFUTED BY MEASUREMENT, RECORDED BECAUSE THEY
+WERE PREDICTIONS. (a) That our rank-16 truncation, which the official pipeline
+does not do, hides DARE. Refuted: 3.0 to 8.2 percent of DARE's energy survives,
+8 to 21x the isotropic prediction of 0.39 percent, because the perturbation is
+elementwise proportional to delta and so shares its subspace. The merged rank-16
+delta is perturbed by 37 to 57 percent in Frobenius norm. (b) That DARE's
+interference-reduction mechanism has nothing to do in the near-orthogonal
+regime. Refuted: mean DARE - TA is +0.0015 on the shared-init cohorts
+(cosines 0.996, n=12) and +0.0018 on the independent ones (cosines 0.047, n=12).
+No regime dependence.
+
+THE ACTUAL MECHANISM. Rescaling makes DARE an unbiased estimator, so
+`E[D_dare] = D_ta`. For a loss convex in the merged delta, Jensen gives
+`E[L(D_dare)] >= L(D_ta)`, and to second order the penalty is `(1/2) tr(H Sigma)`
+with `Sigma` proportional to `(1-density)/density`. So mask + task_arithmetic
+CANNOT beat task arithmetic in expectation, and the penalty must grow as density
+falls. Tested against the pre-existing density sweep (0.05 to 0.5, spanning the
+DARE paper's headline 90-99 percent drop regime): monotone on 3 of 4 bases,
+converging to TA at density 0.5 and degrading to +0.011 to +0.016 at density
+0.05. DARE beats plain TA in 3 of 20 (base, density) cells and all three are
+within 0.0005, a fifth of the tie threshold.
+
+NOT A HARNESS ARTIFACT. TIES through the same cells at the same densities moves
+up to 8x (Qwen 0.1036 -> 0.0130) with a clear interior optimum at density
+0.2-0.3. The harness detects density effects; there are none for DARE.
+
+SEPARATE OBSERVATION WORTH KEEPING. A 37 to 57 percent relative perturbation of
+the merged LoRA delta costs about 0.001 nats, roughly 0.3 to 1 percent of
+worst-task excess. The metric is extremely flat against zero-mean perturbations
+of the merged delta. That is an independent calibration of how weak the NLL
+proxy is and it corroborates W5.
+
+GAP, STATED SO IT IS NOT FORGOTTEN. We tested mask + task_arithmetic only. The
+official wrapper also supports mask + ties_merging (DARE-TIES), and the
+unbiasedness argument does NOT apply to that composition, because TIES is biased
+and the mask changes which parameters survive trimming. Until DARE-TIES is run,
+the claim is about DARE + task arithmetic, not about DARE.
+
+NET EFFECT ON THE PAPER. The count of field-level contributions does not rise
+from one to two on DARE. What is gained instead is a clean negative result with
+a mechanism that predicts its own functional form and matches it: for LoRA
+merging under worst-task NLL, drop-and-rescale cannot help when composed with
+task arithmetic. Cheap to state and defensible.
