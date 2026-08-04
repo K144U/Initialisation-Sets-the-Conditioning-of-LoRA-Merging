@@ -420,3 +420,171 @@ per-seed sd on the shared cohort is 0.0064, which exceeds the Mistral (-0.0032)
 and Qwen (+0.0001) gaps outright. `lambda*` was tuned on the shared cohort, so
 rd_ridge is arguably handicapped on indep1; that argues for a follow-up sweep,
 not for adjusting anything now. Seed replication (indep2, indep3) is queued.
+
+---
+
+# A1 REPLICATION, THREE COHORTS (2026-08-04)
+
+Rules fixed in `prereg_a1_matrix_2026-08-03.md` and
+`prereg_a1_matrix_amendment_2026-08-04.md`, the latter committed at `42c7ff0`
+before any indep2/indep3 value was read. Analyzer
+`analyze_a1_matrix_3cohort.py`. Verbatim output below, unedited.
+
+**Verdicts: Q1' DOES NOT SURVIVE | Q2' RANKINGS CHANGE MATERIALLY | Q3' RANK IS
+IMMATERIAL | Q4 UNSTABLE WITHIN THE REGIME.** Q4 withdraws the initialisation
+claim that Q2' would otherwise have supported. Reasoning, the Q4 specification
+defect, and the post-hoc TA/DARE/KnOTS collinearity note are in `decisions.md`
+under 2026-08-04.
+
+## Subspace geometry, indep2 and indep3
+
+```
+cohort = indep2
+base             cos   |dA|   smax    soft  softFloor   hard d_eff by eps   1e-06   1e-05   1e-04   1e-03   1e-02   3e-02   1e-01
+llama31_8b     0.047   1.41  1.107    63.2     0.0001                       64.0    64.0    64.0    64.0    64.0    64.0    64.0
+mistral_7b     0.047   1.41  1.105    63.3     0.0001                       64.0    64.0    64.0    64.0    64.0    64.0    64.0
+qwen25_7b      0.051   1.41  1.128    63.1     0.0003                       64.0    64.0    64.0    64.0    64.0    64.0    64.0
+yi15_9b        0.047   1.41  1.105    63.3     0.0000                       64.0    64.0    64.0    64.0    64.0    64.0    64.0
+
+cohort = indep3
+base             cos   |dA|   smax    soft  softFloor   hard d_eff by eps   1e-06   1e-05   1e-04   1e-03   1e-02   3e-02   1e-01
+llama31_8b     0.047   1.42  1.105    63.2     0.0001                       64.0    64.0    64.0    64.0    64.0    64.0    64.0
+mistral_7b     0.047   1.41  1.104    63.3     0.0001                       64.0    64.0    64.0    64.0    64.0    64.0    64.0
+qwen25_7b      0.051   1.41  1.129    63.1     0.0003                       64.0    64.0    64.0    64.0    64.0    64.0    64.0
+yi15_9b        0.047   1.41  1.105    63.3     0.0000                       64.0    64.0    64.0    64.0    64.0    64.0    64.0
+```
+
+Reference values for the degenerate shared-init cohort: cos 0.996, |dA| 0.18,
+sigma_max 1.999, soft d_eff 16.3, soft floor 0.745 B-squared. Written to
+`results/phase3/subspace_geometry_indep{2,3}.json`.
+
+## Merge matrix, three cohorts
+
+```
+====================================================================================================
+A1 MERGE MATRIX, three independently initialised cohorts
+worst-task NLL excess (nats); cell = mean of indep1/2/3, sd in brackets
+====================================================================================================
+base            task_arithmeti             ties             dare            knots           tvq_b2         rd_ridge        rd_rank16
+llama31_8b      0.2239 [0.0017]   0.1388 [0.0034]   0.2252 [0.0022]   0.2233 [0.0019]   0.1052 [0.0009]   0.0717 [0.0017]   0.0795 [0.0012]
+mistral_7b      0.1427 [0.0016]   0.0543 [0.0005]   0.1442 [0.0011]   0.1425 [0.0014]   0.0559 [0.0023]   0.0597 [0.0019]   0.0564 [0.0015]
+qwen25_7b       0.1037 [0.0004]   0.0141 [0.0001]   0.1061 [0.0005]   0.1034 [0.0002]   0.0172 [0.0006]   0.0143 [0.0003]   0.0144 [0.0001]
+yi15_9b         0.0970 [0.0014]   0.0487 [0.0011]   0.0989 [0.0014]   0.0969 [0.0015]   0.0513 [0.0011]   0.0637 [0.0020]   0.0641 [0.0011]
+
+per-cohort detail
+  llama31_8b
+    indep1      0.2221    0.1351    0.2228    0.2214    0.1049    0.0714    0.0799
+    indep2      0.2255    0.1419    0.2269    0.2252    0.1062    0.0735    0.0805
+    indep3      0.2239    0.1395    0.2260    0.2232    0.1045    0.0701    0.0783
+    methods: task_arit      ties      dare     knots    tvq_b2  rd_ridge rd_rank16
+  mistral_7b
+    indep1      0.1430    0.0543    0.1451    0.1423    0.0586    0.0575    0.0547
+    indep2      0.1442    0.0547    0.1444    0.1440    0.0544    0.0606    0.0572
+    indep3      0.1410    0.0538    0.1430    0.1412    0.0549    0.0610    0.0574
+    methods: task_arit      ties      dare     knots    tvq_b2  rd_ridge rd_rank16
+  qwen25_7b
+    indep1      0.1040    0.0141    0.1067    0.1036    0.0165    0.0140    0.0143
+    indep2      0.1038    0.0140    0.1060    0.1035    0.0176    0.0145    0.0146
+    indep3      0.1033    0.0142    0.1058    0.1032    0.0175    0.0145    0.0145
+    methods: task_arit      ties      dare     knots    tvq_b2  rd_ridge rd_rank16
+  yi15_9b
+    indep1      0.0960    0.0482    0.0979    0.0959    0.0524    0.0627    0.0638
+    indep2      0.0965    0.0479    0.0982    0.0963    0.0503    0.0622    0.0631
+    indep3      0.0986    0.0499    0.1005    0.0986    0.0512    0.0660    0.0652
+    methods: task_arit      ties      dare     knots    tvq_b2  rd_ridge rd_rank16
+
+====================================================================================================
+Q1'  does rd-ridge's advantage survive across three cohorts?
+     champion baseline selected on the 3-cohort mean (the less biased
+     estimator, and the one more favourable to us: see robustness A)
+====================================================================================================
+base           rd_ridge   champion             name    mean d    sd(d)     2xSE  result
+llama31_8b       0.0717     0.1052           tvq_b2   +0.0335   0.0009   0.0010  WINS
+mistral_7b       0.0597     0.0543             ties   -0.0055   0.0020   0.0024  LOSES
+qwen25_7b        0.0143     0.0141             ties   -0.0002   0.0003   0.0004  TIES
+yi15_9b          0.0637     0.0487             ties   -0.0150   0.0009   0.0011  LOSES
+
+  wins 1, ties 1, losses 2  ->  Q1' PRIMARY VERDICT: DOES NOT SURVIVE
+
+  robustness A: champion re-selected inside each cohort (takes a min over
+  noise three times, so it is biased AGAINST rd_ridge; reported per the
+  amendment because the primary rule is the one that favours us)
+    llama31_8b   mean d  +0.0335  champions tvq_b2/tvq_b2/tvq_b2                     WINS
+    mistral_7b   mean d  -0.0056  champions ties/tvq_b2/ties                         LOSES
+    qwen25_7b    mean d  -0.0002  champions ties/ties/ties                           TIES
+    yi15_9b      mean d  -0.0150  champions ties/ties/ties                           LOSES
+    -> 1W/1T/2L  robustness A verdict: DOES NOT SURVIVE   AGREES
+
+  robustness B: the parent's original single-cohort rule, applied to each
+  cohort independently (no gate, no averaging)
+    indep1  1W/2T/1L  llama31_8b:W mistral_7b:T qwen25_7b:T yi15_9b:L WEAKENED
+    indep2  1W/1T/2L  llama31_8b:W mistral_7b:L qwen25_7b:T yi15_9b:L DOES NOT SURVIVE
+    indep3  1W/1T/2L  llama31_8b:W mistral_7b:L qwen25_7b:T yi15_9b:L DOES NOT SURVIVE
+    -> majority of three: DOES NOT SURVIVE (2/3)   agrees with primary
+
+====================================================================================================
+Q2'  do rankings change between the shared-init and independent regimes?
+====================================================================================================
+llama31_8b   n=7
+               shared seed1 top3: rd_ridge, rd_rank16, tvq_b2
+               indep mean   top3: rd_ridge, rd_rank16, tvq_b2
+               top-1 change: no     top-3 set change: no
+mistral_7b   n=7
+               shared seed1 top3: rd_ridge, ties, rd_rank16
+               indep mean   top3: ties, tvq_b2, rd_rank16
+               top-1 change: YES    top-3 set change: YES
+qwen25_7b    n=7
+               shared seed1 top3: rd_ridge, rd_rank16, ties
+               indep mean   top3: ties, rd_ridge, rd_rank16
+               top-1 change: YES    top-3 set change: no
+yi15_9b      n=7
+               shared seed1 top3: rd_ridge, rd_rank16, ties
+               indep mean   top3: ties, tvq_b2, rd_ridge
+               top-1 change: YES    top-3 set change: YES
+
+  top-1 changes 3/4, top-3 set changes 2/4  ->  Q2' VERDICT: RANKINGS CHANGE MATERIALLY
+  unbalanced design: 3 cohorts averaged on one side, 1 seed on the other.
+  Q4 is what makes this interpretable. Rank correlation stays forbidden.
+
+====================================================================================================
+Q3'  is the salvage arc confounded by rank? rd_ridge r=64 vs rd_rank16 r=16
+====================================================================================================
+base           rd_ridge   rd_rank16    mean d     2xSE  note
+llama31_8b       0.0717      0.0795   +0.0079   0.0009  rank16 worse, rank is part of the effect
+mistral_7b       0.0597      0.0564   -0.0033   0.0004  within threshold
+qwen25_7b        0.0143      0.0144   +0.0001   0.0002  within threshold
+yi15_9b          0.0637      0.0641   +0.0004   0.0012  within threshold
+
+  within 3, rank16-worse 1  ->  Q3' VERDICT: RANK IS IMMATERIAL
+
+====================================================================================================
+Q4   is ranking instability specific to the regime, or just single-seed noise?
+     top-1 and top-3 across indep1/2/3, which differ ONLY in the init draw
+====================================================================================================
+llama31_8b   top-1 by cohort: rd_ridge, rd_ridge, rd_ridge
+               unanimous top-1: yes    unanimous top-3 set: yes
+mistral_7b   top-1 by cohort: ties, tvq_b2, ties
+               unanimous top-1: NO     unanimous top-3 set: NO
+qwen25_7b    top-1 by cohort: rd_ridge, ties, ties
+               unanimous top-1: NO     unanimous top-3 set: yes
+yi15_9b      top-1 by cohort: ties, ties, ties
+               unanimous top-1: yes    unanimous top-3 set: NO
+
+  non-unanimous top-1 on k = 2/4 bases  ->  Q4 VERDICT: UNSTABLE WITHIN THE REGIME
+  Q2' is NOT attributable to initialisation. The claim that published
+  merging benchmarks may be confounded by shared-init geometry is
+  WITHDRAWN. What the campaign found is that single-seed method
+  rankings on this metric are noise: a real methodological point, but a
+  different and smaller claim, and it must be written as that one.
+
+====================================================================================================
+Q1' DOES NOT SURVIVE
+Q2' RANKINGS CHANGE MATERIALLY
+Q3' RANK IS IMMATERIAL
+Q4  UNSTABLE WITHIN THE REGIME
+n = 3 cohorts, replication of the INITIALISATION DRAW ONLY. Not of the
+eval shuffle (pinned 20260518), the bases, the tasks, or lambda*. The sd
+behind every gate carries 2 degrees of freedom.
+====================================================================================================
+[a1] wrote /home/sanjay.g/projects/rdmerge/results/phase3/a1_matrix_3cohort_summary.json
+```

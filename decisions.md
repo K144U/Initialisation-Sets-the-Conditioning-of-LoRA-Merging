@@ -1546,3 +1546,98 @@ dominant over it. Combined with W5 (downstream correlation unmeasurable) and
 W3 (rate exponent falsified), the case for an ICLR method paper is weak. The
 cohort-dependence result is supported in magnitude but only weakly in ranking,
 and needs the seed replication before it could headline anything.
+
+---
+
+## 2026-08-04 — A1 replication landed (n=3 cohorts); Q1 falls to DOES NOT SURVIVE and the initialisation claim is withdrawn
+
+88 cells completed overnight without intervention (32 adapters at 20:57, 56
+matrix cells at 00:55). All 56 parse with a finite `worst_task_excess`, balanced
+28/28 across indep2/indep3 and 8 per method. Both PBS jobs ended on
+`[orch] queue complete`, not a walltime kill, so there was no requeue.
+
+AUDIT TRAIL. Amendment 1 to the pre-registration
+(`notes/prereg_a1_matrix_amendment_2026-08-04.md`) fixes the aggregation rule
+and was committed at `42c7ff0` BEFORE any indep2/indep3 value was read. The
+amendment states its own blindness limitation up front: indep1 was already read,
+so one of three inputs was visible when the rule was chosen. Analyzer is
+`analyze_a1_matrix_3cohort.py`; the single-cohort `analyze_a1_matrix.py` is left
+untouched as the record of what was run on indep1 alone.
+
+GEOMETRY REPLICATES EXACTLY. indep2 and indep3 reproduce indep1 to three
+decimals on all four bases: cosines 0.047 (Qwen 0.051), |dA|/|A| 1.41, sigma_max
+1.10-1.13, soft d_eff 63.1-63.3 of 64, soft floor 0.0000-0.0003 B-squared, and
+hard d_eff = Tr stable at every epsilon from 1e-6 to 1e-1. The floor-zero regime
+claim and the answer to reviewer W2 are now three-cohort results, not one.
+
+THE VALUES ARE HIGHLY REPRODUCIBLE ACROSS INIT DRAWS. Per-cell sd across the
+three cohorts is 0.0001 to 0.0034 nats, an order of magnitude below the
+0.0064 per-seed sd measured on the shared-init cohort in W1s. The noise gate
+therefore downgraded nothing: every call below is outside 2 x SE.
+
+Q1' DOES NOT SURVIVE (1 win, 1 tie, 2 losses).
+
+    base          rd_ridge   champion            mean d   sd(d)    2xSE   result
+    llama31_8b      0.0717     0.1052 tvq_b2    +0.0335  0.0009  0.0010   WINS
+    mistral_7b      0.0597     0.0543 ties      -0.0055  0.0020  0.0024   LOSES
+    qwen25_7b       0.0143     0.0141 ties      -0.0002  0.0003  0.0004   TIES
+    yi15_9b         0.0637     0.0487 ties      -0.0150  0.0009  0.0011   LOSES
+
+Both pre-specified robustness lines agree. Robustness A (champion re-selected
+inside each cohort, the variant biased against rd_ridge) returns the same
+1W/1T/2L. Robustness B (the parent's single-cohort rule applied three times)
+returns WEAKENED on indep1 but DOES NOT SURVIVE on indep2 and indep3, majority
+2/3, agreeing with the primary. So the step-0 WEAKENED verdict of 2026-08-03 was
+the optimistic draw of three: Mistral is a TIE on indep1 and a LOSS on both new
+cohorts. Step 0's headline is superseded and must not be cited.
+
+TIES IS THE BEST METHOD ON 3 OF 4 BASES on properly initialised adapters.
+rd-encoder ridge is beaten by a 2020 baseline on Mistral and Yi, ties it on
+Qwen, and wins only on Llama.
+
+Q2' RANKINGS CHANGE MATERIALLY (top-1 3/4, top-3 set 2/4), but see Q4.
+
+Q3' RANK IS IMMATERIAL (3 within threshold, 1 rank16-worse), verdict unchanged
+from indep1, so audit finding A3 stays off the fix list. One change worth
+recording: Llama now shows rank16 worse by +0.0079, outside both the threshold
+and the gate, where indep1 alone showed it within. The Llama win survives
+rank-matching anyway: rd_rank16 at 0.0795 still beats the tvq_b2 champion at
+0.1052 by 0.0257, so the one surviving win is not a rank artifact.
+
+Q4 UNSTABLE WITHIN THE REGIME (k = 2 of 4 bases have a non-unanimous top-1
+across indep1/2/3). By the rule fixed in the amendment, Q2' is therefore NOT
+attributable to initialisation, and THE CLAIM THAT PUBLISHED MERGING BENCHMARKS
+MAY BE CONFOUNDED BY SHARED-INIT GEOMETRY IS WITHDRAWN. That claim was described
+on 2026-08-03 as "the strongest result available from the campaign". It is gone.
+What survives is the smaller methodological point that single-seed method
+rankings on this metric are not reproducible.
+
+SPECIFICATION DEFECT IN Q4, RECORDED UNDER PARENT CONSTRAINT 1, NOT ACTED ON.
+The rule counts a top-1 flip as instability regardless of margin, and both flips
+are between methods separated by far less than the 0.005 threshold: Mistral
+ties 0.0543/0.0547/0.0538 against tvq_b2 0.0586/0.0544/0.0549, and Qwen rd_ridge
+0.0140 against ties 0.0141, a 0.0001 coin flip. So Q4 as written detects
+coin flips between statistically indistinguishable methods, which is weaker than
+what it was meant to detect. The verdict STANDS AS WRITTEN and the withdrawal
+above is real. A margin-aware version (top-1 change counts only if it exceeds
+the threshold) is a FUTURE pre-registration, not a revision of this one, and
+must be committed before it is run.
+
+POST HOC, LABELLED AS SUCH, NOT PRE-REGISTERED. Three of the five baselines are
+numerically the same method on every base: task_arithmetic, dare and knots agree
+to within 0.0025 nats on all four bases (Llama 0.2239/0.2252/0.2233, Mistral
+0.1427/0.1442/0.1425, Qwen 0.1037/0.1061/0.1034, Yi 0.0970/0.0989/0.0969). The
+KnOTS no-op was already established in A2; DARE collapsing onto TA at
+density 0.2 with rescaling is the same kind of observation and has not been
+verified against the published DARE implementation. Until it is, the effective
+baseline set is three methods, not five.
+
+NET EFFECT ON THE PAPER. Worse than step 0 indicated. The method does not beat
+the baselines on properly initialised cohorts; the initialisation claim that was
+going to replace it is withdrawn by our own pre-registered control; and W5 and
+W3 already removed the downstream case and the rate exponent. What is left that
+is defensible: the theory as regime diagnosis (now supported by three cohorts of
+geometry), the W1 result that the conventional 1/T coefficient is undertuned,
+the disclosure of two scorer bugs, and a reproducibility finding that
+single-seed merge-method rankings do not hold up. That is a solid workshop or
+TMLR contribution and it is not an ICLR method paper.
