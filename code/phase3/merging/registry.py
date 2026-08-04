@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from .adamerging import merge_adamerging
 from .dare import merge_dare
+from .dare_ties import merge_dare_ties
 from .della import merge_della
 from .fisher_avg import merge_fisher_avg
 from .knots import merge_knots
@@ -32,6 +33,7 @@ REGISTRY = {
     "task_arithmetic": merge_task_arithmetic,
     "ties": merge_ties,
     "dare": merge_dare,
+    "dare_ties": merge_dare_ties,
     "knots": merge_knots,
     "tvq": merge_tvq,
     "rd_encoder": merge_rd_encoder,
@@ -48,6 +50,11 @@ DEFAULT_KWARGS = {
     "task_arithmetic": {},
     "ties": {"density": 0.2, "majority_sign_method": "total"},
     "dare": {"density": 0.2, "seed": 20260518},
+    # dare_density is DARE's keep fraction; ties_density is held at TIES's own
+    # 0.2 so the only difference from the `ties` baseline is the mask. See
+    # notes/prereg_dare_ties_2026-08-04.md.
+    "dare_ties": {"dare_density": 0.2, "ties_density": 0.2,
+                  "majority_sign_method": "total", "seed": 20260518},
     # WARNING: "linear" is algebraically Task Arithmetic (see knots.py and
     # tests/test_knots.py). Kept as the default only so historical cells stay
     # reproducible. For a KnOTS that differs from TA, pass

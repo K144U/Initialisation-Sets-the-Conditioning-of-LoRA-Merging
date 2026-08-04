@@ -45,6 +45,41 @@ def _elect_sign(stacked: torch.Tensor, method: str = "total") -> torch.Tensor:
     raise ValueError(f"unknown majority_sign_method: {method!r}")
 
 
+def ties_merge_deltas(
+    deltas: list[torch.Tensor],
+    weights: list[float],
+    density: float = 0.2,
+    majority_sign_method: str = "total",
+) -> torch.Tensor:
+    """Trim, elect sign, disjoint merge. Returns the merged delta, untruncated.
+
+    Extracted verbatim from the body of `merge_ties` on 2026-08-04 so that
+    `dare_ties` can compose with the identical code path instead of carrying a
+    second copy of the algorithm that could drift. `merge_ties` now calls this
+    and its numerics are unchanged; `tests/test_ties.py::test_refactor_matches_
+    frozen_reference` pins that against a frozen copy of the original body.
+    """
+    # 1. Trim per task (stay on whatever device the deltas arrived on)
+    trimmed = [_trim_topk(d, density) for d in deltas]
+    stacked = torch.stack(trimmed, dim=0)  # (T, out, in)
+    device, dtype = stacked.device, stacked.dtype
+
+    # 2. Elect sign
+    elected = _elect_sign(stacked, majority_sign_method)
+
+    # 3. Disjoint merge: per-param, take weighted mean only of tasks whose sign matches the elected
+    sign_t = torch.sign(stacked)
+    match = ((sign_t == elected.unsqueeze(0)) & (elected.unsqueeze(0) != 0)).to(dtype)
+    w_t = torch.tensor(weights, dtype=dtype, device=device).view(-1, 1, 1)
+    weighted = stacked * match * w_t
+    denom_sum = (match * w_t).sum(dim=0).abs()
+    return torch.where(
+        denom_sum > 1e-12,
+        weighted.sum(dim=0) / denom_sum.clamp_min(1e-12),
+        torch.zeros_like(denom_sum),
+    )
+
+
 def merge_ties(
     model: FakePeftModel,
     adapter_names: list[str],
@@ -57,26 +92,8 @@ def merge_ties(
     new_factors: dict[str, FakeLoraLayer] = {}
     for layer in model.layer_names():
         _, _, r = model.layer_topology[layer]
-        # 1. Trim per task (stay on whatever device get_delta returned)
-        trimmed = [_trim_topk(model.get_delta(ad, layer), density) for ad in adapter_names]
-        stacked = torch.stack(trimmed, dim=0)  # (T, out, in)
-        device, dtype = stacked.device, stacked.dtype
-
-        # 2. Elect sign
-        elected = _elect_sign(stacked, majority_sign_method)
-
-        # 3. Disjoint merge: per-param, take weighted mean only of tasks whose sign matches the elected
-        sign_t = torch.sign(stacked)
-        match = ((sign_t == elected.unsqueeze(0)) & (elected.unsqueeze(0) != 0)).to(dtype)
-        w_t = torch.tensor(weights, dtype=dtype, device=device).view(-1, 1, 1)
-        weighted = stacked * match * w_t
-        denom_sum = (match * w_t).sum(dim=0).abs()
-        delta = torch.where(
-            denom_sum > 1e-12,
-            weighted.sum(dim=0) / denom_sum.clamp_min(1e-12),
-            torch.zeros_like(denom_sum),
-        )
-
+        deltas = [model.get_delta(ad, layer) for ad in adapter_names]
+        delta = ties_merge_deltas(deltas, weights, density, majority_sign_method)
         A_new, B_new = svd_truncate_to_rank(delta, r)
         new_factors[layer] = FakeLoraLayer(A=A_new, B=B_new, scaling=1.0)
     model.add_adapter(merged_adapter_name, new_factors)
