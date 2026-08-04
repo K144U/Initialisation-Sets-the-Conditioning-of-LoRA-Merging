@@ -26,7 +26,13 @@ module load anaconda3/anaconda cuda12.2/toolkit/12.2.2 cudnn/9.14
 source activate $PROJECT_ROOT/.conda/envs/rdmerge
 export PYTHONNOUSERSITE=1
 export ORCH_STATE=orchestrator_state_dare_ties.json
-export GPUS=0,1,2,3,4,6
+# Overridable via `qsub -v GPUS=3`. Needed for single-cell smoke runs: the
+# orchestrator starts one worker per pinned GPU and the others exit on
+# queue.Empty after 30s, so a lone cell that lands on a card below its
+# min_free_gb gets requeued into a queue with no live consumer. Pin one
+# known-free GPU for a smoke; leave the default for the full sweep, where the
+# surviving workers drain the queue normally.
+export GPUS="${GPUS:-0,1,2,3,4,6}"
 
 # All three cohorts must be fully trained: 16 adapters each.
 for C in indep1 indep2 indep3; do
