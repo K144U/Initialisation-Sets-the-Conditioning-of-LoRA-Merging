@@ -1852,3 +1852,86 @@ fraction and the tolerance sweep. The two notes above are left as written,
 since this log is append-only, and are superseded by this entry on this point
 only. Nothing else in the A1 analysis depends on the floor magnitude: Q1'
 through Q4 are computed from worst-task excess, not from the floor.
+
+---
+
+## 2026-08-07 (later still) — THE EXACT FLOOR IS ZERO IN BOTH REGIMES; the two-regime headline is an artifact, and the correct quantity is conditioning
+
+Prompted by an external review (W1, W5). Ran the two experiments the review said
+were missing and available. Both are CPU-only on adapters we already held.
+
+### 1. W4: the head-to-head the recommendation implies
+
+`compare_shared_vs_indep.py`, worst-task NLL excess, same method, same base,
+seed1/2/3 (shared) against indep1/2/3 (independent), eval configs verified
+MATCH on all four bases.
+
+    independent better on 2 of 20 cells, tie on 17, WORSE on 1
+    mean delta +0.0014 nats
+
+Independent initialisation makes NO measurable difference to merging outcomes.
+The paper's practical recommendation is not supported by our own data.
+
+### 2. W1: the exact instance floor from Lemma 1
+
+`exact_instance_floor.py`. The paper reported the floor as the Lemma 2
+prior-averaged surrogate `B^2 (1 - d_eff/(Tr))` with the SOFT participation
+ratio substituted for d_eff. The exact instance floor,
+`(1/T) sum_t (tau_t - tauH)^T H_t (tau_t - tauH)`, is computable from the
+adapters and is:
+
+    EXACTLY ZERO, all four bases, BOTH cohorts.
+
+Reason: the floor vanishes iff the V_t are in direct sum, i.e. q = Tr. Measured
+q = 64 = Tr in BOTH cohorts. Under shared init the four 16-dim row spaces are
+near-collinear but still formally independent, so an exact interpolator exists
+and the floor is zero.
+
+THE 0.745 B^2 FIGURE IS AN ARTIFACT. It comes from substituting the soft
+participation ratio (16.3) into a formula derived for a RANK (64). The reviewer
+flagged exactly this: a soft surrogate in a rank formula needs justification we
+never gave. The floor only becomes nonzero if the pseudoinverse is truncated at
+a loose tolerance (shared: 0.32 at rtol 1e-2, 0.58 at 1e-1; independent: 0.0000
+at every tolerance), which is a numerical choice, not a property of the
+instance.
+
+This also explains finding 1 with no extra assumption: the floor is zero in both
+regimes, so nothing operational should differ, and nothing did.
+
+### 3. What actually differs: conditioning
+
+`floor_conditioning.py`. Floor = 0 says an exact interpolator EXISTS. It says
+nothing about its norm.
+
+    cohort   base          cond(Hbar)   min eig   ||tauH||/||mean delta||
+    seed1    llama31_8b      17591.7   9.1e-05          48.3
+    seed1    mistral_7b      32075.3   1.2e-04          52.3
+    seed1    qwen25_7b       24185.7   5.8e-05          43.4
+    seed1    yi15_9b         82961.3   2.6e-05          64.1
+    indep1   llama31_8b          1.5   1.98e-01           4.0
+    indep1   mistral_7b          1.5   1.99e-01           4.0
+    indep1   qwen25_7b           1.6   1.94e-01           4.0
+    indep1   yi15_9b             1.5   1.99e-01           4.0
+
+Conditioning of Hbar moves by four to five orders of magnitude. The
+amplification is EXACTLY 4.0 = T on all four independent bases, which is the
+clean orthogonal-case value, against 43 to 64 under shared init.
+
+So initialisation does not set the floor. It sets the CONDITIONING of the merge
+problem. That is a real, large, cleanly measured effect with an exact
+theoretical baseline, and it is a different claim from the one in the paper.
+
+### Consequence
+
+The paper committed at `cdbec03` has a false headline and must not be
+submitted. "Initialisation sets the floor" is wrong: the floor is zero either
+way. The candidate replacement is "initialisation sets the conditioning", with
+the honest operational rider that this has no measurable effect on any merging
+method we tested, because none of them constructs the exact interpolator; they
+all produce bounded-norm, near-mean solutions that never approach the
+ill-conditioned direction.
+
+Unaffected: the theory itself (Lemmas 1 and 2 and the theorem are correct as
+stated; it is our APPLICATION of Lemma 2 to instances that was wrong), the
+pre-registered method results (Q1 through Q4), and the DARE and DARE-TIES
+results.
