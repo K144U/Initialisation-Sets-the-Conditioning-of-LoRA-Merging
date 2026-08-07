@@ -1,0 +1,59 @@
+Table~\ref{tab:geometry} in \S\ref{subsec:measurement} shows only
+\texttt{indep1} for each base model, on the grounds that the three
+independently initialised cohorts agree closely. This appendix gives all
+three so that claim can be checked rather than taken on trust.
+
+The cohorts differ only in the random draw used to initialise the LoRA
+$A$ factor of each task. The training data, data ordering seed, task
+configurations, rank, and number of layers sampled are identical across
+them. Any variation below is therefore attributable to the
+initialisation draw alone.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Subspace geometry for all three independently initialised
+cohorts. Floor is $1 - \deff/(Tr)$ in units of $B^2$, with $Tr = 64$.
+Compare the shared-initialisation values in Table~\ref{tab:geometry}:
+median cosine $\geq 0.9947$, soft $\deff \approx 16.3$, floor
+$\approx 0.745$.}
+\label{tab:geometry-all}
+\begin{tabular}{llccccc}
+\toprule
+base & cohort & med.\ cosine & $\|\Delta A\|/\|A\|$ & $\sigma_{\max}$ &
+soft $\deff$ & floor$/B^2$ \\
+\midrule
+Llama-3.1-8B & \texttt{indep1} & 0.0473 & 1.415 & 1.107 & 63.23 & 0.0120 \\
+             & \texttt{indep2} & 0.0472 & 1.414 & 1.107 & 63.25 & 0.0118 \\
+             & \texttt{indep3} & 0.0467 & 1.415 & 1.105 & 63.24 & 0.0118 \\
+\addlinespace
+Mistral-7B   & \texttt{indep1} & 0.0468 & 1.412 & 1.106 & 63.24 & 0.0118 \\
+             & \texttt{indep2} & 0.0472 & 1.411 & 1.105 & 63.26 & 0.0116 \\
+             & \texttt{indep3} & 0.0465 & 1.412 & 1.104 & 63.25 & 0.0117 \\
+\addlinespace
+Qwen2.5-7B   & \texttt{indep1} & 0.0500 & 1.412 & 1.131 & 63.08 & 0.0144 \\
+             & \texttt{indep2} & 0.0507 & 1.410 & 1.128 & 63.10 & 0.0141 \\
+             & \texttt{indep3} & 0.0510 & 1.412 & 1.129 & 63.08 & 0.0143 \\
+\addlinespace
+Yi-1.5-9B    & \texttt{indep1} & 0.0467 & 1.412 & 1.102 & 63.25 & 0.0117 \\
+             & \texttt{indep2} & 0.0467 & 1.411 & 1.105 & 63.25 & 0.0117 \\
+             & \texttt{indep3} & 0.0473 & 1.412 & 1.105 & 63.25 & 0.0117 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The largest spread across cohorts on any column is $0.0010$ in median
+cosine (Qwen), $0.005$ in $\sigma_{\max}$ (Llama), and $0.02$ in soft
+$\deff$ (Llama and Mistral). Against a shared-versus-independent
+difference of $0.95$ in median cosine and $47$ in soft $\deff$, the
+between-cohort variation is smaller by three orders of magnitude.
+
+\paragraph{Hard effective dimension.} All twelve cells in
+Table~\ref{tab:geometry-all} return $\deff = Tr = 64$ at every rank
+tolerance in $\{10^{-6}, 10^{-5}, 10^{-4}, 10^{-3}, 10^{-2},
+3\times10^{-2}, 10^{-1}\}$, so the corresponding hard floor is exactly
+zero throughout. This coincidence is asserted programmatically in the
+figure-generating script, which fails rather than plots if any cell
+departs from $64$. The shared-initialisation cohort, by contrast, returns
+$64$ only for $\epsilon \leq 10^{-3}$ and falls to $60.5$, $38.4$ and
+$20.8$ at $10^{-2}$, $3\times10^{-2}$ and $10^{-1}$ respectively.

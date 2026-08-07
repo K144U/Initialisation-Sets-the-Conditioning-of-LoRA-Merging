@@ -1,69 +1,72 @@
-\subsection{Practical decision table}
+This appendix lists the experiments this paper reports, so that the
+released code and result files can be matched to the claims they support.
+It is a manifest for \emph{this} version. An earlier version of this work
+reported a larger experiment set built on the shared-initialisation
+cohort; those results are not repeated here, because \S\ref{sec:regimes}
+shows that cohort sits in a different regime and \S\ref{subsec:q1} shows
+the method conclusions drawn from it do not transfer.
 
-Table~\ref{tab:practical-tree} compresses rules R1--R5 of
-\S\ref{sec:practical-recommendations} into a single decision flow.
-
-\begin{table}[h]
-\centering
-\caption{Practical method-choice tree. ``Regime'' is determined from
-(a) per-task NLL headroom (saturation $=$ headroom $< 0.15$ on
-$\geq 1$ task), (b) base size, and (c) target $T$.}
-\label{tab:practical-tree}
-\small
-\begin{tabular}{p{1.55in}p{2.0in}p{1.45in}}
-\hline
-Regime & Recommendation & Why \\
-\hline
-$T \leq 4$, no saturation        & rd-encoder ridge ($\lambda$-tuned)   & R1, tightest empirical excess \\
-$T \leq 4$, saturated cohort     & rd-encoder ridge + headroom renorm    & R1+R2, prevents Alpaca-style artifact \\
-$T \geq 7$, no saturation        & rd-encoder ridge (margin grows) & R1 + \S\ref{subsec:exp-T-scaling} \\
-$T \geq 7$, saturated cohort     & rd-encoder ridge; fall back to TVQ$_2$ & R3, TIES inverts \\
-rd-encoder unavailable, $T \leq 4$ & TIES (density $0.2$) if non-saturated; TVQ$_2$ otherwise & R3 \\
-floor-positive ($\deff < Tr$; not seen) & no method helps; change the cohort & R5, regime-bound \\
-\hline
-\end{tabular}
-\end{table}
-
-We deliberately do not recommend DARE without a TA fallback (it tracks
-TA to three decimals on our matrix) or KnOTS for new cohorts (its
-performance is indistinguishable from TA at $T = 4$ and tracks TA
-exactly at $T = 7$ on Llama); both remain useful baselines for the
-algorithmic comparison but offer no practical advantage over TA in the
-cohorts we tested.
-
-\subsection{Experiment manifest}
-
-Table~\ref{tab:repro-manifest} enumerates every experiment with the
-count of evaluation cells, the reproducer script in the released code,
-and per-cell wallclock on a single NVIDIA A100-80GB.
+\paragraph{Cohorts and adapters.} Four base models (Llama-3.1-8B,
+Mistral-7B-v0.3, Qwen2.5-7B, Yi-1.5-9B-Chat), four tasks per cohort at
+LoRA rank $r=16$, so $T=4$ and $Tr=64$. Four cohorts per base: one
+\emph{shared} cohort in which all four adapters are initialised from a
+single global seed, and three \emph{independent} cohorts
+(\texttt{indep1}, \texttt{indep2}, \texttt{indep3}) in which each task
+draws its own initialisation. That is $4 \times 4 \times 4 = 64$ trained
+adapters. Training data and data-ordering seed are identical across
+cohorts, so the only variable is the initialisation draw.
 
 \begin{table}[h]
 \centering
-\caption{Experiment manifest. All training uses bf16; scripts are
-under the released code's \texttt{scripts/} directory.}
-\label{tab:repro-manifest}
 \small
-\begin{tabular}{lrll}
-\hline
-Experiment (\S) & cells & reproducer script & cell wallclock \\
-\hline
-Multi-seed $T{=}4$ matrix (\S\ref{subsec:exp-lora})       & $40$ & \texttt{run\_eval\_cell.py} & 12--18 min \\
-Floor-positive null (App.~\ref{app:e5})                   & $12$ & \texttt{run\_eval\_cell.py} & 10--14 min \\
-$b{=}2$ mechanism (App.~\ref{app:b2})                     & $24$ & \texttt{run\_eval\_cell.py} & 12--16 min \\
-GSM8K accuracy (\S\ref{subsec:exp-downstream-gsm8k})      & $24$ & \texttt{run\_downstream\_cell.py} & 18--25 min \\
-HumanEval pass@1 (\S\ref{subsec:exp-downstream-gsm8k})    & $24$ & \texttt{run\_downstream\_cell.py} & 10--20 min \\
-Chat-template probe (App.~\ref{app:downstream})           & $5$  & \texttt{run\_downstream\_cell.py} & 8--10 min \\
-$T$-scaling, per base (\S\ref{subsec:exp-T-scaling})      & $3 \times 54$ & orchestrator & 8--12 min \\
-Sign-election probe (App.~\ref{app:tscaling})             & $3$  & \texttt{probe\_sign\_election.py} & minutes, CPU \\
-Added baselines (App.~\ref{app:baselines})                & $16$ & orchestrator & 10--15 min \\
-Robustness sweeps (App.~\ref{app:robustness})             & $52$ & orchestrator & 10--15 min \\
-Quadratic bridge (App.~\ref{app:baselines})               & $26$ & orchestrator & 8--12 min \\
-Td2 synthetic sweep (App.~\ref{app:td2-synthetic})        & ---  & \texttt{td2\_overlap\_sweep.py} & minutes, CPU \\
-\hline
+\caption{Experiments reported in this paper. Cell counts are completed
+evaluation cells, excluding adapter training.}
+\label{tab:manifest}
+\begin{tabular}{lllr}
+\toprule
+experiment & where & driver & cells \\
+\midrule
+Subspace geometry audit & \S\ref{subsec:measurement}, App.~\ref{app:geometry}
+  & \texttt{measure\_subspace\_geometry.py} & 16 (CPU) \\
+Merge matrix, independent cohorts & \S\ref{subsec:q1}
+  & orchestrator & 84 \\
+Rate sweep, quantizer width $b$ & \S\ref{subsec:w3}
+  & \texttt{run\_eval\_cell.py} & 24 \\
+DARE density sweep & \S\ref{subsec:dare}
+  & \texttt{run\_eval\_cell.py} & 20 \\
+DARE-TIES composition & \S\ref{subsec:dare}
+  & orchestrator & 36 \\
+Synthetic validation & App.~\ref{app:synthetic}
+  & \texttt{run\_synthetic.py} & CPU \\
+\bottomrule
 \end{tabular}
 \end{table}
 
-The total compute footprint of the empirical results is approximately
-$80$--$120$ GPU-hours on a single A100-80GB, plus LoRA training of the
-adapter cohorts (three seeds of the $T = 4$ matrix and the seven-task
-pool per base; each adapter $7500$ examples, $\sim 25$ min).
+\paragraph{Metric.} Worst-task negative log-likelihood excess in nats,
+relative to the per-task fine-tuned adapter, evaluated on a held-out
+draw with the evaluation seed pinned across every arm of every
+comparison. The merged model is truncated back to rank $r$ after merging
+for every method, so no method gains capacity over another.
+
+\paragraph{Methods compared.} Task arithmetic~\citep{ilharco2023task},
+TIES~\citep{yadav2023ties}, DARE~\citep{yu2024dare}, DARE composed with
+TIES, task-vector quantization~\citep{kim2025tvq}, a data-free
+RegMean~\citep{jin2023regmean}, a data-free
+AdaMerging~\citep{adamerging2024}, and our rate-distortion encoder with
+and without the Tikhonov ridge. Our KnOTS~\citep{stoica2025knots}
+baseline is excluded from the headline comparison for the reason given in
+\S\ref{sec:discussion}: with the default inner combination our
+implementation reduces algebraically to task arithmetic, so it was not
+measuring what we intended.
+
+\paragraph{Geometry audit cost.} The audit of \S\ref{subsec:audit} reads
+the adapter weight files, computes principal angles between the $T$ task
+row spaces over eight sampled layers, and returns soft and hard effective
+dimension with the implied floor. It runs on CPU in about one minute per
+cohort, needs no evaluation data and performs no forward passes, which is
+the property that makes it usable as a pre-merge check.
+
+\paragraph{Compute.} All GPU work ran on a single node with A100-80GB
+cards, one evaluation cell per card, each holding 18 to 21 GiB. Cells are
+dispatched by an orchestrator that records a per-cell done marker, so an
+interrupted run resumes without recomputing completed cells.

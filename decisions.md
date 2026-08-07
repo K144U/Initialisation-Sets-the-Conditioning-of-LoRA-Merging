@@ -1805,3 +1805,50 @@ before the rest ran. This was required by the pre-registration rather than a
 lapse, and the smoke inspection checked configuration equality and that the
 mask was not a no-op, not the direction of the effect. Recording it because the
 blindness claim for this test is 11/12, not 12/12.
+
+---
+
+## 2026-08-07 (later) — CORRECTION: the shared-vs-independent floor gap is ~60x, not three orders of magnitude
+
+Caught while rebuilding the paper around the two-regime result, before the
+number reached a draft.
+
+WHAT WAS WRONG. `notes/campaign_results_2026-08-03.md` (section A1) and the
+2026-08-04 A1 replication entry both report the floor comparison as
+"shared-init 0.745 B^2" against "indep 0.0000-0.0003 B^2", which reads as a
+gap of three to four orders of magnitude. Those two figures are not the same
+quantity. `measure_subspace_geometry.py` line 89 computes
+
+    soft_floor = B2 * max(0.0, 1.0 - soft / Tr)
+
+per layer and then averages over layers, so the stored `soft_floor` field is an
+ABSOLUTE floor carrying the measured B^2 scale, not a fraction of B^2. The
+0.745 figure is the FRACTION `1 - d_eff/(Tr)`; the 0.0001 figure is the stored
+absolute field. Comparing them divides out B^2 on one side only.
+
+THE CORRECT COMPARISON, both ways, four bases:
+
+    base          frac shared   frac indep   abs shared   abs indep    ratio
+    llama31_8b       0.7448       0.0120      0.004896    0.000080     60.8x
+    mistral_7b       0.7456       0.0118      0.004222    0.000065     65.1x
+    qwen25_7b        0.7445       0.0144      0.014896    0.000270     55.1x
+    yi15_9b          0.7457       0.0117      0.002387    0.000037     64.6x
+
+Fractional and absolute ratios agree to within a percent, as they must, since
+B^2 is common to both cohorts (measured at 0.0066 on Llama from either side).
+The honest headline is a factor of about 60, i.e. 0.745 B^2 against 0.012 B^2.
+The overstatement was roughly 16x.
+
+WHAT IS UNAFFECTED. The hard-tolerance result, which is the stronger claim
+anyway, needs no correction: all 12 independent cells (4 bases x 3 cohorts)
+return d_eff = Tr = 64 at every epsilon from 1e-6 to 1e-1, so their hard floor
+is exactly zero, while the shared cohort returns 64 only for eps <= 1e-3 and
+falls to 60.5 / 38.4 / 20.8 at 1e-2 / 3e-2 / 1e-1. That coincidence is now
+asserted programmatically in `make_figure_two_regimes.py`, which raises rather
+than plots if any cell departs from 64.
+
+CONSEQUENCE. The paper states the factor as about 60 and gives both the
+fraction and the tolerance sweep. The two notes above are left as written,
+since this log is append-only, and are superseded by this entry on this point
+only. Nothing else in the A1 analysis depends on the floor magnitude: Q1'
+through Q4 are computed from worst-task excess, not from the floor.

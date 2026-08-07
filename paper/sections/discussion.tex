@@ -1,63 +1,86 @@
-\paragraph{Cross-entropy extension.} Theorem~\ref{thm:general} is
-proved for quadratic loss with $H_t$ rank-$r$ PSD; for LLM
-cross-entropy the natural $H_t$ is the Fisher information at $\tau_t$,
-and the proof uses only $H_tH_t^+H_t = H_t$ and the
-$O(d)$-equivariance of the hard distribution, both of which survive
-verbatim. A fully rigorous MSE-to-CE bridge must control the Taylor
-remainder across the $H_t$-ball; the rate budget makes the remainder
-third-order in the quantity the quadratic term is second-order in, and
-$M_t \leq \mathrm{poly}(L)$ for softmax-CE with bounded logits. We
-state this as an informal, remainder-bounded estimate (sketch in the
-supplementary material); the empirical sections measure CE excess
-directly, and the E11 probe (Appendix~\ref{app:baselines}) confirms
-rd-ridge approaches the Fisher-quadratic diagonal optimum to within
-$\sim 20\%$ in a base-dependent $\alpha$ window.
+\paragraph{What we think survives.} Three things. The lower bound and its
+matching construction, which are mathematics and do not depend on any of
+the empirical outcomes above. The identification of $\deff$ as the
+quantity separating merging problems with recoverable headroom from those
+without, together with the closed form for the floor. And the measurement
+that LoRA cohort initialisation moves that floor by a factor of about
+$60$, replicated across three independent cohorts and four base models,
+with a one-CPU-minute audit that reports the regime before any merge.
 
-\paragraph{Scope of the hard distribution.} The lower bound is
-established against $P^\star$; real fine-tunes exhibit structure iid
-Stiefel sampling does not capture (semantically correlated subspaces,
-anisotropic curvature), so the theorems characterize the floor for
-merging, not a tight prediction of any specific real-LLM experiment.
-What the real-LLM study adds is the
-measured regime: floor zero in every layer of every base, so the
-$0.10$--$0.22$ nats of excess is distance from the optimum; the
-cross-model ordering of that slack is unexplained by subspace
-geometry, pointing to the loss curvature $H_t$ and the training
-recipe as the operative quantities.
+\paragraph{What does not.} Our own encoder is not the best method on
+properly initialised cohorts; TIES is, on three of four base models. The
+predicted finite-rate exponent is falsified on real adapters. And the
+claim that published merging benchmarks are confounded by
+shared-initialisation geometry, which would have been the most
+consequential thing here, was withdrawn by a control we wrote ourselves.
+We have left all three in the paper at full strength rather than
+retreating to the subset that flatters the method, because the regime
+result is only worth anything if the reader can trust that we would have
+reported it the other way.
 
-\paragraph{Known limitations (in descending order of constraint).}
-\textbf{(1) Single LoRA rank:} all experiments use $r = 16$; the
-$\rho \approx 1/\sqrt{r}$ slope prediction is consistent with but not
-verified beyond it.
-\textbf{(2) Four bases:} Llama-3.1, Mistral-7B, Qwen-2.5, Yi-1.5 span
-an instructive range of recipes and saturation regimes but exclude,
-e.g., Gemma and Phi.
-\textbf{(3) Uneven seed coverage:} the $T = 4$ matrix has three
-training seeds (all $20$ method-pair gaps Confident); the $T$-scaling
-sweep and added baselines use one.
-\textbf{(4) rd-encoder ridge downstream accuracy is strong but not
-uniform:} best on five of eight cells, seed-unstable and not best on
-two (\S\ref{subsec:exp-downstream-gsm8k}); R1 rests on the NLL win.
-\textbf{(5) One unexplained outlier cell:} the (Llama-3.1, GSM8K
-\textsc{em}) inversion survives both pre-specified mechanism tests
-(Appendix~\ref{app:downstream}).
-\textbf{(6) The quadratic-bridge window is base-dependent}
-(small-$\alpha$ on Yi, $\alpha \in [0.15, 0.25]$ on Llama;
-Appendix~\ref{app:baselines}).
-\textbf{(7) The Td2 threshold is order-of-magnitude:} its constants
-are estimated by spectral analogy, not first-principles Fisher
-information, and the below-window edge is untested
-(Appendix~\ref{app:sign-election-threshold}).
-\textbf{(8) Not an exhaustive method survey:} DARE-TIES and the newest
-2026-era methods are discussed but not re-run; the headline is robust
-to the absence of any single further baseline.
+\paragraph{Limitations.}
+\begin{enumerate}
+\item \textbf{The downstream evaluation cannot measure what we wanted it
+  to.} We had hoped to show that worst-task NLL excess predicts
+  downstream accuracy. It does not, and more importantly our design cannot
+  determine whether it does. The Spearman correlations are computed over
+  the five or six methods in each row, and under the null
+  $\mathrm{SD}(\rho) = 1/\sqrt{n-1}$, which is $0.45$ at $n=6$. Every
+  correlation we can compute, in either direction, is within about one and
+  a half standard deviations of zero. Values we previously reported as
+  evidence were never evidence. Settling this needs roughly $25$ or more
+  points per base, obtained by sweeping $\alpha$, $T$, method and seed,
+  not a different reading of $n=6$.
+\item \textbf{The NLL proxy is very flat.} A zero-mean perturbation that
+  changes the merged delta by $37$ to $57\%$ in Frobenius norm costs about
+  $0.001$ nats, well under $1\%$ of typical worst-task excess. The metric
+  is far less sensitive to the merged weights than one would like, which
+  is an independent reason to be cautious about small differences between
+  methods.
+\item \textbf{Our KnOTS baseline was a no-op, and we have not established
+  whose fault that is.} With the default inner combination our
+  implementation reduces algebraically to task arithmetic, because
+  $V V^\top = I$ cancels, and it matched task arithmetic to four decimals.
+  With a working inner merge it separates from task arithmetic on all four
+  base models. We report this as an erratum about our own baseline. We
+  have not checked the reference implementation, so we do not claim
+  anything about published KnOTS.
+\item \textbf{The rate-exponent falsification rests on one seed.} See
+  \S\ref{subsec:w3}.
+\item \textbf{Train and evaluation splits overlap.} Roughly $14.5\%$ of
+  evaluation examples on the instruction-following task and $10\%$ on the
+  code task also appear in training, because training and evaluation
+  shuffle with different seeds over the same pool. This inflates absolute
+  numbers. It does not favour any method over another, since all methods
+  are evaluated on identical data, so we do not think it affects the
+  comparisons, but the absolute values should not be read as held-out
+  performance.
+\item \textbf{Scope.} Everything here is $T=4$ tasks at rank $r=16$ on
+  four base models in the 7B to 9B range, with worst-task NLL excess as
+  the metric. We do not know how the regime distinction behaves at much
+  larger $T$, where $Tr$ approaches $d$ and $\deff = Tr$ becomes
+  impossible.
+\item \textbf{One pre-registered control has a known specification
+  defect}, described in \S\ref{subsec:withdrawn}, which we did not act on
+  because acting on it after seeing the result is what pre-registration
+  exists to prevent.
+\end{enumerate}
 
-\paragraph{Closing.} We have given LoRA merging the
-information-theoretic reference point it was missing: worst-task NLL
-excess splits into a task-overlap floor and a compression term, an
-explicit encoder closes the gap up to a logarithmic constant in $T$,
-and on every real cohort we tested the floor is zero: what current
-methods lose is recoverable slack, a measurable fraction of which our
-regularized encoder claims. Merging research can now be judged not
-only against the next benchmark, but against a measurable theoretical
-ceiling.
+\paragraph{Implications for practice.} The immediate one is free. If you
+are training a cohort of LoRA adapters that you intend to merge, draw the
+initialisation independently per task rather than from one global seed.
+It costs nothing, and on our measurements it is the difference between an
+irreducible floor of $0.745B^2$ and one of $0.012B^2$. The second is for
+anyone benchmarking merging methods: report the cohort's $\deff$ alongside
+the results, because a comparison run on a collinear cohort is measuring
+differences against a floor rather than against zero, and report more than
+one initialisation draw, because we found single-draw rankings are not
+reproducible.
+
+\paragraph{Future work.} The margin-aware version of the stability control
+is the obvious next pre-registration, and it may well reinstate the claim
+we withdrew. Establishing whether the reference KnOTS implementation has
+the same degeneracy ours did would settle whether that finding is about
+the field or only about our code. And the base-level moderator visible on
+Llama, which is the odd model out in two independent pre-registered tests,
+is worth a designed experiment.

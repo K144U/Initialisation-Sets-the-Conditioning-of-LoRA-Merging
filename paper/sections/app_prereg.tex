@@ -1,0 +1,97 @@
+This appendix records the pre-registration documents governing the tests
+in \S\ref{sec:methods}, together with the commit ordering that makes them
+checkable. In every case the decision rules were committed before the
+compute they govern was dispatched, and in the DARE-TIES case before the
+method being tested had been implemented at all.
+
+\paragraph{Why the ordering is the evidence.} A pre-registration that can
+be edited after the fact is worth nothing. The claim we are making is not
+that we intended to be honest, but that the repository history makes
+dishonesty detectable: each rules commit is an ancestor of every result
+commit it governs, and the rules files are not modified after their
+initial commit. A reader who does not trust the narrative can verify the
+ordering directly.
+
+\subsection{Replication of the merge matrix on independent cohorts}
+
+Rules committed before any independent-cohort result was read. An
+amendment fixing how the three cohorts are combined was committed before
+\texttt{indep2} and \texttt{indep3} were read, and states its own
+blindness limitation in its first paragraph: \texttt{indep1} had already
+been read when the aggregation rule was chosen, so one of three inputs
+was visible. We flag this rather than claim full blindness.
+
+The operative rules:
+\begin{itemize}
+\item Unit of analysis is the cohort, $n = 3$.
+\item Tie threshold $0.005$ nats, fixed in the parent document and not
+  changed.
+\item Noise gate is one-directional: with
+  $\mathrm{SE} = \mathrm{sd}/\sqrt{3}$, a win or loss is downgraded to a
+  tie unless $|\mathrm{mean}(d)| > 2\times\mathrm{SE}$. The gate may only
+  downgrade, never promote.
+\item Primary comparison uses the champion baseline selected on the mean
+  across cohorts, with two pre-specified robustness lines: champion
+  re-selected within each cohort, and the original single-cohort rule
+  applied three times with a majority vote.
+\item A control question asks how many base models have a non-unanimous
+  top-1 method across the three cohorts. Two or more withdraws the
+  initialisation-confounding claim.
+\end{itemize}
+
+The control returned two of four, and the claim was withdrawn
+(\S\ref{subsec:withdrawn}).
+
+\subsection{DARE composed with TIES}
+
+Rules committed before the \texttt{dare\_ties} method existed in the
+codebase, which is the strongest ordering guarantee available: the
+implementation commit is a descendant of the rules commit, so the rules
+cannot have been written to fit an implementation that had not been
+written.
+
+The operative rules:
+\begin{itemize}
+\item $36$ cells: four base models $\times$ three cohorts $\times$ DARE
+  density in $\{0.5, 0.2, 0.1\}$, with the TIES trim density pinned at
+  $0.2$ in both arms so the only difference from the plain TIES arm is
+  the DARE mask.
+\item The primary verdict is read at DARE density $0.2$ only, named in
+  advance. If another density flatters DARE, that is a secondary
+  observation and is not promoted.
+\item Per base: helps if mean $d > 0.005$ and the gate passes, hurts if
+  mean $d < -0.005$ and the gate passes, neutral otherwise. Overall:
+  helps if it helps on $\geq 2$ and hurts on none; hurts if the mirror
+  image; neutral if neutral on $\geq 3$; \emph{mixed} otherwise, and then
+  neither direction is claimed.
+\item The TIES reference cells are the pre-existing ones and are not
+  re-run, re-seeded, or re-selected.
+\item A smoke test on one real cell is mandatory before the remaining
+  thirty-five are dispatched.
+\item All three densities are reported, including any that flatter DARE
+  and any that do not.
+\end{itemize}
+
+The outcome was mixed: helps on one base, hurts on three
+(\S\ref{subsec:dare}).
+
+\paragraph{Two disclosures.} First, the mandated smoke cell sits at the
+primary density and is therefore one of the twelve cells deciding the
+primary verdict, so blindness for that test is eleven of twelve rather
+than twelve of twelve. The smoke inspection checked configuration
+equality between the arms and that the mask was not a no-op; it did not
+examine the direction of the effect. Second, our analysis script
+initially printed, under a mixed verdict, the consequence text belonging
+to the hurts and neutral verdicts, which asserted that the negative
+result generalises. The pre-registration says of a mixed verdict only
+that neither direction is claimed. The verdict computation was correct
+against the rule; the reporting text was not, and it was corrected before
+any of it reached this paper.
+
+\subsection{Rate exponent}
+
+The band $[-2.4, -1.6]$ for the log-rate slope, and the requirement that
+it hold on at least three of four base models, were fixed before the
+sweep ran. The measured slopes were $-0.10$ and $-0.21$ on the two
+fittable base models, so the criterion was met on zero of four and the
+prediction is falsified (\S\ref{subsec:w3}). We did not adjust the band.

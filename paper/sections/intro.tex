@@ -1,123 +1,113 @@
-\paragraph{Model merging is everywhere, but nobody knows the limit.}
-Low-Rank Adaptation~\citep{hu2022lora} has made it routine to maintain
-dozens of task-specific fine-tunes per base model; \emph{merging} them
-into a single deployable model is now the dominant practical question,
-with Task Arithmetic~\citep{ilharco2023task},
-TIES~\citep{yadav2023ties}, DARE~\citep{yu2024dare},
-KnOTS~\citep{stoica2025knots}, Task-Vector
-Quantization~\citep{kim2025tvq}, and many successors competing on it.
-Two operational questions go unanswered: \emph{how much room is left}
-(a benchmark score says nothing about whether a better merger could
-still halve its error) and \emph{when a method will fail} (a merger
-that wins on one base can end up the worst on another with no
-warning). Both reduce to a question no method
-addresses: at a given storage budget, what is the best \emph{possible}
-merging algorithm, and how far from it are today's methods?
+Low-rank adaptation~\citep{hu2022lora} has made it cheap to produce many
+specialised versions of one base model, and correspondingly attractive to
+fold several of them back into a single set of weights. A large family of
+merging heuristics now exists for this: task
+arithmetic~\citep{ilharco2023task}, sign-election methods such as
+TIES~\citep{yadav2023ties}, stochastic sparsification such as
+DARE~\citep{yu2024dare}, subspace alignment such as
+KnOTS~\citep{stoica2025knots}, and closed-form least-squares approaches in
+the RegMean line~\citep{jin2023regmean,lorm2024,regmeanpp2025}.
 
-\paragraph{Contribution in one sentence.} \emph{From a worst-task
-rate-distortion analysis of LoRA merging we obtain two tools: a
-merging method (\textsc{rd-encoder ridge}) with the lowest worst-task
-loss of the ten methods we benchmark at default hyperparameters on
-every base we test, and a CPU-only audit of any set of trained
-adapters, taking minutes and no GPU, that predicts when classical
-methods such as TIES flip from best to worst; its predictions held on
-all three bases we tested, one of them
-pre-registered\footnote{Throughout, \emph{pre-registered} means the
-prediction was committed to our timestamped, version-controlled
-experiment log \emph{before} the corresponding compute was run; an
-anonymized bundle reproducing the commit trail is included in the
-supplementary material.}.}
+These methods are evaluated almost entirely by benchmark averages, and
+the resulting picture is unstable. The same method can be best on one
+cohort of adapters and worst on another, and practitioners have no way to
+tell in advance which situation they are in. We think a large part of this
+instability is not a property of the algorithms at all. It is a property
+of the adapters being merged, and it is measurable before any merge is
+attempted.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.78\textwidth]{figures/figure1_cross_model_T_scaling.pdf}
-\caption{\textbf{Same merge methods, opposite outcomes across bases.}
-Worst-task NLL excess vs.\ task count $T \in \{2, 4, 7\}$ on three
-bases, ordered by $R$, the spread in per-task sign agreement that our
-audit measures: saturated Yi-1.5-9B-Chat ($R = 0.077$), pre-registered
-Mistral-7B-v0.3 ($R = 0.0326$), non-saturated Llama-3.1-8B-Instruct
-($R = 0.028$); bands are per-subset min/max. Yi, above the predicted
-window $[0.025, 0.075]$, inverts: TIES becomes \emph{worst} at $T = 7$
-(\S\ref{subsec:exp-T-scaling}; threshold in
-Appendix~\ref{app:sign-election-threshold}); Mistral, inside the
-window, stays neither best nor worst, exactly as pre-registered.
-\textsc{rd-encoder ridge} (ours) improves as tasks are added: its
-excess falls from $0.84\times$ to $0.52\times$ Task Arithmetic's over
-$T = 2 \to 7$ on Llama, and from $1.38\times$ to $0.47\times$ on
-Mistral.}
-\label{fig:hero}
-\end{figure}
+\paragraph{A rate-distortion view.} We treat merging as lossy compression.
+$T$ task vectors must be summarised by one weight vector, and the figure
+of merit is the \emph{worst-task} excess loss, because a merged model that
+collapses on a single task is not deployable. In
+\S\ref{sec:lower_bound} we prove a lower bound on this quantity that holds
+for every merging algorithm, including ones that see the full curvature
+data for free. The bound splits into two terms with very different
+characters:
+\begin{equation*}
+  \underbrace{B^2\Bigl(1 - \frac{\deff}{Tr}\Bigr)}_{\text{irreducible floor}}
+  \;+\;
+  \underbrace{c\cdot\frac{B^2\deff}{Tr}\,2^{-2R/\deff}}_{\text{rate term}} .
+\end{equation*}
+The second term is the familiar compression cost and vanishes as the rate
+grows. The first does not. It is an irreducible floor that no algorithm,
+at any rate, can go below, and it is controlled entirely by one geometric
+quantity: the effective dimension $\deff$ of the union of the $T$ task
+subspaces. When the task subspaces are near-orthogonal, $\deff = Tr$ and
+the floor is exactly zero, so every nat of observed merging loss is
+algorithmic slack that better methods could in principle recover. When the
+subspaces overlap heavily, $\deff \ll Tr$ and most of the observed loss is
+information-theoretic and permanently unrecoverable.
 
-\paragraph{The lens: merging as compression.} Both tools come from
-treating merging as lossy compression: $T$ task-specific weight
-updates must be encoded into one model within a storage budget, and
-quality is the extra held-out loss (negative log-likelihood, NLL) paid
-by the \emph{worst}-affected task. For this problem we prove a
-rate-distortion theorem: lower and upper bounds that match in their
-rate exponent and split the worst-task error into an
-\textbf{irreducible floor}, set entirely
-by how much the task subspaces overlap and beyond the reach of any
-encoder at any bit budget, plus a \textbf{compression term} that
-decays exponentially in the bit budget and that an explicit encoder
-achieves up to a constant. Measuring the overlap on $16$ trained LoRA
-adapters (four bases $\times$ four tasks) settles which regime real
-merging occupies: task subspaces are linearly \emph{independent} in
-every layer of every model, so the floor is exactly zero and the
-$0.10$--$0.22$ nats/token the five standard methods leave on the table
-is recoverable algorithmic slack, not an information-theoretic cost. Zero overlap also predicts which methods
-can work: subspace-alignment merging (KnOTS~\citep{stoica2025knots})
-has nothing to exploit and is statistically indistinguishable from
-naive averaging, while TIES, which attacks sign-level interference
-instead, is the only baseline that separates. What \S\ref{sec:exp}
-validates on real LLMs is thus the regime \emph{diagnosis}, not the
-quantitative rate-distortion curve.
+\paragraph{The regime is decided by a training detail.} Our main empirical
+contribution is that this distinction is not hypothetical, and that real
+LoRA cohorts land on either side of it for a reason nobody reports. In the
+standard implementation the LoRA $A$ factor is drawn from a single global
+seed and $B$ is initialised to zero, so if all $T$ adapters in a cohort are
+trained from the same seed they all start from the \emph{same} $A$. Because
+$B$ starts at zero, $A$ moves very little during training, and the $T$
+task subspaces end up nearly collinear.
+
+We measure this directly on four base models, comparing a shared-seed
+cohort against three independently seeded ones
+(\S\ref{sec:regimes}, Figure~\ref{fig:two-regimes}). The shared cohort has
+median principal cosine $0.996$ between task subspaces, soft $\deff$ of
+$16.3$ out of a possible $64$, and an irreducible floor of $0.745B^2$.
+The independently seeded cohorts have cosines of $0.047$ to $0.050$, soft
+$\deff$ of $63.1$ to $63.3$, and a floor of $0.012B^2$, lower by a factor
+of about $60$. Measured with a hard rank tolerance the gap is starker: all
+twelve independent cells hold $\deff = Tr = 64$ at every tolerance from
+$10^{-6}$ to $10^{-1}$, whereas the shared cohort's effective dimension
+falls to $20.8$ once the tolerance is realistic. The three independent
+cohorts agree with each other to three decimal places, so this is a
+structural property and not a seed accident.
+
+The measurement needs only the adapter weights. It runs in about one CPU
+minute, requires no forward passes and no evaluation data, and it tells
+you whether the cohort you are about to merge has recoverable headroom at
+all.
+
+\paragraph{What we tested, and what did not survive.} A theory that
+predicts headroom invites the obvious follow-up: does a rate-distortion
+encoder built to exploit that headroom actually win? We built one, and on
+the shared-initialisation cohorts it wins comfortably. To find out whether
+that result was real or an artifact of the degenerate geometry, we
+pre-registered a replication on the independently initialised cohorts,
+committing the decision rules to version control before the compute ran.
+
+It did not survive. On properly initialised cohorts our encoder's
+advantage disappears and TIES wins on three of four base models
+(\S\ref{sec:methods}). A second pre-registered control, which we wrote
+ourselves and which was designed to catch exactly this, forced us to
+withdraw a headline claim that published merging benchmarks are confounded
+by shared-initialisation geometry: the control showed our own
+champion-selection was unstable across cohorts, so we cannot support the
+stronger claim about the field. The predicted finite-rate exponent is
+falsified on real adapters, where the distortion curve is flat from two
+bits upward instead of decaying at the predicted rate. We report all of
+these, and we report the pre-registrations verbatim in
+Appendix~\ref{app:prereg}.
 
 \paragraph{Contributions.}
-\begin{enumerate}[leftmargin=*,topsep=2pt,itemsep=2pt]
-\item \textbf{A merge method and an adapter audit, both falling out of
-the bound (\S\ref{sec:exp}).} \textsc{rd-encoder ridge}, the encoder
-from our achievability proof repaired by a single ridge term after a
-measured spectral failure, has the lowest worst-task excess of all
-ten methods at default hyperparameters on every base we test (a tuned
-RegMean edges it on one saturated base;
-\S\ref{subsec:exp-rd-encoder}). A
-perturbation analysis of the TIES sign election yields a CPU-only audit
-and a five-rule decision tree that predict when classical mergers flip
-from best to worst, with the window's upper edge and its ambiguous
-interior confirmed on three bases (one pre-registered).
-
-\item \textbf{A rate-distortion theorem for worst-task merging
-(\S\ref{sec:lower}--\S\ref{sec:achv}).} A reduction identity
-(Lemma~\ref{lem:id}) splits worst-task distortion into a quantization
-term around the $H$-weighted centroid plus a spread term no encoder
-can remove; under the random-subspace hard distribution the spread
-term equals $B^2(1 - \deff/(Tr))$ exactly
-(Lemma~\ref{lem:floor-general}). At rate $R$, no encoder/decoder pair
-beats this floor plus
-$c_{\mathrm{TQ}} (B^2 \deff/(Tr))\, 2^{-2R/\deff}$, for arbitrary
-positive-definite per-task spectra (Theorem~\ref{thm:general}). In
-the floor-zero regime an explicit encoder (randomized orthogonal
-mixing followed by scalar quantization) achieves the same
-$2^{-2R/(Tr)}$ decay, so
-$\mathcal{D}^\star = \Theta(B^2\, 2^{-2R/(Tr)})$ for fixed $T$
-(Theorem~\ref{thm:achv}); the measured \emph{logarithmic} growth of
-the constant in $T$ is posed as a sharp open problem
-(Remark~\ref{rem:tgap}).
-
-\item \textbf{A real-LLM calibration that turns the bound into a
-measured gap (\S\ref{sec:exp}).} Floor zero everywhere;
-$0.10$--$0.22$ nats/token of recoverable headroom; and a universal
-``less-is-more'' dip at $2$-bit task-vector quantization on all four
-architectures.
+\begin{enumerate}
+\item A closed-form lower bound on worst-task NLL excess for rank-$r$
+  merging (Theorem~\ref{thm:general}), valid for arbitrary task-dependent
+  curvature and against decoders given the curvature for free, together
+  with a matching achievability construction (Theorem~\ref{thm:achv}).
+\item The identification of $\deff$ as the quantity that separates
+  merging problems with recoverable headroom from those without, and a
+  closed form for the resulting floor.
+\item A measurement showing that LoRA cohort initialisation moves this
+  floor by a factor of about $60$, replicated across three independent
+  cohorts and four base models, together with a one-CPU-minute audit that
+  reports the regime before merging.
+\item A pre-registered evaluation, reported in whichever direction it
+  fell, establishing that our own encoder's advantage does not survive on
+  properly initialised cohorts, that the predicted rate exponent is
+  falsified on real adapters, and that a claim we previously made about
+  benchmark confounding must be withdrawn.
+\item A negative result for DARE composed with task arithmetic, with a
+  mechanism that predicts its own functional form, and a pre-registered
+  demonstration that this negative result does \emph{not} extend to DARE
+  composed with TIES.
 \end{enumerate}
-
-\paragraph{Scope.} The bound certifies a \emph{lower envelope}, not a
-tight per-instance grade: real task vectors are more benign than the
-worst case, so a method's measured gap to $\mathcal{D}^\star$ is an
-upper estimate of its true suboptimality. The matching upper bound is proved in the generic
-random-subspace regime with $Tr \leq d$; the floor-positive regime has
-an exponent gap we leave open (Remark~\ref{rem:sharedv-gap}).
-\S\ref{sec:setup} formalizes the model; \S\ref{sec:lower} proves the
-lower bound; \S\ref{sec:achv} gives the matching construction;
-\S\ref{sec:exp} reports the empirical studies; \S\ref{sec:discussion}
-discusses the cross-entropy bridge and limitations.

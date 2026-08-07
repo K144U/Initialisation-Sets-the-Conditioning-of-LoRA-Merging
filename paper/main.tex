@@ -1,9 +1,29 @@
 % Shared document body. Identical for every build target; the only things
-% that vary between ICLR and arXiv are in build/*.tex (documentclass, style
+% that vary between targets are in the build roots (documentclass, style
 % file, title block, bibliography style).
 %
 % This file is \input from inside \begin{document}. It must not contain
 % \documentclass, preamble packages, or \begin{document}/\end{document}.
+%
+% REBUILT 2026-08-07 around the two-regime spine. The previous body was
+% organised around the rd-encoder as the headline result; a pre-registered
+% replication did not support that (see sections/method_tests.tex), so the
+% spine is now the lower bound plus the initialisation regime result.
+%
+% Appendices deliberately dropped in the rebuild, because they support
+% claims this version no longer makes:
+%   app_e5_floor           directly contradicted: the floor-positive regime
+%                          DOES arise naturally, whenever init is shared
+%   app_downstream_details every published downstream number was void under
+%                          the fixed scorers; the correlation is unmeasurable
+%                          at n = 5-6 (see discussion, limitation 1)
+%   app_b2_mechanism       built on the degenerate cohort; cites KnOTS as a
+%                          cluster member, and our KnOTS was a no-op
+%   app_tscaling_details   same, plus rests on the falsified rate exponent
+%   app_multiseed          same cohort, and its table has a KnOTS column
+%   app_baselines_bridge   same cohort
+%   app_robustness         superseded by the pre-registered replication
+% They remain in git history if any is to be reworked.
 
 \maketitle
 
@@ -26,8 +46,11 @@
 \section{Achievability: A Rate-Matching Upper Bound}\label{sec:achv}\label{sec:achievability}
 \input{sections/achievability}
 
-\section{Experiments}\label{sec:exp}\label{sec:experiments}
-\input{sections/experiments_main}
+\section{Two Regimes: Initialisation Sets the Floor}\label{sec:regimes}
+\input{sections/regimes}
+
+\section{Pre-Registered Tests of What This Predicts}\label{sec:methods}
+\input{sections/method_tests}
 
 \section{Discussion and Limitations}\label{sec:discussion}\label{sec:future}
 \input{sections/discussion}
@@ -41,29 +64,17 @@
 \section{Synthetic Validation Details}\label{app:synthetic}
 \input{sections/app_synthetic}
 
-\section{The Floor-Positive Regime Does Not Arise Naturally}\label{app:e5}
-\input{sections/app_e5_floor}
+\section{Subspace Geometry for All Three Independent Cohorts}\label{app:geometry}
+\input{sections/app_geometry}
 
-\section{What Drives the $b=2$ Dip}\label{app:b2}
-\input{sections/app_b2_mechanism}
+\section{Pre-Registration Documents and Commit Ordering}\label{app:prereg}
+\input{sections/app_prereg}
 
-\section{$T$-Scaling: Probe Details and Base-Specific Artifacts}\label{app:tscaling}
-\input{sections/app_tscaling_details}
+% app_td2 (sign-election threshold) is also held back: the derivation is
+% sound and TIES matters more in this version than the last, but its
+% empirical anchor was the T-scaling sweep on the degenerate cohort, which
+% is not in this paper. Reinstate once that anchor is re-measured on
+% independently initialised cohorts.
 
-\section{Downstream Accuracy: Falsification Tests and Seed Stability}\label{app:downstream}
-\input{sections/app_downstream_details}
-
-\section{Added Baselines and the Quadratic Bridge}\label{app:baselines}
-\input{sections/app_baselines_bridge}
-
-\section{Robustness: Tuning the Closest Competitors}\label{app:robustness}
-\input{sections/app_robustness}
-
-\section{Multi-Seed Bootstrap of the $T=4$ Matrix}\label{app:multiseed}
-\input{sections/app_multiseed}
-
-\section{Sign-Election Threshold for TIES Inversion}\label{app:sign-election-threshold}
-\input{sections/app_td2}
-
-\section{Practical Decision Table and Experiment Manifest}\label{app:manifest}
+\section{Experiment Manifest}\label{app:manifest}
 \input{sections/app_manifest}

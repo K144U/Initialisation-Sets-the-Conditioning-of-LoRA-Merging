@@ -1,25 +1,44 @@
-All theoretical claims are stated with explicit assumptions in
-\S\ref{sec:setup} and proved in \S\ref{sec:lower}--\S\ref{sec:achv}
-and the supplementary material. For the empirical results we release,
-on publication, the training and evaluation code, exact per-task
-configuration files (base model, LoRA rank and target modules,
-optimizer, token budget, eval split sizes), random seeds, and the
-per-example NLL arrays underlying every cell of the merge matrix.
-Training and evaluation splits are disjoint (verified by a separate
-zero-overlap audit); confidence intervals are $95\%$ percentile
-bootstrap over $10{,}000$ resamples, with paired bootstraps for
-method-to-method comparisons; point estimates were reproduced across
-two independent evaluation runs to within $0.001$ nats/token. The
-headline $T = 4$ matrix uses three independent training seeds
-(Appendix~\ref{app:multiseed}); the $T$-scaling sweep and added
-baselines use a single training seed, as stated in their sections.
-The pre-registered Mistral prediction of
-\S\ref{subsec:exp-T-scaling} is verifiable from the anonymized,
-timestamped experiment-log bundle in the supplementary material,
-whose commit trail shows no result commit predating the registration.
-Appendix~\ref{app:manifest} gives a per-experiment manifest (cells,
-reproducer script, per-cell wallclock); the total footprint of the
-empirical results is roughly $80$--$120$ GPU-hours on a single
-A100-80GB plus adapter training. A chronological log of design
-decisions and intermediate negative results accompanies the
-camera-ready version.
+All merging methods, the evaluation harness, the geometry audit, the
+pre-registration documents and the analysis scripts are released with the
+paper. Every pre-registration is reproduced verbatim in
+Appendix~\ref{app:prereg}, and each was committed to version control
+before the compute it governs was dispatched; the commit ordering is
+recoverable from the repository history and is the audit trail we ask the
+reader to check rather than take on trust.
+
+\paragraph{Data splits.} We correct a claim made in an earlier version of
+this work. Training and evaluation splits are \emph{not} disjoint.
+Training shuffles the source pool with the cohort seed while evaluation
+shuffles with a separate fixed seed, and the two draws overlap: about
+$14.5\%$ of evaluation examples on the instruction-following task and
+about $10\%$ on the code task also appear in that cohort's training data.
+Absolute loss and accuracy numbers in this paper are therefore optimistic
+and should not be read as held-out performance. Because every method is
+evaluated on identical data with an identical harness, we do not believe
+the overlap affects any comparison between methods, which is what all of
+our claims rest on. It is disclosed here rather than quietly fixed because
+the earlier statement asserted the opposite.
+
+\paragraph{Evaluation harnesses.} An earlier version of this work reported
+downstream GSM8K and HumanEval numbers produced by scorers that discarded
+a large and method-dependent fraction of generations: the HumanEval
+extractor returned an empty completion for markdown-fenced output, and the
+GSM8K extractor required the answer at end-of-string. Discard rates ran
+from $61\%$ to $81\%$ on some method and base combinations and near zero
+on others, which makes cross-method comparison meaningless. Both scorers
+have been fixed, all affected cells were re-scored, and the discard rate
+is now zero. The re-scored numbers are what appear here. We do not draw
+any correlation conclusion from them, for the power reasons given in
+\S\ref{sec:discussion}.
+
+\paragraph{Compute.} All merging and evaluation ran on a single node with
+A100-80GB GPUs. The geometry audit of \S\ref{subsec:audit} runs on CPU in
+about one minute per cohort and needs only the adapter weight files, so
+that measurement is reproducible without GPU access.
+
+\paragraph{Seeds and provenance.} Cohort initialisation seeds, evaluation
+data seeds, and merge-time mask seeds are independent and are recorded
+per cell in the released manifests. The distinction matters in this paper
+more than usual: \S\ref{sec:regimes} turns entirely on whether the
+initialisation seed is shared across the tasks of a cohort, and the
+shared-seed condition is the one our own earlier draft used throughout.
