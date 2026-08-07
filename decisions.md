@@ -1935,3 +1935,78 @@ Unaffected: the theory itself (Lemmas 1 and 2 and the theorem are correct as
 stated; it is our APPLICATION of Lemma 2 to instances that was wrong), the
 pre-registered method results (Q1 through Q4), and the DARE and DARE-TIES
 results.
+
+---
+
+## 2026-08-08 — E2 PARTIAL: conditioning has an operational consequence, but it is the ridge GAIN that tracks it, not lambda*
+
+Rules fixed in `notes/prereg_conditioning_2026-08-07.md` at `f9d230e`, before
+the cells were generated. Analyzer committed before the verdict was read. All
+56 cells landed (4 bases x 7 lambdas x 2 cohorts), rank pinned to 16 in both
+arms so audit finding A3 cannot confound this.
+
+**P1 FAILS, 1 of 4.** lambda* is IDENTICAL across arms on three bases
+(Mistral 0.13/0.13, Qwen 0.13/0.13, Yi 0.30/0.30). Only Llama separates
+(0.05 shared against 0.0 independent). The amount of regularisation needed is
+not proportional to conditioning in any simple way.
+
+**P2 HOLDS, 4 of 4.** The ridge gain `L(0) - L(lambda*)` is far larger on the
+shared arm on every base:
+
+    base          gain shared   gain independent      diff
+    llama31_8b         0.2216             0.0000   +0.2216
+    mistral_7b         9.7301             0.0952   +9.6349
+    qwen25_7b          0.1867             0.0114   +0.1754
+    yi15_9b            0.2211             0.0904   +0.1307
+
+Per the pre-registered rules this is PARTIAL: report both, claim ONLY P2, and
+do not narrate P1 as a trend.
+
+### The unregularised column is the actual finding
+
+Worst-task excess at lambda = 0, i.e. no regularisation at all:
+
+    base          shared   independent   ratio
+    llama31_8b    0.3081        0.0713     4.3x
+    mistral_7b    9.7799        0.1504    65.0x
+    qwen25_7b     0.1973        0.0256     7.7x
+    yi15_9b       0.2490        0.1209     2.1x
+
+Mistral at 9.78 nats is a total collapse of the merge, against 0.15 on the
+same base with independently initialised adapters. That is the conditioning
+showing up operationally, and it is the effect the earlier head-to-head could
+not see.
+
+### This resolves the W4 null
+
+The head-to-head found independent init better on 2 of 20 cells, tie on 17
+(`2fdb223`), and that looked like the geometry not mattering. It is now
+explained. Every method in that comparison (task arithmetic, TIES, DARE,
+KnOTS, TVQ) produces a bounded-norm, near-mean solution and never goes near
+the ill-conditioned direction, so none of them can see the conditioning. Only
+a method that actually solves the linear system is exposed to it, and when we
+run one unregularised it blows up by up to 65x on exactly the cohort the
+conditioning measurement flagged.
+
+So the honest claim is narrower than "initialisation matters for merging" and
+sharper than the null suggested: **cohort conditioning is invisible to the
+standard merging heuristics and catastrophic for solve-based methods, and one
+ridge term repairs it.**
+
+### What this does NOT license
+
+- It does not reinstate the floor story. The exact floor is still zero in both
+  regimes (`2fdb223`) and that correction stands.
+- It does not license "initialise independently" as a general recommendation.
+  On the methods practitioners actually use, the head-to-head null still holds.
+  The recommendation is conditional on the merging method being solve-based.
+- P1 failed. The claim that lambda* itself tracks conditioning is not made.
+
+### Limitation, disclosed because the prereg named a gate we cannot compute
+
+The pre-registration specified a one-directional 2 x SE noise gate. This sweep
+has one cohort per arm, so there is no across-cohort SE and only the 0.005 nat
+threshold was applied. P2's margins are 0.13 to 9.6 nats, far above any
+plausible noise, so the verdict does not rest on the missing gate; P1's
+comparisons are of grid values and are not noise-limited either. Re-running the
+sweep on indep2 and indep3 would restore the gate and is the obvious extension.
