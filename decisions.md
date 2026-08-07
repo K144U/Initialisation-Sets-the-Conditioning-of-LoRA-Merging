@@ -1723,3 +1723,85 @@ from one to two on DARE. What is gained instead is a clean negative result with
 a mechanism that predicts its own functional form and matches it: for LoRA
 merging under worst-task NLL, drop-and-rescale cannot help when composed with
 task arithmetic. Cheap to state and defensible.
+
+---
+
+## 2026-08-07 — DARE-TIES pre-registered test: Q1 MIXED, and the DARE negative result does NOT generalise
+
+Rules fixed in `notes/prereg_dare_ties_2026-08-04.md`, committed `efb593f`
+BEFORE the `dare_ties` method existed (implementation `904e4c7`, analyzer
+`f268288`). 36/36 cells landed from PBS job 45808: 4 bases x 3 cohorts
+(indep1/2/3) x dare_density 0.5/0.2/0.1, with `ties_density` pinned at 0.2 in
+both arms so the only difference from the existing `ties` arm is the DARE mask.
+All 12 primary-density cells present. Summary at
+`results/phase3/dare_ties_summary.json`.
+
+Q1 PRIMARY, at dare_density 0.2 only, as named in advance. Positive mean d
+means DARE helps; gate is 2 x SE over the three cohorts.
+
+| base | TIES | DARE-TIES | mean d | 2xSE | result |
+|---|---|---|---|---|---|
+| llama31_8b | 0.1388 | 0.0926 | +0.0462 | 0.0036 | HELPS |
+| mistral_7b | 0.0543 | 0.1121 | -0.0579 | 0.0060 | HURTS |
+| qwen25_7b | 0.0141 | 0.0328 | -0.0188 | 0.0007 | HURTS |
+| yi15_9b | 0.0487 | 0.1076 | -0.0589 | 0.0015 | HURTS |
+
+helps 1, neutral 0, hurts 3, so the pre-registered rule returns **Q1 MIXED**
+and neither direction is claimed. Every one of the four calls clears its gate
+by a wide margin (Llama by 13x), so this is not a noise story: the sign of the
+effect genuinely differs by base.
+
+THIS CLOSES THE GAP THE EARLIER DARE ENTRY LEFT OPEN, AND NOT IN THE DIRECTION
+I EXPECTED. That entry said the negative result was about DARE + task
+arithmetic and could not yet be stated about DARE in general. The answer is
+that it must STAY scoped to task arithmetic. Composed with TIES the mask helps
+decisively on one base of four, so "drop-and-rescale cannot help" is false as
+a general statement about LoRA merging. The unbiasedness plus Jensen mechanism
+is untouched, because it only ever applied to the task-arithmetic composition;
+it makes no prediction here, and the data confirm it should not be extended.
+
+CONSTRAINT 7 DOES NOT FIRE. It is conditioned on Q1 returning HELPS, and Q1
+returned MIXED, so `notes/audit_dare_2026-08-04.md` is NOT amended. Its
+conclusion was already scoped to task arithmetic and remains correct as
+written.
+
+Q2 SECONDARY, descriptive. Penalty relative to TIES as density falls across
+0.5/0.2/0.1: monotone on 3 of 4 bases (Mistral, Qwen, Yi), matching the DARE +
+TA pattern. Llama is NOT monotone, and in the informative direction: its
+penalty is -0.0320, -0.0462, -0.0474, so DARE-TIES beats TIES at every density
+tested and the advantage grows as the mask gets more aggressive. Per the Q2
+clause and constraint 6, this is reported as evidence for DARE's stated
+interference-reduction mechanism even though Q1 is primary.
+
+Q3 FREE READOUT, the reason 0.1 was in the design. At dare_density 0.1 the
+TIES trim is inert (the mask has already removed more than the trim would), so
+whatever survives is the sign election's doing. Fraction of the TA-to-TIES gain
+retained by DARE-TIES at d=0.1: Llama 1.56, Qwen 0.68, Mistral -0.08, Yi -0.63.
+On Llama, sign election plus a random mask recovers more than half again what
+sign election plus magnitude trimming recovers (TA 0.2239, TIES 0.1388,
+DARE-TIES@0.1 0.0914). On Mistral and Yi the same configuration is worse than
+plain TA.
+
+POST-HOC OBSERVATION, FLAGGED AS POST-HOC AND NOT CLAIMED. Llama is also the
+only base where rd-ridge won the 3-cohort A1 analysis. It is the odd one out in
+two independent pre-registered tests now. I am not proposing a mechanism, per
+the standing rule not to invent one; recording it because a base-level
+moderator that neither pre-registration anticipated would be worth a designed
+test rather than another post-hoc read.
+
+DEFECT FOUND AND FIXED IN THE ANALYZER'S REPORTING, NOT ITS VERDICT. The first
+run printed, under MIXED, the consequence text "the negative result generalises
+to both compositions". That text is the HURTS/NEUTRAL consequence; the
+pre-registration says of MIXED only that neither direction is claimed
+(prereg line 100). The `else` branch had lumped all three verdicts together, so
+the analyzer asserted a direction the pre-registration forbids. The verdict
+computation itself was correct against the rule. Fixed by giving MIXED its own
+branch. No threshold and no decision rule was touched.
+
+BLINDNESS LIMITATION, DISCLOSED. Constraint 5 mandated a smoke cell before
+dispatching the other 35, and the natural smoke cell (Qwen, indep1, primary
+density) is one of the 12 cells that decide Q1. So 1 of those 12 was seen
+before the rest ran. This was required by the pre-registration rather than a
+lapse, and the smoke inspection checked configuration equality and that the
+mask was not a no-op, not the direction of the effect. Recording it because the
+blindness claim for this test is 11/12, not 12/12.

@@ -165,6 +165,19 @@ def main() -> int:
         print("  CONSEQUENCE (fixed in advance): the DARE negative result must be")
         print("  rescoped to 'composed with task arithmetic'. notes/audit_dare_")
         print("  2026-08-04.md and the decisions.md entry are amended in place.")
+    elif v1.startswith("MIXED"):
+        # The pre-registration (line 100) says of MIXED only that "neither
+        # direction is claimed". It does NOT authorise the "generalises to
+        # both compositions" text below, which is the HURTS/NEUTRAL
+        # consequence. The first version of this branch lumped MIXED in with
+        # those two and printed a directional claim the pre-registration
+        # forbids. The verdict was right; the consequence was not.
+        print("  CONSEQUENCE (fixed in advance): NEITHER DIRECTION IS CLAIMED.")
+        print("  The negative result does NOT generalise to this composition,")
+        print("  and no positive claim is made either. Constraint 7 does not")
+        print("  fire, so the DARE audit is NOT amended. Constraints 6 and the")
+        print("  Q2 clause still bind: every base where DARE-TIES beats TIES is")
+        print("  reported as evidence for DARE's stated mechanism.")
     else:
         print("  CONSEQUENCE (fixed in advance): the negative result generalises to")
         print("  both compositions. NOTE that the unbiasedness mechanism does NOT")
