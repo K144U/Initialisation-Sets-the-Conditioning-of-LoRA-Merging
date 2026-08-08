@@ -2071,3 +2071,74 @@ as if it were. If run, it needs its own decision rule fixed in advance.
 The W3 configs use per-base lambda*, and qwen's is 0.13. E2 independently
 selected lambda* = 0.13 for qwen on both arms. Two different procedures, run
 months apart, agreeing on the same grid point.
+
+---
+
+## 2026-08-08 (later) — W3 refitted against matched asymptotes: the impossible values are gone, the published slopes were artifacts, and Llama actually matches -2
+
+Three matched-asymptote cells (bits=32, base's own lambda*, realize=rank_deff,
+seed1) ran as job 186. Llama already had one at lambda*=0.05. The corrected
+analyzer asserts lambda and realize equality between curve and asymptote from
+the configs before fitting anything.
+
+    base           b=1     b=2     b=3     b=4     b=8    b=16   b=inf   slope     R2
+    llama31_8b   0.633   0.097   0.080   0.085   0.082   0.082   0.082   -2.10  0.984
+    mistral_7b   0.211   0.050   0.048   0.047   0.047   0.047   0.047      --      --
+    qwen25_7b    0.075   0.011   0.010   0.010   0.010   0.010   0.010      --      --
+    yi15_9b      0.210   0.041   0.036   0.036   0.036   0.036   0.036   -3.50  1.000
+
+### 1. The impossible values are gone
+
+No base now shows finite-rate excess below its asymptote. That pathology was
+entirely produced by comparing a lambda* curve against a lambda=0.05 3-seed
+mean. Diagnosis confirmed. The reviewer's W14 ("a value impossible under the
+model is evidence of a measurement problem, and it is not investigated") was
+correct, though the fault was in the analyzer's reference, not in the cells.
+
+### 2. THE PUBLISHED SLOPES WERE ARTIFACTS AND MUST BE WITHDRAWN
+
+The paper reports the exponent as falsified on the strength of slopes -0.10
+and -0.21, "roughly an order of magnitude off" the predicted [-2.4, -1.6].
+Those two numbers were Mistral and Qwen fitted against the wrong asymptote.
+Against matched asymptotes neither base is fittable at all over the registered
+window, so the numbers that carried the falsification do not exist. They must
+come out of the paper regardless of what verdict replaces them.
+
+### 3. Llama matches the prediction
+
+Slope -2.10 with R2 = 0.984 against a predicted -2. That is the theory's
+exponent holding cleanly on a real adapter cohort, and the previous analysis
+could not see it because Llama was one of the two bases the bad asymptote
+rendered unfittable.
+
+### 4. Registered verdict: UNRESOLVED
+
+Rule from f9d230e, applied verbatim: VOID needs slope in band on >= 3 of 4
+(got 1), STANDS needs |slope| < 0.5 on >= 3 of 4 (got 0). Neither is met, so
+the verdict is UNRESOLVED and is recorded as such rather than rounded toward
+the in-band result, which would be reading the rule after seeing the data.
+
+Yi fits at -3.50 (R2 = 1.000), steeper than predicted rather than flatter.
+
+### 5. Why Mistral and Qwen are unfittable is now benign
+
+Not impossibility: convergence. Mistral sits at 0.047 from b=4 onward against
+an asymptote of 0.047, and Qwen at 0.010 from b=3 onward against 0.010. The
+curve reaches its asymptotic value inside the fit window, leaving no dynamic
+range, so only b=2 and b=3 survive the positivity filter and 2 points cannot
+support a 3-point fit. The registered window {2,3,4,8} is simply too coarse
+for bases that converge by 4 bits.
+
+The fix is a finer low-rate grid (fractional or b in {1, 1.5, 2, 2.5, 3}), not
+a reinterpretation of these cells. That needs its own pre-registration; the
+window in f9d230e must not be re-chosen now that we know which window would
+produce a fit.
+
+### Net effect on the paper
+
+The exponent falsification as written is withdrawn: its supporting numbers
+were artifacts. It is NOT replaced by a confirmation. One base matches the
+predicted exponent closely, one is steeper, two converge too fast to fit at
+this resolution. The honest statement is that the finite-rate behaviour is
+not resolved at the rates we swept, and that the earlier claim to have
+falsified it was based on a mismatched reference.
