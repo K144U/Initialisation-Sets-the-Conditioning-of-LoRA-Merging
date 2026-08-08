@@ -2010,3 +2010,64 @@ threshold was applied. P2's margins are 0.13 to 9.6 nats, far above any
 plausible noise, so the verdict does not rest on the missing gate; P1's
 comparisons are of grid values and are not noise-limited either. Re-running the
 sweep on indep2 and indep3 would restore the gate and is the obvious extension.
+
+---
+
+## 2026-08-08 — E1 caught as a no-op before it ran: the W3 rate sweep was NEVER truncated, so W2's truncation hypothesis is refuted by existing configs
+
+An external reviewer (W2) argued that the flat rate curve in the exponent
+falsification could be a rank-truncation artifact: every method is
+SVD-truncated back to rank r, an independently initialised merge has rank up
+to Tr = 64, so truncation would discard most of it and dominate the modelled
+quantization error. I accepted the premise, pre-registered E1 to rerun the
+sweep untruncated, generated 48 cells and dispatched a smoke.
+
+THE PREMISE IS FALSE FOR THIS SWEEP. `code/phase3/configs/eval_w3_rate/*.yaml`
+already carries `realize: rank_deff`, which the rd_encoder docstring defines as
+carrying W* EXACTLY via its natural factorization, "no SVD, no truncation".
+The W3 rate sweep was untruncated from the start. Caught by reading
+`analyze_w3_rate.py` line 90, whose own header string says
+"(lambda = lambda*, realize=rank_deff, seed1)".
+
+`diff` of the W3 config against the E1 cell I generated to "fix" it differs on
+`output_path` and NOTHING else. My 24 seed1 cells were byte-identical
+duplicates. Job 185 was qdel'd four minutes in.
+
+This is the same failure mode as the KnOTS no-op: a configuration that looks
+like it changes the thing under test and does not. It is the second time in
+this project, and both times it was caught by comparing against the shipped
+config rather than by trusting the intent.
+
+### Consequence for the registered E1 question
+
+The existing W3 sweep IS the untruncated sweep, so the registered rule can be
+evaluated with no new compute. Applying it verbatim:
+
+- VOID   requires slope in [-2.4, -1.6] on >= 3 of 4. Measured: 0 of 4.
+- STANDS requires |slope| < 0.5 on >= 3 of 4. Measured: 2 of 4 (-0.10, -0.21),
+  because Llama and Yi could not be fitted at all.
+- Neither threshold is met, so by the rule as written the verdict is
+  **UNRESOLVED**, and it is recorded as unresolved rather than rounded to the
+  branch that 2 of 4 nearly satisfies.
+
+So truncation is excluded as the explanation for the flatness, but the
+falsification does not thereby stand either. The blocker is the thing the
+pre-registration already flagged: on 2 of 4 bases the finite-rate excess falls
+BELOW the b = infinity value, which is impossible under the model. That is a
+measurement or implementation problem and it is now the actual open item, not
+a sweep.
+
+### What is still worth running, stated honestly
+
+The W3 sweep is `seed1` only, i.e. the shared, ill-conditioned, degenerate
+cohort. Running the same sweep on `indep1` is a genuinely new measurement, but
+it tests a DIFFERENT question from the one registered: whether the flatness is
+an artifact of the degenerate cohort, not whether it is an artifact of
+truncation. It is not covered by the E1 registration and must not be reported
+as if it were. If run, it needs its own decision rule fixed in advance.
+
+### Cross-check worth keeping
+
+The W3 configs use per-base lambda*, and qwen's is 0.13. E2 independently
+selected lambda* = 0.13 for qwen on both arms. Two different procedures, run
+months apart, agreeing on the same grid point.

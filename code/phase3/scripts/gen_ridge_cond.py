@@ -89,14 +89,27 @@ def main() -> int:
                 cfg["method_kwargs"] = kw
                 cfg["adapter_specs"] = specs
 
+                # Three things here are load-bearing and the first version of
+                # this generator got all three wrong; the smoke caught it.
+                #  1. run_eval_cell.py takes ONLY --config. There is no --out.
+                #     The destination is read from `output_path` in the YAML.
+                #  2. orchestrator.py runs cmd with shell=True, so cmd must be
+                #     a STRING. A list under shell=True executes only its first
+                #     element, i.e. a bare `python`, which reads EOF from stdin
+                #     and exits 0 having written nothing. That shows up as
+                #     "FAIL ... rc=0 (0 min)" with an empty per-cell log.
+                #  3. `done` is relative to ROOT, and the orchestrator's VRAM
+                #     gate needs min_free_gb on the manifest entry.
+                out_p = OUT_RES / f"{name}.json"
+                cfg["output_path"] = str(out_p)
                 cfg_p = OUT_CFG / f"{name}.yaml"
                 cfg_p.write_text(yaml.safe_dump(cfg, sort_keys=False))
                 manifest.append({
                     "name": name,
-                    "cmd": ["python", "code/phase3/eval/run_eval_cell.py",
-                            "--config", str(cfg_p.relative_to(ROOT)),
-                            "--out", str((OUT_RES / f"{name}.json").relative_to(ROOT))],
-                    "done": str(OUT_RES / f"{name}.json"),
+                    "cmd": ("python code/phase3/eval/run_eval_cell.py "
+                            f"--config {cfg_p.relative_to(ROOT)}"),
+                    "done": str(out_p.relative_to(ROOT)),
+                    "min_free_gb": 25.0,
                 })
 
     if problems:
