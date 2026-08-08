@@ -2142,3 +2142,65 @@ predicted exponent closely, one is steeper, two converge too fast to fit at
 this resolution. The honest statement is that the finite-rate behaviour is
 not resolved at the rates we swept, and that the earlier claim to have
 falsified it was based on a mismatched reference.
+
+---
+
+## 2026-08-08 — DECISION: scope honestly around the degenerate translation adapter, do not retrain
+
+User decision, recorded because it constrains everything downstream. The
+translation (`flores`) adapter is degenerate on all four bases in both arms
+(`059d277`): it fails to beat the base model on Llama and Mistral, and on all
+four bases another task's adapter beats it at its own task. A nominal T=4
+cohort therefore has three tasks that learned.
+
+Retraining would fix it and would also invalidate every cell measured on these
+cohorts, which is most of the project. The decision is to disclose the defect
+and report every geometry quantity at BOTH T=4 (as run) and T=3 (translation
+excluded), so a reader can check for themselves that nothing rests on the
+degenerate adapter. `geometry_T4_vs_T3.py` produces that table.
+
+### The contrast is untouched by dropping the degenerate adapter
+
+    base           median cosine, shared / independent
+                   T=4                 T=3
+    llama31_8b     0.9948 / 0.0473     0.9950 / 0.0475
+    mistral_7b     0.9947 / 0.0468     0.9945 / 0.0469
+    qwen25_7b      0.9964 / 0.0500     0.9963 / 0.0502
+    yi15_9b        0.9973 / 0.0467     0.9970 / 0.0467
+
+Agreement to three decimals. The degenerate adapter contributes essentially
+nothing to the shared-versus-independent separation.
+
+    quantity                    shared T=4 -> T=3     independent T=4 -> T=3
+    soft d_eff                  16.33/64 -> 16.30/48   63.23/64 -> 47.61/48
+    floor fraction of B^2       0.745 -> 0.661         0.0120 -> 0.0081
+    hard d_eff at eps = 0.1     20.8 -> 20.4           64.0 -> 48.0
+
+Two things worth noting in that table. Shared-init soft d_eff stays at ~16.3
+whether T is 4 or 3, which is the point: the subspaces collapse onto roughly
+one r-dimensional subspace regardless of how many tasks there are. And the
+independent arm holds soft d_eff at essentially Tr in both cases (63.2 of 64,
+47.6 of 48), and hard d_eff at exactly Tr (64 and 48).
+
+Together with the conditioning check already run at T=3 (`ea3214b`: cond ratio
+falls 25-40 percent but stays at ~1e4, and independent-arm amplification is
+exactly T at both T=3 and T=4), every geometry and conditioning claim in the
+paper is now shown to survive removal of the degenerate adapter.
+
+### What must appear in the paper
+
+1. The defect, stated plainly: one of four adapters did not learn its task, on
+   every base, in both arms, with the numbers from `adapter_quality.py`.
+2. That worst-task excess is never driven by it: across 84 independent cells
+   the argmax is gsm8k 64 percent and alpaca 36 percent, translation never.
+3. Geometry reported at both T, as above.
+4. The claim scoped as "T = 4 nominal, 3 effective", never as a clean T = 4.
+
+### What this does NOT excuse
+
+The merged models still contain the degenerate adapter, so the merge results
+are for a cohort containing one untrained member. That is arguably realistic,
+since practitioners do merge adapters of uneven quality, but it is not the
+same experiment as four well-trained adapters and must not be described as
+though it were. No claim about how merging behaves with T well-trained tasks
+is supported by this data.
