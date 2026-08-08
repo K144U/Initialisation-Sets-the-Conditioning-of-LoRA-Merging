@@ -1,79 +1,145 @@
-Theorem~\ref{thm:general} says the achievable worst-task excess is bounded
-below by $B^2(1 - \deff/(Tr))$, and that this floor is zero exactly when
-the $T$ task subspaces are in general position. This section shows that
-real LoRA cohorts occupy both regimes, that which one they occupy is
-decided by how they were initialised rather than by anything about the
-tasks, and that the regime can be read off the adapter weights alone.
+Theorem~\ref{thm:general} bounds worst-task excess below by
+$B^2(1 - \deff/(Tr))$, which vanishes exactly when the $T$ task subspaces are
+in direct sum. This section reports what that quantity does on real LoRA
+cohorts. The answer is not the one an earlier version of this work gave, and
+the correction is the reason the section is organised around conditioning
+rather than around the floor.
 
 \subsection{Why shared initialisation collapses the task subspaces}
 \label{subsec:mechanism}
 
 In the reference LoRA implementation~\citep{hu2022lora} an adapter is
-$\Delta W = BA$ with $A \in \R^{r \times k}$ drawn from a random
-initialisation and $B \in \R^{m \times r}$ initialised to zero. Two
-consequences matter here. First, because $B = 0$ at the start, the
-gradient with respect to $A$ is proportional to $B$ and therefore vanishes
-at initialisation, so $A$ moves comparatively little over training.
-Second, in most training pipelines the initialisation is drawn from a
-single global seed. If the $T$ adapters of a cohort are trained with that
-same seed, as is the natural thing to do when the seed is meant to control
-run-to-run reproducibility, then all $T$ adapters begin from an
-\emph{identical} $A$ and never move far from it.
+$\Delta W = BA$ with $A$ randomly initialised and $B$ initialised to zero. Two
+consequences matter. Because $B = 0$ at the start, the gradient with respect
+to $A$ is proportional to $B$ and vanishes at initialisation, so $A$ moves
+comparatively little over training. And in most pipelines the initialisation
+is drawn from a single global seed, so if the $T$ adapters of a cohort are
+trained with that seed, as is natural when the seed is meant to control
+run-to-run reproducibility, all $T$ begin from an \emph{identical} $A$.
 
-The row space of $\Delta W_t = B_t A_t$ is contained in the row space of
-$A_t$. If every $A_t$ is a small perturbation of one shared matrix, the
-$T$ task subspaces are near-collinear, $\deff$ collapses toward $r$ rather
-than $Tr$, and the floor rises toward $B^2(1 - 1/T)$. This is not a
-statement about the tasks being similar. It is an artifact of the
-initialisation, and it survives even when the tasks are entirely unrelated.
+Since $\range(\Delta W_t^\top) \subseteq \range(A_t^\top)$, if every $A_t$ is
+a small perturbation of one shared matrix then the task subspaces are
+near-collinear. This is not a statement about the tasks being related; it is
+an artifact of initialisation and survives when the tasks are unrelated.
 
 \subsection{Measurement}
 \label{subsec:measurement}
 
-We train $T = 4$ adapters at rank $r = 16$ on four base models, giving
-$Tr = 64$, for four unrelated tasks (instruction following, code, mathematical
-reasoning, and summarisation; full configuration in
-Appendix~\ref{app:manifest}). We do this in two conditions. The
-\emph{shared} condition uses one global seed for the whole cohort, which
-is what our own earlier draft and, as far as we can tell from released
-code, much of the merging literature does. The \emph{independent}
-condition draws a separate initialisation per task. We repeat the
-independent condition three times with different draws, giving cohorts
-\texttt{indep1}, \texttt{indep2} and \texttt{indep3}, so that the
-comparison is not resting on a single lucky sample.
+We train $T = 4$ adapters at rank $r = 16$ ($Tr = 64$) on four base models for
+four unrelated tasks, in two conditions: a \emph{shared} cohort using one
+global seed, and \emph{independent} cohorts drawing a separate initialisation
+per task, repeated three times (\texttt{indep1/2/3}).
 
-For each cohort we compute, per layer and then averaged over eight sampled
-layers: the median principal cosine between the $T$ task row spaces; the
-relative distance $\|\Delta A\|/\|A\|$ between task $A$ factors; the top
-singular value $\sigma_{\max}$ of the stacked projectors, which equals
-$\sqrt{T}$ under exact collinearity and approaches $1$ under
-orthogonality; the soft effective dimension; and the resulting floor.
+For each cohort we compute, per layer and averaged over eight sampled layers,
+the median principal cosine between the $T$ task row spaces; the top singular
+value $\sigma_{\max}$ of the stacked bases, which is $\sqrt{T}$ under exact
+collinearity and near $1$ under orthogonality; and two notions of effective
+dimension.
+
+\paragraph{Two effective dimensions, and which one the theory uses.} With
+$M = [V_1 \cdots V_T]$ the concatenated orthonormal bases and $\sigma_i$ its
+singular values, the \emph{hard} effective dimension at tolerance $\epsilon$
+is $|\{i : \sigma_i > \epsilon\,\sigma_1\}|$, and the \emph{soft} effective
+dimension is the participation ratio
+\begin{equation}\label{eq:soft-deff}
+  \deff^{\mathrm{soft}} \;:=\; \frac{\bigl(\sum_i \sigma_i^2\bigr)^2}
+  {\sum_i \sigma_i^4}.
+\end{equation}
+The quantity in Lemma~\ref{lem:floor-general} is a \emph{rank}, so it is the
+hard one at any tolerance small enough to be numerically meaningful. The soft
+version is a continuous diagnostic that degrades gracefully instead of
+jumping, which makes it convenient to report, but it is \textbf{not} the
+quantity in the theorem and substituting it into
+$B^2(1-\deff/(Tr))$ is not licensed. We say this emphatically because an
+earlier version of this work did exactly that, and \S\ref{subsec:floor-zero}
+is the correction.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Subspace geometry, four base models, $T=4$, $r=16$, $Tr=64$.
-The three independently initialised cohorts agree to three decimals, so
-only \texttt{indep1} is shown per base; \texttt{indep2} and
-\texttt{indep3} are in Appendix~\ref{app:geometry}. Floor is
-$1 - \deff/(Tr)$, in units of $B^2$.}
+\caption{Subspace geometry, $T=4$, $r=16$, $Tr=64$, \texttt{indep1} shown for
+the independent arm; \texttt{indep2} and \texttt{indep3} agree to three
+decimals (Appendix~\ref{app:geometry}). Hard $\deff$ is at
+$\epsilon = 10^{-1}$.}
 \label{tab:geometry}
 \begin{tabular}{llccccc}
 \toprule
-base & init & med.\ cosine & $\|\Delta A\|/\|A\|$ & $\sigma_{\max}$ &
-soft $\deff$ & floor$/B^2$ \\
+base & init & med.\ cosine & $\sigma_{\max}$ & soft $\deff$ & hard $\deff$
+& exact floor \\
 \midrule
-Llama-3.1-8B  & shared      & 0.9948 & 0.168 & 1.999 & 16.33 & 0.745 \\
-              & independent & 0.0473 & 1.415 & 1.107 & 63.23 & 0.012 \\
+Llama-3.1-8B  & shared      & 0.9948 & 1.999 & 16.33 & 20.8 & $0$ \\
+              & independent & 0.0473 & 1.107 & 63.23 & 64.0 & $0$ \\
 \addlinespace
-Mistral-7B    & shared      & 0.9947 & 0.159 & 1.999 & 16.28 & 0.746 \\
-              & independent & 0.0468 & 1.412 & 1.106 & 63.24 & 0.012 \\
+Mistral-7B    & shared      & 0.9947 & 1.999 & 16.28 & 19.9 & $0$ \\
+              & independent & 0.0468 & 1.106 & 63.24 & 64.0 & $0$ \\
 \addlinespace
-Qwen2.5-7B    & shared      & 0.9964 & 0.191 & 1.999 & 16.35 & 0.744 \\
-              & independent & 0.0500 & 1.412 & 1.131 & 63.08 & 0.014 \\
+Qwen2.5-7B    & shared      & 0.9964 & 1.999 & 16.35 & 21.4 & $0$ \\
+              & independent & 0.0500 & 1.131 & 63.08 & 64.0 & $0$ \\
 \addlinespace
-Yi-1.5-9B     & shared      & 0.9973 & 0.163 & 2.000 & 16.28 & 0.746 \\
-              & independent & 0.0467 & 1.412 & 1.102 & 63.25 & 0.012 \\
+Yi-1.5-9B     & shared      & 0.9973 & 2.000 & 16.28 & 20.2 & $0$ \\
+              & independent & 0.0467 & 1.102 & 63.25 & 64.0 & $0$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The geometric separation is large and reproducible. Under shared
+initialisation the median principal cosine is above $0.994$ and
+$\sigma_{\max}$ is $1.999$ against a collinear maximum of $\sqrt{T}=2$; under
+independent initialisation the cosines are near $0.047$ and $\sigma_{\max}$
+near $1.1$. The three independent cohorts agree to three decimal places on
+every column, so this is structural rather than a sampling accident.
+
+\subsection{The irreducible floor is zero in both regimes}
+\label{subsec:floor-zero}
+
+It is tempting, and we previously yielded to the temptation, to read the soft
+column of Table~\ref{tab:geometry} through Lemma~\ref{lem:floor-general} and
+conclude that the shared cohort carries an irreducible floor of
+$B^2(1 - 16.3/64) = 0.745B^2$ against $0.012B^2$ for the independent one.
+That is wrong, and we correct it here.
+
+By \eqref{eq:floor-exact} the exact floor for a given cohort is
+$B^2 - \tauH^\top \bar H \tauH$, computable from the adapters with no appeal
+to $P^\star$. Evaluating it gives \textbf{exactly zero on all four bases in
+both conditions}. The reason is visible in the proof: the floor vanishes iff
+the $V_t$ are in direct sum, and near-collinear is not collinear. Even at
+median cosine $0.995$ the four $16$-dimensional row spaces remain linearly
+independent, $\deff = Tr = 64$ exactly, and an interpolator reproducing every
+task exactly exists.
+
+Two lessons follow, and both are corrections to the earlier draft. A soft
+surrogate must not be substituted into a formula derived for a rank; doing so
+manufactured a difference of a factor of $60$ where the true difference is
+zero against zero. And more importantly, for LoRA cohorts in general position
+\textbf{the floor term of Theorem~\ref{thm:general} is vacuous}. It is exactly
+zero whenever $Tr \leq d$ and the subspaces are independent, which is every
+cohort we have measured and, we expect, every cohort trained this way. The
+bound is not thereby useless, but its content for practitioners is not in the
+floor.
+
+\subsection{What initialisation actually controls is conditioning}
+\label{subsec:conditioning}
+
+A zero floor says an exact interpolator exists. It says nothing about its
+norm. That is where the two regimes separate.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Conditioning of $\bar H$ and the norm of the exact interpolator,
+relative to the mean task delta. The independent-arm amplification equals $T$
+exactly, the value for orthogonal subspaces.}
+\label{tab:conditioning}
+\begin{tabular}{lcccc}
+\toprule
+base & \multicolumn{2}{c}{$\kappa(\bar H)$} &
+\multicolumn{2}{c}{$\|\tauH\| / \|\bar\Delta\|$} \\
+ & shared & independent & shared & independent \\
+\midrule
+Llama-3.1-8B & $1.76\times10^{4}$ & 1.5 & 48.3 & 4.0 \\
+Mistral-7B   & $3.21\times10^{4}$ & 1.5 & 52.3 & 4.0 \\
+Qwen2.5-7B   & $2.42\times10^{4}$ & 1.6 & 43.4 & 4.0 \\
+Yi-1.5-9B    & $8.30\times10^{4}$ & 1.5 & 64.1 & 4.0 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -82,76 +148,61 @@ Yi-1.5-9B     & shared      & 0.9973 & 0.163 & 2.000 & 16.28 & 0.746 \\
 \centering
 \includegraphics[width=\textwidth]{figures/figure_two_regimes.pdf}
 \caption{The two regimes. \textbf{Left:} hard effective dimension against
-rank tolerance $\epsilon$. All twelve independently initialised cells
-(four bases $\times$ three cohorts) hold $\deff = Tr = 64$ at every
-tolerance across four decades; the shared-initialisation cohorts match
-only at numerically loose tolerances and collapse to $20.8$ by
-$\epsilon = 10^{-1}$. \textbf{Right:} the resulting irreducible floor,
-$0.745B^2$ under shared initialisation against $0.012B^2$ under
-independent initialisation.}
+rank tolerance. All twelve independently initialised cells hold
+$\deff = Tr = 64$ at every tolerance across four decades; the shared cohorts
+match only at numerically loose tolerances and fall to $\approx 20$ by
+$\epsilon = 10^{-1}$. Since $\deff = Tr$ holds exactly in both, the
+irreducible floor is zero in both (\S\ref{subsec:floor-zero}).
+\textbf{Right:} what does separate them, the condition number of $\bar H$,
+four to five orders of magnitude apart.}
 \label{fig:two-regimes}
 \end{figure}
 
-\subsection{Result}
-\label{subsec:regime-result}
+Table~\ref{tab:conditioning} gives the result. The condition number of
+$\bar H$ differs by four to five orders of magnitude between the two
+conditions. The exact interpolator is $43$ to $64$ times larger than the mean
+task delta under shared initialisation, against exactly $4.0$ under
+independent initialisation. That $4.0$ is not fitted: it is $T$, the value for
+exactly orthogonal subspaces, and recomputing the whole table at $T=3$ returns
+exactly $3.0$ (Appendix~\ref{app:geometry}). The measurement reproduces its
+own theoretical value at two different $T$, which is the strongest internal
+check we have on it.
 
-Table~\ref{tab:geometry} and Figure~\ref{fig:two-regimes} give the
-outcome, and the separation is not marginal. Under shared initialisation
-the median principal cosine is $0.995$ or above, meaning the task
-subspaces are nearly the same subspace; $\sigma_{\max}$ is $1.999$ against
-a collinear maximum of $\sqrt{T} = 2$; the $A$ factors have moved
-$16$ to $19\%$ from their common start; soft $\deff$ is $16.3$ of $64$,
-close to the fully collinear value $r = 16$; and the floor is $0.745B^2$,
-essentially the fully collinear $B^2(1 - 1/T) = 0.75B^2$.
-
-Under independent initialisation the same cohort design gives cosines
-around $0.047$, $\sigma_{\max}$ near $1.1$, $\|\Delta A\|/\|A\|$ of
-$1.41 \approx \sqrt{2}$, which is exactly the value for two independent
-vectors of equal norm, soft $\deff$ of $63.2$ of $64$, and a floor of
-$0.012B^2$. The floor moves by a factor of $52$ to $64$ depending on the
-base.
-
-The hard-tolerance sweep in the left panel of Figure~\ref{fig:two-regimes}
-is the sharper statement. Effective dimension computed with a hard rank
-tolerance is only meaningful if it is stable in that tolerance. For the
-independent cohorts it is completely stable: every one of the twelve
-cells returns $\deff = 64$ at every $\epsilon$ from $10^{-6}$ to
-$10^{-1}$. For the shared cohort it is not: $\deff = 64$ holds only for
-$\epsilon \leq 10^{-3}$, and by $\epsilon = 10^{-1}$ it has fallen to
-$20.8$. A shared-initialisation cohort can therefore be made to look
-full-dimensional by choosing a permissive tolerance, which is a trap worth
-flagging, since $\deff = Tr$ at a loose numerical threshold is exactly
-what one would report by default.
-
-\paragraph{Replication.} The three independent cohorts were drawn
-separately and agree to three decimal places on every column of
-Table~\ref{tab:geometry}. The consistency assertion is enforced in the
-figure-generating code rather than checked by eye. Whatever this effect
-is, it is not sampling noise.
+So initialisation does not set the floor. It sets how ill-conditioned the
+merge problem is, and therefore how large a solution must be to interpolate
+the tasks. \S\ref{subsec:ridge} tests whether that has any operational
+consequence, and the answer is not the obvious one.
 
 \subsection{The audit}
 \label{subsec:audit}
 
-Everything above is computed from the adapter weight matrices. No forward
-passes, no evaluation data, and no merging is involved, so the whole
-measurement takes about one CPU minute for a cohort of four rank-16
-adapters. We package it as an audit that answers one question before any
-merging is attempted: is the cohort in the floor-zero regime, where the
-observed merging loss is recoverable slack, or in the floor-positive
-regime, where most of it is not.
+Everything above is computed from the adapter weight matrices: no forward
+passes, no evaluation data, no merging. It costs about one CPU minute for a
+cohort of four rank-16 adapters. What it reports is not "how much of your loss
+is irreducible", which is zero in every case we have seen, but where your
+cohort sits on the conditioning axis of Table~\ref{tab:conditioning}, which
+\S\ref{subsec:ridge} shows determines whether an unregularised solve-based
+merge will work at all.
 
-The practical recommendation follows directly and is uncomfortable for
-anyone benchmarking merging methods. If a cohort reports median principal
-cosine near $1$ and soft $\deff$ near $r$, then a large part of whatever
-worst-task excess is measured on it is irreducible, no merging method can
-remove it, and differences between methods on that cohort are being
-measured against a floor rather than against zero. The fix is on the
-training side and costs nothing: draw the LoRA initialisation
-independently per task.
+\subsection{Scope: one adapter in four did not learn}
+\label{subsec:scope}
 
-We are careful about how far to push this. We can show that our own
-earlier cohorts were degenerate in exactly this way, and we can show what
-it does to the floor. We attempted to establish the stronger claim, that
-published merging comparisons are confounded by the same effect, and a
-pre-registered control we designed for the purpose did not support it. We
-withdraw that claim in \S\ref{subsec:withdrawn}.
+We report a defect rather than repairing it, because repairing it would
+invalidate every cell measured on these cohorts. On all four bases and in both
+conditions, the translation adapter fails to beat the base model at its own
+task or is beaten there by another task's adapter; the other three tasks train
+cleanly, improving $10$ to $70\%$ over base with the specialist best on its
+own task in every cell (Appendix~\ref{app:geometry}). Our cohorts are
+therefore $T=4$ nominal and $3$ effective, and we describe them that way
+throughout.
+
+Two things bound the damage and one does not. Worst-task excess is never
+driven by the degenerate adapter: across the $84$ independent-cohort cells the
+argmax is \texttt{gsm8k} in $64\%$ and \texttt{alpaca} in $36\%$, and
+translation never. And every geometry and conditioning quantity above is
+reported at both $T=4$ and $T=3$ in Appendix~\ref{app:geometry}; the
+shared-versus-independent contrast is unchanged to three decimals. What is
+\emph{not} bounded is that the merged models contain an untrained member. That
+is arguably realistic, since practitioners merge adapters of uneven quality,
+but it is not the same experiment as four well-trained adapters, and we make
+no claim about the latter.

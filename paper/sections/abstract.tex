@@ -3,42 +3,40 @@ nothing and sometimes destroys a task outright, and practitioners have
 no cheap way to tell which case they are in before they merge. We give
 a closed-form lower bound on worst-task negative log-likelihood excess
 for rank-$r$ merging, together with a matching achievability
-construction. The bound is governed by a single geometric quantity, the
-effective dimension $\deff$ of the union of the task subspaces, and it
-takes the form $B^2\bigl(1 - \deff/(Tr)\bigr)$: an irreducible floor
-that is large when the task subspaces overlap and vanishes exactly when
-they are near-orthogonal.
+construction. The bound splits into an irreducible floor
+$B^2\bigl(1 - \deff/(Tr)\bigr)$, governed by the effective dimension
+$\deff$ of the union of the task subspaces, and a rate term.
 
-Our main empirical finding is that this regime distinction is not a
-technicality, and that which regime a LoRA cohort occupies is decided
-by a training detail that is almost never reported. Across four base
-models and three independently drawn cohorts we measure $\deff$
-directly. When all adapters in a cohort share one initialisation of the
-LoRA $A$ factor, the task subspaces are nearly collinear (median
-principal cosine $0.996$), $\deff$ is $16.3$ of a possible $64$, and
-the floor sits at $0.745B^2$: about three quarters of the worst-task
-loss such a cohort can suffer is information-theoretically
-irreducible, and no merging algorithm can remove it. When the adapters
-are initialised independently, the same measurement gives cosines of
-$0.047$ to $0.050$, $\deff$ of $63.1$ to $63.3$, and a floor of
-$0.012B^2$, lower by a factor of about $60$. Measured at a realistic
-rank tolerance the separation is sharper still: the shared cohort's
-effective dimension falls to $20.8$ of $64$, while the independently
-initialised cohorts hold $\deff = Tr = 64$ across four decades of
-tolerance. No standard merging diagnostic distinguishes the two
-cohorts, and the measurement costs about one CPU-minute with no
+Our first finding is a negative one about our own bound. On real LoRA
+cohorts the floor is not merely small: it is \emph{exactly zero}, on
+every base model and under every initialisation scheme we tried, because
+$T$ rank-$r$ adapters with $Tr \leq d$ have linearly independent row
+spaces even when those spaces are nearly collinear. The floor term is
+therefore vacuous for LoRA merging as practised, and the interesting
+content of the bound lies elsewhere.
+
+Where it lies is conditioning. Whether a cohort's adapters share one
+initialisation of the LoRA $A$ factor, a detail almost never reported,
+moves the median principal cosine between task subspaces from $0.047$ to
+$0.995$ and the condition number of the merge operator by four to five
+orders of magnitude, from $1.5$ to between $1.8\times10^{4}$ and
+$8.3\times10^{4}$. The exact interpolator is then $43$ to $64$ times
+larger than the mean task delta, against exactly $T$ under independent
+initialisation, a value the measurement reproduces at both $T=3$ and
+$T=4$. The whole diagnosis costs about one CPU minute and needs no
 forward passes.
 
-We then use pre-registration to test what this predicts about merging
-methods, and report the outcome whichever way it fell. Our own
-rate-distortion encoder, which wins on the shared-initialisation
-cohorts that our earlier draft measured, does not survive the move to
-independently initialised ones: TIES wins on three of four base models.
-A pre-registered control that we wrote ourselves withdrew our headline
-claim that published benchmarks are confounded by shared-initialisation
-geometry. The predicted finite-rate exponent is falsified on real
-adapters, where the curve is flat from two bits upward rather than
-decaying. We report a clean negative result for DARE composed with task
-arithmetic, with a mechanism that predicts its own functional form, and
-show that the negative result does not extend to DARE composed with
-TIES. What survives is the bound, the regime diagnosis, and the audit.
+We then test, under pre-registration, whether this has operational
+consequences, and report the outcome whichever way it fell. It is
+invisible to standard merging heuristics: across twenty base-by-method
+cells, task arithmetic, TIES, DARE and TVQ are indifferent to which
+regime the cohort occupies, because all of them produce bounded-norm,
+near-mean solutions that never approach the ill-conditioned direction.
+It is severe for methods that solve the linear system: unregularised,
+the same merge is $4.3$ to $65$ times worse on the ill-conditioned
+cohort, and a single ridge term repairs it. Along the way our own
+encoder's advantage did not survive the move to properly initialised
+cohorts, a pre-registered control we wrote ourselves withdrew a headline
+claim about benchmark confounding, and a rate-exponent falsification we
+had reported turned out to rest on a mismatched reference and is
+withdrawn. What survives is the bound, the diagnosis, and the audit.

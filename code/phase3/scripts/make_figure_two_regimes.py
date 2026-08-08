@@ -5,8 +5,10 @@ shared-initialisation cohort only reaches d_eff = Tr at numerically loose
 tolerances and collapses as soon as the tolerance is realistic; the three
 independently initialised cohorts hold d_eff = Tr = 64 across four decades.
 
-Right panel: the resulting Lemma 2 floor B^2 (1 - d_eff / (Tr)) as a fraction
-of B^2. Shared init sits at ~0.745, independent init at ~0.012.
+axR.set_ylabel(r"condition number $\kappa(\bar H)$")
+floor panel: the exact floor is zero in both regimes (see app_proofs), so the
+floor difference that panel showed was an artifact of substituting a soft
+participation ratio into a rank formula.
 
 Writes paper/figures/figure_two_regimes.pdf. Run from the repo root.
 """
@@ -60,30 +62,35 @@ axL.set_title("Effective dimension is tolerance-fragile\nonly under shared initi
               fontsize=10)
 axL.legend(fontsize=7.0, loc="lower left", frameon=False)
 
-# ---------------- right: floor as a fraction of B^2 ----------------
+# ---------------- right: conditioning ----------------
+# The floor panel this replaces asserted a shared-vs-independent difference
+# of ~60x in B^2(1 - d_eff/(Tr)). That was computed by substituting the SOFT
+# participation ratio into a formula derived for a RANK. The exact floor is
+# zero in both regimes, so the panel was showing an artifact. What actually
+# separates the regimes is the conditioning of Hbar.
+cond = json.loads((RES / "floor_conditioning.json").read_text())
+KS, KI = "seed1 | T=4 (all)", "indep1 | T=4 (all)"
+
 x = range(len(BASES))
-sh_frac = [1.0 - shared[b]["soft_d_eff"] / shared[b]["Tr"] for b in BASES]
-# mean across the three independent cohorts
-in_frac = [sum(1.0 - indep[c][b]["soft_d_eff"] / indep[c][b]["Tr"]
-               for c in indep) / len(indep) for b in BASES]
+sh = [cond[KS][b]["cond_Hbar"] for b in BASES]
+ind = [cond[KI][b]["cond_Hbar"] for b in BASES]
 
 w = 0.36
-axR.bar([i - w / 2 for i in x], sh_frac, w, color="#b03a2e",
+axR.bar([i - w / 2 for i in x], sh, w, color="#b03a2e",
         label="shared init (one $A$ per cohort)")
-axR.bar([i + w / 2 for i in x], in_frac, w, color="#1b6ca8",
-        label="independent init (mean of 3 cohorts)")
+axR.bar([i + w / 2 for i in x], ind, w, color="#1b6ca8",
+        label="independent init")
+for i, (a, b) in enumerate(zip(sh, ind)):
+    axR.text(i - w / 2, a * 1.35, f"{a/1e4:.1f}e4", ha="center", fontsize=7.5)
+    axR.text(i + w / 2, b * 1.35, f"{b:.1f}", ha="center", fontsize=7.5)
 
-for i, (s, v) in enumerate(zip(sh_frac, in_frac)):
-    axR.text(i - w / 2, s + 0.018, f"{s:.3f}", ha="center", fontsize=7.5)
-    axR.text(i + w / 2, v + 0.018, f"{v:.3f}", ha="center", fontsize=7.5)
-
+axR.set_yscale("log")
 axR.set_xticks(list(x))
 axR.set_xticklabels([LABEL[b] for b in BASES], fontsize=8, rotation=12)
-axR.set_ylabel(r"irreducible floor $\;/\;B^2$")
-# headroom so the legend clears the 0.745 bars and their value labels
-axR.set_ylim(0, 1.16)
-axR.set_title(r"Lemma 2 floor $B^2(1 - d_{\mathrm{eff}}/(Tr))$" "\n"
-              "moves by a factor of about 60", fontsize=10)
+axR.set_ylabel(r"condition number $\kappa(\bar H)$")
+axR.set_ylim(1, 3e6)
+axR.set_title("Conditioning, not the floor, is what\n"
+              "initialisation controls", fontsize=10)
 axR.legend(fontsize=7.5, frameon=False, loc="upper center")
 
 for ax in (axL, axR):
@@ -95,6 +102,6 @@ OUT.parent.mkdir(parents=True, exist_ok=True)
 fig.savefig(OUT, bbox_inches="tight")
 fig.savefig(OUT.with_suffix(".png"), dpi=200, bbox_inches="tight")
 print("wrote", OUT)
-print("shared frac :", ["%.4f" % v for v in sh_frac])
-print("indep  frac :", ["%.4f" % v for v in in_frac])
-print("ratio       :", ["%.1fx" % (s / v) for s, v in zip(sh_frac, in_frac)])
+print("cond shared :", ["%.0f" % v for v in sh])
+print("cond indep  :", ["%.1f" % v for v in ind])
+print("ratio       :", ["%.0fx" % (a / b) for a, b in zip(sh, ind)])

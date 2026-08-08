@@ -52,18 +52,94 @@ original single-cohort rule three times returns a weakened verdict on
 \texttt{indep1} but a failure on \texttt{indep2} and \texttt{indep3}, so
 the earlier optimistic reading was the best of three draws.
 
-The blunt summary is that \textbf{TIES, a 2023 baseline, is the best
-method on three of four base models} once the adapters are initialised
-properly. Our encoder is beaten on Mistral and Yi, ties on Qwen, and wins
-only on Llama. The Llama win is not a rank artifact: rank-matching the
-encoder to the baselines still leaves it at $0.0795$ against the
-champion's $0.1052$.
+We are careful about how strongly to put this, because the margins do
+not all support the same strength of claim. The encoder wins clearly on
+Llama ($+0.0335$, well outside the gate) and loses clearly on Yi
+($-0.0150$). The other two are much weaker: Mistral at $-0.0055$ clears
+the $0.005$ tie threshold by $0.0005$, and Qwen at $-0.0002$ is a tie by
+any reading. So the accurate summary is \textbf{one clear win, one clear
+loss, and two bases where the encoder and a 2023 baseline are
+indistinguishable} on a metric whose own resolution we estimate at about
+$0.001$ nats (\S\ref{sec:discussion}). What does not survive is the
+earlier claim that the encoder is the better method: on properly
+initialised cohorts it is not distinguishable from TIES on half the
+bases and worse on a quarter. The Llama win is not a rank artifact:
+rank-matching the encoder to the baselines still leaves it at $0.0795$
+against the champion's $0.1052$.
 
 We think the honest reading is that the encoder's apparent advantage was
 substantially a property of the degenerate cohort it was developed on.
 In the floor-positive regime there is a large irreducible component that
 different methods approach differently, and a method tuned on that regime
 need not generalise to the regime where the floor is gone.
+
+\subsection{Does the conditioning matter? Only for methods that solve}
+\label{subsec:ridge}
+
+\S\ref{subsec:conditioning} found a four-order-of-magnitude difference in
+$\kappa(\bar H)$ between the two initialisation regimes. A difference that
+size which nothing observable depends on would be a curiosity, so we tested
+it, pre-registering the prediction before running the cells.
+
+\paragraph{First, the null.} Comparing every method we have on matched
+cohorts, same method, same base, shared against independent
+initialisation, gives no effect: independent is better on $2$ of $20$
+base-by-method cells, worse on $1$, and tied on $17$, with a mean
+difference of $+0.0014$ nats. Task arithmetic, TIES, DARE, KnOTS and TVQ
+are simply indifferent to which regime the cohort occupies.
+
+\paragraph{Then the mechanism.} The explanation is that none of those
+methods ever goes near the ill-conditioned direction. Each produces a
+bounded-norm, roughly mean-like solution, whereas the quantity that blows
+up is the norm of the \emph{exact interpolator}. To expose the
+conditioning one needs a method that actually solves the system. Our
+encoder does, and it carries a Tikhonov ridge, so sweeping
+$\lambda \in \{0, 0.01, 0.03, 0.05, 0.13, 0.30, 1.00\}$ on both cohorts
+with rank pinned to $16$ in every cell isolates the effect.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Worst-task NLL excess for the unregularised solve
+($\lambda = 0$), and the gain from the best ridge. Conditioning is
+invisible to the heuristics above and severe here.}
+\label{tab:ridge}
+\begin{tabular}{lccccc}
+\toprule
+base & \multicolumn{3}{c}{$\lambda = 0$} &
+\multicolumn{2}{c}{ridge gain $L(0) - L(\lambda^\star)$} \\
+ & shared & independent & ratio & shared & independent \\
+\midrule
+Llama-3.1-8B & 0.3081 & 0.0713 & $4.3\times$  & 0.2216 & 0.0000 \\
+Mistral-7B   & 9.7799 & 0.1504 & $65\times$   & 9.7301 & 0.0952 \\
+Qwen2.5-7B   & 0.1973 & 0.0256 & $7.7\times$  & 0.1867 & 0.0114 \\
+Yi-1.5-9B    & 0.2490 & 0.1209 & $2.1\times$  & 0.2211 & 0.0904 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:ridge} gives the result. Unregularised, the same merge is
+$2.1$ to $65$ times worse on the ill-conditioned cohort; on Mistral it
+collapses outright to $9.78$ nats against $0.15$. The ridge gain is larger
+on the shared arm on all four bases, which was the pre-registered
+prediction and held.
+
+The other half of the prediction failed, and we report it as failed. We
+also predicted that $\lambda^\star$ itself would be at least ten times
+larger on the shared arm. It is not: $\lambda^\star$ is \emph{identical}
+across arms on Mistral, Qwen and Yi ($0.13$, $0.13$, $0.30$), separating
+only on Llama. How much regularisation is needed does not track
+conditioning in any simple way; how much it buys does. By the
+pre-registered rules this makes the test \textsc{partial}, and we claim
+only the half that held.
+
+\paragraph{What this licenses, and what it does not.} It licenses a
+conditional recommendation: if you merge with a method that solves a
+linear system, check your cohort's conditioning and regularise, because
+unregularised it can fail by a factor of $65$. It does \emph{not} license
+the general advice to initialise independently. On the methods most
+practitioners actually use, the null above stands, and we do not dress it
+up as anything else.
 
 \subsection{A claim we withdraw}
 \label{subsec:withdrawn}
@@ -139,12 +215,18 @@ our tie threshold.
 
 Unlike most negative results this one has a mechanism that predicts its
 own shape. The rescaling makes the masked task vector an unbiased
-estimator of the unmasked one. For a loss convex in the merged delta,
-Jensen's inequality then gives
-$\E[L(D_{\mathrm{DARE}})] \geq L(D_{\mathrm{TA}})$, so the composition
-\emph{cannot} beat task arithmetic in expectation, and to second order the
-penalty is $\tfrac12\tr(H\Sigma)$ with $\Sigma \propto (1-p)/p$, which
-predicts monotone degradation as density falls. That is what we observe,
+estimator of the unmasked one, $\E[D_{\mathrm{DARE}}] = D_{\mathrm{TA}}$.
+We state the consequence carefully, because the obvious version of the
+argument is not available here: negative log-likelihood of an LLM is
+\emph{not} convex in the weights, so Jensen's inequality does not apply
+globally and we do not claim
+$\E[L(D_{\mathrm{DARE}})] \geq L(D_{\mathrm{TA}})$ as a theorem. What
+does hold is the local statement. Expanding $L$ to second order about
+$D_{\mathrm{TA}}$, the first-order term vanishes by unbiasedness and the
+penalty is $\tfrac12\tr(H\Sigma) + o(\|\Sigma\|)$ with
+$\Sigma \propto (1-p)/p$ and $H$ the local Hessian. Where $H \succeq 0$,
+which is the generic situation near a trained solution, this is
+non-negative and grows as density falls. That is what we observe,
 on three of four base models. We verified our implementation against the
 reference one and confirmed the operator reproduces the analytic signature
 $\sqrt{(1-p)/p}$ to three decimals, so this is a property of the method

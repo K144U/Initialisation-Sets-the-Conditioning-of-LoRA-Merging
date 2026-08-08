@@ -62,11 +62,21 @@ reports that across four LLM families only Task Arithmetic reliably
 produces constructive interference, with subspace-alignment methods
 often failing. Their result is an \emph{upper bound} on specific
 algorithms; our Theorem~\ref{thm:general} is a \emph{lower bound} on
-every algorithm, and our measurements reconcile the two: real LoRA task
-subspaces are linearly independent ($\deff = Tr$ in every layer of all
-four bases), so subspace alignment has no overlap to exploit (we
-measure KnOTS indistinguishable from Task Arithmetic) while
-sign-level TIES helps. Where our ordering differs from theirs, the
+every algorithm. Our measurements bear on theirs, but less directly than
+an earlier version of this work claimed. We find $\deff = Tr$ in every
+layer of all four bases and in both initialisation conditions, so the
+task subspaces are indeed linearly independent and the irreducible floor
+is zero throughout (Appendix~\ref{app:proofs}). We previously took that
+to mean subspace-alignment methods have no overlap to exploit, and cited
+our own KnOTS measurement as support. We withdraw both. Formal
+independence is not the absence of overlap: under shared initialisation
+the subspaces are near-collinear and $\bar H$ is ill-conditioned
+(\S\ref{sec:regimes}), which is exactly the situation an alignment
+method might be expected to address. And our KnOTS implementation
+reduced algebraically to Task Arithmetic under its default inner
+combination, so it never tested the question (\S\ref{sec:discussion}).
+We make no claim here about published KnOTS. Where our ordering differs
+from theirs, the
 difference is one of metric and setup (average interference across
 $16$ heterogeneous benchmarks vs.\ worst-task NLL excess on a
 controlled matrix), not a contradiction.

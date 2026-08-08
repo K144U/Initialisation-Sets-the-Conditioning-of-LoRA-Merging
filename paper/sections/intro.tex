@@ -8,106 +8,104 @@ DARE~\citep{yu2024dare}, subspace alignment such as
 KnOTS~\citep{stoica2025knots}, and closed-form least-squares approaches in
 the RegMean line~\citep{jin2023regmean,lorm2024,regmeanpp2025}.
 
-These methods are evaluated almost entirely by benchmark averages, and
-the resulting picture is unstable. The same method can be best on one
-cohort of adapters and worst on another, and practitioners have no way to
-tell in advance which situation they are in. We think a large part of this
-instability is not a property of the algorithms at all. It is a property
-of the adapters being merged, and it is measurable before any merge is
-attempted.
+These methods are evaluated almost entirely by benchmark averages, and the
+resulting picture is unstable: the same method can be best on one cohort of
+adapters and worst on another, with no way to tell in advance which
+situation one is in. This paper asks what a rate-distortion analysis can say
+about that, and reports both what it can and, at some length, what it
+cannot.
 
-\paragraph{A rate-distortion view.} We treat merging as lossy compression.
-$T$ task vectors must be summarised by one weight vector, and the figure
-of merit is the \emph{worst-task} excess loss, because a merged model that
-collapses on a single task is not deployable. In
-\S\ref{sec:lower_bound} we prove a lower bound on this quantity that holds
-for every merging algorithm, including ones that see the full curvature
-data for free. The bound splits into two terms with very different
-characters:
+\paragraph{The bound.} We treat merging as lossy compression: $T$ task
+vectors must be summarised by one weight vector, and the figure of merit is
+the \emph{worst-task} excess loss, because a merged model that collapses on
+a single task is not deployable. In \S\ref{sec:lower_bound} we prove a lower
+bound holding for every merging algorithm, even one given the curvature data
+for free. It splits into two terms of very different character,
 \begin{equation*}
   \underbrace{B^2\Bigl(1 - \frac{\deff}{Tr}\Bigr)}_{\text{irreducible floor}}
   \;+\;
-  \underbrace{c\cdot\frac{B^2\deff}{Tr}\,2^{-2R/\deff}}_{\text{rate term}} .
+  \underbrace{c\cdot\frac{B^2\deff}{Tr}\,2^{-2R/\deff}}_{\text{rate term}},
 \end{equation*}
-The second term is the familiar compression cost and vanishes as the rate
-grows. The first does not. It is an irreducible floor that no algorithm,
-at any rate, can go below, and it is controlled entirely by one geometric
-quantity: the effective dimension $\deff$ of the union of the $T$ task
-subspaces. When the task subspaces are near-orthogonal, $\deff = Tr$ and
-the floor is exactly zero, so every nat of observed merging loss is
-algorithmic slack that better methods could in principle recover. When the
-subspaces overlap heavily, $\deff \ll Tr$ and most of the observed loss is
-information-theoretic and permanently unrecoverable.
+where $\deff$ is the effective dimension of the union of the $T$ task
+subspaces. The floor is the part no algorithm can escape at any rate. Proofs
+are in Appendix~\ref{app:proofs}.
 
-\paragraph{The regime is decided by a training detail.} Our main empirical
-contribution is that this distinction is not hypothetical, and that real
-LoRA cohorts land on either side of it for a reason nobody reports. In the
-standard implementation the LoRA $A$ factor is drawn from a single global
-seed and $B$ is initialised to zero, so if all $T$ adapters in a cohort are
-trained from the same seed they all start from the \emph{same} $A$. Because
-$B$ starts at zero, $A$ moves very little during training, and the $T$
-task subspaces end up nearly collinear.
+\paragraph{The floor is vacuous, and we say so.} The natural next step is to
+measure the floor on real cohorts and report how much of the observed merging
+loss is irreducible. We did, and the answer is that \textbf{the floor is
+exactly zero} on all four base models under every initialisation scheme we
+tried. This is not a numerical accident but a structural fact: the floor
+vanishes precisely when the task row spaces are in direct sum, and $T$
+rank-$r$ adapters with $Tr \leq d$ are linearly independent even when their
+subspaces are nearly collinear. Near-collinear is not collinear.
 
-We measure this directly on four base models, comparing a shared-seed
-cohort against three independently seeded ones
-(\S\ref{sec:regimes}, Figure~\ref{fig:two-regimes}). The shared cohort has
-median principal cosine $0.996$ between task subspaces, soft $\deff$ of
-$16.3$ out of a possible $64$, and an irreducible floor of $0.745B^2$.
-The independently seeded cohorts have cosines of $0.047$ to $0.050$, soft
-$\deff$ of $63.1$ to $63.3$, and a floor of $0.012B^2$, lower by a factor
-of about $60$. Measured with a hard rank tolerance the gap is starker: all
-twelve independent cells hold $\deff = Tr = 64$ at every tolerance from
-$10^{-6}$ to $10^{-1}$, whereas the shared cohort's effective dimension
-falls to $20.8$ once the tolerance is realistic. The three independent
-cohorts agree with each other to three decimal places, so this is a
-structural property and not a seed accident.
+We report this prominently because an earlier version of this work claimed
+otherwise, deriving a floor of $0.745B^2$ for one cohort against $0.012B^2$
+for another. That difference was an artifact of substituting a soft
+participation-ratio surrogate into a formula derived for a rank
+(\S\ref{subsec:floor-zero}). For LoRA merging as practised, the floor term
+carries no operational content.
 
-The measurement needs only the adapter weights. It runs in about one CPU
-minute, requires no forward passes and no evaluation data, and it tells
-you whether the cohort you are about to merge has recoverable headroom at
-all.
+\paragraph{What initialisation does control.} A zero floor says an exact
+interpolator exists; it says nothing about its norm. That is where cohorts
+differ, and by a lot. Whether the $T$ adapters share one initialisation of
+the LoRA $A$ factor, which is what happens when a single global seed
+controls a training run and is almost never reported, moves the median
+principal cosine between task subspaces from $0.047$ to $0.995$, and the
+condition number of the merge operator $\bar H$ from about $1.5$ to between
+$1.8\times10^{4}$ and $8.3\times10^{4}$ (\S\ref{sec:regimes},
+Figure~\ref{fig:two-regimes}). The exact interpolator becomes $43$ to $64$
+times larger than the mean task delta, against exactly $T$ under independent
+initialisation. That $T$ is not fitted; it is the orthogonal-subspace value,
+and the measurement returns it exactly at both $T=3$ and $T=4$.
 
-\paragraph{What we tested, and what did not survive.} A theory that
-predicts headroom invites the obvious follow-up: does a rate-distortion
-encoder built to exploit that headroom actually win? We built one, and on
-the shared-initialisation cohorts it wins comfortably. To find out whether
-that result was real or an artifact of the degenerate geometry, we
-pre-registered a replication on the independently initialised cohorts,
-committing the decision rules to version control before the compute ran.
+The diagnosis needs only the adapter weights, runs in about one CPU minute,
+and requires no forward passes or evaluation data.
 
-It did not survive. On properly initialised cohorts our encoder's
-advantage disappears and TIES wins on three of four base models
-(\S\ref{sec:methods}). A second pre-registered control, which we wrote
-ourselves and which was designed to catch exactly this, forced us to
-withdraw a headline claim that published merging benchmarks are confounded
-by shared-initialisation geometry: the control showed our own
-champion-selection was unstable across cohorts, so we cannot support the
-stronger claim about the field. The predicted finite-rate exponent is
-falsified on real adapters, where the distortion curve is flat from two
-bits upward instead of decaying at the predicted rate. We report all of
-these, and we report the pre-registrations verbatim in
-Appendix~\ref{app:prereg}.
+\paragraph{Whether it matters, tested both ways.} A four-order-of-magnitude
+difference that nothing observable depends on would be a curiosity. We
+pre-registered the test and report both halves of the answer
+(\S\ref{sec:methods}). Standard merging heuristics are \emph{indifferent} to
+it: across twenty base-by-method cells, task arithmetic, TIES, DARE and TVQ
+show no systematic advantage in either regime, because each produces a
+bounded-norm near-mean solution that never approaches the ill-conditioned
+direction. Methods that actually solve the linear system are not: run
+unregularised, the same merge is $4.3$ to $65$ times worse on the
+ill-conditioned cohort, and a single Tikhonov term repairs it.
+
+So the honest claim is narrow and, we think, useful: cohort conditioning is
+invisible to the merging methods most people use and decisive for the ones
+that solve a system, and one ridge term is the difference.
+
+\paragraph{What did not survive.} We pre-registered several tests and lost
+several of them. Our own rate-distortion encoder's advantage does not survive
+the move from shared-initialisation cohorts to properly initialised ones. A
+pre-registered control we designed ourselves withdrew our headline claim that
+published merging benchmarks are confounded by initialisation geometry. A
+rate-exponent falsification we previously reported turned out to rest on an
+asymptote computed at a different ridge value, and is withdrawn without being
+replaced by a confirmation. One of our four adapters never learned its task,
+so our cohorts are $T=4$ nominal and $3$ effective, and we report every
+geometric quantity at both. The pre-registrations are reproduced verbatim in
+Appendix~\ref{app:prereg}, with the commit ordering that makes them checkable.
 
 \paragraph{Contributions.}
 \begin{enumerate}
 \item A closed-form lower bound on worst-task NLL excess for rank-$r$
-  merging (Theorem~\ref{thm:general}), valid for arbitrary task-dependent
-  curvature and against decoders given the curvature for free, together
-  with a matching achievability construction (Theorem~\ref{thm:achv}).
-\item The identification of $\deff$ as the quantity that separates
-  merging problems with recoverable headroom from those without, and a
-  closed form for the resulting floor.
-\item A measurement showing that LoRA cohort initialisation moves this
-  floor by a factor of about $60$, replicated across three independent
-  cohorts and four base models, together with a one-CPU-minute audit that
-  reports the regime before merging.
-\item A pre-registered evaluation, reported in whichever direction it
-  fell, establishing that our own encoder's advantage does not survive on
-  properly initialised cohorts, that the predicted rate exponent is
-  falsified on real adapters, and that a claim we previously made about
-  benchmark confounding must be withdrawn.
-\item A negative result for DARE composed with task arithmetic, with a
-  mechanism that predicts its own functional form, and a pre-registered
-  demonstration that this negative result does \emph{not} extend to DARE
-  composed with TIES.
+  merging (Theorem~\ref{thm:general}) with arbitrary task-dependent
+  curvature, and a matching construction (Theorem~\ref{thm:achv}); both
+  proved in Appendix~\ref{app:proofs}, with the one imported constant
+  isolated rather than absorbed.
+\item The finding that the bound's floor term is \emph{vacuous} for LoRA
+  cohorts in general position, together with the exact instance form
+  $B^2 - \tauH^\top\bar H\tauH$ that a practitioner should evaluate instead
+  of the prior-averaged expression.
+\item The identification of the conditioning of $\bar H$, rather than the
+  floor, as what cohort initialisation controls, measured across four base
+  models and four cohorts, with an audit that reports it in one CPU minute.
+\item A pre-registered demonstration that this conditioning is invisible to
+  standard merging heuristics and decisive for solve-based ones.
+\item A set of pre-registered negative results reported in the direction
+  they fell, including the withdrawal of two claims from our own earlier
+  drafts.
 \end{enumerate}
