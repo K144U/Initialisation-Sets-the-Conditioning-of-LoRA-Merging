@@ -31,10 +31,29 @@ is now zero. The re-scored numbers are what appear here. We do not draw
 any correlation conclusion from them, for the power reasons given in
 \S\ref{sec:discussion}.
 
+\paragraph{Code and data.} The merge implementations, the evaluation
+harness, the geometry audit, every pre-registration document, and the
+per-cell result files are released at \texttt{[REPOSITORY URL]}. The
+pre-registrations are also reproduced verbatim in
+Appendix~\ref{app:prereg}, but the repository is what makes the commit
+ordering checkable, and that ordering is the part of our procedure we are
+asking the reader to verify rather than accept.
+
 \paragraph{Compute.} All merging and evaluation ran on a single node with
-A100-80GB GPUs. The geometry audit of \S\ref{subsec:audit} runs on CPU in
-about one minute per cohort and needs only the adapter weight files, so
-that measurement is reproducible without GPU access.
+A100-80GB GPUs, one evaluation cell per card at 18 to 21 GiB. The project
+as a whole trained $112$ LoRA adapters and completed roughly $1{,}200$
+evaluation cells at $17$ to $26$ minutes each, on the order of $400$
+GPU-hours, of which the experiments reported in this paper are a subset
+(Appendix~\ref{app:manifest}). That total includes superseded runs: the
+results this paper reports were not obtained on the first attempt, and
+several of the corrections described in \S\ref{sec:discussion} required
+re-running cells that had already been analysed.
+
+The geometry and conditioning audit of \S\ref{subsec:audit} is the
+exception and is deliberately cheap: it runs on CPU in about one minute
+per cohort from the adapter weight files alone, with no forward passes, so
+that measurement and every number in Tables~\ref{tab:geometry}
+and~\ref{tab:conditioning} are reproducible without GPU access.
 
 \paragraph{Seeds and provenance.} Cohort initialisation seeds, evaluation
 data seeds, and merge-time mask seeds are independent and are recorded
