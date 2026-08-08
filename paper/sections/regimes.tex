@@ -25,10 +25,16 @@ an artifact of initialisation and survives when the tasks are unrelated.
 \subsection{Measurement}
 \label{subsec:measurement}
 
-We train $T = 4$ adapters at rank $r = 16$ ($Tr = 64$) on four base models for
-four unrelated tasks, in two conditions: a \emph{shared} cohort using one
-global seed, and \emph{independent} cohorts drawing a separate initialisation
-per task, repeated three times (\texttt{indep1/2/3}).
+We train $T = 4$ adapters at rank $r = 16$ ($Tr = 64$) on four base models
+(Llama-3.1-8B-Instruct, Mistral-7B-v0.3, Qwen2.5-7B-Instruct,
+Yi-1.5-9B-Chat) for four unrelated tasks: grade-school mathematics
+(\texttt{gsm8k}), instruction following (\texttt{alpaca}), code generation
+(\texttt{magicoder}), and translation (\texttt{flores}). Two conditions: a
+\emph{shared} cohort using one global seed, and \emph{independent} cohorts
+drawing a separate initialisation per task, repeated three times
+(\texttt{indep1/2/3}). The translation adapter does not learn its task; we
+report that defect and its consequences in \S\ref{subsec:scope} and carry
+the qualification throughout.
 
 For each cohort we compute, per layer and averaged over eight sampled layers,
 the median principal cosine between the $T$ task row spaces; the top singular
@@ -65,19 +71,19 @@ $\epsilon = 10^{-1}$.}
 \begin{tabular}{llccccc}
 \toprule
 base & init & med.\ cosine & $\sigma_{\max}$ & soft $\deff$ & hard $\deff$
-& exact floor \\
+& floor at $10^{-6}$ / $10^{-2}$ \\
 \midrule
-Llama-3.1-8B  & shared      & 0.9948 & 1.999 & 16.33 & 20.8 & $0$ \\
-              & independent & 0.0473 & 1.107 & 63.23 & 64.0 & $0$ \\
+Llama-3.1-8B  & shared      & 0.9948 & 1.999 & 16.33 & 20.8 & $0$ / $0.324$ \\
+              & independent & 0.0473 & 1.107 & 63.23 & 64.0 & $0$ / $0$ \\
 \addlinespace
-Mistral-7B    & shared      & 0.9947 & 1.999 & 16.28 & 19.9 & $0$ \\
-              & independent & 0.0468 & 1.106 & 63.24 & 64.0 & $0$ \\
+Mistral-7B    & shared      & 0.9947 & 1.999 & 16.28 & 19.9 & $0$ / $0.365$ \\
+              & independent & 0.0468 & 1.106 & 63.24 & 64.0 & $0$ / $0$ \\
 \addlinespace
-Qwen2.5-7B    & shared      & 0.9964 & 1.999 & 16.35 & 21.4 & $0$ \\
-              & independent & 0.0500 & 1.131 & 63.08 & 64.0 & $0$ \\
+Qwen2.5-7B    & shared      & 0.9964 & 1.999 & 16.35 & 21.4 & $0$ / $0.161$ \\
+              & independent & 0.0500 & 1.131 & 63.08 & 64.0 & $0$ / $0$ \\
 \addlinespace
-Yi-1.5-9B     & shared      & 0.9973 & 2.000 & 16.28 & 20.2 & $0$ \\
-              & independent & 0.0467 & 1.102 & 63.25 & 64.0 & $0$ \\
+Yi-1.5-9B     & shared      & 0.9973 & 2.000 & 16.28 & 20.2 & $0$ / $0.230$ \\
+              & independent & 0.0467 & 1.102 & 63.25 & 64.0 & $0$ / $0$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -98,24 +104,42 @@ conclude that the shared cohort carries an irreducible floor of
 $B^2(1 - 16.3/64) = 0.745B^2$ against $0.012B^2$ for the independent one.
 That is wrong, and we correct it here.
 
-By \eqref{eq:floor-exact} the exact floor for a given cohort is
-$B^2 - \tauH^\top \bar H \tauH$, computable from the adapters with no appeal
-to $P^\star$. Evaluating it gives \textbf{exactly zero on all four bases in
-both conditions}. The reason is visible in the proof: the floor vanishes iff
-the $V_t$ are in direct sum, and near-collinear is not collinear. Even at
-median cosine $0.995$ the four $16$-dimensional row spaces remain linearly
-independent, $\deff = Tr = 64$ exactly, and an interpolator reproducing every
-task exactly exists.
+The correct statement has two halves, and separating them matters because
+one is algebra and the other is not.
 
-Two lessons follow, and both are corrections to the earlier draft. A soft
-surrogate must not be substituted into a formula derived for a rank; doing so
-manufactured a difference of a factor of $60$ where the true difference is
-zero against zero. And more importantly, for LoRA cohorts in general position
-\textbf{the floor term of Theorem~\ref{thm:general} is vacuous}. It is exactly
-zero whenever $Tr \leq d$ and the subspaces are independent, which is every
-cohort we have measured and, we expect, every cohort trained this way. The
-bound is not thereby useless, but its content for practitioners is not in the
-floor.
+\emph{Algebraically}, the floor is zero for every cohort here. By
+Lemma~\ref{lem:floor-general} it vanishes iff the $V_t$ are in direct sum,
+and $T$ rank-$r$ adapters with $Tr \leq d$ span independently unless they
+coincide exactly. Near-collinear is not collinear: even at median cosine
+$0.995$ the four $16$-dimensional row spaces are linearly independent,
+$\deff = Tr = 64$, and an exact interpolator exists. This is a rank
+statement and needs no measurement.
+
+\emph{Numerically}, that is not a property one can verify by evaluating
+\eqref{eq:floor-exact}, and we do not claim to have done so. Computing
+$B^2 - \tauH^\top\bar H\tauH$ requires a pseudoinverse of $\bar H$, whose
+condition number reaches $8.3\times10^{4}$ on the shared arm
+(\S\ref{subsec:conditioning}), so the answer depends on the rank tolerance.
+At $\mathrm{rtol} = 10^{-6}$ we obtain zero on all eight cohort-base pairs;
+at $10^{-2}$ the shared arm returns $0.16$ to $0.37\,B^2$ and the
+independent arm still returns zero. Reporting "exactly zero" for the shared
+arm would be reporting a tolerance choice as a fact.
+
+That tolerance sensitivity is the finding, not an inconvenience.
+\textbf{A shared-initialisation cohort is numerically indistinguishable from
+a genuinely positive-floor one}, and only exact arithmetic separates them.
+So the algebraic answer, that the floor term of
+Theorem~\ref{thm:general} is vacuous for LoRA cohorts in general position,
+is correct and also the wrong thing to look at: it is a statement about a
+rank that no finite-precision merge can resolve. What a practitioner
+experiences is governed by how far the cohort sits from the degenerate case,
+which is a conditioning question. \S\ref{subsec:conditioning} asks it
+directly.
+
+One correction stands regardless of tolerance. A soft surrogate must not be
+substituted into a formula derived for a rank. Doing so produced our earlier
+claim of a $60$-fold floor difference, which is not the difference between
+two floors at any tolerance we have tried.
 
 \subsection{What initialisation actually controls is conditioning}
 \label{subsec:conditioning}
@@ -162,16 +186,44 @@ Table~\ref{tab:conditioning} gives the result. The condition number of
 $\bar H$ differs by four to five orders of magnitude between the two
 conditions. The exact interpolator is $43$ to $64$ times larger than the mean
 task delta under shared initialisation, against exactly $4.0$ under
-independent initialisation. That $4.0$ is not fitted: it is $T$, the value for
-exactly orthogonal subspaces, and recomputing the whole table at $T=3$ returns
-exactly $3.0$ (Appendix~\ref{app:geometry}). The measurement reproduces its
-own theoretical value at two different $T$, which is the strongest internal
-check we have on it.
+independent initialisation. That $4.0$ is $T$, the identity for exactly
+orthogonal subspaces, and recomputing at $T=3$ returns exactly $3.0$
+(Appendix~\ref{app:geometry}). We record this as a correctness check on the
+implementation and nothing more: reproducing an identity confirms the code
+computes what we intend, and says nothing about whether the quantity
+matters. \S\ref{subsec:ridge} is where that is tested.
 
 So initialisation does not set the floor. It sets how ill-conditioned the
 merge problem is, and therefore how large a solution must be to interpolate
-the tasks. \S\ref{subsec:ridge} tests whether that has any operational
-consequence, and the answer is not the obvious one.
+the tasks.
+
+\paragraph{Is $\kappa(\bar H)$ a property of the cohort or of our
+surrogate?} $\bar H$ is built from the LoRA factors under the
+specialisation $H_t = P_{V_t}$, so the question is fair and we answer it
+only partly. What is surrogate-independent is the geometry: the principal
+cosines and $\sigma_{\max}$ in Table~\ref{tab:geometry} are properties of
+the row spaces $\range(A_t^\top)$ alone, and any $H_t$ with
+$\range(H_t) = V_t$ inherits the near-degeneracy of $\sum_t P_{V_t}$,
+because that degeneracy is the overlap of the $V_t$ and not a choice of
+metric. What is \emph{not} surrogate-independent is the specific value of
+$\kappa$, which would change under a Fisher-weighted $H_t$ with a spread
+spectrum. We therefore read $\kappa(\bar H)$ as a calibrated index of
+subspace overlap rather than as the condition number any particular solver
+will encounter, and we have not measured the latter.
+
+\paragraph{A gap we do not close.} There is a mismatch of objects running
+through this paper and we flag it rather than let a reader find it.
+Theorem~\ref{thm:general} constrains $w^\star \in \R^d$ with no rank
+constraint. The interpolator $\tauH$ whose norm we report above has rank up
+to $Tr = 64$. But our merge pipeline truncates every method back to rank
+$r = 16$ for deployment parity, so the object whose norm we measure is not
+one the pipeline can return, and the ridge sweep of \S\ref{subsec:ridge}
+tests conditioning through a rank-$16$-constrained solver. Theory, geometry
+and experiment therefore constrain three different objects. We expect the
+conditioning story to survive, since truncation cannot reduce the ill-posedness
+of the underlying system, but we have not shown that, and until the sweep is
+repeated without truncation the link between the $\kappa$ we measure and the
+degradation we observe is an inference rather than a measurement.
 
 \subsection{The audit}
 \label{subsec:audit}
