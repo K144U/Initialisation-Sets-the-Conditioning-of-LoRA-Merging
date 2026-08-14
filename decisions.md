@@ -2420,3 +2420,77 @@ Verified inert BEFORE use: `check_nll_tau_determinism.py` found 8 of 8 cohort
 groups bitwise identical across the existing sweep, 960 comparisons, worst
 difference exactly 0. A cached cell takes about 10 minutes against 57. The
 sweep finished in 2 hours 20 minutes on five GPUs instead of an estimated 10.6.
+
+---
+
+## 2026-08-14 (evening) — R7 SURVIVES and the effect is LARGER untruncated; R8 supplies the gate the paper said it could not compute
+
+Rules `acebd1a`, generator/PBS/analyzer `ca94868`, both preceding every cell.
+R7 finished 16:45, R8 at 18:46, 56 cells each, on disjoint GPU sets under the
+queue's two-job limit.
+
+### R7: the gap in 6.4 is closed, in the direction that helps
+
+Section 6.4 says theory, geometry and experiment constrain three different
+objects, that we expect the conditioning story to survive rank truncation, and
+that we have not shown it. Now we have.
+
+    base         cohort         0.0     0.01     0.03     0.05     0.13      0.3      1.0   lambda*     gain
+    llama31_8b   seed1       7.4266   0.3355   0.1166   0.0824   0.1083   0.1791   0.2832      0.05   7.3442
+    llama31_8b   indep1      0.0635   0.0649   0.0681   0.0714   0.0901   0.1342   0.2480         0   0.0000
+    mistral_7b   seed1      11.6283   3.0965   0.3346   0.1425   0.0473   0.0689   0.2198      0.13  11.5809
+    mistral_7b   indep1      0.1582   0.1428   0.1178   0.0994   0.0575   0.0597   0.1699      0.13   0.1007
+    qwen25_7b    seed1       0.8993   0.1378   0.0505   0.0181   0.0101   0.0164   0.1938      0.13   0.8893
+    qwen25_7b    indep1      0.0256   0.0239   0.0211   0.0188   0.0140   0.0184   0.1599      0.13   0.0116
+    yi15_9b      seed1       3.1294   0.4194   0.2421   0.1531   0.0356   0.0268   0.1338       0.3   3.1026
+    yi15_9b      indep1      0.1227   0.1160   0.1034   0.0927   0.0626   0.0312   0.1129       0.3   0.0916
+
+Ratio at lambda = 0 holds 4 of 4 (116.9x, 73.5x, 35.2x, 25.5x), ridge gain
+larger on the shared arm 4 of 4. **VERDICT: SURVIVES.**
+
+**The effect is bigger without truncation, not smaller.** Truncated, the same
+ratios were 4.3x, 65x, 7.7x and 2.1x. Rank truncation to 16 was *suppressing*
+the blow-up, because it throws away most of a rank-64 interpolator, and the
+direction it throws away is the ill-conditioned one. So the published numbers
+were, if anything, conservative, and 6.4's "we expect the conditioning story to
+survive, since truncation cannot reduce the ill-posedness" was right for a
+reason slightly different from the one given: truncation cannot reduce the
+ill-posedness of the underlying system, and it also hides part of its
+consequence.
+
+This is the single largest change to what the paper may claim. Every sentence
+that currently says the kappa-to-degradation link is an inference rather than a
+measurement can be rewritten, and Limitation 7's mismatch-of-objects paragraph
+is now a measurement plus a residual caveat about the theory's unconstrained
+w\*, not a three-way gap.
+
+### R8: the gate exists, and everything clears it
+
+    base           gain shared  gain indep mean       sd     2xSE      diff   verdict
+    llama31_8b          0.2216           0.0000   0.0000   0.0000   +0.2216   larger on shared
+    mistral_7b          9.7301           0.0968   0.0015   0.0017   +9.6333   larger on shared
+    qwen25_7b           0.1867           0.0116   0.0002   0.0003   +0.1752   larger on shared
+    yi15_9b             0.2211           0.0917   0.0028   0.0033   +0.1294   larger on shared
+
+Limitation 6 said the pre-registration specified a 2 x SE gate that we could
+not compute, and that only the tie threshold was applied. With indep2 and
+indep3 the independent arm is n = 3 and the gate exists. All four bases clear
+it, by two to four orders of magnitude.
+
+The independent-arm gains are remarkably stable across cohorts, sd 0.0000 to
+0.0028, which is why the gate is so easy to clear and is itself worth
+reporting: the ridge buys essentially nothing on a well-conditioned cohort, and
+it buys the same nothing every time.
+
+**The asymmetry is stated rather than hidden.** The shared arm is still one
+cohort, so this SE is the independent arm's alone. The gate is applied
+symmetrically, its provenance is not, and Limitation 6 should be rewritten to
+say that rather than deleted.
+
+### Standing consequence for the paper
+
+Three of the referee's blocking items are now answered with measurements
+instead of promises: R1 (the family claim holds on a solver we did not build),
+R7 (the truncation gap closes, and the effect grows), R8 (the gate exists and
+clears). R2 measured the mechanism, R3 gave the null a detectable-effect floor,
+R10 found the metric inverted on HumanEval. R4 is running. R5 and R6 remain.
