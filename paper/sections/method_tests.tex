@@ -95,6 +95,45 @@ that cleared the threshold by $0.0005$ nats. The conclusion of this section
 does not change, and neither does the direction of any other base, but the
 matched arm is the one that should be read.
 
+\paragraph{Nor does the remaining win survive dropping the untrained
+adapter.} \S\ref{subsec:scope} reports that one of our four adapters never
+learned its task, and Appendix~\ref{app:t3} shows every geometric quantity
+is unchanged when it is removed. The merge results deserve the same
+treatment, so we re-ran the matrix at $T = 3$ on all three independent
+cohorts:
+
+\begin{center}
+\small
+\begin{tabular}{lcc}
+\toprule
+base & $d$ at $T = 4$ & $d$ at $T = 3$ \\
+\midrule
+Llama-3.1-8B & $+0.0257$ \; wins & $+0.0033$ \; \textbf{ties} \\
+Mistral-7B   & $-0.0022$ \; ties & $-0.0012$ \; ties \\
+Qwen2.5-7B   & $-0.0004$ \; ties & $+0.0009$ \; ties \\
+Yi-1.5-9B    & $-0.0154$ \; loses & $-0.0053$ \; loses \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+One win, two ties and one loss becomes \emph{zero} wins, three ties and one
+loss. The Llama win, the only clear win this method has left anywhere in
+the paper, falls from $0.0257$ to $0.0033$ nats and stops clearing the
+gate. The rank-$64$ realisation disagrees, keeping Llama at $+0.0081$ while
+moving Mistral from a loss to a tie, and two realisations of one method
+disagreeing about the same base is itself a measure of how thin that win
+is. The champion on Mistral changes from TIES to TVQ at $T = 3$, which we
+report rather than absorb.
+
+The $T = 4$ matrix was registered as primary and stays primary; we are not
+replacing it with the arm that happens to be less flattering, any more than
+we would the reverse. But levels are not comparable across $T$, since a
+maximum over three tasks is not a maximum over four, so what transfers is
+the verdict, and the verdict is that three separate controls have each
+removed a piece of this method's advantage: independent initialisation,
+matching the rank and inference path, and now removing the adapter that
+never trained.
+
 We are careful about how strongly to put this, because the margins do
 not all support the same strength of claim. The encoder wins clearly on
 Llama ($+0.0335$, well outside the gate) and loses clearly on Yi

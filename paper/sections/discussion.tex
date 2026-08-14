@@ -15,11 +15,13 @@ with essentially none of their energy in the ill-conditioned directions, while
 the unregularised solvers reach $35$ to $57$ times with three quarters of
 theirs there.
 
-\paragraph{What does not.} Our own encoder is not distinguishable from TIES on
-half the bases once cohorts are properly initialised, and worse on one; with
-the inference path matched between the arms it is two ties rather than two
-losses, which is a correction in our favour that we report because it is a
-correction either way. The claim that published merging benchmarks are
+\paragraph{What does not.} Our own encoder. Three controls have each removed
+a piece of its advantage: moving to properly initialised cohorts, matching the
+rank and the inference path to the baselines, and dropping the adapter that
+never trained. After all three it beats the best baseline on no base model at
+all, and is worse than it on one. The middle control moved a verdict in our
+favour and the other two moved verdicts against us; we report all three the
+same way. The claim that published merging benchmarks are
 confounded by initialisation geometry was withdrawn by a control we wrote
 ourselves. Our earlier report that the finite-rate exponent is falsified is
 withdrawn: its two supporting slopes were fitted against an asymptote computed
@@ -85,9 +87,12 @@ other way.
 \item \textbf{One adapter in four never learned its task}, on every base and
   in both arms, so our cohorts are $T=4$ nominal and $3$ effective
   (\S\ref{subsec:scope}). Every geometric quantity is reported at both $T$
-  and the contrast is unchanged, but the merged models do contain an
-  untrained member, and no claim about merging $T$ well-trained tasks is
-  supported by this data.
+  and the contrast is unchanged. The merge results are now reported at both
+  $T$ as well, and there one verdict does move: our encoder's win on Llama
+  becomes a tie once the untrained adapter is removed (\S\ref{subsec:q1}),
+  so its remaining advantage is one of the things this defect was
+  supporting. No claim about merging $T$ well-trained tasks is supported by
+  this data.
 \item \textbf{The ridge sweep's gate is one-sided in provenance.} An
   earlier version could not compute the pre-registered
   $2\times\mathrm{SE}$ gate at all, because there was one cohort per arm.
