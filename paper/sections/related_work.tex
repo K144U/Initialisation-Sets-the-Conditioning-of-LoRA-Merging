@@ -60,12 +60,15 @@ when merging deeper ones. Ours differs in two ways: it is
 alone, and it is derived from a worst-task rate-distortion lower bound
 rather than from an empirical fit. What it shares with that line is more
 important here than what separates it. All of these methods solve a linear
-system in a curvature surrogate, which is exactly the family that
-\S\ref{subsec:ridge} finds is sensitive to cohort conditioning, and all of
-them carry a ridge term whose role that section is about. We do not
-benchmark against RegMean in this version: an earlier draft did, on the
-shared-initialisation cohort, and \S\ref{subsec:q1} is the reason those
-comparisons are not carried over.
+system in a curvature surrogate, and all carry a ridge term whose role
+\S\ref{subsec:ridge} is about. We test RegMean directly on both cohorts
+(\S\ref{subsec:regmean}) and find the same conditioning effect there, which
+is what licenses talking about the family rather than about our encoder.
+LoRM and RegMean++ are not run: RegMean++'s distinguishing mechanism is a
+cross-layer dependency in the activation Gram and LoRM's setting is
+federated continual learning, so neither has a data-free adapter-only form
+we could implement without inventing the part that makes it that method.
+The family claim therefore rests on two members of it, not five.
 
 \paragraph{Rate-distortion and rotation-for-quantization ancestry.}
 Classical rate-distortion theory~\citep{shannon1959rd,coverthomas}

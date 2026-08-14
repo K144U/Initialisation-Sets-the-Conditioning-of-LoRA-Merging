@@ -59,6 +59,42 @@ original single-cohort rule three times returns a weakened verdict on
 \texttt{indep1} but a failure on \texttt{indep2} and \texttt{indep3}, so
 the earlier optimistic reading was the best of three draws.
 
+\paragraph{One arm of that table was measured on a different inference
+path, and matching it moves a verdict.} We found this while checking an
+unrelated cell and report it because it bears directly on Table~\ref{tab:q1}.
+Of the seven methods in that matrix, the ridge-regularised encoder is the
+only one evaluated through vanilla \textsc{transformers}; the six others run
+a fused fast path. That is not a slip: at $\deff$ realisation the merged
+adapter has rank $64$ while the baselines have rank $16$, and the fast path
+does not support mixed-rank adapters, so the encoder had to take the other
+route. But the two paths are not numerically identical. On the same
+adapters and the same evaluation draw they differ by up to $0.0105$ nats,
+which is twice our tie threshold and comparable to three of the four margins
+in the table.
+
+The rank-$16$ realisation of the same encoder runs the fast path, so it is
+matched to the baselines on both counts and needs no new measurement:
+
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+base & $d$ as published & $d$ matched & verdict \\
+\midrule
+Llama-3.1-8B & $+0.0335$ & $+0.0257$ & wins, both \\
+Mistral-7B   & $-0.0055$ & $-0.0022$ & \textbf{loses $\to$ ties} \\
+Qwen2.5-7B   & $-0.0002$ & $-0.0004$ & ties, both \\
+Yi-1.5-9B    & $-0.0150$ & $-0.0154$ & loses, both \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Matched, the count is one win, two ties and one loss rather than one win,
+one tie and two losses. Mistral was reported as a clear loss on a margin
+that cleared the threshold by $0.0005$ nats. The conclusion of this section
+does not change, and neither does the direction of any other base, but the
+matched arm is the one that should be read.
+
 We are careful about how strongly to put this, because the margins do
 not all support the same strength of claim. The encoder wins clearly on
 Llama ($+0.0335$, well outside the gate) and loses clearly on Yi
@@ -92,21 +128,92 @@ $\kappa(\bar H)$ between the two initialisation regimes. A difference that
 size which nothing observable depends on would be a curiosity, so we tested
 it, pre-registering the prediction before running the cells.
 
-\paragraph{First, the null.} Comparing every method we have on matched
-cohorts, same method, same base, shared against independent
-initialisation, gives no effect: independent is better on $2$ of $20$
-base-by-method cells, worse on $1$, and tied on $17$, with a mean
-difference of $+0.0014$ nats. Task arithmetic, TIES, DARE, KnOTS and TVQ
-are simply indifferent to which regime the cohort occupies.
+\paragraph{First, the null, and what it can actually detect.} We compare
+every method on matched cohorts, same method, same base, shared against
+independent initialisation, with three cohorts per arm so the
+pre-registered gate can be applied: a cell counts as an effect only if the
+mean difference exceeds $\max(0.005, 2\,\mathrm{SE})$. Across $20$
+base-by-method cells, $15$ show no detectable effect, $5$ favour
+independent initialisation, and none favours shared.
 
-\paragraph{Then the mechanism.} The explanation is that none of those
-methods ever goes near the ill-conditioned direction. Each produces a
-bounded-norm, roughly mean-like solution, whereas the quantity that blows
-up is the norm of the \emph{exact interpolator}. To expose the
-conditioning one needs a method that actually solves the system. Our
-encoder does, and it carries a Tikhonov ridge, so sweeping $\lambda$ over
-seven values, $0$, $0.01$, $0.03$, $0.05$, $0.13$, $0.30$ and $1.00$, on
-both cohorts with rank pinned to $16$ in every cell isolates the effect.
+The number that matters alongside that is the smallest effect the design
+could have found, because a null without one is not evidence of absence.
+The gate sits at $0.0052$ nats in the median cell and $0.0109$ in the
+worst, so the honest statement is \emph{no effect detectable at about
+$0.01$ nats}, not \emph{no effect}. It also settles a tension in an
+earlier version of this work, which quoted a mean difference of $0.0014$
+nats while estimating the metric's own resolution at about $0.001$: that
+difference is below the median gate, so it is a quantity this design
+cannot resolve in either direction.
+
+The five cells that do clear the gate are worth naming rather than
+averaging away, because four of them are not spread at random. Three are
+the subspace-alignment method, on Mistral, Qwen and Yi, at $0.0096$ to
+$0.0129$ nats; the others are TIES on Llama at $0.0151$ and TVQ on Yi at
+$0.0087$. Task arithmetic and DARE, the two methods closest to a plain
+mean, show nothing anywhere. That ordering is the one the mechanism below
+predicts: a method that explicitly operates on the subspace geometry is
+the heuristic most exposed to a change in that geometry, and it gains from
+the cohort whose subspaces are not near-collinear. The effect is small,
+consistent in direction, and we do not build anything on it.
+
+\paragraph{Then the mechanism, measured.} The explanation for the other
+$15$ cells is that those methods never go near the ill-conditioned
+direction. That was an assertion in an earlier version and is now a
+measurement, and it needs no forward passes: every merge here is weight
+arithmetic on the adapter factors. For each merged solution we report its
+norm relative to the mean task delta, and the share of its energy lying in
+the bottom quartile of $\bar H$'s eigen-directions, in the projected
+coordinates of \S\ref{subsec:conditioning}.
+
+\begin{table}[t]
+\centering
+\small
+\caption{What each solution does with the ill-conditioned directions.
+Amplification is $\|\Delta_{\mathrm{merged}}\|/\|\bar\Delta\|$; tail
+fraction is the share of squared norm in the bottom quartile of $\bar H$'s
+spectrum. Ranges are over the four base models. On the independent arm a
+tail fraction near $0.21$ is what a generic direction gives when a quarter
+of the dimensions holds a quarter of the energy, so the signature is the
+$0.73$ to $0.80$ on the shared arm, not the baseline it is measured
+against.}
+\label{tab:mechanism}
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{shared} & \multicolumn{2}{c}{independent} \\
+solution & amplification & tail & amplification & tail \\
+\midrule
+mean task delta            & 1.00 & 0.000 & 1.00 & 0.21 \\
+task arithmetic            & 0.99 & 0.000 & 0.86--0.92 & 0.20 \\
+DARE                       & 0.98--0.99 & 0.000 & 0.86--0.90 & 0.20 \\
+TIES                       & 1.98--2.04 & 0.000 & 2.04--2.22 & 0.21 \\
+TVQ ($b{=}2$)              & 1.95--2.16 & 0.000 & 1.68--1.95 & 0.20 \\
+\addlinespace
+RegMean, minimal ridge     & 35.4--51.4 & 0.73--0.79 & 3.41--3.67 & 0.29 \\
+our encoder, $\lambda = 0$ & 36.7--56.7 & 0.78--0.80 & 3.42--3.67 & 0.29 \\
+our encoder, $\lambda^\star$ & 2.20--2.56 & 0.000 & 2.84--3.05 & 0.28 \\
+\addlinespace
+exact interpolator $\tauH$ & 43.4--64.1 & 0.62--0.66 & 3.96--4.00 & 0.28 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:mechanism} gives it. On the ill-conditioned cohort every
+heuristic sits at one to two times the mean task delta with a tail
+fraction that rounds to zero at three decimals, while both unregularised
+solvers sit at $35$ to $57$ times with roughly three quarters of their
+energy in the bottom quartile of the spectrum. They are the only methods
+that go there, which is why they are the only methods the conditioning
+reaches. One incidental check falls out: RegMean at minimal ridge and our
+encoder at $\lambda = 0$ agree to two decimals on the independent arm
+across all four bases, so two differently derived solvers land on the same
+solution once the problem is well posed.
+
+\paragraph{So we sweep the ridge, on two solvers.} To expose the
+conditioning one needs a method that actually solves the system. Ours
+does, and it carries a Tikhonov ridge, so sweeping $\lambda$ over seven
+values, $0$, $0.01$, $0.03$, $0.05$, $0.13$, $0.30$ and $1.00$, on both
+cohorts with rank pinned to $16$ in every cell isolates the effect.
 
 \begin{table}[t]
 \centering
@@ -144,13 +251,110 @@ conditioning in any simple way; how much it buys does. By the
 pre-registered rules this makes the test \textsc{partial}, and we claim
 only the half that held.
 
+\subsection{The same test on a solver we did not build}
+\label{subsec:regmean}
+
+Everything above concerns one solver, and we built it. A referee is
+entitled to ask whether the effect is a property of the family or of our
+implementation, and the question is sharp enough to be worth answering
+with a pre-registered experiment rather than an argument.
+
+RegMean~\citep{jin2023regmean}, in the data-free adapter-only form, is a
+solver we did not design, whose ridge term is part of its own published
+formulation rather than something we added. We swept it on the same grid
+and the same two cohorts, registering two predictions in advance: that the
+ridge gain would be larger on the shared arm, and that the minimally
+regularised excess would be worse there by at least a factor of two, each
+on at least three of four bases.
+
+\begin{table}[t]
+\centering
+\small
+\caption{RegMean on both cohorts. Its minimally regularised reference is
+$\lambda = 10^{-6}$ rather than $0$: RegMean solves in the full input
+dimension against a Gram of rank at most $Tr = 64$ against $d = 4096$, so
+$\lambda = 0$ is singular rather than ill-conditioned and returns
+null-space noise without raising an error. Our encoder solves inside
+$\range(\bar H)$, so its $\lambda = 0$ is defined. The two columns are
+therefore not the same object and each method is compared only against
+itself across arms.}
+\label{tab:regmean}
+\begin{tabular}{llcccc}
+\toprule
+base & cohort & $\lambda = 10^{-6}$ & $\lambda^\star$ & gain & ratio \\
+\midrule
+Llama-3.1-8B & shared      & 1.9789 & 0.01 & 1.7428 & \multirow{2}{*}{$27.9\times$} \\
+             & independent & 0.0708 & $10^{-6}$ & 0.0000 & \\
+\addlinespace
+Mistral-7B   & shared      & 10.6283 & 0.01 & 10.5314 & \multirow{2}{*}{$70.9\times$} \\
+             & independent & 0.1499 & 0.01 & 0.0449 & \\
+\addlinespace
+Qwen2.5-7B   & shared      & 0.2376 & 0.01 & 0.2255 & \multirow{2}{*}{$9.3\times$} \\
+             & independent & 0.0256 & 0.01 & 0.0133 & \\
+\addlinespace
+Yi-1.5-9B    & shared      & 0.5700 & 0.01 & 0.5477 & \multirow{2}{*}{$4.7\times$} \\
+             & independent & 0.1203 & 0.01 & 0.0913 & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Both predictions hold on four of four bases. The effect is not a property
+of our encoder.
+
+Three details in Table~\ref{tab:regmean} are worth reporting rather than
+smoothing. $\lambda^\star$ is $0.01$ on seven of the eight arms, so on
+RegMean too the amount of regularisation needed does not track the
+conditioning even though the amount it buys does; that is the same split
+our own sweep found, now reproduced on a method we did not write. Llama's
+independent arm selects the minimal $\lambda$ and gains exactly zero,
+which is the cleanest statement of the claim available: on a
+well-conditioned cohort there is nothing to repair. And from
+$\lambda = 0.13$ upward the two arms agree to three decimals, because
+heavy regularisation washes the difference out entirely.
+
+\subsection{The same test without rank truncation}
+\label{subsec:untruncated}
+
+\S\ref{subsec:conditioning} notes that our pipeline truncates every merge
+back to rank $r$, so the sweep above tests conditioning through a
+rank-constrained solver while the interpolator whose norm we report has
+rank up to $Tr$. Repeating the sweep with truncation disabled removes that
+mismatch, and the truncated sweep is then the comparison arm rather than
+being re-run.
+
+\begin{center}
+\small
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{$\lambda = 0$ excess} & \multicolumn{2}{c}{shared / independent} \\
+base & shared & independent & untruncated & truncated \\
+\midrule
+Llama-3.1-8B & 7.4266  & 0.0635 & $116.9\times$ & $4.3\times$ \\
+Mistral-7B   & 11.6283 & 0.1582 & $73.5\times$  & $65\times$ \\
+Qwen2.5-7B   & 0.8993  & 0.0256 & $35.2\times$  & $7.7\times$ \\
+Yi-1.5-9B    & 3.1294  & 0.1227 & $25.5\times$  & $2.1\times$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The link survives on all four bases, and the effect is \emph{larger}
+without truncation, by factors of $25$ to $117$ against $2.1$ to $65$.
+Truncation was not manufacturing the result; it was hiding part of it,
+which is what one should expect when all but the leading $16$ directions
+of a rank-$64$ interpolator are discarded and the ill-conditioned subspace
+goes with them. The numbers we report as primary are therefore the
+conservative ones.
+
 \paragraph{What this licenses, and what it does not.} It licenses a
 conditional recommendation: if you merge with a method that solves a
 linear system, check your cohort's conditioning and regularise, because
-unregularised it can fail by a factor of $65$. It does \emph{not} license
-the general advice to initialise independently. On the methods most
-practitioners actually use, the null above stands, and we do not dress it
-up as anything else.
+unregularised it can fail by a factor of $65$ at rank $16$ and $117$
+without truncation, on two solvers, one of which we did not build. It does
+\emph{not} license the general advice to initialise independently. On the
+methods most practitioners actually use the null above stands, with the
+single qualification that the subspace-alignment method gains a little
+from independent initialisation on three of four bases, and we do not
+dress that up as anything more.
 
 \subsection{A claim we withdraw}
 \label{subsec:withdrawn}

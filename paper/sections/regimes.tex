@@ -214,19 +214,31 @@ spectrum. We therefore read $\kappa(\bar H)$ as a calibrated index of
 subspace overlap rather than as the condition number any particular solver
 will encounter, and we have not measured the latter.
 
-\paragraph{A gap we do not close.} There is a mismatch of objects running
-through this paper and we flag it rather than let a reader find it.
-Theorem~\ref{thm:general} constrains $w^\star \in \R^d$ with no rank
-constraint. The interpolator $\tauH$ whose norm we report above has rank up
-to $Tr = 64$. But our merge pipeline truncates every method back to rank
-$r = 16$ for deployment parity, so the object whose norm we measure is not
-one the pipeline can return, and the ridge sweep of \S\ref{subsec:ridge}
-tests conditioning through a rank-$16$-constrained solver. Theory, geometry
-and experiment therefore constrain three different objects. We expect the
-conditioning story to survive, since truncation cannot reduce the ill-posedness
-of the underlying system, but we have not shown that, and until the sweep is
-repeated without truncation the link between the $\kappa$ we measure and the
-degradation we observe is an inference rather than a measurement.
+\paragraph{A mismatch of objects, and what closes it.} Three different
+objects appear in the argument so far, and we flag that rather than let a
+reader find it. Theorem~\ref{thm:general} constrains $w^\star \in \R^d$ with
+no rank constraint. The interpolator $\tauH$ whose norm we report above has
+rank up to $Tr = 64$. But our merge pipeline truncates every method back to
+rank $r = 16$ for deployment parity, so the object whose norm we measure is
+not one the pipeline can return, and the ridge sweep of
+\S\ref{subsec:ridge} tests conditioning through a rank-$16$-constrained
+solver.
+
+An earlier version of this work stopped there, saying we expected the
+conditioning story to survive but had not shown it. We have now repeated the
+ridge sweep with the post-merge truncation disabled
+(\S\ref{subsec:untruncated}), and it does survive: the unregularised
+shared-versus-independent ratio is $25$ to $117$ times, against $2.1$ to
+$65$ with truncation, on all four base models. Truncation was not producing
+the effect. It was \emph{masking} part of it, which is what one should
+expect, since discarding all but the leading $16$ directions of a rank-$64$
+interpolator discards most of the ill-conditioned subspace along with them.
+
+What remains open is only the first of the three objects. The theorem
+constrains an unconstrained $w^\star$, and every merge we run is rank
+constrained, so the bound bears on our measurements by analogy at that step
+and not by derivation. That is a real limitation and it is not closed by
+anything in this paper.
 
 \subsection{The audit}
 \label{subsec:audit}

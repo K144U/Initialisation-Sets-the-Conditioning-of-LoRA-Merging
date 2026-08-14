@@ -9,15 +9,28 @@ reader to check rather than take on trust.
 \paragraph{Data splits.} We correct a claim made in an earlier version of
 this work. Training and evaluation splits are \emph{not} disjoint.
 Training shuffles the source pool with the cohort seed while evaluation
-shuffles with a separate fixed seed, and the two draws overlap: about
-$14.5\%$ of evaluation examples on the instruction-following task and
-about $10\%$ on the code task also appear in that cohort's training data.
-Absolute loss and accuracy numbers in this paper are therefore optimistic
-and should not be read as held-out performance. Because every method is
-evaluated on identical data with an identical harness, we do not believe
-the overlap affects any comparison between methods, which is what all of
-our claims rest on. It is disclosed here rather than quietly fixed because
-the earlier statement asserted the opposite.
+shuffles with a separate fixed seed, so on the two tasks whose evaluation
+split is the training split the held-out thousand is a different
+permutation's slice of the same pool. Measured directly, the overlap is
+$12.9$ to $16.2\%$ of evaluation examples on the instruction-following
+task and $9.2$ to $11.6\%$ on the code task, varying by cohort. Grade-school
+mathematics and translation draw from genuinely separate splits and are
+unaffected. Absolute loss and accuracy numbers in this paper are therefore
+optimistic and should not be read as held-out performance.
+
+An earlier version went on to say that we did not \emph{believe} the
+overlap affected comparisons between methods. That belief is now tested.
+Every cell stores per-example loss in evaluation order, so the
+contaminated positions can be dropped and the whole matrix re-aggregated
+without retraining anything. On the disjoint subset the method ordering is
+unchanged in $19$ of the $20$ base-by-cohort rows; the single exception
+swaps two variants of our own encoder with each other and moves no
+baseline; and the worst task is the same in all $144$ cells. Per-cell
+worst-task excess shifts by a mean of $0.0000$ nats, between $-0.0021$ and
+$+0.0009$. The claim that the overlap does not affect our comparisons is
+therefore a result rather than an assurance, and it is worth being precise
+about what it covers: comparisons, not levels. Absolute numbers remain
+optimistic.
 
 \paragraph{Evaluation harnesses.} An earlier version of this work reported
 downstream GSM8K and HumanEval numbers produced by scorers that discarded

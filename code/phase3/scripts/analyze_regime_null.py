@@ -36,14 +36,24 @@ from pathlib import Path
 
 DEFAULT = Path(__file__).resolve().parents[3] / "results" / "phase3"
 BASES = ["llama31_8b", "mistral_7b", "qwen25_7b", "yi15_9b"]
-METHODS = ["task_arithmetic", "ties", "dare", "tvq_b2", "knots"]
+METHODS = ["task_arithmetic", "ties", "dare", "tvq_b2", "knots", "knots_ties"]
 SHARED = ("eval_matrix_seeds", ["seed1", "seed2", "seed3"])
 INDEP = ("eval_a1_indep", ["indep1", "indep2", "indep3"])
 TIE = 0.005
 DUPLICATE = "knots"   # R4: algebraically task arithmetic under the default
 
+# The repaired KnOTS lives in its own directories, one per arm. R4 found it
+# separates from task arithmetic on 4 of 4 bases on both arms, so by the
+# registered rule it is a real method and belongs in this table; the default
+# configuration it replaces does not.
+OVERRIDE_DIR = {
+    ("knots_ties", "eval_matrix_seeds"): "eval_a2_knots_ties",
+    ("knots_ties", "eval_a1_indep"): "eval_a2_knots_ties_indep",
+}
+
 
 def excess(root, subdir, base, method, cohort):
+    subdir = OVERRIDE_DIR.get((method, subdir), subdir)
     p = root / subdir / f"{base}__{method}__{cohort}.json"
     if not p.exists():
         return None

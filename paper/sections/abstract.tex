@@ -28,7 +28,13 @@ regime the cohort occupies, because all of them produce bounded-norm,
 near-mean solutions that never approach the ill-conditioned direction.
 It is severe for methods that solve the linear system: unregularised,
 the same merge is $2.1$ to $65$ times worse on the ill-conditioned
-cohort, and a single ridge term repairs it.
+cohort, and a single ridge term repairs it. That holds on two solvers,
+one of which we did not design, and it grows to $25$ to $117$ times when
+the post-merge rank truncation is removed. The mechanism is measured
+rather than asserted: the heuristics stay within a factor of two of the
+mean task delta with essentially none of their energy in the
+ill-conditioned directions, while the unregularised solvers reach $35$ to
+$57$ times with three quarters of theirs there.
 
 What we withdraw is as much of this paper as what we claim. The bound's
 floor term is \emph{vacuous} for LoRA merging as practised: on every base
@@ -37,7 +43,10 @@ because $T$ rank-$r$ adapters with $Tr \leq d$ have linearly independent
 row spaces even when those spaces are nearly collinear. Our own encoder's
 advantage did not survive the move to properly initialised cohorts. A
 pre-registered control we wrote ourselves withdrew a headline claim about
-benchmark confounding. And a rate-exponent falsification we had reported
+benchmark confounding. A rate-exponent falsification we had reported
 turned out to rest on a mismatched reference and is withdrawn without
-being replaced by a confirmation. What survives is the bound, the
-diagnosis, and the audit.
+being replaced by a confirmation. And the metric all of this is measured
+in does not predict downstream accuracy: pooled over twelve blocks it is
+uncorrelated with grade-school mathematics accuracy and \emph{positively}
+correlated with code pass rate, which is the wrong sign. What survives is
+the bound, the diagnosis, and the audit.

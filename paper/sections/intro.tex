@@ -79,7 +79,10 @@ show no systematic advantage in either regime, because each produces a
 bounded-norm near-mean solution that never approaches the ill-conditioned
 direction. Methods that actually solve the linear system are not: run
 unregularised, the same merge is $2.1$ to $65$ times worse on the
-ill-conditioned cohort, and a single Tikhonov term repairs it.
+ill-conditioned cohort, and a single Tikhonov term repairs it. We tested
+that on a second solver, RegMean, which we did not design, and it holds
+there on four of four base models; removing the rank truncation makes the
+effect larger, not smaller.
 
 So the honest claim is narrow and, we think, useful: cohort conditioning is
 invisible to the merging methods most people use and decisive for the ones
@@ -113,7 +116,10 @@ Appendix~\ref{app:prereg}, with the commit ordering that makes them checkable.
   floor, as what cohort initialisation controls, measured across four base
   models and four cohorts, with an audit that reports it in one CPU minute.
 \item A pre-registered demonstration that this conditioning is invisible to
-  standard merging heuristics and decisive for solve-based ones.
+  standard merging heuristics and decisive for solve-based ones, on two
+  solvers and with the mechanism measured: the heuristics never place more
+  than a rounding error of their norm in the ill-conditioned directions and
+  the unregularised solvers place three quarters of it there.
 \item A negative result for DARE composed with task arithmetic, with a
   mechanism that predicts its own functional form, together with a
   pre-registered demonstration that it does \emph{not} extend to DARE

@@ -6,17 +6,27 @@ $B^2 - \tauH^\top\bar H\tauH$ that should be evaluated in its place. The
 identification of $\kappa(\bar H)$ as the quantity cohort initialisation
 actually controls, measured across four base models and four cohorts, with an
 amplification that returns the orthogonal-subspace value $T$ to within
-$1.4\%$ at two values of $T$. And the pre-registered finding that this conditioning is
-invisible to standard merging heuristics and decisive for solve-based ones.
+$1.4\%$ at two values of $T$. The pre-registered finding that this conditioning
+is invisible to standard merging heuristics and decisive for solve-based ones,
+which holds on a second solver we did not design and survives removing the rank
+truncation, where the effect is larger rather than smaller. And the measurement
+behind it: the heuristics stay within a factor of two of the mean task delta
+with essentially none of their energy in the ill-conditioned directions, while
+the unregularised solvers reach $35$ to $57$ times with three quarters of
+theirs there.
 
 \paragraph{What does not.} Our own encoder is not distinguishable from TIES on
-half the bases once cohorts are properly initialised, and worse on one. The
-claim that published merging benchmarks are confounded by initialisation
-geometry was withdrawn by a control we wrote ourselves. Our earlier report
-that the finite-rate exponent is falsified is withdrawn: its two supporting
-slopes were fitted against an asymptote computed at a different ridge value,
-and against matched asymptotes the question is unresolved rather than settled
-either way. We have left all of these at full strength rather than retreating
+half the bases once cohorts are properly initialised, and worse on one; with
+the inference path matched between the arms it is two ties rather than two
+losses, which is a correction in our favour that we report because it is a
+correction either way. The claim that published merging benchmarks are
+confounded by initialisation geometry was withdrawn by a control we wrote
+ourselves. Our earlier report that the finite-rate exponent is falsified is
+withdrawn: its two supporting slopes were fitted against an asymptote computed
+at a different ridge value, and against matched asymptotes the question is
+unresolved rather than settled either way. And worst-task NLL excess, the
+metric everything here is measured in, does not predict downstream accuracy on
+either benchmark we can test, and inverts on one of them. We have left all of these at full strength rather than retreating
 to the subset that flatters the method, because the conditioning result is
 only worth anything if the reader can believe we would have reported it the
 other way.
@@ -32,40 +42,70 @@ other way.
   shared-versus-independent difference at $\lambda = 0$, which is the quantity
   \S\ref{subsec:ridge} turns on, runs from $0.13$ to $9.63$ nats, one to three
   orders of magnitude above the resolution.
-\item \textbf{We cannot measure whether NLL excess predicts downstream
-  accuracy.} The Spearman correlations available to us are computed over the
-  five or six methods in a row, and under the null
-  $\mathrm{SD}(\rho) = 1/\sqrt{n-1} = 0.45$ at $n=6$. Every value we can
-  compute, in either direction, is within about $1.5$ standard deviations of
-  zero. Values we previously reported as evidence were not evidence.
-  Settling it needs roughly $25$ points per base.
+\item \textbf{Worst-task NLL excess does not predict downstream accuracy,
+  and on one benchmark it predicts it backwards.} An earlier version said
+  only that we could not measure this, because the Spearman correlations
+  were computed over the five or six methods in a single row, where
+  $\mathrm{SD}(\rho) = 1/\sqrt{n-1} = 0.45$. That was too weak a statement:
+  the correlation does not have to be computed within a row. Pooling over
+  the $12$ base-by-cohort blocks that already exist gives a standard error
+  of about $0.17$ instead, and the answer is then visible. On grade-school
+  mathematics there is no relationship, $\rho = -0.14$ with a
+  block-bootstrap interval of $-0.46$ to $+0.21$. On code generation
+  $\rho = +0.45$, interval $+0.10$ to $+0.73$, and the sign is the wrong
+  one: \emph{higher} NLL excess goes with a \emph{higher} pass rate. It
+  survives dropping the one arm with a rank confound ($\rho = +0.48$).
+
+  There is a reading of this that is not damning, and we give it without
+  leaning on it: worst-task excess is a maximum over four tasks, so it
+  penalises exactly those merges that sacrifice one task to preserve
+  another, and a merge that protects the code adapter at the expense of
+  translation will look bad by our metric and good on a code benchmark.
+  That is a coherent story, and it is also an argument that the metric
+  answers a different question from the one a practitioner asks about a
+  single deployed capability. Either way, nothing in this paper should be
+  read as a claim about downstream accuracy.
 \item \textbf{The finite-rate exponent is unresolved, not confirmed.} Against
   matched asymptotes one base fits at $-2.10$ ($R^2 = 0.98$) against a
   predicted $-2$, one at $-3.50$, and two converge to their asymptote by
   $b = 3$ to $4$, leaving too little dynamic range to fit over our grid. A
   finer low-rate grid would settle it; we deliberately have not chosen one
   after seeing which would produce a fit.
-\item \textbf{Our KnOTS baseline was a no-op.} With the default inner
-  combination it reduces algebraically to task arithmetic and matched it to
-  four decimals. We report this as an erratum about our own baseline; we have
-  not checked the reference implementation and claim nothing about published
-  KnOTS. The consequence is that no subspace-alignment method is represented
-  in our comparison.
+\item \textbf{Our KnOTS baseline was a no-op, and the repair works.} With
+  the default inner combination it reduces algebraically to task arithmetic
+  and matched it to four decimals; \S\ref{subsec:ridge} measures it at
+  amplification $0.99$ with tail fraction $0.000$, identical to task
+  arithmetic in both columns. We report that as an erratum about our own
+  configuration and claim nothing about published KnOTS. Re-run with a TIES
+  inner combination it becomes a genuinely different method, and a good one:
+  it beats task arithmetic on all four bases in both cohorts, by $0.020$ to
+  $0.080$ nats. So a subspace-alignment method \emph{is} represented in our
+  comparison after all. It does not reach the champion baseline on any base,
+  so no verdict in Table~\ref{tab:q1} moves.
 \item \textbf{One adapter in four never learned its task}, on every base and
   in both arms, so our cohorts are $T=4$ nominal and $3$ effective
   (\S\ref{subsec:scope}). Every geometric quantity is reported at both $T$
   and the contrast is unchanged, but the merged models do contain an
   untrained member, and no claim about merging $T$ well-trained tasks is
   supported by this data.
-\item \textbf{The ridge sweep has one cohort per arm.} The pre-registration
-  specified a $2\times\mathrm{SE}$ noise gate that we therefore could not
-  compute, and only the tie threshold was applied. The margins are far above
-  any plausible noise, but the gate is missing and we say so.
-\item \textbf{Train and evaluation splits overlap} by about $14.5\%$ on the
-  instruction task and $10\%$ on the code task, because the two draws use
-  different seeds over one pool. Absolute numbers are optimistic. Every
-  method sees identical data, so we do not believe comparisons are affected,
-  but no absolute number here is a held-out number.
+\item \textbf{The ridge sweep's gate is one-sided in provenance.} An
+  earlier version could not compute the pre-registered
+  $2\times\mathrm{SE}$ gate at all, because there was one cohort per arm.
+  The independent arm now has three, the gate exists, and all four bases
+  clear it by two to four orders of magnitude: differences of $+0.22$,
+  $+9.63$, $+0.18$ and $+0.13$ nats against gates of $0.005$ or less. The
+  shared arm is still a single cohort, so that standard error comes from
+  the independent side alone; the gate is applied symmetrically and its
+  provenance is not, which is a limitation of the design rather than of the
+  analysis.
+\item \textbf{Train and evaluation splits overlap} by $12.9$ to $16.2\%$ on
+  the instruction task and $9.2$ to $11.6\%$ on the code task, because the
+  two draws shuffle one pool with different seeds. Absolute numbers are
+  optimistic and no number here is a held-out number. Whether that affects
+  the \emph{comparisons} is no longer a matter of belief: re-scoring every
+  cell on the disjoint subset leaves the method ordering unchanged in $19$
+  of $20$ rows, and the one change swaps two variants of our own encoder
+  (Reproducibility Statement).
 \item \textbf{Theorem~\ref{thm:general}'s rate term is conditional.} It holds
   under Assumption~\ref{asm:epr}, which we state rather than prove: that the
   entropy-power-to-variance ratio of $\eta$ is bounded below uniformly in
@@ -80,17 +120,32 @@ other way.
   after seeing which way it fell is what pre-registration exists to prevent.
 \end{enumerate}
 
-\paragraph{Implications for practice.} The recommendation is conditional and
-we state it that way. If you merge with a method that solves a linear system,
-audit your cohort's conditioning and regularise: unregularised, the same merge
-can be $65$ times worse on an ill-conditioned cohort, and one ridge term
-removes the difference. If you merge with task arithmetic, TIES, DARE or a
-similar heuristic, our data says the cohort's conditioning will not affect
-you, and we found no measurable benefit to changing how the adapters were
-initialised. For anyone benchmarking merging methods, report $\kappa(\bar H)$
-and the principal cosines alongside the results, and report more than one
-initialisation draw, because we find single-draw method rankings are not
-reproducible.
+\paragraph{Implications for practice.} The recommendation is conditional,
+and it is about worst-task NLL excess, which limitation~2 says does not
+predict downstream accuracy. We state both halves rather than the
+convenient one.
+
+If you merge with a method that solves a linear system, audit your cohort's
+conditioning and regularise. Unregularised, the same merge is $65$ times
+worse on an ill-conditioned cohort at rank $16$ and $117$ times without
+truncation, on two solvers, one of which we did not build, and one ridge
+term removes the difference. This is the recommendation we are most
+confident in, because it is the one with a measured mechanism
+(Table~\ref{tab:mechanism}) behind it.
+
+If you merge with task arithmetic, TIES, DARE or a similar heuristic, we
+find no effect of cohort conditioning larger than about $0.01$ nats, which
+is what our design can detect. The exception is subspace alignment, which
+gains $0.010$ to $0.013$ nats from independent initialisation on three of
+four bases, small but consistent.
+
+For anyone benchmarking merging methods: report $\kappa(\bar H)$ and the
+principal cosines alongside the results, since they cost a CPU minute and
+change how a solve-based result should be read; report more than one
+initialisation draw, because single-draw rankings are not reproducible; and
+do not use worst-task NLL excess as a proxy for deployed capability, on our
+evidence, since on one of the two benchmarks we tested it ranks methods in
+the wrong order.
 
 \paragraph{Future work.} A margin-aware version of the stability control is
 the obvious next pre-registration and may reinstate the claim we withdrew. A
