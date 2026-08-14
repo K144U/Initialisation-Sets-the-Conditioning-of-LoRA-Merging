@@ -1,0 +1,882 @@
+{
+  "masks": {
+    "alpaca|102|20260518": 162,
+    "magicoder|103|20260518": 92,
+    "alpaca|202|20260518": 153,
+    "magicoder|203|20260518": 108,
+    "alpaca|302|20260518": 146,
+    "magicoder|303|20260518": 103,
+    "alpaca|1|20260518": 134,
+    "magicoder|1|20260518": 116,
+    "alpaca|2|20260518": 133,
+    "magicoder|2|20260518": 105,
+    "alpaca|3|20260520": 129,
+    "magicoder|3|20260520": 94
+  },
+  "cells": {
+    "eval_a1_indep|llama31_8b|indep1|task_arithmetic": [
+      0.2221062264216414,
+      0.2221062264216414,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep1|ties": [
+      0.1350798520334327,
+      0.1350798520334327,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep1|dare": [
+      0.22275830206207486,
+      0.22275830206207486,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep1|tvq_b2": [
+      0.10485591104580999,
+      0.10485591104580999,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep1|knots": [
+      0.22142644882534718,
+      0.22142644882534718,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep1|rd_ridge": [
+      0.07142008346429901,
+      0.07142008346429901,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep1|rd_rank16": [
+      0.07988732645381474,
+      0.07988732645381474,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep2|task_arithmetic": [
+      0.22551864608047162,
+      0.22551864608047162,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep2|ties": [
+      0.14187653108170722,
+      0.14187653108170722,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep2|dare": [
+      0.22688782434759197,
+      0.22688782434759197,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep2|tvq_b2": [
+      0.10622441219676043,
+      0.10622441219676043,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep2|knots": [
+      0.2252409312186769,
+      0.2252409312186769,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep2|rd_ridge": [
+      0.07353485964588691,
+      0.07353485964588691,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep2|rd_rank16": [
+      0.08047153934054124,
+      0.08047153934054124,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep3|task_arithmetic": [
+      0.22392583582117787,
+      0.22392583582117787,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep3|ties": [
+      0.13945741712362247,
+      0.13945741712362247,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep3|dare": [
+      0.22604663971074046,
+      0.22604663971074046,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep3|tvq_b2": [
+      0.104530367107034,
+      0.104530367107034,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep3|knots": [
+      0.22324571410954996,
+      0.22324571410954996,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep3|rd_ridge": [
+      0.07006574215383099,
+      0.07006574215383099,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|llama31_8b|indep3|rd_rank16": [
+      0.07825060409172835,
+      0.07825060409172835,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep1|task_arithmetic": [
+      0.14302921415292935,
+      0.14302921415292935,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep1|ties": [
+      0.05430183382875409,
+      0.05430183382875409,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep1|dare": [
+      0.14512543532023814,
+      0.14512543532023814,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep1|tvq_b2": [
+      0.05857030866152679,
+      0.05857030866152679,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep1|knots": [
+      0.14229157445203933,
+      0.14229157445203933,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep1|rd_ridge": [
+      0.05753754360970775,
+      0.05774936014345433,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|mistral_7b|indep1|rd_rank16": [
+      0.05467528075736616,
+      0.05489436658178448,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|mistral_7b|indep2|task_arithmetic": [
+      0.1441875831651409,
+      0.1441875831651409,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep2|ties": [
+      0.05470350876066665,
+      0.05470350876066665,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep2|dare": [
+      0.14440933245738308,
+      0.14440933245738308,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep2|tvq_b2": [
+      0.054360303957572076,
+      0.054360303957572076,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep2|knots": [
+      0.14398290364406896,
+      0.14398290364406896,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep2|rd_ridge": [
+      0.06062734279828785,
+      0.06152749761418852,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|mistral_7b|indep2|rd_rank16": [
+      0.05722439314291805,
+      0.05808041954675336,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|mistral_7b|indep3|task_arithmetic": [
+      0.14099852065712898,
+      0.14099852065712898,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep3|ties": [
+      0.053783697129124286,
+      0.053783697129124286,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep3|dare": [
+      0.14299189512716465,
+      0.14299189512716465,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep3|tvq_b2": [
+      0.0548533871374593,
+      0.0548533871374593,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep3|knots": [
+      0.14121559855221427,
+      0.14121559855221427,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|mistral_7b|indep3|rd_ridge": [
+      0.06101418480615062,
+      0.061162452330459915,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|mistral_7b|indep3|rd_rank16": [
+      0.057430902228054026,
+      0.05751510980544716,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|qwen25_7b|indep1|task_arithmetic": [
+      0.10403472637265027,
+      0.10403472637265027,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|qwen25_7b|indep1|ties": [
+      0.014097059233918796,
+      0.014068664559646393,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|qwen25_7b|indep1|dare": [
+      0.10665940472246,
+      0.10665940472246,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|qwen25_7b|indep1|tvq_b2": [
+      0.016469769234487397,
+      0.016369998715197176,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|qwen25_7b|indep1|knots": [
+      0.10359080284206129,
+      0.10359080284206129,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|qwen25_7b|indep1|rd_ridge": [
+      0.013963619878858191,
+      0.013834447816146733,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|qwen25_7b|indep1|rd_rank16": [
+      0.014292760026989204,
+      0.014200569904619709,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|qwen25_7b|indep2|task_arithmetic": [
+      0.10382843074111098,
+      0.10382843074111098,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|qwen25_7b|indep2|ties": [
+      0.013976918919265446,
+      0.014060412147744672,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|qwen25_7b|indep2|dare": [
+      0.1059838231054771,
+      0.1059838231054771,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|qwen25_7b|indep2|tvq_b2": [
+      0.017592759858400586,
+      0.017835305821184866,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|qwen25_7b|indep2|knots": [
+      0.1034780039705609,
+      0.1034780039705609,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|qwen25_7b|indep2|rd_ridge": [
+      0.01453044226525857,
+      0.014702741464434288,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|qwen25_7b|indep2|rd_rank16": [
+      0.014556602772176852,
+      0.0147668473451672,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|qwen25_7b|indep3|task_arithmetic": [
+      0.10325697625340313,
+      0.10325697625340313,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|qwen25_7b|indep3|ties": [
+      0.014162852613714638,
+      0.014280309421638382,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|qwen25_7b|indep3|dare": [
+      0.1057623148641792,
+      0.1057623148641792,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|qwen25_7b|indep3|tvq_b2": [
+      0.017505959681005878,
+      0.01780767065585287,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|qwen25_7b|indep3|knots": [
+      0.10323694825840946,
+      0.10323694825840946,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|qwen25_7b|indep3|rd_ridge": [
+      0.014462068666392214,
+      0.014743028354311294,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|qwen25_7b|indep3|rd_rank16": [
+      0.01449677703091723,
+      0.01474131954416047,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|yi15_9b|indep1|task_arithmetic": [
+      0.09595603378214346,
+      0.09595603378214346,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|yi15_9b|indep1|ties": [
+      0.04821269219226432,
+      0.04815975335663736,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|yi15_9b|indep1|dare": [
+      0.09790870860273948,
+      0.09790870860273948,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|yi15_9b|indep1|tvq_b2": [
+      0.05243071315052528,
+      0.05233754068064944,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|yi15_9b|indep1|knots": [
+      0.09587130055632809,
+      0.09587130055632809,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|yi15_9b|indep1|rd_ridge": [
+      0.06273726212702302,
+      0.06256771391742555,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|yi15_9b|indep1|rd_rank16": [
+      0.06383029183094235,
+      0.06372788894065007,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|yi15_9b|indep2|task_arithmetic": [
+      0.09653870139625909,
+      0.09653870139625909,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|yi15_9b|indep2|ties": [
+      0.04787318788691319,
+      0.04807319140673261,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|yi15_9b|indep2|dare": [
+      0.09820298763341456,
+      0.09820298763341456,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|yi15_9b|indep2|tvq_b2": [
+      0.05026152811933837,
+      0.05050719174622087,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|yi15_9b|indep2|knots": [
+      0.09633725149781247,
+      0.09633725149781247,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|yi15_9b|indep2|rd_ridge": [
+      0.06222441389162059,
+      0.06229024216130241,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|yi15_9b|indep2|rd_rank16": [
+      0.06312433407795193,
+      0.06329403792133725,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|yi15_9b|indep3|task_arithmetic": [
+      0.09864997295750338,
+      0.09864997295750338,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|yi15_9b|indep3|ties": [
+      0.04992138855673689,
+      0.05056298036329321,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|yi15_9b|indep3|dare": [
+      0.10045975006438418,
+      0.10045975006438418,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|yi15_9b|indep3|tvq_b2": [
+      0.051217148555068204,
+      0.05189733187070833,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|yi15_9b|indep3|knots": [
+      0.09858676235263075,
+      0.09858676235263075,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_a1_indep|yi15_9b|indep3|rd_ridge": [
+      0.06599204684915061,
+      0.0667495116673581,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_a1_indep|yi15_9b|indep3|rd_rank16": [
+      0.0652025238826387,
+      0.06600012384235732,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_matrix_seeds|llama31_8b|seed1|task_arithmetic": [
+      0.21320948014527896,
+      0.21320948014527896,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|llama31_8b|seed1|ties": [
+      0.14709085075643702,
+      0.14709085075643702,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|llama31_8b|seed1|dare": [
+      0.2127432672611379,
+      0.2127432672611379,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|llama31_8b|seed1|tvq_b2": [
+      0.10125602259449284,
+      0.10125602259449284,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|llama31_8b|seed1|knots": [
+      0.212954907058594,
+      0.212954907058594,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|llama31_8b|seed2|task_arithmetic": [
+      0.2211033464829097,
+      0.2211033464829097,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|llama31_8b|seed2|ties": [
+      0.1580073179986306,
+      0.1580073179986306,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|llama31_8b|seed2|dare": [
+      0.22097921370459933,
+      0.22097921370459933,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|llama31_8b|seed2|tvq_b2": [
+      0.11404334898372642,
+      0.11404334898372642,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|llama31_8b|seed2|knots": [
+      0.22062492902268388,
+      0.22062492902268388,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|llama31_8b|seed3|task_arithmetic": [
+      0.22433802699443828,
+      0.22433802699443828,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|llama31_8b|seed3|ties": [
+      0.15651451619776724,
+      0.15651451619776724,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|llama31_8b|seed3|dare": [
+      0.22445926374765135,
+      0.22445926374765135,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|llama31_8b|seed3|tvq_b2": [
+      0.11379129646441544,
+      0.11379129646441544,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|llama31_8b|seed3|knots": [
+      0.2246361316432156,
+      0.2246361316432156,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|mistral_7b|seed1|task_arithmetic": [
+      0.1324584857576177,
+      0.1324584857576177,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|mistral_7b|seed1|ties": [
+      0.049419556226264316,
+      0.049419556226264316,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|mistral_7b|seed1|dare": [
+      0.13419481000147587,
+      0.13419481000147587,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|mistral_7b|seed1|tvq_b2": [
+      0.05371990865076076,
+      0.05371990865076076,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|mistral_7b|seed1|knots": [
+      0.1319972469396416,
+      0.1319972469396416,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|mistral_7b|seed2|task_arithmetic": [
+      0.1431763709295128,
+      0.1431763709295128,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|mistral_7b|seed2|ties": [
+      0.05420015791514948,
+      0.05420015791514948,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|mistral_7b|seed2|dare": [
+      0.14341081150109808,
+      0.14341081150109808,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|mistral_7b|seed2|tvq_b2": [
+      0.06272177949559782,
+      0.06272177949559782,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|mistral_7b|seed2|knots": [
+      0.1423112908940391,
+      0.1423112908940391,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|mistral_7b|seed3|task_arithmetic": [
+      0.14404792206186373,
+      0.14404792206186373,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|mistral_7b|seed3|ties": [
+      0.05438397052751359,
+      0.05438397052751359,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|mistral_7b|seed3|dare": [
+      0.1464133314218205,
+      0.1464133314218205,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|mistral_7b|seed3|tvq_b2": [
+      0.06431404536222746,
+      0.06431404536222746,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|mistral_7b|seed3|knots": [
+      0.1444467585788342,
+      0.1444467585788342,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|qwen25_7b|seed1|task_arithmetic": [
+      0.10359976436623458,
+      0.10359976436623458,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|qwen25_7b|seed1|ties": [
+      0.012997040188357789,
+      0.01250958549815151,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_matrix_seeds|qwen25_7b|seed1|dare": [
+      0.10660951634497157,
+      0.10660951634497157,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|qwen25_7b|seed1|tvq_b2": [
+      0.019209001306546014,
+      0.018736811921641672,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_matrix_seeds|qwen25_7b|seed1|knots": [
+      0.10395480329206014,
+      0.10395480329206014,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|qwen25_7b|seed2|task_arithmetic": [
+      0.10604116325091223,
+      0.10604116325091223,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|qwen25_7b|seed2|ties": [
+      0.013091333752735856,
+      0.012695048489923089,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_matrix_seeds|qwen25_7b|seed2|dare": [
+      0.1082292840074161,
+      0.1082292840074161,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|qwen25_7b|seed2|tvq_b2": [
+      0.019310353096090194,
+      0.0189321334666398,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_matrix_seeds|qwen25_7b|seed2|knots": [
+      0.1059973381302382,
+      0.1059973381302382,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|qwen25_7b|seed3|task_arithmetic": [
+      0.11257733112660973,
+      0.11257733112660973,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|qwen25_7b|seed3|ties": [
+      0.013487430835284808,
+      0.013075257859372358,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_matrix_seeds|qwen25_7b|seed3|dare": [
+      0.11514148876789687,
+      0.11514148876789687,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|qwen25_7b|seed3|tvq_b2": [
+      0.01946307046813145,
+      0.019013499425060476,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_matrix_seeds|qwen25_7b|seed3|knots": [
+      0.11253140960682861,
+      0.11253140960682861,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|yi15_9b|seed1|task_arithmetic": [
+      0.0988685795782363,
+      0.0988685795782363,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|yi15_9b|seed1|ties": [
+      0.04491596881544235,
+      0.0429200718204501,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_matrix_seeds|yi15_9b|seed1|dare": [
+      0.10118192915360302,
+      0.10118192915360302,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|yi15_9b|seed1|tvq_b2": [
+      0.0574498516821097,
+      0.05534820003777441,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_matrix_seeds|yi15_9b|seed1|knots": [
+      0.09898278432386975,
+      0.09898278432386975,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|yi15_9b|seed2|task_arithmetic": [
+      0.0982091708477087,
+      0.0982091708477087,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|yi15_9b|seed2|ties": [
+      0.0463668587427587,
+      0.04526505184621932,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_matrix_seeds|yi15_9b|seed2|dare": [
+      0.10085650553366504,
+      0.10085650553366504,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|yi15_9b|seed2|tvq_b2": [
+      0.06081751339813135,
+      0.059900220961309536,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_matrix_seeds|yi15_9b|seed2|knots": [
+      0.09804810087749877,
+      0.09804810087749877,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|yi15_9b|seed3|task_arithmetic": [
+      0.10179968165248282,
+      0.10179968165248282,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|yi15_9b|seed3|ties": [
+      0.0479618658845391,
+      0.04594856234326128,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_matrix_seeds|yi15_9b|seed3|dare": [
+      0.10369404480398553,
+      0.10369404480398553,
+      "gsm8k",
+      "gsm8k"
+    ],
+    "eval_matrix_seeds|yi15_9b|seed3|tvq_b2": [
+      0.06185549908280441,
+      0.060065609345477555,
+      "alpaca",
+      "alpaca"
+    ],
+    "eval_matrix_seeds|yi15_9b|seed3|knots": [
+      0.10176662024844707,
+      0.10176662024844707,
+      "gsm8k",
+      "gsm8k"
+    ]
+  }
+}

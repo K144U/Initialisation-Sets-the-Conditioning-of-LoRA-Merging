@@ -2550,3 +2550,49 @@ R6 is running with six methods, having excluded default KnOTS. Now that the
 repaired one is a real arm it belongs in the T = 3 matrix too, which is 12
 further cells. They will run as a supplement when R6 finishes rather than by
 editing a manifest an orchestrator is already reading.
+
+---
+
+## 2026-08-14 (night) — R5: the overlap sentence is now a measurement, and it holds
+
+The Reproducibility Statement asserted "we do not believe the overlap affects
+any comparison between methods, which is what all of our claims rest on".
+Nothing supported it. It is now tested, with no retraining and no GPU, by
+dropping the contaminated evaluation positions and re-aggregating every cell
+from the per-example records it already stores.
+
+**Self-check first: 1152 of 1152 unfiltered aggregations reproduced the stored
+scalars exactly**, token-weighted by `n_answer` as `compute_nll` does. Without
+that the filtered numbers would be worthless.
+
+### Overlap, measured rather than predicted
+
+    task        cohort seeds            overlap
+    alpaca      1, 2, 3                 13.4%, 13.3%, 12.9%
+    alpaca      102, 202, 302           16.2%, 15.3%, 14.6%
+    magicoder   1, 2, 3                 11.6%, 10.5%, 9.4%
+    magicoder   103, 203, 303           9.2%, 10.8%, 10.3%
+
+The audit predicted 14.5% and 10% from `n_eval * n_train / N`. Measured, alpaca
+runs 12.9 to 16.2 and magicoder 9.2 to 11.6, so the estimate was right on
+average and the paper should quote the measured range rather than the single
+predicted figure. The independent cohorts sit slightly higher on alpaca.
+
+### Effect on the comparisons
+
+- **Method ordering changes in 1 of 20 rows.** The single change is Qwen
+  `indep3`, where `rd_ridge` and `rd_rank16` swap. Both are our own encoder;
+  no baseline moves relative to any other method, and no method crosses our
+  encoder.
+- **0 of 144 cells change which task is worst.**
+- Per-cell worst-task excess shifts by mean 0.0000 nats, range -0.0021 to
+  +0.0009.
+
+So the sentence survives, and it can be stated as a result instead of a
+belief: on the disjoint subset the method ordering is unchanged in 19 of 20
+rows, the exception is a swap between two variants of our own method, and the
+worst task is the same in every cell.
+
+**What it does not license.** Absolute numbers remain optimistic, exactly as
+the statement already says. This tests comparisons, not levels, and the
+distinction is the whole point of the sentence.
