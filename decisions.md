@@ -2309,3 +2309,114 @@ visitors, and `paper-consolidation` is 53 commits ahead of
 a reader can check the commit ordering. Until that repository is public with
 those commits in it, the Reproducibility Statement and App. D are describing
 something no reader can reach. That is a decision for the author, not an edit.
+
+---
+
+## 2026-08-14 (later) — R1 CONFIRMED: the conditioning effect appears on a solver we did not build; R2 measures the mechanism
+
+Rules in `notes/prereg_tmlr_2026-08-14.md` (`acebd1a`), amended in
+`notes/prereg_tmlr_amendment_2026-08-14.md` (`7ce15b1`), generator and analyzer
+in `fddc0ff`. All three precede every cell of this sweep, which is checkable in
+the graph. 56 cells, 4 bases x 7 lambdas x 2 cohorts, method `regmean`.
+
+### The referee's objection, and why this was the decisive test
+
+The report's R1 says the paper's only surviving positive claim is stated about a
+family of methods and tested on exactly one member of it, and that the member is
+ours. That was correct. RegMean is Jin et al.'s method in the data-free
+adapter-only form already in the tree, with a ridge term that is part of its own
+published formulation rather than something we added.
+
+### Result
+
+    base         cohort         1e-06     0.01     0.03     0.05     0.13      0.3      1.0   lambda*     gain
+    llama31_8b   shared        1.9789   0.2361   0.2996   0.3280   0.4012   0.5197   0.6420      0.01   1.7428
+    llama31_8b   independent   0.0708   0.1652   0.2621   0.3061   0.3937   0.5224   0.6429     1e-06   0.0000
+    mistral_7b   shared       10.6283   0.0970   0.2760   0.3957   0.6202   0.7497   0.8364      0.01  10.5314
+    mistral_7b   independent   0.1499   0.1050   0.2688   0.3864   0.6189   0.7531   0.8405      0.01   0.0449
+    qwen25_7b    shared        0.2376   0.0122   0.0692   0.1399   0.3919   0.6514   0.8826      0.01   0.2255
+    qwen25_7b    independent   0.0256   0.0123   0.0464   0.1074   0.3575   0.6377   0.8812      0.01   0.0133
+    yi15_9b      shared        0.5700   0.0222   0.0887   0.1499   0.2984   0.4227   0.5199      0.01   0.5477
+    yi15_9b      independent   0.1203   0.0291   0.0811   0.1374   0.2939   0.4264   0.5299      0.01   0.0913
+
+**P1 holds 4 of 4.** Ridge gain larger on the shared arm by +1.74, +10.49,
++0.21 and +0.46 nats. **P2 holds 4 of 4.** The minimally regularised excess is
+worse on the shared arm by 27.9x, 70.9x, 9.3x and 4.7x. **VERDICT: CONFIRMED.**
+
+The family-level claim now rests on two solvers, one of which we did not
+design, and the paper may say so.
+
+### Three things in that table worth reporting rather than smoothing
+
+1. **lambda\* is 0.01 on seven of the eight arms.** It does not track
+   conditioning, which reproduces E2's failed P1 on an independent method. The
+   amount of regularisation needed is not proportional to the conditioning; how
+   much it buys is. Two methods now agree on that split.
+2. **Llama's independent arm has lambda\* = 1e-6 and a gain of exactly zero.**
+   On a well-conditioned cohort the minimally regularised solve is already the
+   best cell in the row. That is the cleanest statement of the claim available:
+   there is nothing to repair.
+3. **The two arms converge from lambda = 0.13 upward**, agreeing to three
+   decimals at lambda = 1.0. Heavy regularisation washes the conditioning
+   difference out entirely, which is what the mechanism predicts and is worth
+   showing rather than cropping.
+
+### R2: the mechanism, measured instead of asserted
+
+`merged_solution_norms.py`, no GPU. Amplification is
+`||Delta_merged Q|| / ||mean_t Delta_t Q||` and tail fraction is the share of
+the solution's energy in the bottom quartile of `Hbar`'s eigen-directions,
+both in the projected coordinates of `floor_conditioning.py`.
+
+    solution            shared (amp / tail)        independent (amp / tail)
+    mean                1.00 / 0.000               1.00 / 0.21
+    task arithmetic     0.99 / 0.000               0.86-0.92 / 0.20
+    TIES                1.98-2.04 / 0.000          2.04-2.22 / 0.21
+    DARE                0.98-0.99 / 0.000-0.001    0.86-0.90 / 0.20
+    TVQ b=2             1.95-2.16 / 0.000          1.68-1.95 / 0.20
+    KnOTS               0.99 / 0.000               0.85-0.92 / 0.20
+    RegMean 1e-6        35.4-51.4 / 0.73-0.79      3.41-3.67 / 0.29-0.32
+    RegMean 0.13        0.80-0.96 / 0.000          1.39-1.58 / 0.24
+    rd-encoder 0        36.7-56.7 / 0.78-0.80      3.42-3.67 / 0.29-0.32
+    rd-encoder 0.05     2.20-2.56 / 0.000-0.001    2.84-3.05 / 0.28
+    exact interpolator  43.4-64.1 / 0.62-0.66      3.96-4.00 / 0.28-0.31
+
+Section 7.2's sentence, that the heuristics "never go near the ill-conditioned
+direction" because each is a bounded-norm near-mean solution, is now a
+measurement. On the shared arm every heuristic sits at 1 to 2 times the mean
+delta with a tail fraction that rounds to zero at three decimals, while both
+unregularised solvers sit at 35 to 57 with roughly three quarters of their
+energy in the bottom quartile of the spectrum.
+
+**Read the independent column carefully before quoting it.** A tail fraction of
+about 0.21 there is not a signal: a quarter of the directions holds about a
+quarter of a generic vector's energy when `Hbar` is well conditioned. The
+signature is 0.78 against that 0.25 baseline on the shared arm, and its absence
+on the independent one. Stating it the other way round would be reading
+structure into an artifact of the definition.
+
+Note also that RegMean at 1e-6 and rd-encoder at 0 agree to two decimals on the
+independent arm (3.50/3.50, 3.41/3.42, 3.61/3.60, 3.67/3.67). Two differently
+derived solvers converge on the same solution once the problem is well posed,
+which is a check on both implementations.
+
+### What this does NOT license
+
+The comparison across methods of RegMean's 1e-6 column and our encoder's 0
+column is not like-for-like, because the two solve in different spaces, and the
+amendment said so before the cells ran. Each method is compared against itself
+across arms. The shared arm is a single cohort, so no across-cohort SE exists;
+only the 0.005 threshold and the factor-2 rule were applied. R8 is what fixes
+that, and it is still to run.
+
+### Infrastructure note, because it changed the numbers' cost and not the numbers
+
+Cells were taking 57 minutes on the current node against 17 to 26 in the August
+campaign. 20 of every cell's 24 evaluations are the base model and the four task
+adapters scored on the four tasks, which do not depend on the merge, so a
+seven-lambda sweep recomputed them seven times. `nll_tau` is now cached per
+(base, cohort), keyed on everything it can depend on including the loader.
+Verified inert BEFORE use: `check_nll_tau_determinism.py` found 8 of 8 cohort
+groups bitwise identical across the existing sweep, 960 comparisons, worst
+difference exactly 0. A cached cell takes about 10 minutes against 57. The
+sweep finished in 2 hours 20 minutes on five GPUs instead of an estimated 10.6.
