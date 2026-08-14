@@ -2596,3 +2596,56 @@ worst task is the same in every cell.
 **What it does not license.** Absolute numbers remain optimistic, exactly as
 the statement already says. This tests comparisons, not levels, and the
 distinction is the whole point of the sentence.
+
+---
+
+## 2026-08-15 — R6: the encoder's one clear win does not survive dropping the untrained adapter
+
+72 cells, 4 bases x 6 methods x indep1/2/3, translation dropped, finished
+2026-08-14 22:31. The keeper never fired; the sweep took 2h15m rather than the
+projected 5 to 6 because the nll_tau cache helped more inside T = 3 than
+expected. Rules `acebd1a` section R6, analyzer `d92c7ef`, both preceding every
+cell.
+
+### The verdict comparison, matched encoder (rank 16, unsloth path)
+
+    base         T = 4 as published        T = 3, translation dropped
+    llama31_8b   +0.0257  WINS             +0.0033  ties
+    mistral_7b   -0.0022  ties             -0.0012  ties
+    qwen25_7b    -0.0004  ties             +0.0009  ties
+    yi15_9b      -0.0154  loses            -0.0053  loses
+
+**One win, two ties and one loss becomes zero wins, three ties and one loss.**
+The Llama win, which is the single clear win the encoder has left anywhere in
+this paper, drops from +0.0257 to +0.0033 nats and stops clearing the gate.
+
+The rank-64 arm behaves differently and is reported too: on it, Llama still
+wins at T = 3 (+0.0081) while Mistral moves from loses to ties (-0.0055 to
++0.0005). So the two encoder realisations disagree about Llama at T = 3, which
+is itself informative about how thin that win is.
+
+Champion identity changes on Mistral at T = 3, from TIES to TVQ, and is
+reported separately rather than folded into the counts.
+
+### What this means, stated plainly
+
+The encoder's advantage was already known not to survive the move to properly
+initialised cohorts. It now also fails to survive removing the adapter that
+never learned its task, on the arm where rank and inference path are matched to
+the baselines. Three separate controls have each removed a piece of it:
+independent initialisation, loader and rank matching, and now T = 3.
+
+Under the registered rule the T = 4 matrix remains primary and is NOT replaced;
+both columns go in the table and the difference is stated. But the honest
+summary sentence in 7.1 gets stronger, not weaker: on properly initialised
+cohorts, with rank and inference path matched, and with the degenerate adapter
+removed, our encoder does not beat the best baseline on any base model.
+
+### What is NOT claimed
+
+Levels are not compared across T. The T = 3 worst-task excess is a maximum over
+three tasks rather than four, so a lower number there means nothing on its own,
+and the analyzer refuses to make that comparison. Only verdicts transfer.
+
+The 12 knots_ties cells at T = 3 are running as a supplement (job 461), now
+that R4 established the repaired KnOTS as a real method.

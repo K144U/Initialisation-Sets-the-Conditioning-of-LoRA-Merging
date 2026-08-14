@@ -50,8 +50,13 @@ RES = ROOT / "results/phase3"
 
 BASES = ["llama31_8b", "mistral_7b", "qwen25_7b", "yi15_9b"]
 COHORTS = ["indep1", "indep2", "indep3"]
-# Default-config KnOTS removed by the registered R4 rule.
-METHODS = ["task_arithmetic", "ties", "dare", "tvq_b2", "rd_ridge", "rd_rank16"]
+# Default-config KnOTS removed by the registered R4 rule. The repaired one is
+# included because R4 found it separates from task arithmetic on 4 of 4 bases
+# in both arms, which is what the rule required for it to count as a method.
+METHODS = ["task_arithmetic", "ties", "dare", "tvq_b2", "rd_ridge", "rd_rank16",
+           "knots_ties"]
+# Methods whose T = 4 template does not live in eval_a1_indep.
+TEMPLATE_DIR = {"knots_ties": "eval_a2_knots_ties_indep"}
 DROP_TASK = "translation"
 
 OUT_CFG = CFG / "eval_r6_t3"
@@ -67,7 +72,8 @@ def main() -> int:
     for base in BASES:
         for cohort in COHORTS:
             for method in METHODS:
-                tmpl_p = CFG / f"eval_a1_indep/{base}__{method}__{cohort}.yaml"
+                tdir = TEMPLATE_DIR.get(method, "eval_a1_indep")
+                tmpl_p = CFG / f"{tdir}/{base}__{method}__{cohort}.yaml"
                 if not tmpl_p.exists():
                     problems.append(f"missing template {tmpl_p}")
                     continue
