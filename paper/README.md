@@ -99,6 +99,24 @@ compile. The 2026-07-04 page budget referred to a different, shorter paper.
 10. **The release URL lives in one place**, `\repohost` / `\repourl` in
     `preamble.tex`. `sections/reproducibility.tex` is the only consumer.
 
+## State after the 2026-08-14 referee response
+
+Every blocking item in the report now has a measurement behind it, run under a
+pre-registration committed before any cell existed (`acebd1a`, amended
+`7ce15b1`). The campaign was 280 GPU cells across four sweeps plus five
+analyses that needed no compute. `decisions.md` carries the full record; the
+short version is that the paper's positive claim got stronger and its claim
+about our own method got weaker.
+
+Strengthened: the conditioning effect holds on RegMean, a solver we did not
+build (4/4); it survives removing the rank truncation and is larger there,
+25-117x against 2.1-65x; the mechanism is measured rather than asserted; the
+ridge sweep's noise gate now exists and clears on all four bases.
+
+Weakened: worst-task NLL excess does not predict downstream accuracy and
+inverts on HumanEval; the encoder's last clear win becomes a tie once the
+untrained adapter is dropped; Table 3 mixed two inference paths.
+
 ## Before this is posted anywhere
 
 Blocking, in the order they bite:
