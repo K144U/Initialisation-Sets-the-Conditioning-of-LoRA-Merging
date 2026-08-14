@@ -2494,3 +2494,59 @@ instead of promises: R1 (the family claim holds on a solver we did not build),
 R7 (the truncation gap closes, and the effect grows), R8 (the gate exists and
 clears). R2 measured the mechanism, R3 gave the null a detectable-effect floor,
 R10 found the metric inverted on HumanEval. R4 is running. R5 and R6 remain.
+
+---
+
+## 2026-08-14 (night) — R4: the repaired KnOTS is a real arm, and it beats task arithmetic on all eight cells
+
+Rules `acebd1a` section R4, generator `03263ea`, both preceding the 12
+independent-arm cells. The 12 shared-arm cells in `eval_a2_knots_ties`
+pre-date the registration and were not read against any rule until now.
+
+    arm            base         knots_ties  task arith      diff     2xSE
+    shared         llama31_8b       0.1935      0.2196   -0.0261   0.0027
+                   mistral_7b       0.0722      0.1399   -0.0677   0.0054
+                   qwen25_7b        0.0427      0.1074   -0.0647   0.0039
+                   yi15_9b          0.0476      0.0996   -0.0520   0.0000
+    independent    llama31_8b       0.2040      0.2239   -0.0198   0.0046
+                   mistral_7b       0.0627      0.1427   -0.0801   0.0010
+                   qwen25_7b        0.0298      0.1037   -0.0739   0.0031
+                   yi15_9b          0.0389      0.0970   -0.0581   0.0009
+
+Separates from task arithmetic on 4 of 4 bases on the shared arm, which is
+where the rule is read, and on 4 of 4 on the independent arm as well.
+**VERDICT: it is a real arm.**
+
+Negative differences mean lower excess, so KnOTS with a TIES inner merge is
+**better** than task arithmetic everywhere, by 0.020 to 0.080 nats. That is
+comfortably outside the tie threshold and outside every gate.
+
+### What changes in the paper
+
+Discussion limitation 4 currently ends "The consequence is that no
+subspace-alignment method is represented in our comparison." That is no longer
+true and the limitation is rewritten: a subspace-alignment method IS
+represented, it works, and what was broken was our configuration of it rather
+than the method. The erratum about the default `inner_combination="linear"`
+stays exactly as it is, because it is still true and is still ours.
+
+### What does NOT change
+
+It does not touch Table 3's verdicts. Against the champion baseline,
+knots_ties loses on all four bases: TIES beats it at 0.1539 against 0.1935 on
+Llama, 0.0527 against 0.0722 on Mistral, 0.0132 against 0.0427 on Qwen and
+0.0464 against 0.0476 on Yi, and on Llama the champion is TVQ at 0.1052
+anyway. So the champion identity is unchanged on every base and no win, tie or
+loss moves.
+
+Default-configuration KnOTS still comes out of the regime null regardless, as
+registered: it is task arithmetic to four decimals, and R2 measured it at
+amplification 0.99 with tail fraction 0.000 on every base, identical to task
+arithmetic in both.
+
+### Consequence for R6
+
+R6 is running with six methods, having excluded default KnOTS. Now that the
+repaired one is a real arm it belongs in the T = 3 matrix too, which is 12
+further cells. They will run as a supplement when R6 finishes rather than by
+editing a manifest an orchestrator is already reading.
