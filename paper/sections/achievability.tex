@@ -63,8 +63,13 @@ read as ``$\Theta$ up to a $\log T$ factor.''
 \end{remark}
 
 \paragraph{The shared-$V$ / floor-positive regime.}\label{subsec:sharedv}
-When the $V_t$ overlap ($\deff < Tr$, floor positive), the zero-floor
-step fails. A refinement quantizing around the Chebyshev center of the
+The regime below is a property of the model, not of any cohort we
+measured: \S\ref{subsec:floor-zero} finds $\deff = Tr$ on every real
+cohort, in both initialisation conditions, so none of them occupies it.
+It is reachable when the $V_t$ genuinely coincide, which for LoRA would
+need $Tr > d$ or exactly shared subspaces rather than merely
+near-collinear ones. When they do overlap ($\deff < Tr$, floor positive),
+the zero-floor step fails. A refinement quantizing around the Chebyshev center of the
 ensemble in an active-set-aware null-space split achieves excess
 distortion of order $2^{-2R/(\deff + |A| - 1)}$, where $|A|$ is the
 active-set size: better than naive scalar quantization but short of

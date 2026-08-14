@@ -2204,3 +2204,108 @@ since practitioners do merge adapters of uneven quality, but it is not the
 same experiment as four well-trained adapters and must not be described as
 though it were. No claim about how merging behaves with T well-trained tasks
 is supported by this data.
+
+---
+
+## 2026-08-14 — Completion pass on the arXiv build: the title contradicted the
+abstract, and §7.4 still carried a verdict the analysis had withdrawn
+
+Target fixed as arXiv for now; the venue decision comes after the paper is
+finished, not before. Everything below is a consistency and completion pass on
+`paper/`, not new science. No cell was run and no number was recomputed except
+where stated.
+
+### The two contradictions a reader would have hit first
+
+**1. The title said the opposite of the abstract.** `arxiv.tex` still read
+"Initialisation Sets the Floor" while `abstract.tex` reports the floor as
+exactly zero in both regimes, and the 2026-08-08 entry above says in terms
+that this headline is false and must not be submitted. The body was rebuilt
+onto the conditioning spine on 08-08; the title block was never moved with it.
+Both roots now read "Initialisation Sets the Conditioning: A Rate-Distortion
+View of LoRA Merging", and §6's heading is "Two Regimes: What Initialisation
+Controls".
+
+**2. §7.4 still reported the rate exponent as falsified**, with the slopes
+-0.10 and -0.21, three days after the refit showed those numbers were
+artifacts of a mismatched asymptote. The abstract, intro, discussion and
+proofs appendix had all been updated to say "withdrawn, and unresolved";
+`method_tests.tex` had not. It now carries the corrected table (matched
+asymptotes, llama -2.10 at R2 0.984, yi -3.50 at R2 1.000, mistral and qwen
+unfittable because they converge inside the fit window), the registered
+verdict UNRESOLVED, and an explicit withdrawal of the two published slopes.
+
+### Promises the paper made and did not keep
+
+- §6.4 and §6.6 sent the reader to App. C for T=3 geometry, T=3 conditioning
+  and per-adapter task quality. None of the three tables existed. All three
+  are now there, from `geometry_T4_vs_T3.json`, `floor_conditioning.json`, and
+  the `nll_tau` blocks of the canonical eval cells.
+- `related_work.tex` promised a benchmark against data-free RegMean in §7. §7
+  does not report one; that comparison was on the shared cohort and did not
+  transfer. The promise is withdrawn and the paragraph now says why.
+- `app_manifest.tex` listed RegMean and AdaMerging under "methods compared".
+  Removed, with the gap stated rather than papered over. The manifest table
+  was also missing the 20-cell null and the 56-cell ridge sweep, both of which
+  §7.2 reports. Added.
+- App. C's geometry table carried a "floor" column computed from soft d_eff,
+  which is exactly the substitution §6.3 corrects. Relabelled as
+  `1 - soft d_eff/(Tr)` with a caption saying it is not the floor.
+
+### One priority claim was wrong and is now scoped
+
+`related_work.tex` claimed we are the first to pose merging as a multi-source
+rate-distortion problem. arXiv:2603.09463 (Cao et al., 10 March 2026) applies
+rate-distortion theory to merging collapse in fine-tuned LLMs and argues for a
+dimension-dependent limit on mergeability. It is now cited, the priority claim
+for the lens is dropped, and what we add is stated specifically: worst-task
+rather than average distortion, rank-r with arbitrary task curvature, and a
+matching construction. We have not reconciled the two bounds and say so.
+
+### Adapter quality, recomputed locally
+
+`adapter_quality.py` reads `eval_a1_indep`, which is not in the local mirror,
+so the table was rebuilt from the canonical cells that are (`eval_dare_ties`
+for indep1/2/3, `eval_matrix_seeds` and `eval_density_sweep` for seed1/2/3),
+averaging each arm over its three cohorts. Two things worth recording:
+
+- The result confirms §6.6 as written. Translation is beaten at its own task
+  on all four bases in both arms; gsm8k, alpaca and magicoder gain 9.8 to
+  69.5% over base and every specialist is best on its own task in all 24
+  remaining cells.
+- `eval_ridge_cond` disagrees with the canonical cells on `nll_tau` by up to
+  0.02 nats for the same nominal cohort, and on Yi that is enough to flip
+  which adapter is best on the translation task. The E2 ridge cells are
+  therefore a different evaluation draw from the rest. It does not affect any
+  claim in the paper, since the ridge results are within-cell comparisons, but
+  do not average the two sets together.
+
+### Overstatement corrected
+
+"Amplification is exactly T under independent initialisation" was measured as
+3.956 to 4.000 at T=4 and 2.958 to 3.002 at T=3. It is now reported as "to
+within 1.4%" in the abstract, intro, §6.4 and the discussion. The claim is
+still striking and is now the claim the data supports.
+
+### Build state
+
+tectonic 0.17.0, local. arXiv 30 pp, 6 overfull hboxes all under 5pt, 0
+undefined refs, 0 undefined citations. ICLR 26 pp, 1 overfull, 0/0. The ICLR
+build compiles but its main text runs to p15 against a 10-page limit, so that
+target needs a five-page cut and is not a live option without one.
+
+Three large overfull boxes were fixed (a 22pt one introduced by the release
+URL, a 21pt lambda list, a 16pt inline ratio in App. B). `\belowcaptionskip`
+is now 6pt: at the article-class default of 0pt the first `\toprule` lands on
+the baseline of the caption's last line, which was visibly wrong on Table 9.
+microtype was tried and rejected, measured: it moved the build from six
+overfull lines to eight, because the XeTeX engine gives protrusion only.
+
+### The one thing that is still blocking, and it is not a writing task
+
+`\repourl` points at `github.com/K144U/rdmerge`, which 404s for anonymous
+visitors, and `paper-consolidation` is 53 commits ahead of
+`origin/phase3-bootstrap` and unpushed. The paper's integrity argument is that
+a reader can check the commit ordering. Until that repository is public with
+those commits in it, the Reproducibility Statement and App. D are describing
+something no reader can reach. That is a decision for the author, not an edit.

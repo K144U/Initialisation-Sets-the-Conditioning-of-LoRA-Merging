@@ -21,10 +21,22 @@ provides the $H_t = U_t D_t U_t^\top$ formalism we adopt, but gives no
 rate-distortion bounds. Task-Vector Bases~\citep{jang2025taskvectorbases}
 posits a thin-Gaussian-shell geometry; ATM~\citep{atm2024alternating}
 and its successor~\citep{gradients2025taskvectorsgradients} develop a
-second-order Taylor bound on task-arithmetic error. None frames merging
-as lossy source coding; to our knowledge we are the first to pose
-merging as a multi-source rate-distortion problem with worst-task
-distortion as the figure of merit.
+second-order Taylor bound on task-arithmetic error. None of these frames
+merging as lossy source coding.
+
+\paragraph{Concurrent work using the same lens.} \citet{cao2026collapse},
+posted while this work was in progress and independently of it, study
+``merging collapse'' in fine-tuned LLMs, identify representational
+incompatibility between tasks as a strong correlate of it, and use
+rate-distortion theory to argue for a dimension-dependent limit on
+mergeability that holds regardless of the merging method. We therefore
+make no priority claim for the lens itself. What we add is specific: a
+bound on \emph{worst-task} rather than average distortion, stated for
+rank-$r$ adapters with arbitrary task-dependent curvature, together with
+a matching construction that makes the exponent tight in the generic
+regime. We have not attempted to reconcile the two bounds, which are
+stated over different objects, and a reader interested in the limits of
+merging should read both.
 
 \paragraph{Closed-form merging lineage.} Our encoder sits in a line of
 closed-form merges that invert a per-task curvature surrogate.
@@ -34,14 +46,17 @@ required); LoRM~\citep{lorm2024} carries the closed form over to LoRA
 modules in federated continual learning, and
 RegMean++~\citep{regmeanpp2025} adds cross-layer dependencies to
 RegMean's objective so that merged earlier layers are accounted for
-when merging deeper ones. Ours differs
-in three ways: it is \emph{data-free} (the projector comes from the
-adapter factors alone); it is derived from a worst-task rate-distortion
-lower bound rather than an empirical fit; and its Tikhonov $\lambda$ is
-the numerical-conditioning floor of Theorem~\ref{thm:achv} exposed as a
-single hyperparameter. We benchmark against a data-free RegMean in
-\S\ref{sec:methods}, with its ridge $\lambda$ swept, so the comparison
-does not conflate the centroid with the regularizer.
+when merging deeper ones. Ours differs in two ways: it is
+\emph{data-free}, since the projector comes from the adapter factors
+alone, and it is derived from a worst-task rate-distortion lower bound
+rather than from an empirical fit. What it shares with that line is more
+important here than what separates it. All of these methods solve a linear
+system in a curvature surrogate, which is exactly the family that
+\S\ref{subsec:ridge} finds is sensitive to cohort conditioning, and all of
+them carry a ridge term whose role that section is about. We do not
+benchmark against RegMean in this version: an earlier draft did, on the
+shared-initialisation cohort, and \S\ref{subsec:q1} is the reason those
+comparisons are not carried over.
 
 \paragraph{Rate-distortion and rotation-for-quantization ancestry.}
 Classical rate-distortion theory~\citep{shannon1959rd,coverthomas}
@@ -66,7 +81,7 @@ every algorithm. Our measurements bear on theirs, but less directly than
 an earlier version of this work claimed. We find $\deff = Tr$ in every
 layer of all four bases and in both initialisation conditions, so the
 task subspaces are indeed linearly independent and the irreducible floor
-is zero throughout (Appendix~\ref{app:proofs}). We previously took that
+is zero throughout (\S\ref{subsec:floor-zero}). We previously took that
 to mean subspace-alignment methods have no overlap to exploit, and cited
 our own KnOTS measurement as support. We withdraw both. Formal
 independence is not the absence of overlap: under shared initialisation

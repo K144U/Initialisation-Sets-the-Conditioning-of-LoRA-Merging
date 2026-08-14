@@ -90,8 +90,38 @@ any of it reached this paper.
 
 \subsection{Rate exponent}
 
-The band $[-2.4, -1.6]$ for the log-rate slope, and the requirement that
-it hold on at least three of four base models, were fixed before the
-sweep ran. The measured slopes were $-0.10$ and $-0.21$ on the two
-fittable base models, so the criterion was met on zero of four and the
-prediction is falsified (\S\ref{subsec:w3}). We did not adjust the band.
+The band $[-2.4, -1.6]$ for the log-rate slope, the fit window
+$b \in \{2,3,4,8\}$, and the requirement that the band hold on at least
+three of four base models were fixed before the sweep ran.
+
+A second document was committed later, when an external review argued that
+the flat curve we were then reporting could be an artifact of the
+post-merge rank truncation. It fixed three branches in advance: the
+falsification is \emph{void} if the slope enters the band on at least
+three of four bases, it \emph{stands} if $|{\rm slope}| < 0.5$ on at least
+three of four, and it is \emph{unresolved} otherwise, ``reported as
+unresolved, not resolved in whichever direction is more convenient''. That
+document also recorded, before any new cell ran, what to do about an
+anomaly already visible in the output: on two bases the excess at finite
+rate sat below the $b = \infty$ value, which the model forbids, and the
+rules said in advance that if it persisted it was to be treated as a
+harness problem and reported as one.
+
+The experiment those rules were written for was never needed. Its premise
+was that the sweep had been truncated, and checking the configurations
+showed it had not been: the sweep already ran at the untruncated
+realisation, so there was nothing to repeat. The anomaly clause was the
+part that mattered, and following it led to the mismatched asymptote and
+the refit of \S\ref{subsec:w3}. We applied the three branches to the
+refitted slopes as written, obtaining one base in band and none flat,
+hence \textsc{unresolved}.
+
+Two things about this ordering deserve stating plainly. The decision rule
+is unchanged and predates the numbers it judges. But the rule was
+registered against a different intervention from the one that ended up
+producing those numbers, so what carried over is the standard of evidence
+rather than a full pre-specification of the analysis, and the correction
+itself was made after the first analysis had been read. We think a
+forbidden value obliges investigation rather than permitting it, which is
+why the clause was written in advance, and the commit ordering shows both
+the clause and what followed it.

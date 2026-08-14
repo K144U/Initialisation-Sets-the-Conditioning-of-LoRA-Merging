@@ -30,8 +30,12 @@ Subspace geometry audit & \S\ref{subsec:measurement}, App.~\ref{app:geometry}
   & \texttt{measure\_subspace\_geometry.py} & 16 (CPU) \\
 Merge matrix, independent cohorts & \S\ref{subsec:q1}
   & orchestrator & 84 \\
+Merge matrix, shared cohort (the null) & \S\ref{subsec:ridge}
+  & orchestrator & 20 \\
+Ridge sweep, both cohorts & \S\ref{subsec:ridge}
+  & \texttt{run\_eval\_cell.py} & 56 \\
 Rate sweep, quantizer width $b$ & \S\ref{subsec:w3}
-  & \texttt{run\_eval\_cell.py} & 24 \\
+  & \texttt{run\_eval\_cell.py} & $24 + 4$ \\
 DARE density sweep & \S\ref{subsec:dare}
   & \texttt{run\_eval\_cell.py} & 20 \\
 DARE-TIES composition & \S\ref{subsec:dare}
@@ -50,14 +54,24 @@ for every method, so no method gains capacity over another.
 
 \paragraph{Methods compared.} Task arithmetic~\citep{ilharco2023task},
 TIES~\citep{yadav2023ties}, DARE~\citep{yu2024dare}, DARE composed with
-TIES, task-vector quantization~\citep{kim2025tvq}, a data-free
-RegMean~\citep{jin2023regmean}, a data-free
-AdaMerging~\citep{adamerging2024}, and our rate-distortion encoder with
-and without the Tikhonov ridge. Our KnOTS~\citep{stoica2025knots}
-baseline is excluded from the headline comparison for the reason given in
-\S\ref{sec:discussion}: with the default inner combination our
-implementation reduces algebraically to task arithmetic, so it was not
-measuring what we intended.
+TIES, task-vector quantization~\citep{kim2025tvq}, and our
+rate-distortion encoder with and without the Tikhonov ridge. Our
+KnOTS~\citep{stoica2025knots} baseline is excluded from the headline
+comparison for the reason given in \S\ref{sec:discussion}: with the
+default inner combination our implementation reduces algebraically to
+task arithmetic, so it was not measuring what we intended. It is retained
+in the regime null of \S\ref{subsec:ridge}, where the question is whether
+a method responds to cohort conditioning at all and a method that is
+task arithmetic under another name is still a valid data point.
+
+The data-free RegMean~\citep{jin2023regmean} and
+AdaMerging~\citep{adamerging2024} variants an earlier version of this work
+compared against are not carried over. They were run on the
+shared-initialisation cohort only, and \S\ref{subsec:q1} is our reason for
+not transferring conclusions from that cohort. Their absence means the
+closed-form least-squares family, the closest structural relative of our
+own encoder, is represented in this version only by that encoder, which we
+note as a gap rather than defend.
 
 \paragraph{Geometry audit cost.} The audit of \S\ref{subsec:audit} reads
 the adapter weight files, computes principal angles between the $T$ task

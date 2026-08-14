@@ -33,11 +33,14 @@ any correlation conclusion from them, for the power reasons given in
 
 \paragraph{Code and data.} The merge implementations, the evaluation
 harness, the geometry audit, every pre-registration document, and the
-per-cell result files are released at \texttt{[REPOSITORY URL]}. The
+per-cell result files are released at \href{\repourl}{\texttt{\repohost}}. The
 pre-registrations are also reproduced verbatim in
 Appendix~\ref{app:prereg}, but the repository is what makes the commit
 ordering checkable, and that ordering is the part of our procedure we are
-asking the reader to verify rather than accept.
+asking the reader to verify rather than accept. The base model weights and
+the trained adapters are not redistributed: the bases are public
+checkpoints, and the adapter training configurations, including every
+seed, are in the repository.
 
 \paragraph{Compute.} All merging and evaluation ran on a single node with
 A100-80GB GPUs, one evaluation cell per card at 18 to 21 GiB. The project

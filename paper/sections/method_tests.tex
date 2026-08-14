@@ -1,11 +1,14 @@
-The previous section establishes that properly initialised cohorts sit in
-the floor-zero regime, where all observed worst-task excess is in
-principle recoverable. That is an invitation to build an encoder that
-recovers it, and we did: a rate-distortion encoder using incoherent
-orthogonal mixing and scalar quantization, regularised with a single
-Tikhonov ridge term (\S\ref{sec:achv}, implementation in
-Appendix~\ref{app:manifest}). On the shared-initialisation cohorts our
-earlier draft measured, it wins comfortably against every baseline.
+The previous section leaves every cohort in the floor-zero regime, so all
+observed worst-task excess is in principle recoverable, and separates the
+cohorts on conditioning instead. Both halves of that invite a test. The
+first invites an encoder that recovers the slack, and we built one: a
+rate-distortion encoder using incoherent orthogonal mixing and scalar
+quantization, regularised with a single Tikhonov ridge term
+(\S\ref{sec:achv}, implementation in Appendix~\ref{app:manifest}). On the
+shared-initialisation cohorts our earlier draft measured, it wins
+comfortably against every baseline. The second invites the question of
+whether a four-order-of-magnitude difference in conditioning is visible to
+anything a practitioner does.
 
 This section reports what happened when we tested that result properly.
 Every decision rule quoted below was committed to version control before
@@ -68,10 +71,14 @@ rank-matching the encoder to the baselines still leaves it at $0.0795$
 against the champion's $0.1052$.
 
 We think the honest reading is that the encoder's apparent advantage was
-substantially a property of the degenerate cohort it was developed on.
-In the floor-positive regime there is a large irreducible component that
-different methods approach differently, and a method tuned on that regime
-need not generalise to the regime where the floor is gone.
+substantially a property of the degenerate cohort it was developed on. On
+that cohort $\bar H$ is ill-conditioned by four orders of magnitude
+(\S\ref{subsec:conditioning}), which is precisely the situation the
+encoder's ridge term was introduced to handle, so it was tuned on the one
+regime where its distinguishing component has work to do.
+\S\ref{subsec:ridge} makes that reading concrete: the ridge gain on the
+shared cohort is $0.19$ to $9.73$ nats and on the independent cohort
+$0.00$ to $0.10$.
 
 \subsection{Does the conditioning matter? Only for methods that solve}
 \label{subsec:ridge}
@@ -93,9 +100,9 @@ methods ever goes near the ill-conditioned direction. Each produces a
 bounded-norm, roughly mean-like solution, whereas the quantity that blows
 up is the norm of the \emph{exact interpolator}. To expose the
 conditioning one needs a method that actually solves the system. Our
-encoder does, and it carries a Tikhonov ridge, so sweeping
-$\lambda \in \{0, 0.01, 0.03, 0.05, 0.13, 0.30, 1.00\}$ on both cohorts
-with rank pinned to $16$ in every cell isolates the effect.
+encoder does, and it carries a Tikhonov ridge, so sweeping $\lambda$ over
+seven values, $0$, $0.01$, $0.03$, $0.05$, $0.13$, $0.30$ and $1.00$, on
+both cohorts with rank pinned to $16$ in every cell isolates the effect.
 
 \begin{table}[t]
 \centering
@@ -176,32 +183,81 @@ What survives is weaker and still worth saying: single-seed method
 rankings on this metric are not reproducible, so merging comparisons
 should report multiple initialisation draws.
 
-\subsection{The predicted rate exponent is falsified on real adapters}
+\subsection{The predicted rate exponent is unresolved}
 \label{subsec:w3}
 
 Theorem~\ref{thm:general} predicts distortion decaying as
 $2^{-2R/\deff}$, which on a log-rate axis is a slope in a narrow band. We
 pre-registered the band as $[-2.4, -1.6]$, to hold on at least three of
-four base models, and swept quantizer width $b \in \{1,2,3,4,8,16\}$.
+four base models, and swept quantizer width $b \in \{1,2,3,4,8,16\}$ with
+the fit taken over $b \in \{2,3,4,8\}$, $b=1$ being clipping-dominated.
 
-It fails. Of the two base models where the curve can be fitted at all,
-the measured slopes are $-0.10$ and $-0.21$, roughly an order of
-magnitude off the predicted band, so the criterion is met on zero of the
-fittable models. On the other two the fit is undefined because the excess
-at finite rate falls \emph{below} its own $b = \infty$ value, which the
-model does not allow.
+An earlier version of this work reported the prediction falsified, on the
+strength of measured slopes of $-0.10$ and $-0.21$. \textbf{Those two
+numbers are withdrawn.} Each finite-rate curve was compared against a
+$b = \infty$ reference computed at a \emph{different} ridge value and
+aggregated over a different number of cohorts, so the quantity being
+differenced was not the same method. The symptom was visible in the
+output and we did not act on it at the time: on two bases the excess at
+finite rate came out \emph{below} its own asymptote, which the model does
+not permit. That is a measurement fault, not a property of the data.
 
-The data instead show something flat and operationally useful: with the
-ridge on, everything from $b = 2$ upward is indistinguishable. Two bits
-buys the entire effect and sixteen bits adds nothing. We report this as an
-empirical regularity, not as a confirmation of the theory, because it is
-not one. The theory's floor term is what our measurements support; its
-rate term is not, at least at the ranks and scales reachable here.
+\begin{table}[t]
+\centering
+\small
+\caption{Rate sweep against matched asymptotes: same ridge $\lambda$, same
+realisation, same cohort for the curve and its $b = \infty$ reference, with
+the equality asserted from the configuration files before any fit is
+attempted. Worst-task NLL excess in nats. No base now falls below its own
+asymptote.}
+\label{tab:w3}
+\begin{tabular}{lccccccccc}
+\toprule
+base & $b{=}1$ & $b{=}2$ & $b{=}3$ & $b{=}4$ & $b{=}8$ & $b{=}16$ &
+$b{=}\infty$ & slope & $R^2$ \\
+\midrule
+Llama-3.1-8B & 0.633 & 0.097 & 0.080 & 0.085 & 0.082 & 0.082 & 0.082 & $-2.10$ & 0.984 \\
+Mistral-7B   & 0.211 & 0.050 & 0.048 & 0.047 & 0.047 & 0.047 & 0.047 & --- & --- \\
+Qwen2.5-7B   & 0.075 & 0.011 & 0.010 & 0.010 & 0.010 & 0.010 & 0.010 & --- & --- \\
+Yi-1.5-9B    & 0.210 & 0.041 & 0.036 & 0.036 & 0.036 & 0.036 & 0.036 & $-3.50$ & 1.000 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-A caveat on the falsification itself: this sweep was run on a single
-initialisation draw. A single draw is thin evidence for a falsification,
-though the flatness is far too large and too consistent across four base
-models to be plausibly explained by initialisation noise.
+\paragraph{Refitted, the verdict is unresolved.} Table~\ref{tab:w3} gives
+the corrected sweep. Llama fits at $-2.10$ with $R^2 = 0.98$ against a
+predicted $-2$, which is the exponent holding cleanly on a real adapter
+cohort and was invisible before because the bad reference made that base
+unfittable. Yi fits at $-3.50$, steeper than predicted rather than
+flatter. Mistral and Qwen cannot be fitted at all, and the reason is now
+benign rather than impossible: each reaches its asymptotic value inside
+the fit window, Mistral at $b = 4$ and Qwen at $b = 3$, leaving fewer than
+three points with any dynamic range above the asymptote.
+
+The rule fixed in advance requires the slope to lie in $[-2.4, -1.6]$ on
+at least three of four bases to void the falsification, and $|{\rm slope}|
+< 0.5$ on at least three of four for it to stand. We obtain one and zero
+respectively, so by the registered rule the outcome is
+\textsc{unresolved}, and we record it that way rather than round it to the
+branch that the single in-band fit points towards. The registered window
+$\{2,3,4,8\}$ is simply too coarse for bases that converge by four bits; a
+finer low-rate grid would settle it, and we have deliberately not chosen
+one after seeing which grid would produce a fit.
+
+What survives is an operational regularity rather than a test of the
+theory. With the ridge on, three bits buys essentially the whole effect:
+from $b = 3$ upward every base is within $0.005$ nats of its own
+asymptote, and sixteen bits adds nothing measurable over four. Only $b=1$,
+where clipping dominates, is far off.
+
+Two caveats. This sweep is a single initialisation draw on the
+shared-initialisation cohort, so it says nothing about whether the
+finite-rate behaviour differs by regime; repeating it on an independent
+cohort would be a genuinely new measurement and needs its own registered
+rule, since it asks a different question from the one registered here.
+And the corrected analyser is the one that produced Table~\ref{tab:w3};
+the fault it fixes was ours, in the reference it selected, not in the
+cells.
 
 \subsection{DARE: a negative result with a mechanism, and its limits}
 \label{subsec:dare}

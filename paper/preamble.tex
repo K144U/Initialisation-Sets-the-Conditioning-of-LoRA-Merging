@@ -11,6 +11,16 @@
 \usepackage[table]{xcolor}
 \usepackage{url}
 \usepackage{hyperref}
+% Not microtype: under the XeTeX engine tectonic uses, only protrusion is
+% available (no font expansion for these Type 1 faces), and enabling it
+% moved the arXiv build from six overfull lines to eight. Measured, not
+% assumed; if the build ever moves to pdflatex, retest it.
+
+% article.cls ships \belowcaptionskip = 0pt, which puts the first \toprule on
+% the baseline of the caption's last line. It only shows up on some tables,
+% depending on how the last caption line falls, and it looks like a printing
+% error when it does. Give every caption a little air instead.
+\setlength{\belowcaptionskip}{6pt}
 
 % Heatmap-style cell shading for the matrix tables.
 % \best = winner of the row (lowest NLL excess / highest accuracy).
@@ -21,6 +31,13 @@
 % silently leaving \cellcolor undefined and printing a literal "green!18".
 \newcommand{\best}[1]{\cellcolor{green!18}\textbf{#1}}
 \newcommand{\worst}[1]{\cellcolor{red!10}#1}
+
+% The one place the release URL is written. The reproducibility statement is
+% the only user. Before posting the paper anywhere, the repository this
+% points at must be public and must contain the commit trail the paper asks
+% the reader to check; see paper/README.md for the pre-submission list.
+\newcommand{\repohost}{github.com/K144U/rdmerge}
+\newcommand{\repourl}{https://\repohost}
 
 % Shorthand macros used throughout.
 \newcommand{\R}{\mathbb{R}}

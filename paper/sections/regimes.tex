@@ -122,7 +122,7 @@ condition number reaches $8.3\times10^{4}$ on the shared arm
 (\S\ref{subsec:conditioning}), so the answer depends on the rank tolerance.
 At $\mathrm{rtol} = 10^{-6}$ we obtain zero on all eight cohort-base pairs;
 at $10^{-2}$ the shared arm returns $0.16$ to $0.37\,B^2$ and the
-independent arm still returns zero. Reporting "exactly zero" for the shared
+independent arm still returns zero. Reporting ``exactly zero'' for the shared
 arm would be reporting a tolerance choice as a fact.
 
 That tolerance sensitivity is the finding, not an inconvenience.
@@ -151,8 +151,9 @@ norm. That is where the two regimes separate.
 \centering
 \small
 \caption{Conditioning of $\bar H$ and the norm of the exact interpolator,
-relative to the mean task delta. The independent-arm amplification equals $T$
-exactly, the value for orthogonal subspaces.}
+relative to the mean task delta. The independent-arm amplification returns
+$T$, the value for exactly orthogonal subspaces, to within $1.1\%$ in the
+worst of the four cells.}
 \label{tab:conditioning}
 \begin{tabular}{lcccc}
 \toprule
@@ -185,10 +186,11 @@ four to five orders of magnitude apart.}
 Table~\ref{tab:conditioning} gives the result. The condition number of
 $\bar H$ differs by four to five orders of magnitude between the two
 conditions. The exact interpolator is $43$ to $64$ times larger than the mean
-task delta under shared initialisation, against exactly $4.0$ under
-independent initialisation. That $4.0$ is $T$, the identity for exactly
-orthogonal subspaces, and recomputing at $T=3$ returns exactly $3.0$
-(Appendix~\ref{app:geometry}). We record this as a correctness check on the
+task delta under shared initialisation, against $3.96$ to $4.00$ under
+independent initialisation. That value is $T$, the identity for exactly
+orthogonal subspaces, and recomputing with the degenerate adapter dropped
+returns $2.96$ to $3.00$ at $T=3$ (Appendix~\ref{app:t3}). Neither is
+fitted. We record this as a correctness check on the
 implementation and nothing more: reproducing an identity confirms the code
 computes what we intend, and says nothing about whether the quantity
 matters. \S\ref{subsec:ridge} is where that is tested.
@@ -230,8 +232,8 @@ degradation we observe is an inference rather than a measurement.
 
 Everything above is computed from the adapter weight matrices: no forward
 passes, no evaluation data, no merging. It costs about one CPU minute for a
-cohort of four rank-16 adapters. What it reports is not "how much of your loss
-is irreducible", which is zero in every case we have seen, but where your
+cohort of four rank-16 adapters. What it reports is not ``how much of your loss
+is irreducible'', which is zero in every case we have seen, but where your
 cohort sits on the conditioning axis of Table~\ref{tab:conditioning}, which
 \S\ref{subsec:ridge} shows determines whether an unregularised solve-based
 merge will work at all.
