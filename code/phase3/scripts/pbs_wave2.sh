@@ -49,6 +49,8 @@ case "$ARM" in
   r8) MANIFEST=code/phase3/configs/wave2_r8_manifest.json; COHORTS="indep2 indep3" ;;
   r4) MANIFEST=code/phase3/configs/r4_knots_indep_manifest.json
       COHORTS="indep1 indep2 indep3" ;;
+  r6) MANIFEST=code/phase3/configs/r6_t3_manifest.json
+      COHORTS="indep1 indep2 indep3" ;;
   *)  echo "[w2] ABORT: unknown ARM=$ARM"; exit 2 ;;
 esac
 
