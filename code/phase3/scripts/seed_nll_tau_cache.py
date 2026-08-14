@@ -9,8 +9,14 @@ The key is rebuilt from the CONFIG, not from the result, and must match what
 run_eval_cell.py computes. If the two ever drift, the cache misses and the cell
 recomputes, which is the safe direction.
 
+The third argument exists because a cell can be a valid source for a cache
+entry its own config knows nothing about. The eval_a1_indep baseline cells ran
+on the unsloth path long before this cache existed, and their nll_tau is
+exactly what an unsloth-path cell of the same cohort needs.
+
 Usage:
   python code/phase3/scripts/seed_nll_tau_cache.py <config.yaml> <result.json>
+                                                   [cache_path]
 """
 import json
 import sys
@@ -19,13 +25,13 @@ from pathlib import Path
 import yaml
 
 
-def main(cfg_path, res_path):
+def main(cfg_path, res_path, override=None):
     cfg = yaml.safe_load(Path(cfg_path).read_text())
     res = json.loads(Path(res_path).read_text())
 
-    cache_path = cfg.get("nll_tau_cache")
+    cache_path = override or cfg.get("nll_tau_cache")
     if not cache_path:
-        sys.exit(f"{cfg_path} has no nll_tau_cache field")
+        sys.exit(f"{cfg_path} has no nll_tau_cache field and none was given")
     cache_path = Path(cache_path)
 
     n_eval = res.get("n_eval_per_task")
@@ -60,6 +66,6 @@ def main(cfg_path, res_path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
+    if len(sys.argv) not in (3, 4):
         sys.exit(__doc__)
-    raise SystemExit(main(sys.argv[1], sys.argv[2]))
+    raise SystemExit(main(*sys.argv[1:]))
