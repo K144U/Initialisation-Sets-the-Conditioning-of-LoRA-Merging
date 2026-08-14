@@ -216,23 +216,75 @@ def main() -> int:
 
     nll_tau: dict[str, dict[str, float]] = {}   # nll_tau[state][task]
     per_example_tau: dict[str, dict[str, list[dict]]] = {}  # per_example[state][task] = [...]
-    # Evaluate each task-specific adapter on each task
-    print(f"[eval_cell] evaluating tau adapters", flush=True)
     state_names_for_nll_tau = ["base"] + [s["name"] for s in cfg["adapter_specs"]]
-    for state in state_names_for_nll_tau:
-        if state == "base":
-            ctx = model.disable_adapter()
-        else:
-            model.set_adapter(state if state != cfg["adapter_specs"][0]["name"] else "default")
-            ctx = _NullCtx()
-        with ctx:
-            nll_tau[state] = {}
-            per_example_tau[state] = {}
-            for task_name, ev in eval_data.items():
-                v, per_ex = compute_nll(model, tokenizer, ev, max_len)
-                nll_tau[state][task_name] = v
-                per_example_tau[state][task_name] = per_ex
-                print(f"  {state:<12} on {task_name:<14} nll={v:.4f}", flush=True)
+
+    # 3a. nll_tau does not depend on the merge. It is the base model and each
+    # task adapter evaluated on each task, which is 20 evaluations of the 24 a
+    # cell runs, and every cell that shares a (base, cohort) recomputes exactly
+    # the same 20. In a seven-lambda sweep that is the same work seven times.
+    #
+    # The cache is keyed on everything nll_tau can depend on and refuses to
+    # load on any mismatch, because a stale hit would be invisible in the
+    # output and would silently make two arms incomparable. It deliberately
+    # does NOT include the method or its kwargs, which is the whole point.
+    cache_key = {
+        "base_model": base_path,
+        "adapters": [[s["name"], s["dir"]] for s in cfg["adapter_specs"]],
+        "task_cfgs": [s["task_cfg"] for s in cfg["adapter_specs"]],
+        "seed": cfg.get("seed", 20260518),
+        "max_seq_length": max_len,
+        "n_eval": {k: len(v) for k, v in eval_data.items()},
+        "loader": cfg.get("loader"),
+        "delta_scale": cfg.get("delta_scale"),
+        "version": 1,
+    }
+    cache_path = cfg.get("nll_tau_cache")
+    cache_path = Path(cache_path) if cache_path else None
+    loaded_from_cache = False
+    if cache_path is not None and cache_path.exists():
+        try:
+            blob = json.loads(cache_path.read_text())
+        except (ValueError, OSError) as exc:
+            print(f"[eval_cell] nll_tau cache unreadable ({exc}), recomputing",
+                  flush=True)
+            blob = None
+        if blob is not None:
+            if blob.get("key") == cache_key:
+                nll_tau = blob["nll_tau"]
+                per_example_tau = blob["per_example_tau"]
+                loaded_from_cache = True
+                print(f"[eval_cell] nll_tau loaded from {cache_path}", flush=True)
+            else:
+                diff = [k for k in cache_key
+                        if blob.get("key", {}).get(k) != cache_key[k]]
+                print(f"[eval_cell] nll_tau cache MISS, differs in {diff}; "
+                      f"recomputing", flush=True)
+
+    if not loaded_from_cache:
+        # Evaluate each task-specific adapter on each task
+        print(f"[eval_cell] evaluating tau adapters", flush=True)
+        for state in state_names_for_nll_tau:
+            if state == "base":
+                ctx = model.disable_adapter()
+            else:
+                model.set_adapter(state if state != cfg["adapter_specs"][0]["name"] else "default")
+                ctx = _NullCtx()
+            with ctx:
+                nll_tau[state] = {}
+                per_example_tau[state] = {}
+                for task_name, ev in eval_data.items():
+                    v, per_ex = compute_nll(model, tokenizer, ev, max_len)
+                    nll_tau[state][task_name] = v
+                    per_example_tau[state][task_name] = per_ex
+                    print(f"  {state:<12} on {task_name:<14} nll={v:.4f}", flush=True)
+        if cache_path is not None:
+            # Atomic, because five workers can finish this block at once.
+            cache_path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = cache_path.with_suffix(f".tmp{os.getpid()}")
+            tmp.write_text(json.dumps({"key": cache_key, "nll_tau": nll_tau,
+                                       "per_example_tau": per_example_tau}))
+            os.replace(tmp, cache_path)
+            print(f"[eval_cell] nll_tau cached to {cache_path}", flush=True)
 
     # 4. Apply the merging method
     view = PeftModelView(model)
@@ -301,6 +353,10 @@ def main() -> int:
         "base_model": base_path,
         "adapter_dirs": [s["dir"] for s in cfg["adapter_specs"]],
         "task_names": [s["name"] for s in cfg["adapter_specs"]],
+        # Provenance: was nll_tau recomputed in this cell or reused from the
+        # cache? Recorded so a reader can tell without inspecting timings.
+        "nll_tau_from_cache": loaded_from_cache,
+        "nll_tau_cache_path": str(cache_path) if cache_path else None,
         "nll_tau": nll_tau,           # nll_tau[state][task] (mean over n_eval)
         "nll_merged": nll_merged,      # nll_merged[task] (mean over n_eval)
         "per_example_nll_tau": per_example_tau,

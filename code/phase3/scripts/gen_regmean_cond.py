@@ -102,6 +102,12 @@ def main() -> int:
 
                 out_p = OUT_RES / f"{name}.json"
                 cfg["output_path"] = str(out_p)
+                # nll_tau depends on (base, cohort) and nothing else in this
+                # sweep, so seven lambda cells share one cache entry. The key
+                # inside the file is what actually gates reuse; this path only
+                # decides which cells can possibly share.
+                cfg["nll_tau_cache"] = str(
+                    RES / "nll_tau_cache" / f"{base}__{cohort}.json")
                 cfg_p = OUT_CFG / f"{name}.yaml"
                 cfg_p.write_text(yaml.safe_dump(cfg, sort_keys=False))
                 written[f"{cohort}|{tag}"] = cfg
@@ -157,6 +163,20 @@ def main() -> int:
     expect = len(BASES) * len(LAMBDAS) * len(COHORTS)
     assert len(manifest) == expect, (len(manifest), expect)
     assert len(smoke) == 1, len(smoke)
+
+    # Order matters now that nll_tau is cached. Put one cell per (base, cohort)
+    # first, so the eight cache entries are populated by eight cells running on
+    # different cohorts, and every later cell is a hit. Without this the five
+    # workers can start two cells of the same cohort at once and both pay the
+    # full twenty evaluations. The orchestrator pulls in manifest order.
+    seen: set[str] = set()
+    first, rest = [], []
+    for entry in manifest:
+        cohort_key = entry["name"].split("__")[0] + entry["name"].split("__")[2]
+        (rest if cohort_key in seen else first).append(entry)
+        seen.add(cohort_key)
+    assert len(first) == len(BASES) * len(COHORTS), len(first)
+    manifest = first + rest
 
     out = CFG / "regmean_cond_manifest.json"
     out.write_text(json.dumps(manifest, indent=2))
