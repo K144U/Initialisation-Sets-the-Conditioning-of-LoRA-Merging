@@ -34,9 +34,18 @@ make no priority claim for the lens itself. What we add is specific: a
 bound on \emph{worst-task} rather than average distortion, stated for
 rank-$r$ adapters with arbitrary task-dependent curvature, together with
 a matching construction that makes the exponent tight in the generic
-regime. We have not attempted to reconcile the two bounds, which are
-stated over different objects, and a reader interested in the limits of
-merging should read both.
+regime.
+
+We have not attempted to reconcile the two bounds, and it is worth being
+precise about why. Ours constrains $\max_t (w-\tau_t)^\top H_t (w-\tau_t)$ over
+admissible rank-$r$ task tuples, at a storage budget of $R$ bits, and its
+content is a rate-distortion tradeoff: it says what no encoder can achieve at a
+given rate. Theirs, on the abstract's description, constrains mergeability as a
+function of representational incompatibility between tasks, with no rate
+appearing. The two would meet if their incompatibility measure were expressible
+through the geometry of the $V_t$, since that is what fixes both our $\deff$ and
+our $\kappa(\bar H)$; whether it is, we cannot tell without their construction
+in front of us. A reader interested in the limits of merging should read both.
 
 \paragraph{Closed-form merging lineage.} Our encoder sits in a line of
 closed-form merges that invert a per-task curvature surrogate.

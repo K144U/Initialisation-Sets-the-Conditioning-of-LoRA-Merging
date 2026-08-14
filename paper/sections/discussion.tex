@@ -28,8 +28,10 @@ other way.
   delta by $37$ to $57\%$ in Frobenius norm costs roughly that much. Any
   comparison in this paper at the $0.005$ threshold should be read with that
   in mind; it is why we decline to call two of the four bases in
-  Table~\ref{tab:q1} losses. The conditioning results are not affected, since
-  their margins run from $0.09$ to $9.6$ nats.
+  Table~\ref{tab:q1} losses. The conditioning results are not affected: the
+  shared-versus-independent difference at $\lambda = 0$, which is the quantity
+  \S\ref{subsec:ridge} turns on, runs from $0.13$ to $9.63$ nats, one to three
+  orders of magnitude above the resolution.
 \item \textbf{We cannot measure whether NLL excess predicts downstream
   accuracy.} The Spearman correlations available to us are computed over the
   five or six methods in a row, and under the null
@@ -64,10 +66,11 @@ other way.
   different seeds over one pool. Absolute numbers are optimistic. Every
   method sees identical data, so we do not believe comparisons are affected,
   but no absolute number here is a held-out number.
-\item \textbf{Theorem~\ref{thm:general}'s constant is imported, not derived.}
-  Appendix~\ref{app:proofs} isolates the step: we do not prove that the
-  entropy-power-to-variance ratio is bounded below uniformly, and transfer
-  TurboQuant's constant to our conditional setting as an assumption.
+\item \textbf{Theorem~\ref{thm:general}'s rate term is conditional.} It holds
+  under Assumption~\ref{asm:epr}, which we state rather than prove: that the
+  entropy-power-to-variance ratio of $\eta$ is bounded below uniformly in
+  $(T, r, d)$ and in the spectra. Appendix~\ref{app:proofs} isolates the single
+  step that uses it. The floor term carries no such condition.
 \item \textbf{Scope.} $T=4$, $r=16$, four base models in the 7B to 9B range,
   language only, worst-task NLL excess. $Tr = 64$ is far below $d$, so the
   regime where $Tr$ approaches $d$, and where $\deff = Tr$ must fail, is

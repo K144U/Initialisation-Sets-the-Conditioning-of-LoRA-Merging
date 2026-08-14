@@ -32,8 +32,12 @@ only downgrade a win or loss to a tie, never promote.
 \small
 \caption{Pre-registered replication on independently initialised cohorts.
 Worst-task NLL excess in nats, mean over three cohorts. Positive $d$
-favours the encoder. Per-cell standard deviation across cohorts is
-$0.0001$ to $0.0034$, so the noise gate downgraded nothing.}
+favours the encoder. The gate is computed on the paired difference
+$d$, whose standard deviation across cohorts is $0.0003$ to $0.0020$;
+individual cells vary more, from $0.0001$ to $0.0034$ across all seven
+methods, because the encoder and the champion move together from cohort to
+cohort and the difference is quieter than either. The gate downgraded
+nothing.}
 \label{tab:q1}
 \begin{tabular}{lccccc}
 \toprule

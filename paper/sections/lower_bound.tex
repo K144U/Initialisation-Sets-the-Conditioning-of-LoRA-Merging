@@ -4,8 +4,9 @@ floor; a closed-form evaluation of that floor under $P^\star$; and a
 Shannon converse on the remaining compression subproblem, conditional
 on the curvature data $\boldsymbol H$. Lemmas~\ref{lem:id}
 and~\ref{lem:floor-general} are proved in full in
-Appendix~\ref{app:proofs}; Theorem~\ref{thm:general} is proved there
-modulo one constant, which that appendix isolates rather than absorbs.
+Appendix~\ref{app:proofs}. Theorem~\ref{thm:general}'s floor term is proved
+there unconditionally; its rate term rests on Assumption~\ref{asm:epr} below,
+which we state explicitly rather than leave in an appendix.
 
 \begin{lemma}[$H_t$-weighted max $\geq$ avg identity]\label{lem:id}
 For every admissible $(\boldsymbol\tau, \boldsymbol H)$ and every
@@ -48,9 +49,29 @@ all subspaces coincide ($V_t = V$, $\deff = r$) it is again
 $B^2(1 - 1/T)$. In the generic LoRA regime ($V_t$ Stiefel-random,
 $Tr \leq d$), $\deff = Tr$ almost surely and the floor vanishes.
 
+The rate term needs one ingredient we do not prove, and we state it as an
+assumption rather than carry it as a caveat, so that what is conditional is
+visible where the result is used.
+
+\begin{assumption}[Uniform entropy power]\label{asm:epr}
+There is an absolute constant $c_{\mathrm{TQ}} > 0$, independent of
+$(T, r, d)$ and of the spectra $(D_t)_{t=1}^T$, such that the conditional
+entropy power of $\eta := \bar H^{1/2}\tauH$ given $\boldsymbol H$ is at least
+$c_{\mathrm{TQ}}$ times its conditional variance.
+\end{assumption}
+
+For each fixed instance the ratio is finite, because $\eta$ has a density and
+its scale is pinned by $\tau_t^\top H_t \tau_t = B^2$. What we do not establish
+is that the bound is uniform, and Appendix~\ref{app:proofs} isolates the exact
+step where it is used. We import the constant from
+TurboQuant~\citep{zandieh2025turboquant}, which supplies one in the
+rotation-invariant case; transferring it to our conditional setting is part of
+what Assumption~\ref{asm:epr} asserts.
+
 \begin{theorem}[Rank-$r$ RD lower bound, general $H_t$]\label{thm:general}
 Under $P^\star$ with any fixed positive-definite spectra
-$(D_t)_{t=1}^T$ and $\rank(H_t) = r$ for all $t$,
+$(D_t)_{t=1}^T$ and $\rank(H_t) = r$ for all $t$, and under
+Assumption~\ref{asm:epr} for the rate term,
 \begin{equation}\label{eq:thm-lb}
   \mathcal{D}^\star(T, d, r, B, R)
   \;\geq\;

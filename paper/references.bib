@@ -70,7 +70,14 @@
 
 % Verified from OpenReview forum id=iE0dWuv6jU, fetched 2026-05-03;
 % authors visible after the ICLR 2026 review cycle. Submission was
-% withdrawn on 2026-01-06; cited as @misc.
+% withdrawn on 2026-01-06; cited as a misc entry.
+%
+% Do not write an at-sign followed by an entry type in these comments.
+% BibTeX has no comment syntax between entries: it scans for the next
+% at-sign, so "cited as <at>misc." made it expect a brace, fail, and then
+% SKIP the real entry below, silently dropping this reference from the
+% bibliography. That is what the "I was expecting a `{'" line in
+% out/arxiv.blg was.
 @misc{tspa2025,
   title  = {Leveraging Rotation Symmetry for Efficient {LoRA} Merging
             in Large Language Models},

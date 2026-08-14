@@ -34,10 +34,18 @@ are in Appendix~\ref{app:proofs}.
 measure the floor on real cohorts and report how much of the observed merging
 loss is irreducible. We did, and the answer is that \textbf{the floor is
 exactly zero} on all four base models under every initialisation scheme we
-tried. This is not a numerical accident but a structural fact: the floor
-vanishes precisely when the task row spaces are in direct sum, and $T$
-rank-$r$ adapters with $Tr \leq d$ are linearly independent even when their
-subspaces are nearly collinear. Near-collinear is not collinear.
+tried. That is a statement about a rank: the floor vanishes precisely when the
+task row spaces are in direct sum, and $T$ rank-$r$ adapters with $Tr \leq d$
+are linearly independent even when their subspaces are nearly collinear.
+Near-collinear is not collinear.
+
+It is also, deliberately, a statement no finite-precision merge can act on.
+Evaluating the floor needs a pseudoinverse of a matrix whose condition number
+reaches $8.3\times10^{4}$, so at a loose tolerance the shared-initialisation
+cohort returns $0.16$ to $0.37\,B^2$ rather than zero
+(\S\ref{subsec:floor-zero}). A cohort with a genuinely positive floor and one
+with a zero floor are numerically indistinguishable, which is the first sign
+that the floor is not the quantity to be looking at.
 
 We report this prominently because an earlier version of this work claimed
 otherwise, deriving a floor of $0.745B^2$ for one cohort against $0.012B^2$
@@ -70,7 +78,7 @@ it: across twenty base-by-method cells, task arithmetic, TIES, DARE and TVQ
 show no systematic advantage in either regime, because each produces a
 bounded-norm near-mean solution that never approaches the ill-conditioned
 direction. Methods that actually solve the linear system are not: run
-unregularised, the same merge is $4.3$ to $65$ times worse on the
+unregularised, the same merge is $2.1$ to $65$ times worse on the
 ill-conditioned cohort, and a single Tikhonov term repairs it.
 
 So the honest claim is narrow and, we think, useful: cohort conditioning is
@@ -93,9 +101,10 @@ Appendix~\ref{app:prereg}, with the commit ordering that makes them checkable.
 \begin{enumerate}
 \item A closed-form lower bound on worst-task NLL excess for rank-$r$
   merging (Theorem~\ref{thm:general}) with arbitrary task-dependent
-  curvature, and a matching construction (Theorem~\ref{thm:achv}); both
-  proved in Appendix~\ref{app:proofs}, with the one imported constant
-  isolated rather than absorbed.
+  curvature, and a matching construction (Theorem~\ref{thm:achv}). The
+  floor term is unconditional; the rate term holds under an explicitly
+  stated assumption on the entropy power (Assumption~\ref{asm:epr}), which
+  we do not prove and do not absorb into a constant.
 \item The finding that the bound's floor term is \emph{vacuous} for LoRA
   cohorts in general position, together with the exact instance form
   $B^2 - \tauH^\top\bar H\tauH$ that a practitioner should evaluate instead

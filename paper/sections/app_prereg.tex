@@ -12,6 +12,41 @@ commit it governs, and the rules files are not modified after their
 initial commit. A reader who does not trust the narrative can verify the
 ordering directly.
 
+Table~\ref{tab:commits} gives the hashes, so that checking the ordering does
+not require cloning the repository and reconstructing which commit is which.
+Each row reads left to right in the order the commits were made, and every
+rules commit is an ancestor of the result commit on its row.
+
+\begin{table}[tb]
+\centering
+\small
+\caption{Commit trail for every pre-registered test in this paper. Verify with
+\texttt{git merge-base -{}-is-ancestor <rules> <result>}, which exits zero
+exactly when the ordering claimed here holds.}
+\label{tab:commits}
+\begin{tabular}{llll}
+\toprule
+test & rules & analyzer or implementation & result \\
+\midrule
+Independent replication (\S\ref{subsec:q1}) & \texttt{8dad101} &
+  \texttt{42c7ff0} (amendment) & \texttt{c5f068a} \\
+DARE with TIES (\S\ref{subsec:dare}) & \texttt{efb593f} &
+  \texttt{f268288}, \texttt{d426961} & \texttt{c0cf049} \\
+Conditioning and the ridge (\S\ref{subsec:ridge}) & \texttt{f9d230e} &
+  \texttt{fb17e22}, \texttt{54af7c6} & \texttt{5610ce6} \\
+Rate exponent (\S\ref{subsec:w3}) & \texttt{f9d230e} &
+  \texttt{49ebb17} (corrected) & \texttt{f01502c} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two rows deserve a comment. The DARE-TIES analyzer appears twice because the
+first version printed, under a mixed verdict, the consequence text belonging to
+a different verdict; \texttt{d426961} is that repair, and it predates the
+verdict commit. The rate-exponent row names a \emph{corrected} analyzer, and
+that correction was made after the first analysis had been read, for the reason
+given in \S\ref{subsec:rate-prereg} below.
+
 \subsection{Replication of the merge matrix on independent cohorts}
 
 Rules committed before any independent-cohort result was read. An
@@ -88,7 +123,7 @@ that neither direction is claimed. The verdict computation was correct
 against the rule; the reporting text was not, and it was corrected before
 any of it reached this paper.
 
-\subsection{Rate exponent}
+\subsection{Rate exponent}\label{subsec:rate-prereg}
 
 The band $[-2.4, -1.6]$ for the log-rate slope, the fit window
 $b \in \{2,3,4,8\}$, and the requirement that the band hold on at least
