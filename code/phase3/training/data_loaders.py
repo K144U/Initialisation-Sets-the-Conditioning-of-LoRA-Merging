@@ -74,6 +74,24 @@ def load_task_split(task_cfg: dict, seed: int) -> Tuple[list[dict], list[dict]]:
       - prompt_field, answer_field: column names (ignored for special tasks)
       - streaming: bool (default false) — set true for huge datasets like wmt19
         where loading the full split would be GBs of download
+      - stream_shuffle_buffer: int (default 0) — size of the reservoir used to
+        shuffle a streamed split before taking the prefix. 0 keeps the
+        original take-the-first-n behaviour.
+
+    NOTE on the streaming branch, which had a defect worth recording rather
+    than quietly fixing. With stream_shuffle_buffer unset it takes the FIRST
+    n_train examples of the split in corpus order, while the non-streaming
+    branch below shuffles first. Translation was the only task configured to
+    stream, and WMT19 de-en is a concatenation of sub-corpora of roughly 35M
+    pairs, so its 7500-example prefix was 7500 consecutive sentences of
+    European Parliament proceedings rather than a sample of the corpus:
+    17.4 parliamentary terms per 1000 tokens against 0.6 in a shuffled sample,
+    evaluated against a news-domain split. That is why the translation adapter
+    never learned its task; see code/phase3/scripts/diagnose_translation_adapter.py.
+
+    The default is left at 0 deliberately. Every committed config predates this
+    fix, and changing what they load would mean a re-run no longer reproduces
+    the cell it claims to. New training should set stream_shuffle_buffer.
     """
     name = task_cfg["dataset"]
     cfg = task_cfg.get("config")
@@ -84,8 +102,9 @@ def load_task_split(task_cfg: dict, seed: int) -> Tuple[list[dict], list[dict]]:
     n_eval = task_cfg["n_eval"]
 
     if streaming:
-        # Iterate parquet shards, take first N. Cheaper than full-split download.
+        # Iterate parquet shards rather than downloading the full split.
         import itertools
+        buf = int(task_cfg.get("stream_shuffle_buffer", 0))
         train_iter = (
             load_dataset(name, cfg, split=train_split, streaming=True) if cfg
             else load_dataset(name, split=train_split, streaming=True)
@@ -94,6 +113,16 @@ def load_task_split(task_cfg: dict, seed: int) -> Tuple[list[dict], list[dict]]:
             load_dataset(name, cfg, split=eval_split, streaming=True) if cfg
             else load_dataset(name, split=eval_split, streaming=True)
         )
+        if buf > 0:
+            # Reservoir-shuffle first, so the prefix samples the corpus rather
+            # than whichever sub-corpus happens to be written first.
+            train_iter = train_iter.shuffle(seed=seed, buffer_size=buf)
+            eval_iter = eval_iter.shuffle(seed=seed, buffer_size=buf)
+            print(f"[data] streaming with shuffle buffer {buf}", flush=True)
+        else:
+            print("[data] streaming UNSHUFFLED prefix: this samples the head "
+                  "of the corpus, not the corpus. See the note in "
+                  "load_task_split.", flush=True)
         train_raw = list(itertools.islice(train_iter, n_train))
         # eval skips the first n_train if same split, else just takes first n_eval
         if eval_split == train_split:
