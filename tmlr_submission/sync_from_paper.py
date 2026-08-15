@@ -38,8 +38,8 @@ DEST = REPO / "tmlr_submission" / "overleaf"
 
 SECTIONS = [
     "abstract.tex", "intro.tex", "related_work.tex", "setup.tex",
-    "lower_bound.tex", "achievability.tex", "regimes.tex", "method_tests.tex",
-    "discussion.tex", "reproducibility.tex", "app_proofs.tex",
+    "theory_brief.tex", "regimes.tex", "method_tests.tex",
+    "discussion.tex", "reproducibility.tex", "app_rd.tex", "app_proofs.tex",
     "app_synthetic.tex", "app_geometry.tex", "app_rate_exponent.tex",
     "app_prereg.tex", "app_manifest.tex",
 ]
@@ -55,8 +55,31 @@ def title_of(root: Path) -> str:
     return re.sub(r"\s+", " ", m.group(1)).strip() if m else ""
 
 
+def sections_in_build() -> list[str]:
+    """What paper/main.tex actually inputs, in order."""
+    body = (PAPER / "main.tex").read_text(encoding="utf-8")
+    return [f"{m}.tex" for m in
+            re.findall(r"\\input\{sections/([A-Za-z0-9_]+)\}", body)]
+
+
 def main() -> int:
     changed = []
+
+    # SECTIONS has gone stale before. Check it against the root rather than
+    # trusting it: a missing entry ships a build with dangling references, and
+    # a stale entry crashes this script on a file that no longer exists.
+    actual = sections_in_build()
+    missing = [s for s in actual if s not in SECTIONS]
+    extra = [s for s in SECTIONS if s not in actual]
+    if missing or extra:
+        print("SECTIONS does not match paper/main.tex:")
+        for s in missing:
+            print(f"  main.tex inputs {s}, SECTIONS does not list it")
+        for s in extra:
+            print(f"  SECTIONS lists {s}, main.tex does not input it")
+        print("\nFix SECTIONS and re-run. Nothing copied.")
+        return 2
+
 
     for name in SUPPORT:
         dst = DEST / name

@@ -47,13 +47,12 @@ other way.
   (\S\ref{subsec:shared-arm}), one to three orders of magnitude above the
   resolution either way.
 \item \textbf{Worst-task NLL excess does not predict downstream accuracy,
-  and on one benchmark it predicts it backwards.} An earlier version said
-  only that we could not measure this, because the Spearman correlations
-  were computed over the five or six methods in a single row, where
-  $\mathrm{SD}(\rho) = 1/\sqrt{n-1} = 0.45$. That was too weak a statement:
-  the correlation does not have to be computed within a row. Pooling over
-  the $12$ base-by-cohort blocks that already exist gives a standard error
-  of about $0.17$ instead, and the answer is then visible. On grade-school
+  and on one benchmark it predicts it backwards.} Computed within a single
+  row of five or six methods this is unmeasurable, since
+  $\mathrm{SD}(\rho) = 1/\sqrt{n-1} = 0.45$. But it need not be computed
+  within a row: pooling over the $12$ base-by-cohort blocks that already
+  exist gives a standard error of about $0.17$, and the answer is then
+  visible. On grade-school
   mathematics there is no relationship, $\rho = -0.14$ with a
   block-bootstrap interval of $-0.46$ to $+0.21$. On code generation
   $\rho = +0.45$, interval $+0.10$ to $+0.73$, and the sign is the wrong
@@ -116,13 +115,11 @@ other way.
   supporting. No claim about merging $T$ well-trained tasks is supported by
   this data.
 \item \textbf{The ridge sweep's gate was one-sided in provenance, and no
-  longer is.} An earlier version could not compute the pre-registered
-  $2\times\mathrm{SE}$ gate at all, because there was one cohort per arm;
-  a later one had three cohorts on the independent side and one on the
-  shared side, so the standard error came entirely from the independent
-  arm. Both arms now have three (\S\ref{subsec:shared-arm}). We leave this
-  entry in the list rather than deleting it, because the two earlier states
-  were published and a reader tracking what changed should find it here.
+  longer is.} With one cohort per arm the pre-registered
+  $2\times\mathrm{SE}$ gate cannot be computed at all, and with three
+  cohorts on the independent side and one on the shared side its standard
+  error comes entirely from the independent arm. Both arms now have three
+  (\S\ref{subsec:shared-arm}), so the gate is two-sided throughout.
 \item \textbf{Train and evaluation splits overlap} by $12.9$ to $16.2\%$ on
   the instruction task and $9.2$ to $11.6\%$ on the code task, because the
   two draws shuffle one pool with different seeds. Absolute numbers are
@@ -172,8 +169,10 @@ do not use worst-task NLL excess as a proxy for deployed capability, on our
 evidence, since on one of the two benchmarks we tested it ranks methods in
 the wrong order.
 
-\paragraph{Future work.} A margin-aware version of the stability control is
-the obvious next pre-registration and may reinstate the claim we withdrew. A
+\paragraph{Future work.} The benchmark-confounding claim would be settled by
+Part B of the prevalence registration, auditing the cohorts published
+merging benchmarks actually release; our margin-aware control is not a
+substitute, for the reason \S\ref{subsec:withdrawn} gives. A
 finer low-rate grid would settle the exponent. Checking whether the reference
 KnOTS implementation shares the degeneracy ours did would establish whether
 that finding is about the field or only about our code. And the regime where

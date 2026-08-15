@@ -1,5 +1,5 @@
 This appendix supplies the proofs that \S\ref{sec:lower_bound} defers. An
-earlier version of this work stated that they were in supplementary material;
+an earlier pointer sent the reader to supplementary material;
 no such material existed, and we correct that here.
 
 We are explicit about what is fully proved and what is not.
@@ -142,13 +142,13 @@ It remains to lower-bound the second term. As noted, the decoder may be
 assumed to emit $w^\star \in \range(\bar H)$. Put
 $\eta := \bar H^{1/2}\tauH$ and $\hat\eta := \bar H^{1/2} w^\star$, both in a
 space of dimension $\deff$; the term equals $\E\|\hat\eta - \eta\|^2$, so the
-subproblem is rate-$R$ quantization of $\eta$ under squared error.
+subproblem is rate-$R$ quantisation of $\eta$ under squared error.
 
 Condition on $\boldsymbol H$. Given $\boldsymbol H$ the only remaining
 randomness is the directions $u_t$, and a conditional Shannon converse
 therefore applies to every rate-$R$ code, \emph{including codebooks chosen
 with knowledge of $\boldsymbol H$}. This is the step that makes the bound valid
-against the $\boldsymbol H$-aware decoder of \S\ref{sec:achv}: we do not
+against the $\boldsymbol H$-aware decoder of Appendix~\ref{app:rd-achv}: we do not
 average over rotations, we condition. The standard converse for a
 $\deff$-dimensional source under squared error gives
 \begin{equation*}

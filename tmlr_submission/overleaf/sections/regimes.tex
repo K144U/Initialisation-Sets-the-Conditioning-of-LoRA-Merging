@@ -1,9 +1,8 @@
 Theorem~\ref{thm:general} bounds worst-task excess below by
 $B^2(1 - \deff/(Tr))$, which vanishes exactly when the $T$ task subspaces are
 in direct sum. This section reports what that quantity does on real LoRA
-cohorts. The answer is not the one an earlier version of this work gave, and
-the correction is the reason the section is organised around conditioning
-rather than around the floor.
+cohorts. The answer is that it vanishes, which is why this section is
+organised around conditioning rather than around the floor.
 
 \subsection{Why shared initialisation collapses the task subspaces}
 \label{subsec:mechanism}
@@ -11,8 +10,11 @@ rather than around the floor.
 In the reference LoRA implementation~\citep{hu2022lora} an adapter is
 $\Delta W = BA$ with $A$ randomly initialised and $B$ initialised to zero. Two
 consequences matter. Because $B = 0$ at the start, the gradient with respect
-to $A$ is proportional to $B$ and vanishes at initialisation, so $A$ moves
-comparatively little over training. And in most pipelines the initialisation
+to $A$ is proportional to $B$ and vanishes at initialisation, which is a
+property of the parameterisation rather than a measurement: we did not
+retain initial weights, so how far $A$ actually travelled is not something
+this paper measures (Appendix~\ref{subsec:drift}). What we measure is the
+consequence. And in most pipelines the initialisation
 is drawn from a single global seed, so if the $T$ adapters of a cohort are
 trained with that seed, as is natural when the seed is meant to control
 run-to-run reproducibility, all $T$ begin from an \emph{identical} $A$.
@@ -55,10 +57,9 @@ The quantity in Lemma~\ref{lem:floor-general} is a \emph{rank}, so it is the
 hard one at any tolerance small enough to be numerically meaningful. The soft
 version is a continuous diagnostic that degrades gracefully instead of
 jumping, which makes it convenient to report, but it is \textbf{not} the
-quantity in the theorem and substituting it into
-$B^2(1-\deff/(Tr))$ is not licensed. We say this emphatically because an
-earlier version of this work did exactly that, and \S\ref{subsec:floor-zero}
-is the correction.
+quantity in the theorem, and substituting it into $B^2(1-\deff/(Tr))$ is
+not licensed. \S\ref{subsec:floor-zero} shows what that substitution
+costs: it is the single largest numerical error we have had to correct.
 
 \begin{table}[t]
 \centering
@@ -98,11 +99,11 @@ every column, so this is structural rather than a sampling accident.
 \subsection{The irreducible floor is zero in both regimes}
 \label{subsec:floor-zero}
 
-It is tempting, and we previously yielded to the temptation, to read the soft
-column of Table~\ref{tab:geometry} through Lemma~\ref{lem:floor-general} and
-conclude that the shared cohort carries an irreducible floor of
-$B^2(1 - 16.3/64) = 0.745B^2$ against $0.012B^2$ for the independent one.
-That is wrong, and we correct it here.
+It is tempting to read the soft column of Table~\ref{tab:geometry} through
+Lemma~\ref{lem:floor-general} and conclude that the shared cohort carries
+an irreducible floor of $B^2(1 - 16.3/64) = 0.745B^2$ against $0.012B^2$
+for the independent one. That is wrong, and the rest of this subsection is
+why.
 
 The correct statement has two halves, and separating them matters because
 one is algebra and the other is not.
@@ -224,8 +225,7 @@ not one the pipeline can return, and the ridge sweep of
 \S\ref{subsec:ridge} tests conditioning through a rank-$16$-constrained
 solver.
 
-An earlier version of this work stopped there, saying we expected the
-conditioning story to survive but had not shown it. We have now repeated the
+That mismatch is testable, so we tested it: we repeated the
 ridge sweep with the post-merge truncation disabled
 (\S\ref{subsec:untruncated}), and it does survive: the unregularised
 shared-versus-independent ratio is $25$ to $117$ times, against $2.1$ to
@@ -250,6 +250,36 @@ is irreducible'', which is zero in every case we have seen, but where your
 cohort sits on the conditioning axis of Table~\ref{tab:conditioning}, which
 \S\ref{subsec:ridge} shows determines whether an unregularised solve-based
 merge will work at all.
+
+\paragraph{Can I repair the adapters instead of the merge?} It is the first
+thing a practitioner with a collapsed cohort and no budget to retrain will
+think of, so it deserves an answer even though we did not test it. Orthogonalise
+or re-randomise the $A$ factors, the thought goes, and the subspaces separate.
+
+The trouble is that $A$ cannot be changed on its own. What the model computes
+is $BA$, so replacing $A_t$ by $Q A_t$ for any invertible $Q$ leaves the
+adapter's function unchanged only if $B_t$ becomes $B_t Q^{-1}$, and then the
+product is identical and so is every quantity in this section: the row space
+$\range(A_t^\top)$ is unchanged by an invertible map applied on the left, so
+the principal cosines, $\bar H$ and its conditioning are all exactly what they
+were. A repair that preserves each adapter's behaviour cannot change the
+geometry, because the geometry is a property of that behaviour. A repair that
+changes the geometry changes what each adapter does, and then the merge is
+being asked to combine different models from the ones that were validated.
+
+There is a narrow exception worth naming: the row spaces here have dimension
+$r = 16$ inside $d = 4096$, and the near-collinearity is between spaces, not
+within them, so one could project each $A_t$ onto a private slice of a
+partition of the ambient space. That is a real construction and it is not free:
+it discards the components of each task's update outside its assigned slice,
+which is a lossy edit to a trained adapter, and whether the loss is tolerable
+is exactly the question the merge was supposed to answer. We have not measured
+it, we do not recommend it on the strength of an argument, and we flag it as
+the natural next experiment for anyone who cannot retrain.
+
+What we do recommend for a cohort that is already collapsed is the ridge, which
+\S\ref{subsec:ridge} and \S\ref{subsec:downstream-cond} measure, costs one
+hyperparameter, and leaves the adapters untouched.
 
 \subsection{The collapsed regime occurs in public adapters}
 \label{subsec:prevalence}

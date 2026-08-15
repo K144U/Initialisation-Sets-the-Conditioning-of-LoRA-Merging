@@ -3,10 +3,10 @@ observed worst-task excess is in principle recoverable, and separates the
 cohorts on conditioning instead. Both halves of that invite a test. The
 first invites an encoder that recovers the slack, and we built one: a
 rate-distortion encoder using incoherent orthogonal mixing and scalar
-quantization, regularised with a single Tikhonov ridge term
-(\S\ref{sec:achv}, implementation in Appendix~\ref{app:manifest}). On the
-shared-initialisation cohorts our earlier draft measured, it wins
-comfortably against every baseline. The second invites the question of
+quantisation, regularised with a single Tikhonov ridge term
+(Appendix~\ref{app:rd-achv}, implementation in Appendix~\ref{app:manifest}).
+On a shared-initialisation cohort it wins comfortably against every
+baseline, which is what made the test below necessary. The second invites the question of
 whether a four-order-of-magnitude difference in conditioning is visible to
 anything a practitioner does.
 
@@ -103,11 +103,11 @@ The number that matters alongside that is the smallest effect the design
 could have found, because a null without one is not evidence of absence.
 The gate sits at $0.0052$ nats in the median cell and $0.0109$ in the
 worst, so the honest statement is \emph{no effect detectable at about
-$0.01$ nats}, not \emph{no effect}. It also settles a tension in an
-earlier version of this work, which quoted a mean difference of $0.0014$
-nats while estimating the metric's own resolution at about $0.001$: that
-difference is below the median gate, so it is a quantity this design
-cannot resolve in either direction.
+$0.01$ nats}, not \emph{no effect}. It also disposes of a smaller number
+that has been quoted in this setting, a mean difference of $0.0014$ nats
+against a metric resolution of about $0.001$: that difference sits below
+the median gate, so it is a quantity this design cannot resolve in either
+direction.
 
 The five cells that do clear the gate are worth naming rather than
 averaging away, because four of them are not spread at random. Three are
@@ -122,8 +122,8 @@ consistent in direction, and we do not build anything on it.
 
 \paragraph{Then the mechanism, measured.} The explanation for the other
 $15$ cells is that those methods never go near the ill-conditioned
-direction. That was an assertion in an earlier version and is now a
-measurement, and it needs no forward passes: every merge here is weight
+direction. That is a measurement rather than an assertion, and it needs no
+forward passes: every merge here is weight
 arithmetic on the adapter factors. For each merged solution we report its
 norm relative to the mean task delta, and the share of its energy lying in
 the bottom quartile of $\bar H$'s eigen-directions, in the projected
@@ -340,6 +340,16 @@ $9.1\times10^{3}$, while $\lambda = 0.01$ brings the same layers to about
 $1.5\times10^{2}$, a factor of $55$ apart. The default is on the wrong side of
 the gap this paper is about.
 
+The independent arm is the control, and it behaves as the story requires. The
+\emph{same} default leaves $\kappa$ at $1.2\times10^{3}$ to $1.4\times10^{3}$
+there, six to seven times lower than on the shared arm, while the equivalent
+ridge it applies is identical to three significant figures
+($5.2$ to $6.1\times10^{-4}$ on both arms). That is the point in one line:
+$\alpha$-shrinkage is a fixed dose set by the data's scale and not by the
+cohort's conditioning, so it neither knows nor cares which regime it is in.
+On a well-conditioned cohort the dose is ample. On a collapsed one it is
+$20$ times short, and nothing in the method notices.
+
 Two limits on what this shows, both worth stating. It is a statement about
 conditioning, computed from the adapter factors, not a merge we evaluated: we
 did not run a $\lambda$-free $\alpha$-shrunk RegMean through the NLL harness,
@@ -358,8 +368,15 @@ rank up to $Tr$. Repeating the sweep with truncation disabled removes that
 mismatch, and the truncated sweep is then the comparison arm rather than
 being re-run.
 
-\begin{center}
+\begin{table}[htb]
+\centering
 \small
+\caption{The conditioning link with rank truncation disabled. Worst-task NLL
+excess in nats at $\lambda = 0$, and the shared-to-independent ratio with and
+without truncation. The truncated column is the sweep of
+Table~\ref{tab:ridge}, reproduced here as the comparison arm rather than
+re-run.}
+\label{tab:untruncated}
 \begin{tabular}{lcccc}
 \toprule
  & \multicolumn{2}{c}{$\lambda = 0$ excess} & \multicolumn{2}{c}{shared / independent} \\
@@ -371,9 +388,9 @@ Qwen2.5-7B   & 0.8993  & 0.0256 & $35.2\times$  & $7.7\times$ \\
 Yi-1.5-9B    & 3.1294  & 0.1227 & $25.5\times$  & $2.1\times$ \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{table}
 
-The link survives on all four bases, and the effect is \emph{larger}
+Table~\ref{tab:untruncated} shows the link surviving on all four bases, with the effect \emph{larger}
 without truncation, by factors of $25$ to $117$ against $2.1$ to $65$.
 Truncation was not manufacturing the result; it was hiding part of it,
 which is what one should expect when all but the leading $16$ directions
@@ -548,7 +565,7 @@ four bases. \textbf{The sweep cannot resolve it, and two earlier readings
 of it are withdrawn.} A previously reported falsification rested on
 asymptotes computed at a different ridge value, and the refitted sweep
 turns out to have too little dynamic range to measure an exponent at all:
-only two of the six quantizer widths sit above the metric's own noise
+only two of the six quantiser widths sit above the metric's own noise
 floor, one of which the registered rule excludes as clipping-dominated.
 By the rule as written the outcome is \textsc{unresolved}, and this
 removes the only positive evidence for the rate term anywhere in this
@@ -557,7 +574,7 @@ applied to the result.
 
 One operational regularity does survive at the precision available: with
 the ridge on, every base is within $0.005$ nats of its own asymptote from
-three bits upward, so a practitioner quantizing a merged adapter can stop
+three bits upward, so a practitioner quantising a merged adapter can stop
 at three or four bits regardless of any exponent.
 
 \subsection{DARE: a negative result with a mechanism, and its limits}
