@@ -455,56 +455,105 @@ not permit. That is a measurement fault, not a property of the data.
 \caption{Rate sweep against matched asymptotes: same ridge $\lambda$, same
 realisation, same cohort for the curve and its $b = \infty$ reference, with
 the equality asserted from the configuration files before any fit is
-attempted. Worst-task NLL excess in nats. No base now falls below its own
-asymptote.}
+attempted. Worst-task NLL excess in nats, at four decimals because at three
+the reader cannot check the two facts that matter. \textbf{Ten of the
+twenty-four measured values fall below their own asymptote}, which the model
+forbids; all but one are smaller than $10^{-4}$ nats and are consistent with
+numerical noise, the exception being Llama at $b=3$ at $-0.0020$. The fit is
+ordinary least squares of $\log_2(\text{excess} - \text{asymptote})$ on $b$
+over $b \in \{2,3,4,8\}$, keeping residuals above $10^{-9}$; the ``fit''
+column names the points that survived that filter, and both surviving fits
+rest partly on residuals below this metric's own resolution of about
+$0.001$ nats (\S\ref{sec:discussion}).}
 \label{tab:w3}
-\begin{tabular}{lccccccccc}
+\begin{tabular}{lccccccccccc}
 \toprule
 base & $b{=}1$ & $b{=}2$ & $b{=}3$ & $b{=}4$ & $b{=}8$ & $b{=}16$ &
-$b{=}\infty$ & slope & $R^2$ \\
+$b{=}\infty$ & fit & slope & $R^2$ \\
 \midrule
-Llama-3.1-8B & 0.633 & 0.097 & 0.080 & 0.085 & 0.082 & 0.082 & 0.082 & $-2.10$ & 0.984 \\
-Mistral-7B   & 0.211 & 0.050 & 0.048 & 0.047 & 0.047 & 0.047 & 0.047 & --- & --- \\
-Qwen2.5-7B   & 0.075 & 0.011 & 0.010 & 0.010 & 0.010 & 0.010 & 0.010 & --- & --- \\
-Yi-1.5-9B    & 0.210 & 0.041 & 0.036 & 0.036 & 0.036 & 0.036 & 0.036 & $-3.50$ & 1.000 \\
+Llama-3.1-8B & 0.6329 & 0.0967 & 0.0803 & 0.0845 & 0.0823 & 0.0823 & 0.0823 & 2,4,8 & $-2.10$ & 0.9843 \\
+Mistral-7B & 0.2106 & 0.0497 & 0.0480 & 0.0471 & 0.0474 & 0.0473 & 0.0474 & 2,3 & --- & --- \\
+Qwen2.5-7B & 0.0746 & 0.0110 & 0.0102 & 0.0101 & 0.0101 & 0.0100 & 0.0102 & 2,3 & --- & --- \\
+Yi-1.5-9B & 0.2099 & 0.0413 & 0.0361 & 0.0357 & 0.0356 & 0.0355 & 0.0356 & 2,3,4 & $-3.50$ & 0.9996 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Refitted, the verdict is unresolved.} Table~\ref{tab:w3} gives
 the corrected sweep. Llama fits at $-2.10$ with $R^2 = 0.98$ against a
-predicted $-2$, which is the exponent holding cleanly on a real adapter
-cohort and was invisible before because the bad reference made that base
-unfittable. Yi fits at $-3.50$, steeper than predicted rather than
-flatter. Mistral and Qwen cannot be fitted at all, and the reason is now
-benign rather than impossible: each reaches its asymptotic value inside
-the fit window, Mistral at $b = 4$ and Qwen at $b = 3$, leaving fewer than
-three points with any dynamic range above the asymptote.
+predicted $-2$, and Yi at $-3.50$, steeper than predicted rather than
+flatter. Mistral and Qwen cannot be fitted, because only two of their four
+in-window points have a residual above the filter at all.
+
+\paragraph{A second fault in this analysis, found in preparing this
+version.} The first fault was the mismatched reference described above. The
+second is that neither surviving fit is supported by the data at the
+precision the metric provides, and the published three-decimal table
+concealed it.
+
+The fits are on the residual above the asymptote, and those residuals are
+mostly tiny. Llama's three fitted points have residuals $0.0144$, $0.0023$
+and $0.0000029$ nats. The last is the $b = 8$ point, and it is what makes
+the fit possible at all: without it Llama has two usable points and is
+unfittable like Mistral and Qwen. It sits about $350$ times below this
+metric's own stated resolution of $0.001$ nats
+(\S\ref{sec:discussion}), so on a $\log_2$ axis it carries enormous
+leverage while being, by our own account of the metric,
+indistinguishable from zero. Yi is worse in one respect: two of its three
+fitted residuals, $0.00046$ and $0.000044$, are below the resolution.
+
+We also withdraw the account this section previously gave of why Mistral
+and Qwen are unfittable. It said each ``reaches its asymptotic value
+inside the fit window'', which is benign and wrong. What actually happens
+is that their $b=4$ and $b=8$ points fall \emph{below} their asymptotes and
+are removed by the residual filter. That is the same anomaly this section
+opened by describing, and the caption of the published table asserted it no
+longer occurred. It occurs on all four bases, ten times in twenty-four
+measurements, and Table~\ref{tab:w3} now reports it.
+
+The honest reading is that this sweep does not have the dynamic range to
+measure a rate exponent. Only $b \in \{1, 2\}$ is comfortably above the
+noise floor on any base, and $b = 1$ is excluded by the registered rule as
+clipping-dominated. We are therefore not entitled to the claim that the
+exponent holds on Llama, and we withdraw it; it was the only positive
+evidence for the rate term anywhere in this paper.
 
 The rule fixed in advance requires the slope to lie in $[-2.4, -1.6]$ on
 at least three of four bases to void the falsification, and $|{\rm slope}|
 < 0.5$ on at least three of four for it to stand. We obtain one and zero
 respectively, so by the registered rule the outcome is
-\textsc{unresolved}, and we record it that way rather than round it to the
-branch that the single in-band fit points towards. The registered window
-$\{2,3,4,8\}$ is simply too coarse for bases that converge by four bits; a
-finer low-rate grid would settle it, and we have deliberately not chosen
-one after seeing which grid would produce a fit.
+\textsc{unresolved}. We apply the rule as written, to the fits as computed,
+rather than adjusting the residual filter now that we can see which points
+it admits: moving a threshold after seeing its consequences is the practice
+the pre-registration exists to prevent, and it would in this case move the
+verdict in our own favour. Note however that the reading above makes the
+outcome unresolved for a more basic reason than the rule contemplates. The
+rule presumes fits worth judging, and on this grid there are none. The
+registered window $\{2,3,4,8\}$ is too coarse for bases that reach their
+noise floor by three bits; a finer low-rate grid would settle it, and we
+have deliberately not chosen one after seeing which grid would produce a
+fit.
 
 What survives is an operational regularity rather than a test of the
-theory. With the ridge on, three bits buys essentially the whole effect:
-from $b = 3$ upward every base is within $0.005$ nats of its own
-asymptote, and sixteen bits adds nothing measurable over four. Only $b=1$,
-where clipping dominates, is far off.
+theory, and it is the one thing here the precision does support. With the
+ridge on, three bits buys essentially the whole effect: from $b = 3$ upward
+every base is within $0.005$ nats of its own asymptote, and sixteen bits
+adds nothing measurable over four. Only $b=1$, where clipping dominates, is
+far off. A practitioner quantizing a merged adapter can stop at three or
+four bits, and that recommendation does not depend on any exponent.
 
-Two caveats. This sweep is a single initialisation draw on the
+Three caveats. This sweep is a single initialisation draw on the
 shared-initialisation cohort, so it says nothing about whether the
 finite-rate behaviour differs by regime; repeating it on an independent
 cohort would be a genuinely new measurement and needs its own registered
 rule, since it asks a different question from the one registered here.
-And the corrected analyser is the one that produced Table~\ref{tab:w3};
-the fault it fixes was ours, in the reference it selected, not in the
-cells.
+The faults corrected above were both ours and both in the analysis rather
+than the cells: the first in the reference the analyser selected, the
+second in the precision at which we reported and read the result. And we
+note that the second fault was invisible at three decimals and would have
+stayed invisible: a reader could not have derived it from the published
+table, which is the reason we now print the fitted points and the residual
+scale rather than the rounded values alone.
 
 \subsection{DARE: a negative result with a mechanism, and its limits}
 \label{subsec:dare}

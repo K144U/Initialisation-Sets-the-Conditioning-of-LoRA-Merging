@@ -67,12 +67,20 @@ other way.
   answers a different question from the one a practitioner asks about a
   single deployed capability. Either way, nothing in this paper should be
   read as a claim about downstream accuracy.
-\item \textbf{The finite-rate exponent is unresolved, not confirmed.} Against
-  matched asymptotes one base fits at $-2.10$ ($R^2 = 0.98$) against a
-  predicted $-2$, one at $-3.50$, and two converge to their asymptote by
-  $b = 3$ to $4$, leaving too little dynamic range to fit over our grid. A
-  finer low-rate grid would settle it; we deliberately have not chosen one
-  after seeing which would produce a fit.
+\item \textbf{The finite-rate exponent is unmeasured, not merely
+  unresolved.} Against matched asymptotes one base fits at $-2.10$
+  ($R^2 = 0.98$) and one at $-3.50$, but neither fit is supported at the
+  precision this metric provides: the point that makes the first fit
+  possible sits $0.0000029$ nats above its asymptote, some $350$ times
+  below the metric's own resolution, and two of the second's three points
+  are also below it. Ten of twenty-four measured values fall below their
+  own asymptote, which the model forbids. We withdraw the reading that the
+  exponent holds on any base (\S\ref{subsec:w3}); the sweep lacks the
+  dynamic range to measure it, since only $b \in \{1,2\}$ clears the noise
+  floor and $b=1$ is excluded as clipping-dominated. A finer low-rate grid
+  would settle it; we deliberately have not chosen one after seeing which
+  would produce a fit. \emph{No claim in this paper depends on the rate
+  term.}
 \item \textbf{Our KnOTS baseline was a no-op, and the repair works.} With
   the default inner combination it reduces algebraically to task arithmetic
   and matched it to four decimals; \S\ref{subsec:ridge} measures it at
