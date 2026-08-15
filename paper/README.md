@@ -17,16 +17,33 @@ commit `d15fa8e` on branch `paper-consolidation`, so nothing is lost.
 
 ```
 paper/
-  iclr2027.tex      ICLR build root: documentclass + style + anonymous byline
+  tmlr.tex          TMLR build root: official style, anonymous  <- SUBMISSION
   arxiv.tex         arXiv build root: plain article + real names, no venue named
+  iclr2027.tex      ICLR build root: documentclass + style + anonymous byline
   preamble.tex      packages, macros, theorem counters   (shared)
   main.tex          the document body: \maketitle -> appendices (shared)
   sections/         19 section files                     (shared)
   figures/          3 vector PDFs + 2 PNGs               (shared)
   references.bib                                          (shared)
+  tmlr.sty/.bst, fancyhdr.sty    vendored TMLR assets, from
+                                 github.com/JmlrOrg/tmlr-style-file
   iclr2026_conference.sty/.bst   vendored conference assets
-  build.sh          ./build.sh {iclr|arxiv|both}  ->  out/*.pdf
+  build.sh          ./build.sh {tmlr|arxiv|iclr|all}  ->  out/*.pdf
 ```
+
+**TMLR is the submission target and `tmlr` is now the build.sh default.**
+`\usepackage{tmlr}` with no option produces the anonymous version: the byline
+becomes "Anonymous authors / Paper under double-blind review" and the running
+header reads "Under review as submission to TMLR". Do not add `[accepted]` or
+`[preprint]` before acceptance; TMLR rejects non-anonymous submissions without
+review. The real author block stays in `tmlr.tex` and is simply not rendered,
+so camera-ready is a one-option change plus filling in `\month`, `\year` and
+`\openreview`.
+
+Two TMLR constraints shaped the shared sources: **the abstract must be one
+paragraph** (it is, at about 310 words), and there is **no page limit**, so the
+ICLR 10-page problem does not apply here. Supplementary material may be up to
+100 MB, which comfortably fits the 19 MB audit-trail bundle.
 
 The two roots differ **only** in documentclass, style packages, title block
 and `\bibliographystyle`. All prose lives in `sections/`, so a content edit

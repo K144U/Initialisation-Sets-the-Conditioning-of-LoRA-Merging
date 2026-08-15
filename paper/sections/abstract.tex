@@ -1,52 +1,26 @@
 Merging several LoRA adapters into one model sometimes costs almost
-nothing and sometimes destroys a task outright, and practitioners have
-no cheap way to tell which case they are in before they merge. We give
-a closed-form lower bound on worst-task negative log-likelihood excess
-for rank-$r$ merging, together with a matching achievability
-construction. The bound splits into an irreducible floor
+nothing and sometimes destroys a task, and practitioners have no cheap way
+to tell which case they are in beforehand. We prove a closed-form lower
+bound on worst-task negative log-likelihood excess for rank-$r$ merging,
+with a matching achievability construction: an irreducible floor
 $B^2(1 - \deff/(Tr))$, governed by the effective dimension $\deff$ of the
-union of the task subspaces, and a rate term decaying as
-$2^{-2R/\deff}$.
-
-Applied to real cohorts, the bound points at a property of them that is
-not otherwise reported. Whether a cohort's adapters share one
-initialisation of the LoRA $A$ factor, a detail almost never recorded,
-moves the median principal cosine between task subspaces from $0.047$ to
-$0.995$ and the condition number of the merge operator by four to five
-orders of magnitude, from $1.5$ to between $1.8\times10^{4}$ and
-$8.3\times10^{4}$. The exact interpolator is then $43$ to $64$ times
-larger than the mean task delta, against $T$ under independent
-initialisation, the orthogonal-subspace value, which the measurement
-returns to within $1.4\%$ at both $T=3$ and $T=4$. The whole diagnosis
-costs about one CPU minute and needs no forward passes.
-
-We then test, under pre-registration, whether this has operational
-consequences, and report the outcome whichever way it fell. It is
-invisible to standard merging heuristics: across twenty base-by-method
-cells, task arithmetic, TIES, DARE and TVQ are indifferent to which
-regime the cohort occupies, because all of them produce bounded-norm,
-near-mean solutions that never approach the ill-conditioned direction.
-It is severe for methods that solve the linear system: unregularised,
-the same merge is $2.1$ to $65$ times worse on the ill-conditioned
-cohort, and a single ridge term repairs it. That holds on two solvers,
-one of which we did not design, and it grows to $25$ to $117$ times when
-the post-merge rank truncation is removed. The mechanism is measured
-rather than asserted: the heuristics stay within a factor of two of the
-mean task delta with essentially none of their energy in the
-ill-conditioned directions, while the unregularised solvers reach $35$ to
-$57$ times with three quarters of theirs there.
-
-What we withdraw is as much of this paper as what we claim. The bound's
-floor term is \emph{vacuous} for LoRA merging as practised: on every base
-model and under every initialisation scheme we tried it is exactly zero,
-because $T$ rank-$r$ adapters with $Tr \leq d$ have linearly independent
-row spaces even when those spaces are nearly collinear. Our own encoder's
-advantage did not survive the move to properly initialised cohorts. A
-pre-registered control we wrote ourselves withdrew a headline claim about
-benchmark confounding. A rate-exponent falsification we had reported
-turned out to rest on a mismatched reference and is withdrawn without
-being replaced by a confirmation. And the metric all of this is measured
-in does not predict downstream accuracy: pooled over twelve blocks it is
-uncorrelated with grade-school mathematics accuracy and \emph{positively}
-correlated with code pass rate, which is the wrong sign. What survives is
-the bound, the diagnosis, and the audit.
+union of the task subspaces, plus a rate term decaying as
+$2^{-2R/\deff}$. On real cohorts that floor turns out to be vacuous,
+exactly zero under every initialisation scheme we tried, because $T$
+rank-$r$ adapters with $Tr \leq d$ span independently even when nearly
+collinear. What the bound does expose is conditioning. Whether a cohort's
+adapters share one initialisation of the LoRA $A$ factor, a detail almost
+never reported, moves the median principal cosine between task subspaces
+from $0.047$ to $0.995$ and the condition number of the merge operator
+from $1.5$ to as much as $8.3\times10^{4}$. Diagnosing it costs about one
+CPU minute and no forward passes. We pre-registered whether this matters
+and report both halves. It is invisible to standard heuristics, which
+produce bounded-norm near-mean solutions: across twenty base-by-method
+cells we detect no effect at our $0.01$ nat resolution. It is decisive for
+methods that solve the linear system, which reach $35$ to $57$ times the
+mean task delta with three quarters of their energy in the ill-conditioned
+directions: unregularised they are $2.1$ to $65$ times worse, $25$ to
+$117$ without rank truncation, and one ridge term repairs it, on two
+solvers of which one is not ours. Several of our own claims did not
+survive, including our encoder's advantage and this metric's link to
+downstream accuracy, and we report those at full strength.

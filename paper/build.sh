@@ -46,9 +46,11 @@ build_one () {
   fi
 }
 
-case "${1:-both}" in
+case "${1:-tmlr}" in
+  tmlr)  build_one tmlr ;;
   iclr)  build_one iclr2027 ;;
   arxiv) build_one arxiv ;;
   both)  build_one iclr2027; build_one arxiv ;;
-  *) echo "usage: $0 {iclr|arxiv|both}" >&2; exit 2 ;;
+  all)   build_one tmlr; build_one arxiv; build_one iclr2027 ;;
+  *) echo "usage: $0 {tmlr|arxiv|iclr|both|all}" >&2; exit 2 ;;
 esac
