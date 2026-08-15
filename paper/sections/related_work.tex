@@ -7,7 +7,7 @@ DELLA~\citep{della2024}), rotation- and subspace-alignment families
 (KnOTS~\citep{stoica2025knots}, TSPA~\citep{tspa2025},
 DO-Merging~\citep{domerging2025}, Core~Space~\citep{panariello2025core},
 TARA~\citep{tara2025}, ARM~\citep{arm2026streaming}), and merge-time
-quantization (TVQ~\citep{kim2025tvq},
+quantisation (TVQ~\citep{kim2025tvq},
 1-bit-Merging~\citep{bit1merging2025}). All are \emph{constructions}:
 each proposes an encoder and evaluates it empirically. What none of them
 supplies, and what this paper does supply, is a way to tell in advance
@@ -75,7 +75,7 @@ federated continual learning, so neither has a data-free adapter-only form
 we could implement without inventing the part that makes it that method.
 The family claim therefore rests on two members of it, not five.
 
-\paragraph{Rate-distortion and rotation-for-quantization ancestry.}
+\paragraph{Rate-distortion and rotation-for-quantisation ancestry.}
 Classical rate-distortion theory~\citep{shannon1959rd,coverthomas}
 covers the single-source setting; multi-description
 coding~\citep{elgamalcover1982md} treats \emph{average}, not maximum,
@@ -83,9 +83,9 @@ distortion, which Lemma~\ref{lem:id} shows is strictly weaker. The
 direct ancestor of our achievability construction is
 TurboQuant~\citep{zandieh2025turboquant}, whose Theorem~3 our
 Theorem~\ref{thm:achv} recovers at $T = 1$. Structured rotations as
-quantization pre-conditioners (QuIP~\citep{tseng2024quip},
+quantisation pre-conditioners (QuIP~\citep{tseng2024quip},
 QuaRot~\citep{ashkboos2024quarot}, SpinQuant~\citep{liu2025spinquant},
-RoLoRA~\citep{xi2024rolora}) motivate our randomized orthogonal mixers
+RoLoRA~\citep{xi2024rolora}) motivate our randomised orthogonal mixers
 but are single-source.
 
 \paragraph{A recent negative result, and why a lower bound still
@@ -95,7 +95,7 @@ produces constructive interference, with subspace-alignment methods
 often failing. Their result is an \emph{upper bound} on specific
 algorithms; our Theorem~\ref{thm:general} is a \emph{lower bound} on
 every algorithm. Our measurements bear on theirs, but less directly than
-an earlier version of this work claimed. We find $\deff = Tr$ in every
+an earlier reading of ours suggested. We find $\deff = Tr$ in every
 layer of all four bases and in both initialisation conditions, so the
 task subspaces are indeed linearly independent and the irreducible floor
 is zero throughout (\S\ref{subsec:floor-zero}). We previously took that

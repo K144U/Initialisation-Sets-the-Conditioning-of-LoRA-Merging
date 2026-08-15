@@ -45,7 +45,7 @@ of algorithmic slack}
 Four findings from the $T = 4$ matrix (five baseline methods: TA, TIES,
 DARE at density $0.2$, KnOTS, and TVQ at $b \in \{1,\dots,32\}$ bits).
 \textbf{(1) Non-vanishing worst-task excess, zero floor.} At the
-no-quantization rate, worst-task excess is strictly positive on every
+no-quantisation rate, worst-task excess is strictly positive on every
 base (TA: Llama $0.218$, Mistral $0.146$, Qwen $0.110$, Yi $0.099$).
 Computing $\deff = \rank(\sum_t P_{V_t})$
 directly from the trained adapters gives $\deff = Tr = 64$ in
@@ -67,7 +67,7 @@ bottleneck task; KnOTS and DARE are statistically indistinguishable
 from TA (paired differences $\leq 0.003$ nats), exactly as the
 theory predicts at zero subspace overlap, where alignment has nothing
 to exploit. \textbf{(4) A universal ``less-is-more'' dip at $b=2$.}
-The TVQ rate sweep is non-monotone on every base: $2$-bit quantization
+The TVQ rate sweep is non-monotone on every base: $2$-bit quantisation
 sits $1.7$--$6.0\times$ below the adjacent $b = 4$ point
 (non-overlapping CIs), while $b = 1$ and $b \geq 4$ regress to the
 $\approx$TA floor; the dip covaries with TIES per-task but is

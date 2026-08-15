@@ -1,9 +1,9 @@
 \label{subsec:exp-b2-mechanism}
 The $T = 4$ matrix (\S\ref{subsec:exp-lora}) shows that $2$-bit
-task-vector quantization often outperforms higher bit budgets at
+task-vector quantisation often outperforms higher bit budgets at
 worst-task NLL excess, the ``less-is-more'' dip that survives on all
 four bases. An \emph{implicit-TIES} explanation is natural: $b=2$
-quantization implicitly induces sparsity, playing the same role as
+quantisation implicitly induces sparsity, playing the same role as
 TIES's explicit magnitude trimming. We pre-registered two falsifiable
 predictions of that hypothesis and tested both.
 
@@ -20,9 +20,9 @@ null where both interventions reliably help but the variation does not
 covary).
 
 \paragraph{Prediction 2 (sparsity is the shared mechanism):
-\textsc{rejected}.} $b=2$ quantization does induce substantial implicit
+\textsc{rejected}.} $b=2$ quantisation does induce substantial implicit
 sparsity: $50\%$ of coordinates land in the zero bucket, and
-quantization error exceeds the original magnitude for $\sim 87\%$ of
+quantisation error exceeds the original magnitude for $\sim 87\%$ of
 coordinates. To test whether sparsity drives the dip, we built an
 explicit magnitude-pruning merge (keep top-$\rho$ by $|\Delta|$, zero
 the rest, sum, SVD-truncate to rank $r$) at the two densities matching
@@ -51,7 +51,7 @@ Yi-1.5-9B       & $0.088$ & $0.151$ & $0.059$ & $0.098$ \\
 \paragraph{Sharpened hypothesis.} The covariance with TIES is real but
 not mediated by implicit sparsity. Two candidates remain open:
 (i)~\emph{uniform shrinkage of large coefficients}: a min-max $b=2$
-quantizer pulls the largest coefficients toward the surviving bucket
+quantiser pulls the largest coefficients toward the surviving bucket
 centers, and TIES's sign election under-counts sign-disagreeing
 coefficients, so both compress the merged-coefficient distribution;
 (ii)~\emph{per-tensor (rather than per-coordinate) calibration}:

@@ -93,31 +93,13 @@ any curvature model, whereas $\kappa(\bar H)$ depends on the specialisation
 $H_t = P_{V_t}$ we adopt (\S\ref{subsec:conditioning}).
 
 \paragraph{Where this came from.} We arrived at the conditioning question
-through a rate-distortion analysis, and the analysis is in the paper
-because it is the reason we looked at $\bar H$ at all. We treat merging as
-lossy compression: $T$ task vectors summarised by one weight vector, with
-the figure of merit the \emph{worst-task} excess loss, since a merged model
-that collapses on a single task is not deployable. \S\ref{sec:lower_bound}
-proves a lower bound holding for every merging algorithm, even one given
-the curvature data free,
-\begin{equation*}
-  \underbrace{B^2\Bigl(1 - \frac{\deff}{Tr}\Bigr)}_{\text{irreducible floor}}
-  \;+\;
-  \underbrace{c\cdot\frac{B^2\deff}{Tr}\,2^{-2R/\deff}}_{\text{rate term}},
-\end{equation*}
-with $\deff$ the effective dimension of the union of the task subspaces;
-proofs are in Appendix~\ref{app:proofs}.
-
-We report it as provenance and not as support, for three reasons given in
-full in \S\ref{sec:discussion}. Its floor term is exactly zero on all four
-base models under every initialisation we tried, so it carries no
-operational content for LoRA merging as practised
-(\S\ref{subsec:floor-zero}). Its rate term rests on an assumption we state
-and do not prove (Assumption~\ref{asm:epr}), and our attempt to measure the
-predicted exponent has too little dynamic range to do so
-(\S\ref{subsec:w3}). And Theorem~\ref{thm:general} constrains a $w^\star$
-carrying no rank constraint, while every merge we run is truncated to rank
-$r$ (\S\ref{subsec:conditioning}). Everything in \S\ref{sec:regimes} and
+through a rate-distortion analysis of merging, which is in the paper because
+it is the reason we looked at $\bar H$ at all and for no stronger reason than
+that. \S\ref{sec:theory} states the bound, says what it did and did not do,
+and sends the formal development to Appendix~\ref{app:rd}. In short: its floor
+term is exactly zero on every cohort we measured, its rate term rests on an
+assumption we state but do not prove and on an imported constant, and it
+derives none of the four results above. Everything in \S\ref{sec:regimes} and
 \S\ref{sec:methods} stands or falls on its own measurements.
 
 \paragraph{What did not survive.} Several pre-registered tests went against
@@ -127,10 +109,8 @@ properly initialised ones. A control we designed ourselves withdrew our
 earlier headline claim that published merging benchmarks are confounded by
 initialisation geometry; a second control, registered afterwards and
 identified as secondary, reinstates it only as provisional
-(\S\ref{subsec:q1}). A rate-exponent falsification we previously reported
-rested on an asymptote computed at a different ridge value and is
-withdrawn, and the refitted sweep lacks the range to measure the exponent
-at all (\S\ref{subsec:w3}). One of our four adapters never learned its
+(\S\ref{subsec:q1}). The rate exponent the bound predicts is unresolved:
+our sweep lacks the dynamic range to measure it (\S\ref{subsec:w3}). One of our four adapters never learned its
 task, so our cohorts are $T=4$ nominal and $3$ effective, and we report
 every geometric quantity at both. All ten pre-registrations are reproduced
 in Appendix~\ref{app:prereg} with the commit ordering that makes them
