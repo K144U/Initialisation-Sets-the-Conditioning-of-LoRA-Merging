@@ -189,7 +189,7 @@ the clause and what followed it.
 
 \subsection{The pre-registration documents}\label{subsec:prereg-docs}
 
-The ten documents follow, complete and unedited. They are not summaries
+The six documents follow, complete and unedited. They are not summaries
 written for this appendix: each is the file as committed, included from the
 source tree at build time, so this appendix cannot drift from what the
 commits in Table~\ref{tab:commits} contain. Each is reproduced in full,
@@ -206,7 +206,7 @@ marked where it occurs.
 \begin{table}[htb]
 \centering
 \small
-\caption{The ten pre-registration documents and the commit that introduced
+\caption{The six pre-registration documents and the commit that introduced
 each. Every one was added in a single commit and never modified afterwards,
 which is checkable with \texttt{git log -{}-follow} on the path.}
 \label{tab:prereg-docs}
@@ -220,10 +220,6 @@ document & introduced in & governs \\
 \texttt{prereg\_conditioning} & \texttt{fa5f3c3} & ridge sweep, rate exponent \\
 \texttt{prereg\_tmlr} & \texttt{0c8b9e8} & solver replication, gate, KnOTS, $T=3$ \\
 \texttt{prereg\_tmlr\_amendment} & \texttt{c597e31} & RegMean's minimal $\lambda$ \\
-\texttt{prereg\_shared\_arm} & \texttt{603e013} & the shared arm at $n=3$ \\
-\texttt{prereg\_prevalence} & \texttt{84526b9} & public-cohort prevalence \\
-\texttt{prereg\_downstream} & \texttt{df832fe} & downstream accuracy \\
-\texttt{prereg\_downstream\_amendment} & \texttt{4d48987} & HumanEval's 164 items \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -251,19 +247,3 @@ committed \texttt{d503347}}
 \subsubsection{\texttt{prereg\_tmlr\_amendment\_2026-08-14.md}, committed
 \texttt{c597e31}}
 \lstinputlisting{prereg/prereg_tmlr_amendment_2026-08-14.md}
-
-\subsubsection{\texttt{prereg\_shared\_arm\_2026-08-15.md}, committed
-\texttt{603e013}}
-\lstinputlisting{prereg/prereg_shared_arm_2026-08-15.md}
-
-\subsubsection{\texttt{prereg\_prevalence\_2026-08-15.md}, committed
-\texttt{84526b9}}
-\lstinputlisting{prereg/prereg_prevalence_2026-08-15.md}
-
-\subsubsection{\texttt{prereg\_downstream\_2026-08-15.md}, committed
-\texttt{df832fe}}
-\lstinputlisting{prereg/prereg_downstream_2026-08-15.md}
-
-\subsubsection{\texttt{prereg\_downstream\_amendment\_2026-08-15.md}, committed
-\texttt{4d48987}}
-\lstinputlisting{prereg/prereg_downstream_amendment_2026-08-15.md}
