@@ -11,24 +11,77 @@ the RegMean line~\citep{jin2023regmean,lorm2024,regmeanpp2025}.
 These methods are evaluated almost entirely by benchmark averages, and the
 resulting picture is unstable: the same method can be best on one cohort of
 adapters and worst on another, with no way to tell in advance which
-situation one is in. This paper asks what a rate-distortion analysis can say
-about that, and reports both what it can and, at some length, what it
-cannot.
+situation one is in.
 
-\paragraph{The bound.} We treat merging as lossy compression: $T$ task
-vectors must be summarised by one weight vector, and the figure of merit is
-the \emph{worst-task} excess loss, because a merged model that collapses on
-a single task is not deployable. In \S\ref{sec:lower_bound} we prove a lower
-bound holding for every merging algorithm, even one given the curvature data
-for free. It splits into two terms of very different character,
+\paragraph{One detail of how the adapters were trained explains a lot of
+it.} LoRA factorises each update as $BA$, initialises $A$ at random and $B$
+at zero, and trains. Whether the $T$ adapters of a cohort drew \emph{one}
+$A$ or $T$ independent ones is a detail almost never reported, and it is
+what a single global training seed silently decides. It also determines the
+geometry of the merge problem. Across four base models, sharing the draw
+moves the median principal cosine between task row spaces from $0.047$ to
+$0.995$ (\S\ref{sec:regimes}, Table~\ref{tab:geometry}). The task subspaces
+stop being distinguishable directions and become one direction measured
+four times.
+
+The mechanism is immediate once stated. $B$ starts at zero, so early
+gradients reach $A$ only through a vanishing $B$; $A$ moves little
+thereafter, $\|\Delta A\|/\|A\| = 0.16$ to $0.19$ at convergence, and every
+task inherits the row space it started with. Nothing about this is a bug in
+LoRA, and nothing about it is visible in a training curve or a benchmark
+average.
+
+\paragraph{It is invisible to the methods most people use and decisive for
+the rest.} We pre-registered the test and report both halves
+(\S\ref{sec:methods}). Task arithmetic, TIES, DARE and TVQ show no
+systematic effect across twenty base-by-method cells at our $0.01$ nat
+resolution, because each returns a bounded-norm near-mean solution that
+never enters the ill-conditioned directions: their energy in those
+directions is a rounding error. Methods that solve the linear system are a
+different story. They reach $35$ to $57$ times the mean task delta with
+three quarters of their energy exactly there, and run unregularised they are
+$2.1$ to $65$ times worse on a shared-initialisation cohort, $25$ to $117$
+times with rank truncation removed. A single Tikhonov term repairs it, on
+two solvers of which one is not ours.
+
+\paragraph{Diagnosing it costs a CPU minute.} The quantity above is computed
+from the adapter weight files alone: no forward passes, no evaluation data,
+no merging. About one minute for a cohort of four rank-16 adapters
+(\S\ref{subsec:audit}). A practitioner can run it before choosing a merge
+method, which is the only part of this paper we expect anyone to use
+directly.
+
+\paragraph{How we found it, and what the theory does and does not do.} The
+route here was a rate-distortion analysis, and it is worth being exact about
+its role rather than letting a reader infer it. We treat merging as lossy
+compression: $T$ task vectors summarised by one weight vector, with the
+figure of merit the \emph{worst-task} excess loss, because a merged model
+that collapses on a single task is not deployable. \S\ref{sec:lower_bound}
+proves a lower bound holding for every merging algorithm, even one given the
+curvature data free,
 \begin{equation*}
   \underbrace{B^2\Bigl(1 - \frac{\deff}{Tr}\Bigr)}_{\text{irreducible floor}}
   \;+\;
   \underbrace{c\cdot\frac{B^2\deff}{Tr}\,2^{-2R/\deff}}_{\text{rate term}},
 \end{equation*}
-where $\deff$ is the effective dimension of the union of the $T$ task
-subspaces. The floor is the part no algorithm can escape at any rate. Proofs
-are in Appendix~\ref{app:proofs}.
+with $\deff$ the effective dimension of the union of the task subspaces.
+Proofs are in Appendix~\ref{app:proofs}.
+
+Its operational content in this paper is that it directed attention to
+$\bar H$, the operator built from the task subspaces, and to the
+conditioning of $\bar H$ in particular. That is the whole of it, and we would
+rather write it here than have a reader find it in a limitations list.
+\textbf{The bound does not derive any empirical result that follows.}
+Theorem~\ref{thm:general} constrains a $w^\star$ carrying no rank
+constraint while every merge we run is truncated to rank $r$, so at that
+step it bears on our measurements by analogy and not by derivation
+(\S\ref{subsec:conditioning}). Its floor term is vacuous on real data. Its
+rate term rests on an assumption we state and do not prove
+(Assumption~\ref{asm:epr}), and our attempt to measure the predicted
+exponent has too little dynamic range to do so (\S\ref{subsec:w3}). We
+think the lens earned its keep, because nothing else we tried pointed at
+$\bar H$, but it is a lens: everything in \S\ref{sec:regimes} and
+\S\ref{sec:methods} stands or falls on its own measurements.
 
 \paragraph{The floor is vacuous, and we say so.} The natural next step is to
 measure the floor on real cohorts and report how much of the observed merging
@@ -54,37 +107,26 @@ participation-ratio surrogate into a formula derived for a rank
 (\S\ref{subsec:floor-zero}). For LoRA merging as practised, the floor term
 carries no operational content.
 
-\paragraph{What initialisation does control.} A zero floor says an exact
-interpolator exists; it says nothing about its norm. That is where cohorts
-differ, and by a lot. Whether the $T$ adapters share one initialisation of
-the LoRA $A$ factor, which is what happens when a single global seed
-controls a training run and is almost never reported, moves the median
-principal cosine between task subspaces from $0.047$ to $0.995$, and the
-condition number of the merge operator $\bar H$ from about $1.5$ to between
-$1.8\times10^{4}$ and $8.3\times10^{4}$ (\S\ref{sec:regimes},
-Figure~\ref{fig:two-regimes}). The exact interpolator becomes $43$ to $64$
-times larger than the mean task delta, against $T$ under independent
-initialisation. That $T$ is not fitted; it is the orthogonal-subspace value,
-and the measurement returns it to within $1.4\%$ at both $T=3$ and $T=4$.
+\paragraph{What the collapsed geometry does control.} A zero floor says an
+exact interpolator exists; it says nothing about its norm, and that is where
+the two regimes part. Under a shared draw the exact interpolator is $43$ to
+$64$ times larger than the mean task delta; under independent draws it is
+$T$. That $T$ is not fitted, it is the orthogonal-subspace value, and the
+measurement returns it to within $1.4\%$ at both $T = 3$ and $T = 4$. The
+condition number of $\bar H$ moves correspondingly, from about $1.5$ to
+between $1.8\times10^{4}$ and $8.3\times10^{4}$
+(\S\ref{sec:regimes}, Figure~\ref{fig:two-regimes}).
 
-The diagnosis needs only the adapter weights, runs in about one CPU minute,
-and requires no forward passes or evaluation data.
+We lead on the principal cosines rather than on $\kappa(\bar H)$ throughout,
+and the reason is a limitation of our own construction: the cosines are
+properties of the row spaces alone and hold under any curvature model,
+whereas $\kappa(\bar H)$ depends on the specialisation $H_t = P_{V_t}$ we
+adopt and would take a different value under a Fisher-weighted $H_t$
+(\S\ref{subsec:conditioning}). The four-orders-of-magnitude figure is real
+and is a calibrated index of subspace overlap; it is not the condition
+number any particular solver encounters, and we do not report it as one.
 
-\paragraph{Whether it matters, tested both ways.} A four-order-of-magnitude
-difference that nothing observable depends on would be a curiosity. We
-pre-registered the test and report both halves of the answer
-(\S\ref{sec:methods}). Standard merging heuristics are \emph{indifferent} to
-it: across twenty base-by-method cells, task arithmetic, TIES, DARE and TVQ
-show no systematic advantage in either regime, because each produces a
-bounded-norm near-mean solution that never approaches the ill-conditioned
-direction. Methods that actually solve the linear system are not: run
-unregularised, the same merge is $2.1$ to $65$ times worse on the
-ill-conditioned cohort, and a single Tikhonov term repairs it. We tested
-that on a second solver, RegMean, which we did not design, and it holds
-there on four of four base models; removing the rank truncation makes the
-effect larger, not smaller.
-
-So the honest claim is narrow and, we think, useful: cohort conditioning is
+So the claim is narrow and, we think, useful: cohort conditioning is
 invisible to the merging methods most people use and decisive for the ones
 that solve a system, and one ridge term is the difference.
 
@@ -97,8 +139,9 @@ rate-exponent falsification we previously reported turned out to rest on an
 asymptote computed at a different ridge value, and is withdrawn without being
 replaced by a confirmation. One of our four adapters never learned its task,
 so our cohorts are $T=4$ nominal and $3$ effective, and we report every
-geometric quantity at both. The pre-registrations are reproduced verbatim in
-Appendix~\ref{app:prereg}, with the commit ordering that makes them checkable.
+geometric quantity at both. All six pre-registrations are reproduced verbatim
+in Appendix~\ref{app:prereg}, included from the source files rather than
+summarised, with the commit ordering that makes them checkable.
 
 \paragraph{Contributions.}
 \begin{enumerate}
@@ -107,7 +150,9 @@ Appendix~\ref{app:prereg}, with the commit ordering that makes them checkable.
   curvature, and a matching construction (Theorem~\ref{thm:achv}). The
   floor term is unconditional; the rate term holds under an explicitly
   stated assumption on the entropy power (Assumption~\ref{asm:epr}), which
-  we do not prove and do not absorb into a constant.
+  we do not prove and do not absorb into a constant. Its role in what
+  follows is the one stated above: it identifies $\bar H$ as the object to
+  measure, and does not derive the measurements.
 \item The finding that the bound's floor term is \emph{vacuous} for LoRA
   cohorts in general position, together with the exact instance form
   $B^2 - \tauH^\top\bar H\tauH$ that a practitioner should evaluate instead

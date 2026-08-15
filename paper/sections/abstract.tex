@@ -1,26 +1,30 @@
 Merging several LoRA adapters into one model sometimes costs almost
 nothing and sometimes destroys a task, and practitioners have no cheap way
-to tell which case they are in beforehand. We prove a closed-form lower
-bound on worst-task negative log-likelihood excess for rank-$r$ merging,
-with a matching achievability construction: an irreducible floor
-$B^2(1 - \deff/(Tr))$, governed by the effective dimension $\deff$ of the
-union of the task subspaces, plus a rate term decaying as
-$2^{-2R/\deff}$. On real cohorts that floor turns out to be vacuous,
-exactly zero under every initialisation scheme we tried, because $T$
-rank-$r$ adapters with $Tr \leq d$ span independently even when nearly
-collinear. What the bound does expose is conditioning. Whether a cohort's
-adapters share one initialisation of the LoRA $A$ factor, a detail almost
-never reported, moves the median principal cosine between task subspaces
-from $0.047$ to $0.995$ and the condition number of the merge operator
-from $1.5$ to as much as $8.3\times10^{4}$. Diagnosing it costs about one
-CPU minute and no forward passes. We pre-registered whether this matters
-and report both halves. It is invisible to standard heuristics, which
-produce bounded-norm near-mean solutions: across twenty base-by-method
-cells we detect no effect at our $0.01$ nat resolution. It is decisive for
-methods that solve the linear system, which reach $35$ to $57$ times the
-mean task delta with three quarters of their energy in the ill-conditioned
-directions: unregularised they are $2.1$ to $65$ times worse, $25$ to
-$117$ without rank truncation, and one ridge term repairs it, on two
-solvers of which one is not ours. Several of our own claims did not
-survive, including our encoder's advantage and this metric's link to
-downstream accuracy, and we report those at full strength.
+to tell which case they are in beforehand. We identify a property of the
+adapter cohort that separates the two and that is almost never reported:
+whether the $T$ adapters were trained from one shared random draw of the
+LoRA $A$ factor, which is what a single global training seed silently
+decides. Because $B$ starts at zero, $A$ barely moves during training, so a
+shared draw leaves every task with essentially the same row space. Across
+four base models this moves the median principal cosine between task
+subspaces from $0.047$ to $0.995$: the task directions stop being
+distinguishable. Diagnosing which regime a cohort is in costs about one CPU
+minute from the adapter weights alone, with no forward passes. We
+pre-registered whether the difference matters and report both halves of the
+answer. It is invisible to the merging heuristics most people use: across
+twenty base-by-method cells, task arithmetic, TIES, DARE and TVQ show no
+effect at our $0.01$ nat resolution, because each returns a bounded-norm
+near-mean solution that never enters the collapsed directions. It is
+decisive for the methods that solve the linear system, which reach $35$ to
+$57$ times the mean task delta with three quarters of their energy in
+exactly those directions: run unregularised they are $2.1$ to $65$ times
+worse on shared-initialisation cohorts, $25$ to $117$ times with the rank
+truncation removed, and one Tikhonov term repairs it, on two solvers of
+which one is not ours. The route to this result was a rate-distortion lower
+bound on worst-task NLL excess, which we prove with a matching achievability
+construction and report as provenance rather than as support: its role is to
+say which object to measure, its floor term is exactly zero on every real
+cohort we tried, and it derives none of the measurements above. Several of
+our own claims did not survive pre-registered replication, among them our
+encoder's advantage and this metric's link to downstream accuracy, and we
+report all of them in full.
