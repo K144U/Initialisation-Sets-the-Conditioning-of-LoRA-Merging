@@ -55,19 +55,39 @@ N_OF_4 = 3
 
 
 def load(base: str, which: str, bench: str, cohort: str):
+    """Read one downstream cell.
+
+    The harness writes the accuracy as a scalar under `metric_score`, and the
+    per-item detail under `per_example` with keys task_id, score, err,
+    completion_preview, gen_raw.
+
+    The discard rate is the number of items whose generation came back EMPTY.
+    It is deliberately NOT the number with a non-empty `err`: on HumanEval,
+    `err` holds the unit-test traceback for a wrong solution, so a correct
+    scorer produces one for every failing item. Counting those as discards
+    would report a clean cell as 48% discarded and flag it as void, which is
+    the opposite of the check's purpose. The fault that voided the earlier
+    downstream numbers was empty completions from markdown-fenced output, and
+    empty completions are what this counts.
+    """
     p = RES / "eval_downstream_cond" / f"{base}__{which}_{bench}__{cohort}.json"
     if not p.exists():
         return None
     d = json.loads(p.read_text())
-    acc = d.get("metric_value")
+    acc = d.get("metric_score")
     if acc is None:
-        for k in ("accuracy", "pass1", "em", "score"):
+        for k in ("metric_value", "accuracy", "pass1", "em", "score"):
             if k in d:
                 acc = d[k]
                 break
+
+    pe = d.get("per_example") or []
+    n_empty = sum(1 for e in pe if isinstance(e, dict)
+                  and not str(e.get("gen_raw", e.get("completion_preview", ""))).strip())
+    n_err = sum(1 for e in pe if isinstance(e, dict) and str(e.get("err", "")).strip())
     return {"acc": acc, "raw": d,
-            "n_scored": d.get("n_scored", d.get("n_eval_metric")),
-            "n_empty": d.get("n_empty_completions", d.get("n_discarded", 0))}
+            "n_scored": d.get("n_eval_metric", len(pe) or None),
+            "n_empty": n_empty, "n_err": n_err}
 
 
 def se_diff(p1: float, p2: float, n: int) -> float:
@@ -105,7 +125,7 @@ def main() -> int:
     # Registered report: every cell, with its discard rate.
     print("\n=== all cells (registered report 1 and 2) ===")
     print(f"{'base':<12}{'cohort':<8}{'ridge':<7}{'bench':<11}"
-          f"{'acc':>8}{'n':>6}{'empty':>7}")
+          f"{'acc':>8}{'n':>6}{'empty':>7}{'failed':>8}")
     flagged = 0
     for base in BASES:
         for cohort in (SHARED, INDEP):
@@ -119,7 +139,11 @@ def main() -> int:
                     if ne:
                         flagged += 1
                     print(f"{base:<12}{cohort:<8}{which:<7}{bench:<11}"
-                          f"{v['acc']:>8.3f}{str(v['n_scored']):>6}{ne:>7}{flag}")
+                          f"{v['acc']:>8.3f}{str(v['n_scored']):>6}{ne:>7}"
+                          f"{v.get('n_err', 0):>8}{flag}")
+    print("  'empty' is generations that came back blank, the fault that voided "
+          "the earlier numbers.\n  'failed' is items whose generated code ran "
+          "and failed its tests, which is a legitimate zero.")
     if flagged:
         print(f"\n  {flagged} cells have a non-zero discard rate. The earlier "
               f"downstream numbers were void for exactly this reason; these are "
