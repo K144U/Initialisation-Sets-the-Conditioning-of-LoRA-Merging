@@ -2649,3 +2649,57 @@ and the analyzer refuses to make that comparison. Only verdicts transfer.
 
 The 12 knots_ties cells at T = 3 are running as a supplement (job 461), now
 that R4 established the repaired KnOTS as a real method.
+
+---
+
+## 2026-08-15 — Anonymised audit-trail bundle built, and it caught a wrong row in Appendix D
+
+TMLR reviews double-blind and requires supplementary material to be anonymised
+(checked against their editorial policies and author guide, not from memory),
+so the repository cannot be linked from the submission. But the paper's central
+claim about itself is that a reader can verify the commit ORDERING, and the
+usual anonymisation services serve a snapshot with no git history, which would
+remove exactly the thing being claimed.
+
+A git bundle solves it: one file, real history, `git clone` works and
+`git merge-base --is-ancestor` runs against it. Built by
+`code/phase3/scripts/build_anon_bundle.sh`, 19 MB, 159 commits, all branches.
+
+### What the rewrite does
+
+Removes correspondence, external review notes and author-named drafts, which
+identify people and support no result. Rewrites identifying text across every
+blob and every commit message, and author and committer identity on every
+commit. `git filter-repo` also rewrites commit hashes referenced INSIDE commit
+messages, so cross-references such as "prereg f9d230e precedes" stay valid
+under the new hashes.
+
+### The first pass was not clean, and the check caught it
+
+The literal rules missed every case variant: `JIIT` 57 times, `pathak` 20,
+`sankalp` 7, `garg` 3, plus `pathaksankalp@gmail.com`, an email form without
+the digits that the rule expected, and the bibtex keys `pathak2026merging` and
+`pathak2026rdmerge`. The second pass is case-insensitive throughout. The
+verification now scans every blob in the object store rather than the tip
+trees, and the script refuses to write a bundle if anything survives.
+
+### It also caught a false row in Appendix D
+
+Verifying the ancestry checks inside the bundle, one of thirteen failed: the
+A1 amendment is NOT an ancestor of the step-0 result. That is correct history.
+The amendment (2026-08-04) was written after step 0 (2026-08-03) was read, and
+governs the n = 3 verdict that followed. The prose already disclosed the
+blindness limitation; the TABLE implied the opposite by pairing the amendment
+with the step-0 commit.
+
+Appendix D now has two replication rows, one per result, and says explicitly
+that running the check on the amendment against step 0 fails and should. A
+table that quietly claimed an ordering the history does not have would have
+been the worst possible defect in this particular paper.
+
+### Consequence for maintenance
+
+Anonymisation changes every hash, so Table 6 must be regenerated from the
+mapping the script prints whenever the bundle is rebuilt. Topology is
+unchanged, so the claim is unaffected. The script prints the old-to-new map
+filtered to the commits the table cites.

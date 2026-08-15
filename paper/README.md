@@ -119,22 +119,37 @@ untrained adapter is dropped; Table 3 mixed two inference paths.
 
 ## Before this is posted anywhere
 
+**For a TMLR submission the repository does NOT need to be public.** TMLR
+reviews double-blind and requires supplementary material to be anonymised, so
+a public repo URL in the PDF would de-anonymise you three ways over: the
+account name, the commit authorship, and the author emails in `arxiv.tex`.
+Code release is encouraged, not required.
+
+The audit trail travels as an anonymised **git bundle** instead, built by
+`code/phase3/scripts/build_anon_bundle.sh` and currently at
+`../rdmerge-audit-trail.bundle` (19 MB). A bundle carries real history, so
+`git clone` works on it and `git merge-base --is-ancestor` runs, which a
+snapshot service like anonymous.4open.science cannot offer. Rebuild it after
+any new commits, and regenerate Table 6's hashes from the mapping the script
+prints, because anonymisation changes every hash (not the topology).
+
 Blocking, in the order they bite:
 
-1. **The repository must exist publicly.** `\repourl` points at
-   `github.com/K144U/rdmerge`, which currently 404s for anonymous visitors,
-   and the branch carrying the audit trail (`paper-consolidation`, 53
-   commits ahead of `origin/phase3-bootstrap`) has never been pushed. The
-   paper's central integrity claim is that the commit ordering is checkable
-   by a reader. Until that push happens the claim is unverifiable, and the
-   Reproducibility Statement is describing something that does not exist.
-2. **Decide what "released" covers.** The statement now says the base
-   weights and trained adapters are not redistributed and the configs are.
-   Make that true of whatever is actually pushed.
-3. **arXiv endorsement.** As of 2026-06 there was none, which is why the
-   earlier snapshot went to Zenodo. Confirm before assuming arXiv is
-   available. If Zenodo is used again, the stale 2026-06-02 record should be
-   updated rather than left alongside this version.
+1. **Rebuild the bundle before submitting** if the repo has moved since it was
+   last built, and re-run the ancestry checks. The script verifies no
+   identifying string survives in any blob, commit message or identity, and
+   refuses to write the bundle if one does.
+2. **Upload the bundle as supplementary material**, not a URL. The
+   Reproducibility Statement now describes the bundle; `\repourl` is unused by
+   the submission build and is kept only for a camera-ready that names the
+   repository.
+3. **Decide what "released" covers at camera-ready.** The statement says the
+   base weights and trained adapters are not redistributed and the configs
+   are. Make that true of whatever eventually goes public.
+4. **arXiv endorsement**, only if arXiv is the route. As of 2026-06 there was
+   none, which is why the earlier snapshot went to Zenodo. TMLR permits
+   preprints, but the submission must not link to a named version, so the
+   paper must not cite the Zenodo DOI while under review.
 
 Non-blocking, worth doing:
 

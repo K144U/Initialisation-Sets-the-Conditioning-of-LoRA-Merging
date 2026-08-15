@@ -13,39 +13,63 @@ initial commit. A reader who does not trust the narrative can verify the
 ordering directly.
 
 Table~\ref{tab:commits} gives the hashes, so that checking the ordering does
-not require cloning the repository and reconstructing which commit is which.
-Each row reads left to right in the order the commits were made, and every
-rules commit is an ancestor of the result commit on its row.
+not require reconstructing which commit is which. Each row reads left to
+right in the order the commits were made, and every rules commit is an
+ancestor of the result commit on its row.
 
 \begin{table}[tb]
 \centering
 \small
-\caption{Commit trail for every pre-registered test in this paper. Verify with
-\texttt{git merge-base -{}-is-ancestor <rules> <result>}, which exits zero
-exactly when the ordering claimed here holds.}
+\caption{Commit trail for every pre-registered test in this paper. The hashes
+are those in the audit-trail bundle released with the paper, which differ from
+our working repository's because anonymisation rewrites every commit; the
+ordering is unaffected, since rewriting does not change topology. Verify a row
+with \texttt{git merge-base -{}-is-ancestor <rules> <result>}, which exits zero
+exactly when the ordering claimed here holds, and fails on the reverse.}
 \label{tab:commits}
 \begin{tabular}{llll}
 \toprule
 test & rules & analyzer or implementation & result \\
 \midrule
-Independent replication (\S\ref{subsec:q1}) & \texttt{8dad101} &
-  \texttt{42c7ff0} (amendment) & \texttt{c5f068a} \\
-DARE with TIES (\S\ref{subsec:dare}) & \texttt{efb593f} &
-  \texttt{f268288}, \texttt{d426961} & \texttt{c0cf049} \\
-Conditioning and the ridge (\S\ref{subsec:ridge}) & \texttt{f9d230e} &
-  \texttt{fb17e22}, \texttt{54af7c6} & \texttt{5610ce6} \\
-Rate exponent (\S\ref{subsec:w3}) & \texttt{f9d230e} &
-  \texttt{49ebb17} (corrected) & \texttt{f01502c} \\
+Replication, step 0 (\S\ref{subsec:q1}) & \texttt{0d9924b} &
+  --- & \texttt{175453f} \\
+Replication, $n=3$ (\S\ref{subsec:q1}) & \texttt{d503347} &
+  --- & \texttt{7edf68a} \\
+DARE with TIES (\S\ref{subsec:dare}) & \texttt{100cd43} &
+  \texttt{b94331c}, \texttt{672a72c} & \texttt{3a0822e} \\
+Conditioning and the ridge (\S\ref{subsec:ridge}) & \texttt{fa5f3c3} &
+  \texttt{6e51df3}, \texttt{de2aa10} & \texttt{25d7de0} \\
+Rate exponent (\S\ref{subsec:w3}) & \texttt{fa5f3c3} &
+  \texttt{40eae48} (corrected) & \texttt{dc2991a} \\
+\addlinespace
+Solver replication (\S\ref{subsec:regmean}) & \texttt{0c8b9e8} &
+  \texttt{c597e31}, \texttt{2a49b3e} & \texttt{a5e1ea1} \\
+Untruncated and gate (\S\ref{subsec:untruncated}) & \texttt{0c8b9e8} &
+  \texttt{fb21c0f} & \texttt{23c251b} \\
+Repaired KnOTS (\S\ref{sec:discussion}) & \texttt{0c8b9e8} &
+  \texttt{e8c968a} & \texttt{30d2c04} \\
+Merge matrix at $T=3$ (\S\ref{subsec:q1}) & \texttt{0c8b9e8} &
+  \texttt{7a12e2c} & \texttt{0d35789} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Two rows deserve a comment. The DARE-TIES analyzer appears twice because the
-first version printed, under a mixed verdict, the consequence text belonging to
-a different verdict; \texttt{d426961} is that repair, and it predates the
-verdict commit. The rate-exponent row names a \emph{corrected} analyzer, and
-that correction was made after the first analysis had been read, for the reason
-given in \S\ref{subsec:rate-prereg} below.
+Three rows deserve a comment, and the first is the one a sceptical reader
+should check first.
+
+The replication appears as two rows because its amendment does \emph{not}
+precede the step-0 result: \texttt{d503347} was committed after
+\texttt{175453f} was read. That is the blindness limitation the amendment
+states about itself, made checkable rather than asserted, and it is why the
+amendment is paired with the $n=3$ verdict it actually governs. Running the
+ancestry check on \texttt{d503347} against \texttt{175453f} fails, and should.
+
+The DARE-TIES analyzer appears twice because the first version printed, under a
+mixed verdict, the consequence text belonging to a different verdict;
+\texttt{672a72c} is that repair, and it predates the verdict commit. The
+rate-exponent row names a \emph{corrected} analyzer, and that correction was
+made after the first analysis had been read, for the reason given in
+\S\ref{subsec:rate-prereg} below.
 
 \subsection{Replication of the merge matrix on independent cohorts}
 

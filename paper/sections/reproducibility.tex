@@ -46,14 +46,25 @@ any correlation conclusion from them, for the power reasons given in
 
 \paragraph{Code and data.} The merge implementations, the evaluation
 harness, the geometry audit, every pre-registration document, and the
-per-cell result files are released at \href{\repourl}{\texttt{\repohost}}. The
-pre-registrations are also reproduced verbatim in
-Appendix~\ref{app:prereg}, but the repository is what makes the commit
-ordering checkable, and that ordering is the part of our procedure we are
-asking the reader to verify rather than accept. The base model weights and
-the trained adapters are not redistributed: the bases are public
-checkpoints, and the adapter training configurations, including every
-seed, are in the repository.
+per-cell result files accompany this submission as a \emph{git bundle},
+which is a single file carrying real version history rather than a
+snapshot of it. Clone it with \texttt{git clone <bundle>} and the commit
+graph is intact, so the ordering claimed in Table~\ref{tab:commits} can be
+checked with \texttt{git merge-base} rather than taken on trust. That
+ordering is the part of our procedure we are asking the reader to verify.
+
+The bundle is anonymised: author identity, machine names, absolute paths
+and institutional identifiers are rewritten throughout the history. This
+changes every commit hash, so the hashes in Table~\ref{tab:commits} are the
+bundle's rather than our working repository's. It does not change the
+commit graph, which is what the verification depends on. A small number of
+files are removed entirely because they identify people and are unrelated
+to any result: correspondence, external review notes, and drafts carrying
+author names. Nothing removed is cited anywhere in this paper.
+
+The base model weights and the trained adapters are not redistributed: the
+bases are public checkpoints, and the adapter training configurations,
+including every seed, are in the bundle.
 
 \paragraph{Compute.} All merging and evaluation ran on a single node with
 A100-80GB GPUs, one evaluation cell per card at 18 to 21 GiB. The project
