@@ -39,9 +39,12 @@ if [ -n "${GPUS_FILE:-}" ] && [ -f "$GPUS_FILE" ]; then
 fi
 export GPUS="${GPUS:-1,2,3,4,6}"
 
-MANIFEST=code/phase3/configs/shared_arm_manifest.json
+# Overridable so that binding constraint 5 of the registration, one real cell
+# inspected before the other fifty-five are dispatched, runs through this same
+# path rather than around it. No commas in the value, so -v is safe here.
+MANIFEST="${MANIFEST:-code/phase3/configs/shared_arm_manifest.json}"
 if [ ! -f "$MANIFEST" ]; then
-  echo "[shr] ABORT: no manifest, run gen_shared_arm.py first"
+  echo "[shr] ABORT: no manifest at $MANIFEST, run gen_shared_arm.py first"
   exit 2
 fi
 
