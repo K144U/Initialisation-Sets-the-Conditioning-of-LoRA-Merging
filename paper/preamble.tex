@@ -12,6 +12,36 @@
 \usepackage[table]{xcolor}
 \usepackage{url}
 \usepackage{hyperref}
+
+% Verbatim inclusion of the pre-registration documents in the appendix.
+% They are plain text and must appear exactly as committed, so they are
+% \lstinputlisting'd from prereg/ rather than retyped: the appendix cannot
+% drift from the files, because it is the files. Widest line in the set is
+% 85 columns, which fits at \footnotesize, but breaklines is on so that a
+% future edit to one of them cannot silently produce an overfull line.
+% The section sign is the only non-ASCII character any of them contains.
+\usepackage{listings}
+% upquote before any listing: without it a backtick and an apostrophe come
+% out as curly quotes in the tt font, which misrepresents documents that use
+% backticks for code spans throughout.
+\usepackage{textcomp}
+\usepackage{upquote}
+\lstset{
+  basicstyle=\footnotesize\ttfamily,
+  breaklines=true,
+  breakindent=0pt,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  frame=none,
+  xleftmargin=0pt,
+  aboveskip=0.6\baselineskip,
+  belowskip=0.6\baselineskip,
+  % Only the section sign needs mapping. Do NOT add a {\S} key here: in a
+  % literate list that is read as the single character S, and every capital
+  % S in the documents comes out as a section sign.
+  literate={§}{{\S}}1,
+}
 % Not microtype: under the XeTeX engine tectonic uses, only protrusion is
 % available (no font expansion for these Type 1 faces), and enabling it
 % moved the arXiv build from six overfull lines to eight. Measured, not

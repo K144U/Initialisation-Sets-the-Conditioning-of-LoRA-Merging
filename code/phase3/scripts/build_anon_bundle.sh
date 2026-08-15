@@ -84,9 +84,22 @@ $FR \
   --replace-message "$WORK/rules.txt" \
   --name-callback 'return b"Anonymous Author"' \
   --email-callback 'return b"anon@anonymous.invalid"' \
+  --commit-callback '
+commit.author_date = commit.author_date.split(b" ")[0] + b" +0000"
+commit.committer_date = commit.committer_date.split(b" ")[0] + b" +0000"
+' \
   --force >/dev/null
 
 echo "[5/6] verify no identifying string survives in any blob"
+# The timezone is an identifier too. Every commit carried +0530, which names a
+# geography on a submission whose names, emails, hostnames and paths have all
+# been stripped. The callback above keeps the epoch second and relabels the
+# offset as +0000, so ordering is untouched; ancestry is pure topology and does
+# not consult dates at all.
+if git log --all --format='%ai %ci' | grep -qv '+0000'; then
+  echo "  LEAK: a commit carries a non-UTC timezone offset" >&2; exit 3
+fi
+echo "  timezones normalised to +0000"
 leak=0
 while read -r o; do
   [ "$(git cat-file -t "$o" 2>/dev/null)" = "blob" ] || continue
@@ -108,11 +121,44 @@ git clone -q "$OUT" "$WORK/verify"
 cd "$WORK/verify"
 echo "  $(git rev-list --count --all) commits, identity: $(git log -1 --format='%an <%ae>')"
 echo
-echo "old -> new hashes for Table 6 (regenerate the table from these):"
-while read -r old new; do
-  msg=$(git log -1 --format='%s' "$new" 2>/dev/null | cut -c1-58)
-  [ -n "$msg" ] && printf "  %s -> %s  %s\n" "${old:0:7}" "${new:0:7}" "$msg"
-done < "$WORK/anon.git/filter-repo/commit-map" | grep -iE "pre-?registration|amendment|analyzer|verdict|generator|VOID|CONFIRMED|SURVIVES|complete" | head -40
+echo "old -> new hashes for the commit-trail table"
+echo "(every hash the table cites, looked up by name rather than guessed by"
+echo " keyword: a heuristic that silently misses a row is worse than useless"
+echo " when the row is the evidence)"
+echo
+
+# The working-repository hashes the paper's commit-trail table cites, in table
+# order. Update this list when a row is added, and the mapping below follows.
+WANTED="
+0d9924b 175453f
+d503347 7edf68a
+100cd43 b94331c 672a72c 3a0822e
+fa5f3c3 6e51df3 de2aa10 25d7de0
+40eae48 dc2991a
+0c8b9e8 c597e31 2a49b3e a5e1ea1
+fb21c0f 23c251b
+e8c968a 30d2c04
+7a12e2c 0d35789
+ae3fdf1 603e013 778da6e 84526b9 11bc8a7 df832fe e66d273 f20b13c
+"
+
+missing=0
+for want in $WANTED; do
+  full=$(git -C "$REPO" rev-parse "$want^{commit}" 2>/dev/null || true)
+  if [ -z "$full" ]; then
+    printf "  %-9s NOT FOUND in the working repository\n" "$want"; missing=1; continue
+  fi
+  new=$(awk -v o="$full" '$1==o {print $2}' "$WORK/anon.git/filter-repo/commit-map")
+  if [ -z "$new" ] || [ "$new" = "0000000000000000000000000000000000000000" ]; then
+    printf "  %-9s -> DROPPED by the filter\n" "$want"; missing=1; continue
+  fi
+  msg=$(git log -1 --format='%s' "$new" 2>/dev/null | cut -c1-56)
+  printf "  %-9s -> %s  %s\n" "$want" "${new:0:7}" "$msg"
+done
 
 echo
+if [ "$missing" -ne 0 ]; then
+  echo "WARNING: some cited commits could not be mapped. The table cannot be"
+  echo "regenerated correctly until that is resolved."
+fi
 echo "bundle: $OUT"
