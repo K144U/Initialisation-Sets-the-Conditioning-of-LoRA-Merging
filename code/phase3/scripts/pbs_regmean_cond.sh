@@ -33,7 +33,15 @@ export ORCH_STATE=orchestrator_state_regmean_cond.json
 # starts one worker per pinned GPU and the others exit on queue.Empty after 30s,
 # so a lone cell that lands on a card below its min_free_gb requeues into a
 # queue with no live consumer.
-export GPUS="${GPUS:-0,1,2,3,4,6}"
+# GPU 0 is deliberately NOT in the default. On 2026-08-14 another user's job
+# held 78.9 of its 81.9 GB, so a worker pinned there would fail the 25 GB gate
+# on every cell, back off, and occupy a slot that does nothing. Five cards is
+# the real width. Put 0 back when it frees up.
+#
+# Do NOT pass this as `qsub -v GPUS=1,2,3,4,6`: PBS splits the value on commas
+# and reads 2, 3, 4, 6 as further variable names, failing with "cannot send
+# environment with the job". Edit the default here, or escape every comma.
+export GPUS="${GPUS:-1,2,3,4,6}"
 
 # Both cohorts must be fully trained: 16 adapters each.
 for C in seed1 indep1; do

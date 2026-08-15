@@ -87,6 +87,10 @@ echo "[2-4/6] strip identifying paths, rewrite text and identity"
   --path "notes/garg_message_2026-06-23.md" \
   --path "Alignment Forum research note.pdf" \
   --path-glob "A_Rate_Distortion_*.pdf" \
+  --path "tmlr_submission/supplementary/audit-trail.bundle" \
+  --path "tmlr_submission/supplementary.zip" \
+  --path "tmlr_submission/overleaf_tmlr.zip" \
+  --path "tmlr_submission/paper.pdf" \
   --replace-text "$WORK/rules.txt" \
   --replace-message "$WORK/rules.txt" \
   --name-callback 'return b"Anonymous Author"' \
@@ -139,6 +143,16 @@ echo "  clean"
 
 echo "[6/6] write bundle and verify a fresh clone of it"
 git bundle create "$OUT" --all >/dev/null 2>&1
+# A previous build of this bundle was briefly committed to the repository, and
+# a bundle is built from history, so it ended up inside its own successor and
+# the size tripled. The --path exclusions above strip it, and this guards the
+# invariant: a bundle carrying a copy of a bundle has gone wrong somewhere.
+sz=$(du -m "$OUT" | cut -f1)
+echo "  size: ${sz} MB"
+if [ "$sz" -gt 40 ]; then
+  echo "  WARNING: unexpectedly large. Check for build artifacts in history:" >&2
+  echo "    git rev-list --objects --all | sort -k2 | uniq -f1 -d" >&2
+fi
 rm -rf "$WORK/verify"
 git clone -q "$OUT" "$WORK/verify"
 cd "$WORK/verify"

@@ -36,18 +36,24 @@ _HEX = re.compile(r"\b[0-9a-f]{7,40}\b")
 def norm(subject: str) -> str:
     return _HEX.sub("<hash>", subject.strip())
 
-# The table's rows, as (label, old-bundle hashes in column order).
-ROWS = [
-    ("Replication, step 0",        ["0d9924b", "175453f"]),
-    ("Replication, n=3",           ["d503347", "7edf68a"]),
-    ("DARE with TIES",             ["100cd43", "b94331c", "672a72c", "3a0822e"]),
-    ("Conditioning and the ridge", ["fa5f3c3", "6e51df3", "de2aa10", "25d7de0"]),
-    ("Rate exponent",              ["fa5f3c3", "40eae48", "dc2991a"]),
-    ("Solver replication",         ["0c8b9e8", "c597e31", "2a49b3e", "a5e1ea1"]),
-    ("Untruncated and gate",       ["0c8b9e8", "fb21c0f", "23c251b"]),
-    ("Repaired KnOTS",             ["0c8b9e8", "e8c968a", "30d2c04"]),
-    ("Merge matrix at T=3",        ["0c8b9e8", "7a12e2c", "0d35789"]),
-]
+PAPER = (Path(__file__).resolve().parents[3]
+         / "paper" / "sections" / "app_prereg.tex")
+
+# Read the hashes out of the paper rather than keeping a copy here. A second
+# list is a second thing to forget: the first version of this script carried
+# hardcoded hashes that were already two rebuilds stale, and reported every one
+# of them as dropped by the filter when they had simply ceased to exist.
+_CITED = re.compile(r"\\texttt\{([0-9a-f]{7,40})\}")
+
+
+def cited_hashes() -> list[str]:
+    text = PAPER.read_text(encoding="utf-8")
+    seen, out = set(), []
+    for h in _CITED.findall(text):
+        if h not in seen:
+            seen.add(h)
+            out.append(h)
+    return out
 
 
 def sh(*args: str) -> str:
@@ -80,14 +86,26 @@ def main() -> int:
     problems = 0
     seen: set[str] = set()
 
-    for label, hashes in ROWS:
-        for old in hashes:
+    for old in cited_hashes():
             if old in seen:
                 continue
             seen.add(old)
+            # A cited hash is in one of two spaces. Usually it is a previous
+            # bundle's, and is bridged by subject. But a test added since that
+            # bundle was built is still cited by its working-repository hash,
+            # and maps straight through the commit-map. Try the bridge first,
+            # then fall back, so both kinds resolve without a hand-kept list.
             subj = sh("git", "-C", old_clone, "log", "-1", "--format=%s", old)
             if not subj:
-                print(f"{old:<9} {'-':<9}  NO SUBJECT in the old bundle")
+                direct = sh("git", "-C", str(repo), "rev-parse", "--verify",
+                            "--quiet", old + "^{commit}")
+                if direct and cmap.get(direct):
+                    new = cmap[direct]
+                    s = sh("git", "-C", new_clone, "log", "-1", "--format=%s", new)
+                    resolved[old] = new[:7]
+                    print(f"{old:<9} {new[:7]:<9}  ok*     {s[:44]}")
+                    continue
+                print(f"{old:<9} {'-':<9}  in neither the old bundle nor this repo")
                 problems += 1
                 continue
             cands = subjects.get(norm(subj), [])
