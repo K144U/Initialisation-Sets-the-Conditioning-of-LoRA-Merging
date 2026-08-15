@@ -4,9 +4,9 @@ cohorts on conditioning instead. Both halves of that invite a test. The
 first invites an encoder that recovers the slack, and we built one: a
 rate-distortion encoder using incoherent orthogonal mixing and scalar
 quantisation, regularised with a single Tikhonov ridge term
-(\S\ref{sec:achv}, implementation in Appendix~\ref{app:manifest}). On the
-shared-initialisation cohorts our earlier draft measured, it wins
-comfortably against every baseline. The second invites the question of
+(Appendix~\ref{app:rd-achv}, implementation in Appendix~\ref{app:manifest}).
+On a shared-initialisation cohort it wins comfortably against every
+baseline, which is what made the test below necessary. The second invites the question of
 whether a four-order-of-magnitude difference in conditioning is visible to
 anything a practitioner does.
 
@@ -103,11 +103,11 @@ The number that matters alongside that is the smallest effect the design
 could have found, because a null without one is not evidence of absence.
 The gate sits at $0.0052$ nats in the median cell and $0.0109$ in the
 worst, so the honest statement is \emph{no effect detectable at about
-$0.01$ nats}, not \emph{no effect}. It also settles a tension in an
-earlier version of this work, which quoted a mean difference of $0.0014$
-nats while estimating the metric's own resolution at about $0.001$: that
-difference is below the median gate, so it is a quantity this design
-cannot resolve in either direction.
+$0.01$ nats}, not \emph{no effect}. It also disposes of a smaller number
+that has been quoted in this setting, a mean difference of $0.0014$ nats
+against a metric resolution of about $0.001$: that difference sits below
+the median gate, so it is a quantity this design cannot resolve in either
+direction.
 
 The five cells that do clear the gate are worth naming rather than
 averaging away, because four of them are not spread at random. Three are
@@ -122,8 +122,8 @@ consistent in direction, and we do not build anything on it.
 
 \paragraph{Then the mechanism, measured.} The explanation for the other
 $15$ cells is that those methods never go near the ill-conditioned
-direction. That was an assertion in an earlier version and is now a
-measurement, and it needs no forward passes: every merge here is weight
+direction. That is a measurement rather than an assertion, and it needs no
+forward passes: every merge here is weight
 arithmetic on the adapter factors. For each merged solution we report its
 norm relative to the mean task delta, and the share of its energy lying in
 the bottom quartile of $\bar H$'s eigen-directions, in the projected
