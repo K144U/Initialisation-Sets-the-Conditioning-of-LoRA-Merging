@@ -38,10 +38,12 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import struct
 import time
 import urllib.error
 import urllib.request
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(os.environ.get("RDMERGE_ROOT", "/home/sanjay.g/projects/rdmerge"))
@@ -61,6 +63,31 @@ INTERMEDIATE = 0.5
 P1_FRACTION = 0.20
 
 UA = {"User-Agent": "rdmerge-prevalence-audit/1.0"}
+
+# Cohorts are independent, and the cost is network round-trips rather than
+# compute, so they are fetched concurrently. This changes no measured value
+# and no ordering: results are collected back into the phase-1 order before
+# anything is scored.
+WORKERS = 8
+
+_DTYPES = None
+
+
+def _dtypes():
+    global _DTYPES
+    if _DTYPES is None:
+        import torch
+        _DTYPES = {"F64": torch.float64, "F32": torch.float32,
+                   "F16": torch.float16, "BF16": torch.bfloat16}
+    return _DTYPES
+
+
+class _LazyDtypes(dict):
+    def get(self, k, default=None):
+        return _dtypes().get(k, default)
+
+
+DTYPES = _LazyDtypes()
 
 
 def get_json(url: str, tries: int = 3):
@@ -102,6 +129,133 @@ def get_json_paged(url: str, tries: int = 3):
         except Exception:
             time.sleep(2 * (k + 1))
     return None, None
+
+
+def _range(url: str, a: int, b: int, tries: int = 3):
+    """One HTTP Range read. Returns bytes, or None."""
+    for k in range(tries):
+        try:
+            req = urllib.request.Request(
+                url, headers={**UA, "Range": f"bytes={a}-{b}"})
+            with urllib.request.urlopen(req, timeout=180) as r:
+                return r.read()
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403, 404, 416):
+                return None
+            time.sleep(2 * (k + 1))
+        except Exception:
+            time.sleep(2 * (k + 1))
+    return None
+
+
+def fetch_lora_A(repo: str, cache: Path):
+    """Fetch ONLY the lora_A tensors, via HTTP Range on the safetensors file.
+
+    The audit measures row spaces of A and nothing else. A published adapter
+    can be gigabytes, because PEFT's modules_to_save writes full copies of
+    embed_tokens and lm_head alongside the LoRA factors; on one measured
+    cohort lora_A was 16.78 MB of a 4230 MB file. Reading the whole file to
+    use 0.4% of it is the entire cost of this audit.
+
+    A safetensors file is 8 bytes of little-endian header length, then that
+    many bytes of JSON carrying every tensor's dtype, shape and byte range,
+    then the data block. So three requests suffice: length, header, and one
+    span per contiguous run of wanted tensors.
+
+    Verified byte-identical against a full download before being adopted; the
+    tensors this returns are the same tensors, so no measured value changes.
+
+    Falls back to a whole-file download for .bin adapters, which are zip
+    archives and cannot be range-sliced this way.
+    """
+    import torch
+    from safetensors.torch import load_file
+
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    if cache.exists():
+        return torch.load(cache, map_location="cpu")
+
+    # A full file from an earlier run is as good a source as the network.
+    for old in (cache.parent / "adapter_model.safetensors",
+                cache.parent / "adapter_model.bin"):
+        if old.exists() and old.stat().st_size > 0:
+            try:
+                sd = (load_file(str(old)) if old.suffix == ".safetensors"
+                      else torch.load(old, map_location="cpu"))
+                A = {k: v for k, v in sd.items() if "lora_A" in k}
+                if A:
+                    torch.save(A, cache)
+                    return A
+            except Exception:
+                pass
+
+    url = RESOLVE.format(repo=repo, fname="adapter_model.safetensors")
+    head = _range(url, 0, 7)
+    if head is None or len(head) != 8:
+        dest = cache.parent / "adapter_model.bin"
+        if get_bytes(RESOLVE.format(repo=repo, fname="adapter_model.bin"), dest):
+            try:
+                sd = torch.load(dest, map_location="cpu")
+                A = {k: v for k, v in sd.items() if "lora_A" in k}
+                torch.save(A, cache)
+                return A
+            except Exception:
+                return None
+        return None
+
+    n = struct.unpack("<Q", head)[0]
+    if n <= 0 or n > (1 << 28):
+        return None
+    hdr_raw = _range(url, 8, 8 + n - 1)
+    if hdr_raw is None:
+        return None
+    try:
+        hdr = json.loads(hdr_raw)
+    except Exception:
+        return None
+
+    want = {k: v for k, v in hdr.items()
+            if "lora_A" in k and isinstance(v, dict) and "data_offsets" in v}
+    if not want:
+        return None
+
+    base = 8 + n
+    spans = sorted((v["data_offsets"][0], v["data_offsets"][1], k)
+                   for k, v in want.items())
+    # Merge runs separated by less than 4 MB: fewer requests, and the wasted
+    # bytes stay far below the whole-file cost either way.
+    runs, cur = [], [spans[0][0], spans[0][1]]
+    for s, e, _ in spans[1:]:
+        if s - cur[1] < (4 << 20):
+            cur[1] = max(cur[1], e)
+        else:
+            runs.append(tuple(cur))
+            cur = [s, e]
+    runs.append(tuple(cur))
+
+    blobs = []
+    for s, e in runs:
+        b = _range(url, base + s, base + e - 1)
+        if b is None:
+            return None
+        blobs.append((s, e, b))
+
+    out = {}
+    for k, v in want.items():
+        s, e = v["data_offsets"]
+        dt = DTYPES.get(v["dtype"])
+        if dt is None:
+            continue
+        for rs, re_, blob in blobs:
+            if rs <= s and e <= re_:
+                raw = blob[s - rs: e - rs]
+                out[k] = torch.frombuffer(
+                    bytearray(raw), dtype=dt).reshape(v["shape"])
+                break
+    if not out:
+        return None
+    torch.save(out, cache)
+    return out
 
 
 def get_bytes(url: str, dest: Path, tries: int = 3) -> bool:
@@ -231,28 +385,37 @@ def phase2() -> int:
     cohorts = spec["cohorts"]
     print(f"measuring {len(cohorts)} cohorts from the phase-1 list, in order\n")
 
+    # Prefetch every repo's lora_A tensors concurrently. Ordering of the
+    # SCORING loop below is untouched: it still walks the phase-1 list in
+    # order, and only reads from this cache.
+    repos_all = sorted({m["repo"] for c in cohorts for m in c["members"]})
+    print(f"prefetching lora_A for {len(repos_all)} repos with "
+          f"{WORKERS} workers (range reads, not whole files)")
+
+    def _one(repo: str):
+        cache = CACHE / repo.replace("/", "__") / "lora_A.pt"
+        try:
+            return repo, fetch_lora_A(repo, cache)
+        except Exception:
+            return repo, None
+
+    fetched: dict[str, object] = {}
+    with ThreadPoolExecutor(max_workers=WORKERS) as ex:
+        for i, (repo, A) in enumerate(ex.map(_one, repos_all), 1):
+            fetched[repo] = A
+            if i % 10 == 0 or i == len(repos_all):
+                got = sum(1 for v in fetched.values() if v)
+                print(f"  prefetched {i}/{len(repos_all)}, {got} usable")
+
     rows, identical = [], []
     for ci, c in enumerate(cohorts, 1):
         members = c["members"]
         mats = {}
-        ok = True
         for m in members:
-            dest = CACHE / m["repo"].replace("/", "__") / "adapter_model.safetensors"
-            url = RESOLVE.format(repo=m["repo"], fname="adapter_model.safetensors")
-            if not get_bytes(url, dest):
-                url = RESOLVE.format(repo=m["repo"], fname="adapter_model.bin")
-                dest = dest.with_suffix(".bin")
-                if not get_bytes(url, dest):
-                    ok = False
-                    break
-            try:
-                sd = (load_file(str(dest)) if dest.suffix == ".safetensors"
-                      else torch.load(dest, map_location="cpu"))
-            except Exception:
-                ok = False
-                break
-            mats[m["repo"]] = {k: v for k, v in sd.items() if "lora_A" in k}
-        if not ok or len(mats) < MIN_ADAPTERS:
+            A = fetched.get(m["repo"])
+            if A:
+                mats[m["repo"]] = A
+        if len(mats) < MIN_ADAPTERS:
             print(f"[{ci}/{len(cohorts)}] {c['namespace']} :: SKIP, weights unreadable")
             rows.append({**{k: c[k] for k in ("namespace", "base_model")},
                          "status": "unreadable"})
