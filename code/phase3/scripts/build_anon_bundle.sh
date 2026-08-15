@@ -31,14 +31,18 @@ set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 OUT="${1:-$REPO/../rdmerge-audit-trail.bundle}"
 WORK="$(mktemp -d)"
-FR="${GIT_FILTER_REPO:-git-filter-repo}"
-
-command -v "$FR" >/dev/null 2>&1 || {
-  if [ -f "$FR" ]; then FR="python $FR"; else
-    echo "need git-filter-repo: pip install git-filter-repo, or set" >&2
-    echo "GIT_FILTER_REPO=/path/to/git-filter-repo" >&2; exit 2
-  fi
-}
+# git-filter-repo may be on PATH or a standalone script. Kept as an array, not
+# a string: this repository lives under a path with spaces, and "python $FR"
+# word-splits it into arguments that get run as commands.
+FR_PATH="${GIT_FILTER_REPO:-git-filter-repo}"
+if command -v "$FR_PATH" >/dev/null 2>&1; then
+  FR=("$FR_PATH")
+elif [ -f "$FR_PATH" ]; then
+  FR=(python "$FR_PATH")
+else
+  echo "need git-filter-repo: pip install git-filter-repo, or set" >&2
+  echo "GIT_FILTER_REPO=/path/to/git-filter-repo" >&2; exit 2
+fi
 
 # Order matters: specific patterns before the general ones they contain.
 # Case-insensitive throughout, because the first pass missed JIIT, pathak,
@@ -46,6 +50,7 @@ command -v "$FR" >/dev/null 2>&1 || {
 # the bibtex keys pathak2026merging and pathak2026rdmerge.
 cat > "$WORK/rules.txt" <<'RULES'
 regex:(?i)95154157\+k144u@users\.noreply\.github\.com==>anon@anonymous.invalid
+95154157==>ANONID
 regex:(?i)pathaksankalp[0-9]*@gmail\.com==>author1@anonymous.invalid
 regex:(?i)gargsv[0-9]*@gmail\.com==>author2@anonymous.invalid
 regex:(?i)github\.com/k144u/rdmerge==>github.com/ANONYMISED/rdmerge
@@ -71,7 +76,7 @@ git clone --mirror -q "$REPO" "$WORK/anon.git"
 cd "$WORK/anon.git"
 
 echo "[2-4/6] strip identifying paths, rewrite text and identity"
-$FR \
+"${FR[@]}" \
   --invert-paths \
   --path "SentEmail/" --path "final review/" \
   --path "handoff_2026-05-25_review_to_garg.md" \
@@ -91,20 +96,30 @@ commit.committer_date = commit.committer_date.split(b" ")[0] + b" +0000"
   --force >/dev/null
 
 echo "[5/6] verify no identifying string survives in any blob"
-# The timezone is an identifier too. Every commit carried +0530, which names a
-# geography on a submission whose names, emails, hostnames and paths have all
-# been stripped. The callback above keeps the epoch second and relabels the
-# offset as +0000, so ordering is untouched; ancestry is pure topology and does
-# not consult dates at all.
+# One pattern, used for every check, so a term added here is added everywhere.
+# It is wider than the rewrite rules on purpose: the rules say what to change,
+# this says what must not survive, and the two failing to agree is exactly the
+# bug worth catching. 95154157 is here because a numeric GitHub user id
+# resolves to the account as surely as the name does, and the first build left
+# it inside this script's own rewritten rules; the local timezone offset is
+# here because it was stamped on every commit before the callback above.
+LEAKPAT='sanjay|sankalp|pathak|garg|jiit|k144u|jaypee|172\.16\.176|95154157|\+0530'
+# The timezone is an identifier too. Every commit carried the authors' local
+# offset, which names a geography on a submission whose names, emails,
+# hostnames and paths have all been stripped. The callback above keeps the
+# epoch second and relabels the offset as UTC, so ordering is untouched;
+# ancestry is pure topology and does not consult dates at all. This comment
+# deliberately does not write the original offset, because this script is
+# itself in the bundle.
 if git log --all --format='%ai %ci' | grep -qv '+0000'; then
   echo "  LEAK: a commit carries a non-UTC timezone offset" >&2; exit 3
 fi
-echo "  timezones normalised to +0000"
+echo "  timezones normalised to UTC"
 leak=0
 while read -r o; do
   [ "$(git cat-file -t "$o" 2>/dev/null)" = "blob" ] || continue
   if git cat-file blob "$o" 2>/dev/null \
-     | grep -qaiE "sanjay|sankalp|pathak|garg|jiit|k144u|jaypee|172\.16\.176"; then
+     | grep -qaiE "$LEAKPAT"; then
     echo "  LEAK in blob $o" >&2; leak=1
   fi
 done < <(git rev-list --objects --all | awk '{print $1}' | sort -u)
