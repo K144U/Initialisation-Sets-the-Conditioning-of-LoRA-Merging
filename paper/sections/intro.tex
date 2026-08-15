@@ -24,20 +24,28 @@ $0.995$ (\S\ref{sec:regimes}, Table~\ref{tab:geometry}). The task subspaces
 stop being distinguishable directions and become one direction measured
 four times.
 
-The mechanism is immediate once stated. $B$ starts at zero, so early
-gradients reach $A$ only through a vanishing $B$; $A$ moves little
-thereafter, $\|\Delta A\|/\|A\| = 0.16$ to $0.19$ at convergence, and every
-task inherits the row space it started with. Nothing about this is a bug in
-LoRA, and nothing about it is visible in a training curve or a benchmark
-average.
+The mechanism is immediate once stated, and we are careful about which half
+of it we measure. $B$ starts at zero, so early gradients reach $A$ only
+through a vanishing $B$: that is a property of the parameterisation rather
+than a finding. The consequence, that each task keeps the row space it
+started in, is what we measure, and we measure it directly rather than
+through how far $A$ travelled. We did not retain initial weights or
+checkpoints, so the distance each $A$ moved from its own initialisation is
+not measured here, and an earlier version's figure for it is withdrawn
+(\S\ref{subsec:drift}). Nothing about any of this is a bug in LoRA, and
+nothing about it is visible in a training curve or a benchmark average.
 
 \paragraph{It is invisible to the methods most people use and decisive for
 the rest.} We pre-registered the test and report both halves
-(\S\ref{sec:methods}). Task arithmetic, TIES, DARE and TVQ show no
-systematic effect across twenty base-by-method cells at our $0.01$ nat
-resolution, because each returns a bounded-norm near-mean solution that
-never enters the ill-conditioned directions: their energy in those
-directions is a rounding error. Methods that solve the linear system are a
+(\S\ref{sec:methods}). Across twenty base-by-method cells spanning five
+methods, task arithmetic, TIES, DARE, TVQ and a repaired KnOTS, fifteen
+show no detectable effect at our $0.01$ nat resolution, five favour
+independent initialisation and none favours shared. The fifteen are
+explained by each returning a bounded-norm near-mean solution that never
+enters the ill-conditioned directions: their energy in those directions is
+a rounding error. Of the five that do clear the gate, three are the
+subspace-alignment method, which is the heuristic most exposed to a change
+in subspace geometry. Methods that solve the linear system are a
 different story. They reach $35$ to $57$ times the mean task delta with
 three quarters of their energy exactly there, and run unregularised they are
 $2.1$ to $65$ times worse on a shared-initialisation cohort, $25$ to $117$
@@ -168,41 +176,36 @@ summarised, with the commit ordering that makes them checkable.
 
 \paragraph{Contributions.}
 \begin{enumerate}
-\item A closed-form lower bound on worst-task NLL excess for rank-$r$
-  merging (Theorem~\ref{thm:general}) with arbitrary task-dependent
-  curvature, and a matching construction (Theorem~\ref{thm:achv}). The
-  floor term is unconditional; the rate term holds under an explicitly
-  stated assumption on the entropy power (Assumption~\ref{asm:epr}), which
-  we do not prove and do not absorb into a constant. Its role in what
-  follows is the one stated above: it identifies $\bar H$ as the object to
-  measure, and does not derive the measurements.
-\item The finding that the bound's floor term is \emph{vacuous} for LoRA
-  cohorts in general position, together with the exact instance form
-  $B^2 - \tauH^\top\bar H\tauH$ that a practitioner should evaluate instead
-  of the prior-averaged expression.
-\item The identification of the conditioning of $\bar H$, rather than the
-  floor, as what cohort initialisation controls, measured across four base
-  models and four cohorts, with an audit that reports it in one CPU minute.
-\item A pre-registered prevalence estimate for that regime in adapters we
-  did not train: under a sampling frame fixed before any download, $37.8\%$
-  of $45$ public LoRA cohorts are collapsed, and the distribution is bimodal
-  rather than continuous (\S\ref{subsec:prevalence}).
-\item A pre-registered demonstration that this conditioning is invisible to
-  standard merging heuristics and decisive for solve-based ones, on two
-  solvers, at $n = 3$ cohorts in \emph{both} regimes, and with the mechanism
-  measured: the heuristics never place more than a rounding error of their
-  norm in the ill-conditioned directions and the unregularised solvers place
-  three quarters of it there.
-\item A pre-registered demonstration that the effect reaches downstream
-  accuracy and is not an artifact of the loss we measure it in: on Mistral
-  the unregularised shared-cohort merge scores zero on GSM8K and on
+\item \textbf{A one-CPU-minute audit} that reports, from the adapter weight
+  files alone, whether a cohort's task subspaces have collapsed, and hence
+  whether an unregularised solve-based merge will fail on it
+  (\S\ref{subsec:audit}).
+\item \textbf{A pre-registered prevalence estimate} for that regime in
+  adapters we did not train: under a sampling frame fixed before any
+  download, $37.8\%$ of $45$ public LoRA cohorts are collapsed, and the
+  distribution is bimodal rather than continuous
+  (\S\ref{subsec:prevalence}).
+\item \textbf{A pre-registered demonstration that the collapse is invisible
+  to standard merging heuristics and decisive for solve-based ones}, on two
+  solvers of which one is not ours, at $n = 3$ cohorts in \emph{both}
+  regimes, with the mechanism measured: the heuristics never place more than
+  a rounding error of their norm in the ill-conditioned directions and the
+  unregularised solvers place three quarters of it there
+  (\S\ref{subsec:ridge}, \S\ref{subsec:shared-arm}).
+\item \textbf{A pre-registered demonstration that this reaches downstream
+  accuracy}, so it is not an artifact of the loss we measure it in: on
+  Mistral the unregularised shared-cohort merge scores zero on GSM8K and on
   HumanEval, with no scorer discards, and one ridge term recovers it
   (\S\ref{subsec:downstream-cond}).
-\item A negative result for DARE composed with task arithmetic, with a
-  mechanism that predicts its own functional form, together with a
-  pre-registered demonstration that it does \emph{not} extend to DARE
-  composed with TIES, which bounds where the negative result applies.
 \end{enumerate}
+
+The rate-distortion bound (Theorems~\ref{thm:general} and~\ref{thm:achv}) is
+provenance rather than a contribution, for the reasons given above: it is
+what directed us to $\bar H$, its floor term is vacuous on real cohorts, and
+it derives none of the four results. We also report a negative result for
+DARE composed with task arithmetic and the pre-registered test showing it
+does not extend to DARE with TIES (\S\ref{subsec:dare}), which bounds an
+earlier claim of ours rather than adding a new one.
 
 We also correct several claims from earlier drafts of this work. Those
 corrections are not contributions, and we do not present them as such; they

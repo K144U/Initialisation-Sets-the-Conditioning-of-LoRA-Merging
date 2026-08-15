@@ -39,8 +39,15 @@ def main() -> int:
     text = PAPER.read_text(encoding="utf-8")
 
     bad = 0
-    print("=== every cited hash resolves ===")
-    cited = sorted(set(HASH.findall(text)))
+    # The paper's claim is narrower than "every hash in the appendix resolves".
+    # The prose deliberately quotes a pre-anonymisation hash as an example of
+    # one that does NOT resolve, and the reproduced documents are full of them
+    # by design. What is claimed, and what is checked here, is that the hashes
+    # in the tables resolve.
+    tables = re.findall(r"\\begin\{table\}.*?\\end\{table\}", text, re.S)
+    table_text = "\n".join(tables)
+    print(f"=== every hash in the {len(tables)} tables resolves ===")
+    cited = sorted(set(HASH.findall(table_text)))
     for h in cited:
         rc, _ = sh(clone, "rev-parse", "--verify", "--quiet", h + "^{commit}")
         if rc != 0:
@@ -49,7 +56,7 @@ def main() -> int:
     print(f"  {len(cited) - bad}/{len(cited)} resolve")
 
     print("\n=== ancestry, rules -> result, as the caption instructs ===")
-    rows = ROW.findall(text)
+    rows = ROW.findall(table_text)
     for label, rules, _mid, result in rows:
         label = " ".join(label.split())[:44]
         rc, _ = sh(clone, "merge-base", "--is-ancestor", rules, result)

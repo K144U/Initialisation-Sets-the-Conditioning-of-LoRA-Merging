@@ -17,6 +17,23 @@ not require reconstructing which commit is which. Each row reads left to
 right in the order the commits were made, and every rules commit is an
 ancestor of the result commit on its row.
 
+\paragraph{Two hash spaces, and only one of them resolves.} The
+pre-registration documents reproduced in \S\ref{subsec:prereg-docs} cite
+commits too, in sentences like ``committed before \texttt{2fdb223}''. Those
+are \textbf{pre-anonymisation} hashes, from our working repository, and they
+will not resolve in the bundle: anonymisation rewrites every commit, so the
+hash a document was written with no longer names anything. We have left them
+as written rather than editing the documents, because editing a
+pre-registration after the fact is the one thing these documents exist to
+make detectable, and a reader can see they are unedited precisely because
+their internal references are stale.
+
+\textbf{Only the hashes in Tables~\ref{tab:commits} and~\ref{tab:prereg-docs}
+are resolvable in the released bundle}, and those are the ones the
+verification asks you to use. The correspondence between the two spaces is
+recoverable: commit subjects survive anonymisation, so a stale reference can
+be matched by its message.
+
 \begin{table}[tb]
 \centering
 \small
@@ -206,7 +223,7 @@ including the parts that read badly for us, the blindness limitations each
 states about itself, and the consequence text fixed in advance for outcomes
 that did not occur.
 
-One character has been altered across all six. The first document records
+One character has been altered across all ten. The first document records
 the wall-clock time at which a set of cells completed, with a timezone
 abbreviation that would narrow our geography under double-blind review; it
 appears below as \texttt{[tz]}. That is the only alteration, and it is

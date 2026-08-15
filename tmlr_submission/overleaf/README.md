@@ -1,8 +1,8 @@
 # TMLR submission source
 
 Standalone, self-contained LaTeX source for *Initialisation Sets the
-Conditioning of LoRA Merging*. Everything needed to
-compile is in this directory; nothing outside it is referenced.
+Conditioning of LoRA Merging*.
+Everything needed to compile is in this directory; nothing outside it is referenced.
 
 ## Overleaf
 
@@ -17,7 +17,7 @@ XeLaTeX; both work.
 tectonic --keep-logs --outdir out main.tex     # or ./build.sh
 ```
 
-Last verified with tectonic 0.16.9: **51 pages, 0 overfull boxes, 0 undefined
+Last verified with tectonic 0.16.9: **60 pages, 0 overfull boxes, 0 undefined
 references, 0 undefined citations.** The underfull `\vbox` warnings are
 vertical stretch on pages carrying wide tables or breaking between the
 appendix listings, and are cosmetic.

@@ -174,11 +174,16 @@ def main() -> int:
 
     # The title appears in prose in three READMEs; flag rather than rewrite,
     # since their wording is not mechanical.
+    # Compare with whitespace collapsed: a README may wrap the title across
+    # two lines, which a substring match reads as a stale title forever.
+    flat_title = " ".join(title.split())
     stale = []
     for p in (REPO / "tmlr_submission" / "README.md",
               REPO / "tmlr_submission" / "supplementary" / "README.md",
               DEST / "README.md"):
-        if p.exists() and title not in p.read_text(encoding="utf-8"):
+        if not p.exists():
+            continue
+        if flat_title not in " ".join(p.read_text(encoding="utf-8").split()):
             stale.append(str(p.relative_to(REPO)))
     if stale:
         print("\nREADMEs still carrying an older title:")

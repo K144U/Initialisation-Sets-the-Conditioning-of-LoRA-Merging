@@ -28,11 +28,16 @@ substituting the soft surrogate is the error \S\ref{subsec:floor-zero}
 corrects. The column is reported because it is the diagnostic that varies
 continuously, and to make the size of that earlier error visible. The
 corresponding shared-initialisation values are median cosine
-$\geq 0.9947$, soft $\deff \approx 16.3$, and $0.745$ in this column.}
+$\geq 0.9947$, soft $\deff \approx 16.3$, and $0.745$ in the fourth column.
+\textbf{That column is the distance between two adapters of the same cohort,
+not the distance either has travelled from its initialisation.} An earlier
+version labelled it $\|\Delta A\|/\|A\|$, which reads as the latter and
+contradicted the text; see \S\ref{subsec:drift} for what is and is not
+measured here.}
 \label{tab:geometry-all}
 \begin{tabular}{llccccc}
 \toprule
-base & cohort & med.\ cosine & $\|\Delta A\|/\|A\|$ & $\sigma_{\max}$ &
+base & cohort & med.\ cosine & $\|A_i - A_j\|_F/\|A_i\|_F$ & $\sigma_{\max}$ &
 soft $\deff$ & $1 - \deff^{\mathrm{soft}}/(Tr)$ \\
 \midrule
 Llama-3.1-8B & \texttt{indep1} & 0.0473 & 1.415 & 1.107 & 63.23 & 0.0120 \\
@@ -162,15 +167,56 @@ which is the orthogonal-subspace identity to within $1.4\%$ in the worst of
 the eight cells here and $0.2\%$ in the median one. Table~\ref{tab:conditioning}
 quotes $1.1\%$ because it shows only the four $T=4$ cells.
 
+\subsection{What we measure about \texorpdfstring{$A$}{A}, and what we do
+not}
+\label{subsec:drift}
+
+Two different quantities can be written $\|\Delta A\|/\|A\|$ and only one of
+them is measured in this paper. The distinction matters because the
+mechanism of \S\ref{subsec:mechanism} is stated in terms of the one we do
+\emph{not} measure.
+
+\textbf{Measured: the distance between two adapters of a cohort,}
+$\|A_i - A_j\|_F/\|A_i\|_F$, the fourth column of
+Table~\ref{tab:geometry-all}. It is $1.410$ to $1.415$ on every independent
+cohort and $0.745$ on the shared one. The independent value is not a
+coincidence and is worth reading as a check on the instrument: for two
+independent draws of equal norm, $\|A_i - A_j\|^2 \approx \|A_i\|^2 +
+\|A_j\|^2$, so the ratio must be about $\sqrt 2 = 1.414$. It is. The shared
+cohort sits at roughly half that, which is the signature the paper is about,
+and \S\ref{subsec:prevalence} finds the same two populations in public
+adapters.
+
+\textbf{Not measured: the distance each adapter travelled from its own
+initialisation,} $\|A - A_0\|_F/\|A_0\|_F$. This needs $A_0$, and we did not
+retain the initial weights or any intermediate checkpoint. An earlier
+version of this work quoted $0.16$ to $0.19$ for this quantity on the shared
+cohort. We withdraw that figure: it does not come from any measurement in
+this paper's pipeline, which computes only the between-adapter distance
+above, and we could not reproduce its provenance.
+
+This has a registered consequence and we apply it. The E3 rule in
+\S\ref{subsec:prereg-docs} required $\|\Delta A\|/\|A\|$ at $25$, $50$, $75$
+and $100\%$ of training steps, and scopes every geometry claim to ``at this
+training budget'' if the rule cannot be evaluated. It cannot: the
+checkpoints do not exist. \textbf{So every geometry claim in this paper is
+scoped to this training budget}, and we do not claim that a longer or
+shorter run would show the same subspace collapse.
+
+What the argument rests on instead is the consequence rather than the
+intermediate. That $B$ starts at zero and therefore suppresses $A$'s early
+gradient is a property of the parameterisation, not a measurement. That the
+row spaces of a shared-initialisation cohort are nearly identical is
+measured directly, at median principal cosine $0.995$ against $0.047$, and
+it is that measurement every downstream claim uses. The drift figure would
+have been a useful corroboration of why; it is not load-bearing for what.
+
 \subsection{Did the adapters learn their tasks?}
 \label{app:adapter-quality}
 
-The mechanism of \S\ref{subsec:mechanism} requires that $A$ moves little
-during training, and $\|\Delta A\|/\|A\|$ of $0.16$ to $0.19$ on the
-shared cohort is also what undertraining would look like. The two are
-distinguishable by measuring whether the adapters learned anything, which
-needs no new compute: every evaluation cell already stores the loss of the
-base model and of each task adapter on every task.
+Undertraining would produce a collapsed cohort too, so the two are worth
+distinguishing, which needs no new compute: every evaluation cell already
+stores the loss of the base model and of each task adapter on every task.
 
 % [tb], not [h]: three tall tables in a row forced in place squeeze the
 % inter-float glue until the caption's last line collides with the toprule.

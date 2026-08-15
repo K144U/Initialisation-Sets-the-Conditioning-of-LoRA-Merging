@@ -324,6 +324,24 @@ both are separated. The audit's cost is unchanged from
 \S\ref{subsec:audit}: about one CPU minute per cohort, and the entire sweep of
 $45$ cohorts needed no GPU.
 
+\paragraph{One of three registered parts, and we say which.} The
+pre-registration for this audit (\S\ref{subsec:prereg-docs}) has three parts,
+and what is reported above is Part C alone. Part A asks for the exact condition
+under which PEFT's default initialisation gives two adapters an identical $A$,
+read off a pinned version of the library source. Part B asks for the same audit
+run on the released cohorts of at least two published merging evaluations.
+\textbf{Neither has been run, and we do not treat the precondition as fully
+discharged.}
+
+The distinction matters for what may be claimed. Part C establishes prevalence
+in released adapters, which is what \S\ref{sec:intro} and the abstract assert
+and all they assert. Part B is what would license a statement about published
+merging \emph{benchmarks}, and we make none: \S\ref{subsec:q1} reinstates the
+benchmark-confounding claim only as provisional and says there that the
+precondition is partly outstanding. Part A would explain the cause rather than
+establish the fact, and its absence is why \S\ref{subsec:mechanism} argues from
+the parameterisation rather than from a library's behaviour.
+
 \subsection{Scope: one adapter in four did not learn}
 \label{subsec:scope}
 

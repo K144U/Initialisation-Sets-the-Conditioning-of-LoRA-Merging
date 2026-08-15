@@ -476,9 +476,13 @@ about itself, so it is secondary evidence and we treat it as such. And the
 parent registration attached a precondition to any claim about the field,
 which is that the shared-initialisation pattern must be shown to occur
 outside our own repository before we assert anything about published
-benchmarks. That precondition is now discharged by
-\S\ref{subsec:prevalence}, where $37.8\%$ of $45$ public cohorts are in the
-collapsed regime.
+benchmarks. That precondition is \emph{partly} discharged.
+\S\ref{subsec:prevalence} shows the regime in $37.8\%$ of $45$ public
+cohorts, which is the prevalence half. The half that would bear directly on
+published benchmarks, auditing the cohorts those benchmarks actually
+release, is registered as Part B of that document and has not been run. So
+the reinstatement stays provisional on both counts, and we make no claim
+that any specific published evaluation is affected.
 
 So the claim we make is this, and no more: method rankings on this metric
 move between cohorts that differ only in initialisation draw, the movement
@@ -502,7 +506,9 @@ does not track model quality, why should any of these numbers matter?
 
 The objection is about differences of hundredths of a nat between methods. The
 conditioning effect is not that. At $\lambda = 0$ the shared-versus-independent
-gap runs from $0.13$ to $11.7$ nats, one to three orders of magnitude above
+gap runs from $0.22$ to $11.56$ nats across the four bases at $n = 3$ per
+arm ($0.13$ to $9.63$ from the single-cohort Table~\ref{tab:ridge}, which is
+the same quantity measured with one draw), one to three orders of magnitude above
 both the metric's resolution and the differences the correlation was computed
 over. An effect that size either shows up in accuracy or the metric is
 measuring something other than model quality. We registered the test without
