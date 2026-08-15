@@ -57,18 +57,29 @@ N_OF_4 = 3
 def load(base: str, which: str, bench: str, cohort: str):
     """Read one downstream cell.
 
-    The harness writes the accuracy as a scalar under `metric_score`, and the
-    per-item detail under `per_example` with keys task_id, score, err,
-    completion_preview, gen_raw.
+    Accuracy is a scalar under `metric_score`. The per-item detail is under
+    `per_example`, and the two benchmarks use DIFFERENT schemas, which is the
+    trap this function exists to handle:
 
-    The discard rate is the number of items whose generation came back EMPTY.
-    It is deliberately NOT the number with a non-empty `err`: on HumanEval,
-    `err` holds the unit-test traceback for a wrong solution, so a correct
-    scorer produces one for every failing item. Counting those as discards
-    would report a clean cell as 48% discarded and flag it as void, which is
-    the opposite of the check's purpose. The fault that voided the earlier
-    downstream numbers was empty completions from markdown-fenced output, and
-    empty completions are what this counts.
+        gsm8k      gen_text, gold, pred, score
+        humaneval  task_id, score, err, completion_preview, gen_raw
+
+    Reading gsm8k with the humaneval keys reports every one of its 500 items
+    as an empty generation, which looks like a total scorer failure on a cell
+    that scored 0.8.
+
+    Two quantities are counted and they must not be conflated.
+
+    `n_empty` is a SCORER DEFECT: the generation came back blank and the
+    harness had nothing to score. That is the fault that voided this project's
+    earlier downstream numbers, when a HumanEval extractor returned empty for
+    markdown-fenced output.
+
+    `n_fail` is a LEGITIMATE ZERO: on gsm8k no answer could be extracted from
+    a real generation, on humaneval the generated code ran and failed its
+    tests. A merge so damaged that it emits fluent text containing no parseable
+    answer produces n_fail = n with n_empty = 0, and that is a measurement of
+    the merge, not a defect in the harness.
     """
     p = RES / "eval_downstream_cond" / f"{base}__{which}_{bench}__{cohort}.json"
     if not p.exists():
@@ -82,12 +93,24 @@ def load(base: str, which: str, bench: str, cohort: str):
                 break
 
     pe = d.get("per_example") or []
-    n_empty = sum(1 for e in pe if isinstance(e, dict)
-                  and not str(e.get("gen_raw", e.get("completion_preview", ""))).strip())
-    n_err = sum(1 for e in pe if isinstance(e, dict) and str(e.get("err", "")).strip())
-    return {"acc": acc, "raw": d,
+    task = d.get("metric_task", "")
+
+    if task == "gsm8k":
+        # gen_text / gold / pred / score
+        n_empty = sum(1 for e in pe if isinstance(e, dict)
+                      and not str(e.get("gen_text", "")).strip())
+        n_fail = sum(1 for e in pe if isinstance(e, dict) and (
+            e.get("pred") is None or not str(e.get("pred", "")).strip()))
+    else:
+        # task_id / score / err / completion_preview / gen_raw
+        n_empty = sum(1 for e in pe if isinstance(e, dict) and not str(
+            e.get("gen_raw", e.get("completion_preview", ""))).strip())
+        n_fail = sum(1 for e in pe if isinstance(e, dict)
+                     and str(e.get("err", "")).strip())
+
+    return {"acc": acc, "raw": d, "task": task,
             "n_scored": d.get("n_eval_metric", len(pe) or None),
-            "n_empty": n_empty, "n_err": n_err}
+            "n_empty": n_empty, "n_fail": n_fail}
 
 
 def se_diff(p1: float, p2: float, n: int) -> float:
@@ -125,7 +148,7 @@ def main() -> int:
     # Registered report: every cell, with its discard rate.
     print("\n=== all cells (registered report 1 and 2) ===")
     print(f"{'base':<12}{'cohort':<8}{'ridge':<7}{'bench':<11}"
-          f"{'acc':>8}{'n':>6}{'empty':>7}{'failed':>8}")
+          f"{'acc':>8}{'n':>6}{'empty':>7}{'invalid':>8}")
     flagged = 0
     for base in BASES:
         for cohort in (SHARED, INDEP):
@@ -135,15 +158,31 @@ def main() -> int:
                     if v is None or v["acc"] is None:
                         continue
                     ne = v["n_empty"] or 0
-                    flag = "  <-- NON-ZERO DISCARD" if ne else ""
+                    nf = v.get("n_fail", 0)
+                    n = v["n_scored"] or 1
+                    # A scorer defect means the harness threw the generation
+                    # away. A model that generates fluently but produces no
+                    # parseable answer, and scores zero, has collapsed: that is
+                    # a result. The two are told apart by whether anything was
+                    # generated at all.
                     if ne:
+                        flag = "  <-- SCORER DISCARD"
                         flagged += 1
+                    elif nf == n and (v["acc"] or 0) == 0.0:
+                        flag = "  <-- TOTAL COLLAPSE (generated, nothing valid)"
+                    elif nf > 0.5 * n:
+                        flag = "  <-- majority invalid"
+                    else:
+                        flag = ""
                     print(f"{base:<12}{cohort:<8}{which:<7}{bench:<11}"
                           f"{v['acc']:>8.3f}{str(v['n_scored']):>6}{ne:>7}"
-                          f"{v.get('n_err', 0):>8}{flag}")
-    print("  'empty' is generations that came back blank, the fault that voided "
-          "the earlier numbers.\n  'failed' is items whose generated code ran "
-          "and failed its tests, which is a legitimate zero.")
+                          f"{nf:>8}{flag}")
+    print("\n  'empty'   generations that came back blank. This is the scorer "
+          "fault that\n            voided the earlier numbers, and it is zero "
+          "everywhere here.")
+    print("  'invalid' GSM8K: no answer could be extracted. HumanEval: the code "
+          "ran and\n            failed its tests. Both are legitimate zeros, "
+          "not discards.")
     if flagged:
         print(f"\n  {flagged} cells have a non-zero discard rate. The earlier "
               f"downstream numbers were void for exactly this reason; these are "
