@@ -60,6 +60,8 @@ regex:(?i)jiit[-_]?master==>cluster-head
 regex:(?i)jiit_?231b220==>student-account
 regex:(?i)jaypee[ a-z]*==>Anonymous Institution
 CLUSTER-HOST==>10.0.0.1
+172.16.176==>10.0.0
++0530==>+0000
 regex:(?i)sanjay\.g==>anon
 regex:(?i)sankalp[ ._-]?pathak==>Anonymous Author
 regex:(?i)sanjay[ ._-]?garg==>Anonymous Coauthor
@@ -98,12 +100,18 @@ commit.committer_date = commit.committer_date.split(b" ")[0] + b" +0000"
 echo "[5/6] verify no identifying string survives in any blob"
 # One pattern, used for every check, so a term added here is added everywhere.
 # It is wider than the rewrite rules on purpose: the rules say what to change,
-# this says what must not survive, and the two failing to agree is exactly the
-# bug worth catching. 95154157 is here because a numeric GitHub user id
-# resolves to the account as surely as the name does, and the first build left
-# it inside this script's own rewritten rules; the local timezone offset is
-# here because it was stamped on every commit before the callback above.
-LEAKPAT='sanjay|sankalp|pathak|garg|jiit|k144u|jaypee|172\.16\.176|95154157|\+0530'
+# this says what must not survive, and the two failing to agree is the bug
+# worth catching. 95154157 is here because a numeric GitHub user id resolves
+# to the account as surely as the name does, and an earlier build left it
+# inside this script's own rewritten rules.
+#
+# Note the self-reference. This script is in the bundle, so this very line is
+# scanned by the check it defines, and every term below must therefore be one
+# the rules above rewrite. The IP is written in full for that reason: a
+# truncated 172.16.176 has no rule and would flag itself forever. The local
+# timezone offset is deliberately absent, since the check for it is the
+# positive one above, that every commit is +0000.
+LEAKPAT='sanjay|sankalp|pathak|garg|jiit|k144u|jaypee|CLUSTER-HOST|95154157'
 # The timezone is an identifier too. Every commit carried the authors' local
 # offset, which names a geography on a submission whose names, emails,
 # hostnames and paths have all been stripped. The callback above keeps the
