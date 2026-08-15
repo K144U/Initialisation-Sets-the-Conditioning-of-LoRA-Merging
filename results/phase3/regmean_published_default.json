@@ -9,14 +9,25 @@
   "llama31_8b": {
    "shared": {
     "n_layers": 4,
-    "rank_numeric": 91,
+    "rank_numeric": 89,
     "dim": 4096,
-    "alpha_cond_median": 9071.2578125,
+    "alpha_cond_median": 9071.232421875,
     "alpha_equiv_ridge_median": 0.0005285749211907387,
-    "gram_sigma_max_median": 1.5056145191192627,
-    "cond_ridge1e-06_median": 2100417.25,
-    "cond_ridge0.001_median": 1507.1015625,
-    "cond_ridge0.01_median": 151.56639099121094
+    "gram_sigma_max_median": 1.5056147575378418,
+    "cond_ridge1e-06_median": 1923375.75,
+    "cond_ridge0.001_median": 1506.9246826171875,
+    "cond_ridge0.01_median": 151.56463623046875
+   },
+   "independent": {
+    "n_layers": 4,
+    "rank_numeric": 967,
+    "dim": 4096,
+    "alpha_cond_median": 1240.712890625,
+    "alpha_equiv_ridge_median": 0.0005301748751662672,
+    "gram_sigma_max_median": 0.439882755279541,
+    "cond_ridge1e-06_median": 766501.75,
+    "cond_ridge0.001_median": 441.0726623535156,
+    "cond_ridge0.01_median": 44.98979949951172
    }
   },
   "mistral_7b": {
@@ -24,38 +35,71 @@
     "n_layers": 4,
     "rank_numeric": 88,
     "dim": 4096,
-    "alpha_cond_median": 8134.24560546875,
+    "alpha_cond_median": 8134.267578125,
     "alpha_equiv_ridge_median": 0.000524108880199492,
-    "gram_sigma_max_median": 1.46271812915802,
-    "cond_ridge1e-06_median": 2086955.5,
-    "cond_ridge0.001_median": 1464.19677734375,
-    "cond_ridge0.01_median": 147.27574157714844
+    "gram_sigma_max_median": 1.462717056274414,
+    "cond_ridge1e-06_median": 1856008.0,
+    "cond_ridge0.001_median": 1464.102294921875,
+    "cond_ridge0.01_median": 147.2745361328125
+   },
+   "independent": {
+    "n_layers": 4,
+    "rank_numeric": 992,
+    "dim": 4096,
+    "alpha_cond_median": 1194.1031494140625,
+    "alpha_equiv_ridge_median": 0.0005246392684057355,
+    "gram_sigma_max_median": 0.42560961842536926,
+    "cond_ridge1e-06_median": 511016.6875,
+    "cond_ridge0.001_median": 426.8308410644531,
+    "cond_ridge0.01_median": 43.56215286254883
    }
   },
   "qwen25_7b": {
    "shared": {
     "n_layers": 4,
-    "rank_numeric": 92,
+    "rank_numeric": 89,
     "dim": 3584,
-    "alpha_cond_median": 6581.18017578125,
+    "alpha_cond_median": 6581.17236328125,
     "alpha_equiv_ridge_median": 0.0006060787127353251,
-    "gram_sigma_max_median": 1.530623435974121,
-    "cond_ridge1e-06_median": 2120441.5,
-    "cond_ridge0.001_median": 1532.091796875,
-    "cond_ridge0.01_median": 154.0677032470703
+    "gram_sigma_max_median": 1.5306239128112793,
+    "cond_ridge1e-06_median": 2020523.25,
+    "cond_ridge0.001_median": 1531.8994140625,
+    "cond_ridge0.01_median": 154.0657196044922
+   },
+   "independent": {
+    "n_layers": 4,
+    "rank_numeric": 831,
+    "dim": 3584,
+    "alpha_cond_median": 1265.729248046875,
+    "alpha_equiv_ridge_median": 0.0006077968864701688,
+    "gram_sigma_max_median": 0.4865274727344513,
+    "cond_ridge1e-06_median": 763479.75,
+    "cond_ridge0.001_median": 487.64935302734375,
+    "cond_ridge0.01_median": 49.65340042114258
    }
   },
   "yi15_9b": {
    "shared": {
     "n_layers": 4,
-    "rank_numeric": 91,
+    "rank_numeric": 89,
     "dim": 4096,
-    "alpha_cond_median": 8094.27197265625,
+    "alpha_cond_median": 8094.17919921875,
     "alpha_equiv_ridge_median": 0.0005260521429590881,
-    "gram_sigma_max_median": 1.4906702041625977,
-    "cond_ridge1e-06_median": 2476789.75,
-    "cond_ridge0.001_median": 1492.05810546875,
-    "cond_ridge0.01_median": 150.07240295410156
+    "gram_sigma_max_median": 1.490668535232544,
+    "cond_ridge1e-06_median": 1874574.875,
+    "cond_ridge0.001_median": 1492.060791015625,
+    "cond_ridge0.01_median": 150.07015991210938
+   },
+   "independent": {
+    "n_layers": 4,
+    "rank_numeric": 881,
+    "dim": 4096,
+    "alpha_cond_median": 1436.7611083984375,
+    "alpha_equiv_ridge_median": 0.0005271920235827565,
+    "gram_sigma_max_median": 0.47339436411857605,
+    "cond_ridge1e-06_median": 622087.6875,
+    "cond_ridge0.001_median": 474.567138671875,
+    "cond_ridge0.01_median": 48.34132385253906
    }
   }
  }

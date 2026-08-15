@@ -340,6 +340,16 @@ $9.1\times10^{3}$, while $\lambda = 0.01$ brings the same layers to about
 $1.5\times10^{2}$, a factor of $55$ apart. The default is on the wrong side of
 the gap this paper is about.
 
+The independent arm is the control, and it behaves as the story requires. The
+\emph{same} default leaves $\kappa$ at $1.2\times10^{3}$ to $1.4\times10^{3}$
+there, six to seven times lower than on the shared arm, while the equivalent
+ridge it applies is identical to three significant figures
+($5.2$ to $6.1\times10^{-4}$ on both arms). That is the point in one line:
+$\alpha$-shrinkage is a fixed dose set by the data's scale and not by the
+cohort's conditioning, so it neither knows nor cares which regime it is in.
+On a well-conditioned cohort the dose is ample. On a collapsed one it is
+$20$ times short, and nothing in the method notices.
+
 Two limits on what this shows, both worth stating. It is a statement about
 conditioning, computed from the adapter factors, not a merge we evaluated: we
 did not run a $\lambda$-free $\alpha$-shrunk RegMean through the NLL harness,
