@@ -12,9 +12,8 @@ anything a practitioner does.
 
 This section reports what happened when we tested that result properly.
 Every decision rule quoted below was committed to version control before
-the corresponding compute ran, and the commit ordering is the audit trail.
-The pre-registrations are reproduced verbatim in
-Appendix~\ref{app:prereg}.
+the corresponding compute ran. Appendix~\ref{app:prereg} summarises the
+rules and gives the commit ordering that makes them checkable.
 
 \subsection{The encoder's advantage does not survive}
 \label{subsec:q1}
@@ -68,8 +67,7 @@ Re-selecting the champion inside each cohort, the variant deliberately
 biased against our method, returns the same one/one/two; applying the
 original single-cohort rule three times succeeds on \texttt{indep1} and
 fails on \texttt{indep2} and \texttt{indep3}, so the earlier optimistic
-reading was the best of three draws. Two details we report rather than
-absorb: the rank-$64$ realisation disagrees at $T=3$, keeping Llama at
+reading was the best of three draws. Two further details: the rank-$64$ realisation disagrees at $T=3$, keeping Llama at
 $+0.0081$, and Mistral's champion changes from TIES to TVQ.
 
 The registered $T = 4$ arm stays primary; we are not substituting the less
@@ -207,8 +205,7 @@ collapses outright to $9.78$ nats against $0.15$. The ridge gain is larger
 on the shared arm on all four bases, which was the pre-registered
 prediction and held.
 
-The other half of the prediction failed, and we report it as failed. We
-also predicted that $\lambda^\star$ itself would be at least ten times
+The other half of the prediction failed. We also predicted that $\lambda^\star$ itself would be at least ten times
 larger on the shared arm. It is not: $\lambda^\star$ is \emph{identical}
 across arms on Mistral, Qwen and Yi ($0.13$, $0.13$, $0.30$), separating
 only on Llama. How much regularisation is needed does not track
