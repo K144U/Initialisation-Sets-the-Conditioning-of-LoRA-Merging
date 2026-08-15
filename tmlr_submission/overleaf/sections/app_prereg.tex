@@ -25,7 +25,11 @@ are those in the audit-trail bundle released with the paper, which differ from
 our working repository's because anonymisation rewrites every commit; the
 ordering is unaffected, since rewriting does not change topology. Verify a row
 with \texttt{git merge-base -{}-is-ancestor <rules> <result>}, which exits zero
-exactly when the ordering claimed here holds, and fails on the reverse.}
+exactly when the ordering claimed here holds, and fails on the reverse.
+\textbf{[BUILD NOTE, REMOVE BEFORE SUBMISSION: the last four rows currently
+carry working-repository hashes. The bundle must be rebuilt from the final
+history and every hash in this table regenerated from the mapping
+\texttt{build\_anon\_bundle.sh} prints.]}}
 \label{tab:commits}
 \begin{tabular}{llll}
 \toprule
@@ -50,6 +54,15 @@ Repaired KnOTS (\S\ref{sec:discussion}) & \texttt{0c8b9e8} &
   \texttt{e8c968a} & \texttt{30d2c04} \\
 Merge matrix at $T=3$ (\S\ref{subsec:q1}) & \texttt{0c8b9e8} &
   \texttt{7a12e2c} & \texttt{0d35789} \\
+\addlinespace
+Margin-aware control (\S\ref{subsec:q1}) & \texttt{0c8b9e8} &
+  \texttt{ae3fdf1} & \texttt{f20b13c} \\
+Shared arm at $n=3$ (\S\ref{subsec:shared-arm}) & \texttt{603e013} &
+  \texttt{778da6e} & \texttt{f20b13c} \\
+Public-cohort prevalence (\S\ref{subsec:prevalence}) & \texttt{84526b9} &
+  \texttt{11bc8a7} & \texttt{f20b13c} \\
+Downstream accuracy (\S\ref{subsec:downstream-cond}) & \texttt{df832fe} &
+  \texttt{e66d273} & \texttt{f20b13c} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -189,7 +202,7 @@ the clause and what followed it.
 
 \subsection{The pre-registration documents}\label{subsec:prereg-docs}
 
-The six documents follow, complete and unedited. They are not summaries
+The ten documents follow, complete and unedited. They are not summaries
 written for this appendix: each is the file as committed, included from the
 source tree at build time, so this appendix cannot drift from what the
 commits in Table~\ref{tab:commits} contain. Each is reproduced in full,
@@ -206,7 +219,7 @@ marked where it occurs.
 \begin{table}[htb]
 \centering
 \small
-\caption{The six pre-registration documents and the commit that introduced
+\caption{The ten pre-registration documents and the commit that introduced
 each. Every one was added in a single commit and never modified afterwards,
 which is checkable with \texttt{git log -{}-follow} on the path.}
 \label{tab:prereg-docs}
@@ -220,6 +233,10 @@ document & introduced in & governs \\
 \texttt{prereg\_conditioning} & \texttt{fa5f3c3} & ridge sweep, rate exponent \\
 \texttt{prereg\_tmlr} & \texttt{0c8b9e8} & solver replication, gate, KnOTS, $T=3$ \\
 \texttt{prereg\_tmlr\_amendment} & \texttt{c597e31} & RegMean's minimal $\lambda$ \\
+\texttt{prereg\_shared\_arm} & \texttt{603e013} & the shared arm at $n=3$ \\
+\texttt{prereg\_prevalence} & \texttt{84526b9} & public-cohort prevalence \\
+\texttt{prereg\_downstream} & \texttt{df832fe} & downstream accuracy \\
+\texttt{prereg\_downstream\_amendment} & \texttt{4d48987} & HumanEval's 164 items \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -247,3 +264,19 @@ committed \texttt{d503347}}
 \subsubsection{\texttt{prereg\_tmlr\_amendment\_2026-08-14.md}, committed
 \texttt{c597e31}}
 \lstinputlisting{prereg/prereg_tmlr_amendment_2026-08-14.md}
+
+\subsubsection{\texttt{prereg\_shared\_arm\_2026-08-15.md}, committed
+\texttt{603e013}}
+\lstinputlisting{prereg/prereg_shared_arm_2026-08-15.md}
+
+\subsubsection{\texttt{prereg\_prevalence\_2026-08-15.md}, committed
+\texttt{84526b9}}
+\lstinputlisting{prereg/prereg_prevalence_2026-08-15.md}
+
+\subsubsection{\texttt{prereg\_downstream\_2026-08-15.md}, committed
+\texttt{df832fe}}
+\lstinputlisting{prereg/prereg_downstream_2026-08-15.md}
+
+\subsubsection{\texttt{prereg\_downstream\_amendment\_2026-08-15.md}, committed
+\texttt{4d48987}}
+\lstinputlisting{prereg/prereg_downstream_amendment_2026-08-15.md}

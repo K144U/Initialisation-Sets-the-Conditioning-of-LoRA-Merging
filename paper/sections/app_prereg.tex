@@ -25,7 +25,11 @@ are those in the audit-trail bundle released with the paper, which differ from
 our working repository's because anonymisation rewrites every commit; the
 ordering is unaffected, since rewriting does not change topology. Verify a row
 with \texttt{git merge-base -{}-is-ancestor <rules> <result>}, which exits zero
-exactly when the ordering claimed here holds, and fails on the reverse.}
+exactly when the ordering claimed here holds, and fails on the reverse.
+\textbf{[BUILD NOTE, REMOVE BEFORE SUBMISSION: the last four rows currently
+carry working-repository hashes. The bundle must be rebuilt from the final
+history and every hash in this table regenerated from the mapping
+\texttt{build\_anon\_bundle.sh} prints.]}}
 \label{tab:commits}
 \begin{tabular}{llll}
 \toprule
@@ -50,6 +54,15 @@ Repaired KnOTS (\S\ref{sec:discussion}) & \texttt{0c8b9e8} &
   \texttt{e8c968a} & \texttt{30d2c04} \\
 Merge matrix at $T=3$ (\S\ref{subsec:q1}) & \texttt{0c8b9e8} &
   \texttt{7a12e2c} & \texttt{0d35789} \\
+\addlinespace
+Margin-aware control (\S\ref{subsec:q1}) & \texttt{0c8b9e8} &
+  \texttt{ae3fdf1} & \texttt{f20b13c} \\
+Shared arm at $n=3$ (\S\ref{subsec:shared-arm}) & \texttt{603e013} &
+  \texttt{778da6e} & \texttt{f20b13c} \\
+Public-cohort prevalence (\S\ref{subsec:prevalence}) & \texttt{84526b9} &
+  \texttt{11bc8a7} & \texttt{f20b13c} \\
+Downstream accuracy (\S\ref{subsec:downstream-cond}) & \texttt{df832fe} &
+  \texttt{e66d273} & \texttt{f20b13c} \\
 \bottomrule
 \end{tabular}
 \end{table}
