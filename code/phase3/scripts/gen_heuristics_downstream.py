@@ -87,6 +87,37 @@ BENCH = {
 INVARIANT = ["base_model", "max_seq_length", "seed", "min_free_gb", "loader"]
 
 
+# Implementation defaults, read off the merge functions' signatures. The
+# shared-arm NLL configs leave method_kwargs empty and rely on these; the
+# independent-arm configs spell the same values out. The merges are therefore
+# identical and only the YAML differs, but "identical" must be checked rather
+# than assumed, so the generator fills the defaults in explicitly on both sides
+# and then asserts the two sides match. If an implementation default ever
+# changes, this table stops agreeing with it and the assertion below fires.
+DEFAULTS = {
+    "ties": {"density": 0.2, "majority_sign_method": "total"},
+    "dare": {"density": 0.2, "seed": 20260518},
+}
+
+
+def check_defaults(problems: list[str]) -> None:
+    """The table above must still equal the functions' signature defaults."""
+    import inspect
+    import sys
+    sys.path.insert(0, str(ROOT / "code" / "phase3"))
+    from merging.dare import merge_dare
+    from merging.ties import merge_ties
+
+    for name, fn in (("ties", merge_ties), ("dare", merge_dare)):
+        sig = inspect.signature(fn)
+        for k, v in DEFAULTS[name].items():
+            actual = sig.parameters[k].default
+            if actual != v:
+                problems.append(
+                    f"{name}.{k} default is {actual!r}, this generator "
+                    f"assumes {v!r}; the two arms would not be the same merge")
+
+
 def src_cfg(method: str, base: str, cohort: str) -> Path:
     shared_dir, indep_dir, stem = METHODS[method]
     d = shared_dir if cohort.startswith("seed") else indep_dir
@@ -121,9 +152,16 @@ def build(problems: list[str]) -> list[dict]:
                     if not Path(spec["dir"], "adapter_model.safetensors").exists():
                         problems.append(f"missing adapter {spec['dir']}")
 
+                # Make the implicit defaults explicit, identically on both
+                # arms, so the two cells differ only in the adapter directory.
+                kw = dict(tmpl.get("method_kwargs") or {})
+                for k, v in DEFAULTS.get(method, {}).items():
+                    kw.setdefault(k, v)
+
                 for bench, bspec in BENCH.items():
                     name = f"{base}__{method}_{bench}__{cohort}"
                     cfg = dict(tmpl)
+                    cfg["method_kwargs"] = kw
                     cfg["metric"] = bspec["metric"]
                     cfg["metric_task_spec"] = bspec["metric_task_spec"]
                     cfg["metric_kwargs"] = {
@@ -197,6 +235,7 @@ def build(problems: list[str]) -> list[dict]:
 
 def main() -> int:
     problems: list[str] = []
+    check_defaults(problems)
     manifest = build(problems)
 
     if problems:
