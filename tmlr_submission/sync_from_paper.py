@@ -40,8 +40,8 @@ SECTIONS = [
     "abstract.tex", "intro.tex", "related_work.tex", "setup.tex",
     "lower_bound.tex", "achievability.tex", "regimes.tex", "method_tests.tex",
     "discussion.tex", "reproducibility.tex", "app_proofs.tex",
-    "app_synthetic.tex", "app_geometry.tex", "app_prereg.tex",
-    "app_manifest.tex",
+    "app_synthetic.tex", "app_geometry.tex", "app_rate_exponent.tex",
+    "app_prereg.tex", "app_manifest.tex",
 ]
 FIGURES = ["figure_two_regimes.pdf"]
 SUPPORT = ["tmlr.sty", "tmlr.bst", "fancyhdr.sty", "references.bib"]
@@ -79,14 +79,25 @@ def main() -> int:
             shutil.copy2(src, dst)
             changed.append(f"figures/{name}")
 
-    # The verbatim pre-registrations Appendix D includes.
-    src_pre, dst_pre = PAPER / "prereg", DEST / "prereg"
-    dst_pre.mkdir(parents=True, exist_ok=True)
-    for src in sorted(src_pre.glob("*.md")):
-        dst = dst_pre / src.name
+    # Appendix D used to \lstinputlisting all ten pre-registrations. It now
+    # summarises them and points at the supplementary material, so the build no
+    # longer reads paper/prereg/ and shipping it here would put a second,
+    # non-authoritative copy in the Overleaf project. The documents travel in
+    # the supplementary zip instead, alongside the bundle that dates them.
+    stale_pre = DEST / "prereg"
+    if stale_pre.exists():
+        shutil.rmtree(stale_pre)
+        changed.append("prereg/ (removed: no longer inputted)")
+
+    # They do ship in the supplementary, and that copy is kept in sync here so
+    # the two cannot drift.
+    sup_pre = REPO / "tmlr_submission" / "supplementary" / "prereg"
+    sup_pre.mkdir(parents=True, exist_ok=True)
+    for src in sorted((PAPER / "prereg").glob("*.md")):
+        dst = sup_pre / src.name
         if not dst.exists() or dst.read_bytes() != src.read_bytes():
             shutil.copy2(src, dst)
-            changed.append(f"prereg/{src.name}")
+            changed.append(f"supplementary/prereg/{src.name}")
 
     # Root: paper/tmlr.tex -> main.tex, with the body input renamed.
     root = (PAPER / "tmlr.tex").read_text(encoding="utf-8")

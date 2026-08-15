@@ -215,19 +215,102 @@ the clause and what followed it.
 
 \subsection{The pre-registration documents}\label{subsec:prereg-docs}
 
-The ten documents follow, complete and unedited. They are not summaries
-written for this appendix: each is the file as committed, included from the
-source tree at build time, so this appendix cannot drift from what the
-commits in Table~\ref{tab:commits} contain. Each is reproduced in full,
-including the parts that read badly for us, the blindness limitations each
-states about itself, and the consequence text fixed in advance for outcomes
-that did not occur.
+Ten documents govern the tests in this paper. Table~\ref{tab:prereg-docs}
+lists them with the commit that introduced each, and the rules are
+summarised below. \textbf{The documents themselves are in the supplementary
+material, complete and unedited}, and also inside the anonymised git bundle
+at the commits named here, which is the copy that cannot have been written
+afterwards. Earlier versions of this paper reproduced all ten verbatim in
+the appendix; that is what the bundle is for, and printing them twice made
+the paper longer without making anything more checkable.
 
-One character has been altered across all ten. The first document records
-the wall-clock time at which a set of cells completed, with a timezone
-abbreviation that would narrow our geography under double-blind review; it
-appears below as \texttt{[tz]}. That is the only alteration, and it is
-marked where it occurs.
+Each is the file as committed and none was modified after its commit, which
+is checkable with \texttt{git log -{}-follow} on the path. One character is
+altered across the ten: the first document records the wall-clock time at
+which a set of cells completed, with a timezone abbreviation that would
+narrow our geography under double-blind review, and it appears as
+\texttt{[tz]}. That is the only alteration.
+
+Two conventions are shared by every document and are not repeated in the
+summaries: a \textbf{tie threshold of $0.005$ nats}, fixed in the
+2026-08-03 parent, and a \textbf{one-directional noise gate} at
+$2\times\mathrm{SE}$ over cohorts, which may downgrade a win or a loss to a
+tie but may never promote a tie to either. Verdicts are reported in
+whichever branch the rule lands in.
+
+\paragraph{The rules, one paragraph each.}
+\begin{itemize}\itemsep2pt
+\item \textbf{\texttt{prereg\_a1\_matrix}} (\texttt{5693d9a}) fixes the
+replication: does the encoder's win over the champion baseline survive the
+move to independently initialised cohorts, and do method rankings change
+between cohorts? It states its own statistical ceiling up front, that one
+cohort per arm cannot support a strong verdict regardless of what the rules
+return. Outcome: the win does not survive (\S\ref{subsec:q1}).
+
+\item \textbf{\texttt{prereg\_a1\_matrix\_amendment}} (\texttt{44c0d39})
+extends it to $n = 3$ cohorts and fixes the aggregation. It declares its
+own blindness status plainly: \texttt{indep1} had been read when the rule
+was written, so the rule was chosen to be the obvious one rather than
+selected from a menu. It also retires the parent's $0.013$ nat provisional
+band.
+
+\item \textbf{\texttt{prereg\_dare\_ties}} (\texttt{0e0898d}) asks whether
+our DARE-with-task-arithmetic result extends to DARE with TIES, primary at
+density $0.2$ only, with the density sweep explicitly secondary so that no
+density can be chosen after the fact. Outcome: it does not extend
+(\S\ref{subsec:dare}).
+
+\item \textbf{\texttt{prereg\_conditioning}} (\texttt{f48c4ef}) governs the
+ridge sweep and the rate exponent: whether the optimal ridge tracks the
+conditioning, and whether the flat rate curve is a truncation artifact. It
+fixes the exponent band at $[-2.4, -1.6]$ on at least three of four bases.
+Outcomes: the ridge \emph{gain} tracks conditioning while $\lambda^\star$
+does not (\S\ref{subsec:ridge}), and the exponent is unresolved
+(Appendix~\ref{app:rate}).
+
+\item \textbf{\texttt{prereg\_tmlr}} (\texttt{1eabc27}) is the revision
+campaign: the go/no-go is whether cohort conditioning affects a solver we
+did not build, with the two cohorts required to match byte-for-byte on
+tasks, evaluation seed, sequence length and VRAM gate. It also governs the
+KnOTS repair and the $T = 3$ arm. Outcome: both predictions hold on four of
+four bases (\S\ref{subsec:regmean}).
+
+\item \textbf{\texttt{prereg\_tmlr\_amendment}} (\texttt{0672c70}) sets
+RegMean's minimally regularised reference to $\lambda = 10^{-6}$ rather
+than $0$, because RegMean solves in the full input dimension against a Gram
+of rank at most $Tr$, so $\lambda = 0$ is singular rather than
+ill-conditioned. It changes a grid point, not a threshold or a rule.
+
+\item \textbf{\texttt{prereg\_shared\_arm}} (\texttt{41d8adc}) answers a
+limitation the draft raised against itself: the ridge sweep's shared arm
+was $n = 1$, so its gate was one-sided. This registers the shared arm at
+$n = 3$ with a genuinely two-sided gate, and flags in advance that the
+published cohort sitting more than $2$ sd from its arm's mean would
+require reporting. Outcome: both predictions $4/4$, and the published
+cohort sits $0.23$ to $0.75$ sd out (\S\ref{subsec:shared-arm}).
+
+\item \textbf{\texttt{prereg\_prevalence}} (\texttt{5e8e736}) fixes the
+sampling frame for the public-cohort audit before any download, in three
+parts: the library condition (A), published benchmarks' released cohorts
+(B), and the broad sample (C). Outcome: A and C reported
+(\S\ref{subsec:prevalence}), B not run.
+
+\item \textbf{\texttt{prereg\_downstream}} (\texttt{8845efa}) asks whether
+the conditioning collapse is visible in accuracy rather than only in NLL,
+on GSM8K and HumanEval, with a binomial-SE gate. It fixes in advance what
+we would write in each branch, including that a null would move the metric
+limitation into \S\ref{sec:intro} and delete the practice recommendations.
+Outcome: the ridge recovers the shared arm on four of four bases on both
+benchmarks (\S\ref{subsec:downstream-cond}).
+
+\item \textbf{\texttt{prereg\_downstream\_amendment}} (\texttt{9b20d1e})
+corrects our own specification error: it registered $n = 500$ evaluation
+items, but HumanEval has $164$. The gate adapts to the actual $n$, which
+widens it to roughly $11$ points on HumanEval against $6$ on GSM8K, so the
+two benchmarks are not equally powered and a null on HumanEval is not read
+as equivalent to a null on GSM8K. It makes our own predictions harder to
+satisfy, and was written before any cell ran.
+\end{itemize}
 
 \begin{table}[htb]
 \centering
@@ -254,42 +337,3 @@ document & introduced in & governs \\
 \end{tabular}
 \end{table}
 
-\subsubsection{\texttt{prereg\_a1\_matrix\_2026-08-03.md}, committed
-\texttt{5693d9a}}
-\lstinputlisting{prereg/prereg_a1_matrix_2026-08-03.md}
-
-\subsubsection{\texttt{prereg\_a1\_matrix\_amendment\_2026-08-04.md},
-committed \texttt{44c0d39}}
-\lstinputlisting{prereg/prereg_a1_matrix_amendment_2026-08-04.md}
-
-\subsubsection{\texttt{prereg\_dare\_ties\_2026-08-04.md}, committed
-\texttt{0e0898d}}
-\lstinputlisting{prereg/prereg_dare_ties_2026-08-04.md}
-
-\subsubsection{\texttt{prereg\_conditioning\_2026-08-07.md}, committed
-\texttt{f48c4ef}}
-\lstinputlisting{prereg/prereg_conditioning_2026-08-07.md}
-
-\subsubsection{\texttt{prereg\_tmlr\_2026-08-14.md}, committed
-\texttt{1eabc27}}
-\lstinputlisting{prereg/prereg_tmlr_2026-08-14.md}
-
-\subsubsection{\texttt{prereg\_tmlr\_amendment\_2026-08-14.md}, committed
-\texttt{0672c70}}
-\lstinputlisting{prereg/prereg_tmlr_amendment_2026-08-14.md}
-
-\subsubsection{\texttt{prereg\_shared\_arm\_2026-08-15.md}, committed
-\texttt{41d8adc}}
-\lstinputlisting{prereg/prereg_shared_arm_2026-08-15.md}
-
-\subsubsection{\texttt{prereg\_prevalence\_2026-08-15.md}, committed
-\texttt{5e8e736}}
-\lstinputlisting{prereg/prereg_prevalence_2026-08-15.md}
-
-\subsubsection{\texttt{prereg\_downstream\_2026-08-15.md}, committed
-\texttt{8845efa}}
-\lstinputlisting{prereg/prereg_downstream_2026-08-15.md}
-
-\subsubsection{\texttt{prereg\_downstream\_amendment\_2026-08-15.md}, committed
-\texttt{9b20d1e}}
-\lstinputlisting{prereg/prereg_downstream_amendment_2026-08-15.md}

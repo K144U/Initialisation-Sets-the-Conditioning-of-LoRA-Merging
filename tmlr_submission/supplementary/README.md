@@ -2,12 +2,24 @@
 
 *Initialisation Sets the Conditioning of LoRA Merging*
 
-This directory contains one file, `audit-trail.bundle` (20 MB). It is a **git
-bundle**: a single file carrying the project's real version history, not a
-snapshot of it. The distinction is the point. The paper asks you to check that
-each pre-registration was committed *before* the compute it governs, and that
-check is only meaningful against a commit graph. A directory of files, however
-complete, cannot support it.
+This directory contains two things:
+
+| path | what |
+|---|---|
+| `audit-trail.bundle` | the project's real version history, as a git bundle (20 MB) |
+| `prereg/` | the ten pre-registration documents, complete and unedited |
+
+`prereg/` is here for convenience, so the documents can be read without
+cloning. It is **not** the authoritative copy. The same ten files are inside
+the bundle at the commits Appendix D names, and only the copies in the bundle
+carry the evidence that they were written when they claim to have been. If the
+two ever disagree, the bundle is right.
+
+The bundle is a **git bundle**: a single file carrying the real version
+history, not a snapshot of it. The distinction is the point. The paper asks you
+to check that each pre-registration was committed *before* the compute it
+governs, and that check is only meaningful against a commit graph. A directory
+of files, however complete, cannot support it.
 
 ```
 sha256  c020fdd11490c6f287f5a009fa32f6f185eca3c9dd88e432606a8fdd9419ca39

@@ -1,0 +1,82 @@
+{
+ "dataset": "wmt/wmt19",
+ "config": "de-en",
+ "n_sampled": 1500,
+ "train_prefix_as_run": {
+  "n_rows": 1500,
+  "mean_chars_en": 155.5,
+  "mean_words_en": 26.28,
+  "mean_chars_de": 170.1,
+  "type_token_ratio": 0.1108,
+  "top_content_words": [
+   "european",
+   "commission",
+   "report",
+   "should",
+   "education",
+   "president",
+   "parliament",
+   "member",
+   "heritage",
+   "states",
+   "legislation",
+   "because"
+  ],
+  "parliamentary_rate_per_1k": 17.42
+ },
+ "train_shuffled_control": {
+  "n_rows": 1500,
+  "mean_chars_en": 83.5,
+  "mean_words_en": 13.05,
+  "mean_chars_de": 88.5,
+  "type_token_ratio": 0.3028,
+  "top_content_words": [
+   "airport",
+   "conditioning",
+   "service",
+   "agriturismo",
+   "shuttle",
+   "jordan",
+   "rental",
+   "points",
+   "internet",
+   "agricultural",
+   "products",
+   "manual"
+  ],
+  "parliamentary_rate_per_1k": 0.59
+ },
+ "eval_split": {
+  "n_rows": 1500,
+  "mean_chars_en": 114.1,
+  "mean_words_en": 19.22,
+  "mean_chars_de": 124.9,
+  "type_token_ratio": 0.2065,
+  "top_content_words": [
+   "people",
+   "according",
+   "through",
+   "around",
+   "million",
+   "former",
+   "against",
+   "president",
+   "before",
+   "because",
+   "police",
+   "really"
+  ],
+  "parliamentary_rate_per_1k": 2.83
+ },
+ "summary": {
+  "parliamentary_rate_prefix_vs_eval": [
+   17.42,
+   2.83
+  ],
+  "mean_words_prefix_vs_eval": [
+   26.28,
+   19.22
+  ],
+  "prefix_differs_from_shuffled_control": true
+ }
+}

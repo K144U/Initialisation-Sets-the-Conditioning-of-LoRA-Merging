@@ -28,7 +28,8 @@ substituting the soft surrogate is the error \S\ref{subsec:floor-zero}
 corrects. The column is reported because it is the diagnostic that varies
 continuously, and to make the size of that earlier error visible. The
 corresponding shared-initialisation values are median cosine
-$\geq 0.9947$, soft $\deff \approx 16.3$, and $0.745$ in the fourth column.
+$\geq 0.9947$, soft $\deff \approx 16.3$, and $0.159$ to $0.191$ in the
+fourth column.
 \textbf{That column is the distance between two adapters of the same cohort,
 not the distance either has travelled from its initialisation.} An earlier
 version labelled it $\|\Delta A\|/\|A\|$, which reads as the latter and
@@ -179,21 +180,31 @@ mechanism of \S\ref{subsec:mechanism} is stated in terms of the one we do
 \textbf{Measured: the distance between two adapters of a cohort,}
 $\|A_i - A_j\|_F/\|A_i\|_F$, the fourth column of
 Table~\ref{tab:geometry-all}. It is $1.410$ to $1.415$ on every independent
-cohort and $0.745$ on the shared one. The independent value is not a
-coincidence and is worth reading as a check on the instrument: for two
+cohort and $0.159$ to $0.191$ on the shared one. Both ends have a reference
+value, which makes this a useful check on the instrument. For two
 independent draws of equal norm, $\|A_i - A_j\|^2 \approx \|A_i\|^2 +
-\|A_j\|^2$, so the ratio must be about $\sqrt 2 = 1.414$. It is. The shared
-cohort sits at roughly half that, which is the signature the paper is about,
-and \S\ref{subsec:prevalence} finds the same two populations in public
-adapters.
+\|A_j\|^2$, so the ratio must be about $\sqrt 2 = 1.414$; it is. At the
+other end, adapters that share a draw can differ only by what training
+moved, so the ratio measures that difference directly, and at $0.16$ it is
+an order of magnitude below the independent value.
+\S\ref{subsec:prevalence} finds the same two populations in public adapters.
 
 \textbf{Not measured: the distance each adapter travelled from its own
 initialisation,} $\|A - A_0\|_F/\|A_0\|_F$. This needs $A_0$, and we did not
-retain the initial weights or any intermediate checkpoint. An earlier
-version of this work quoted $0.16$ to $0.19$ for this quantity on the shared
-cohort. We withdraw that figure: it does not come from any measurement in
-this paper's pipeline, which computes only the between-adapter distance
-above, and we could not reproduce its provenance.
+retain the initial weights or any intermediate checkpoint. No script in our
+pipeline computes it and no result file contains it, which we verified
+directly rather than by recollection.
+
+\textbf{An earlier version of this work conflated the two}, quoting the
+measured $0.16$ to $0.19$ and describing it as the distance each adapter had
+moved from its initialisation. The number is correct and is the
+shared-cohort entry of the column above; the description of what it measures
+was wrong. We report the error here rather than silently relabelling it,
+because the two readings support different arguments: a small distance
+\emph{from initialisation} would say training barely moved $A$, which is the
+mechanism of \S\ref{subsec:mechanism}, whereas a small distance
+\emph{between adapters} says only that they ended up near each other, which
+is the phenomenon. We have the second and not the first.
 
 This has a registered consequence and we apply it. The E3 rule in
 \S\ref{subsec:prereg-docs} required $\|\Delta A\|/\|A\|$ at $25$, $50$, $75$

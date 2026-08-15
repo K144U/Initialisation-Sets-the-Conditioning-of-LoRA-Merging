@@ -1,0 +1,143 @@
+{
+ "source_condition": {
+  "peft_version_recorded_in_artifacts": [
+   "0.19.1"
+  ],
+  "file": "src/peft/tuners/lora/layer.py",
+  "function": "reset_lora_parameters",
+  "init_A": "nn.init.kaiming_uniform_(weight, a=math.sqrt(5))",
+  "init_B": "nn.init.zeros_(weight)",
+  "rng": "global torch RNG; no per-adapter seed is taken"
+ },
+ "cohorts": {
+  "llama31_8b": {
+   "seed1": {
+    "n_adapters": 4,
+    "n_distinct_trained_A": 4,
+    "n_lora_A_tensors": 128,
+    "launch": {
+     "n_tasks": 4,
+     "seeds": {
+      "alpaca": [
+       1,
+       1
+      ],
+      "gsm8k": [
+       1,
+       1
+      ],
+      "magicoder": [
+       1,
+       1
+      ],
+      "flores": [
+       1,
+       1
+      ]
+     },
+     "same_seed_across_tasks": true,
+     "same_construction_across_tasks": true,
+     "source_condition_met": true
+    }
+   }
+  },
+  "mistral_7b": {
+   "seed1": {
+    "n_adapters": 4,
+    "n_distinct_trained_A": 4,
+    "n_lora_A_tensors": 128,
+    "launch": {
+     "n_tasks": 4,
+     "seeds": {
+      "alpaca": [
+       1,
+       1
+      ],
+      "gsm8k": [
+       1,
+       1
+      ],
+      "magicoder": [
+       1,
+       1
+      ],
+      "flores": [
+       1,
+       1
+      ]
+     },
+     "same_seed_across_tasks": true,
+     "same_construction_across_tasks": true,
+     "source_condition_met": true
+    }
+   }
+  },
+  "qwen25_7b": {
+   "seed1": {
+    "n_adapters": 4,
+    "n_distinct_trained_A": 4,
+    "n_lora_A_tensors": 112,
+    "launch": {
+     "n_tasks": 4,
+     "seeds": {
+      "alpaca": [
+       1,
+       1
+      ],
+      "gsm8k": [
+       1,
+       1
+      ],
+      "magicoder": [
+       1,
+       1
+      ],
+      "flores": [
+       1,
+       1
+      ]
+     },
+     "same_seed_across_tasks": true,
+     "same_construction_across_tasks": true,
+     "source_condition_met": true
+    }
+   }
+  },
+  "yi15_9b": {
+   "seed1": {
+    "n_adapters": 4,
+    "n_distinct_trained_A": 4,
+    "n_lora_A_tensors": 192,
+    "launch": {
+     "n_tasks": 4,
+     "seeds": {
+      "alpaca": [
+       1,
+       1
+      ],
+      "gsm8k": [
+       1,
+       1
+      ],
+      "magicoder": [
+       1,
+       1
+      ],
+      "flores": [
+       1,
+       1
+      ]
+     },
+     "same_seed_across_tasks": true,
+     "same_construction_across_tasks": true,
+     "source_condition_met": true
+    }
+   }
+  }
+ },
+ "verdict": {
+  "shared_arm_condition_met": "4/4",
+  "independent_arm_condition_not_met": "0/0",
+  "note": "The condition is evaluated at launch, from the seeds and the construction recorded in the configs. It is not evaluated from the shipped tensors, which are post-training and differ in both arms."
+ }
+}

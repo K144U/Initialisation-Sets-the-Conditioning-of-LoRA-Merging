@@ -104,6 +104,24 @@ $\tau_t^\top H_t \tau_t = B^2$. Combining with
 $\E[\|\eta\|^2] = B^2\E[\deff]/(Tr)$ from
 Lemma~\ref{lem:floor-general} yields \eqref{eq:thm-lb}.
 
+\paragraph{On putting $\E[\deff]$ inside the exponent.} The converse is
+applied conditionally on $\boldsymbol H$, so what the argument delivers is
+$\E[g(\deff)]$ with $g(x) := x\,2^{-2R/x}$, whereas \eqref{eq:thm-lb} is
+stated as $g(\E[\deff])$. The substitution needs $g$ convex, and it is, on
+all of $x > 0$: writing $a := 2R\ln 2$,
+\[
+  g''(x) \;=\; \frac{a^{2}}{x^{3}}\,e^{-a/x} \;>\; 0 ,
+\]
+so Jensen gives $\E[g(\deff)] \geq g(\E[\deff])$, which is the direction a
+lower bound requires. The step is worth spelling out because the natural
+misreading fails: the exponential factor \emph{alone}, $x \mapsto
+2^{-2R/x}$, has second derivative $(a/x^{3})(a/x - 2)e^{-a/x}$ and is
+convex only for $x < R\ln 2$, so it would not license the substitution at
+the dimensions we work at. It is the linear prefactor, which comes from
+$\E[\|\eta\|^2] = B^2\E[\deff]/(Tr)$, that makes the product convex
+throughout. The point is moot in the Stiefel regime, where $\deff = Tr$
+almost surely and the expectation is over a constant.
+
 \paragraph{Why the general-$H_t$ statement is the headline.} Real LoRA
 fine-tunes have task-specific curvature: the Fisher information at
 $\tau_t$ is rank-$r$ PSD with range $V_t$ but generally not a

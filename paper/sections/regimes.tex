@@ -324,37 +324,82 @@ both are separated. The audit's cost is unchanged from
 \S\ref{subsec:audit}: about one CPU minute per cohort, and the entire sweep of
 $45$ cohorts needed no GPU.
 
-\paragraph{One of three registered parts, and we say which.} The
-pre-registration for this audit (\S\ref{subsec:prereg-docs}) has three parts,
-and what is reported above is Part C alone. Part A asks for the exact condition
-under which PEFT's default initialisation gives two adapters an identical $A$,
-read off a pinned version of the library source. Part B asks for the same audit
-run on the released cohorts of at least two published merging evaluations.
-\textbf{Neither has been run, and we do not treat the precondition as fully
-discharged.}
+\paragraph{Two of three registered parts, and we say which is missing.} The
+pre-registration for this audit (\S\ref{subsec:prereg-docs}) has three parts.
+The prevalence figures above are Part C. Part A, the library condition, is
+reported below. \textbf{Part B has not been run}, so we do not treat the
+precondition as fully discharged.
 
-The distinction matters for what may be claimed. Part C establishes prevalence
-in released adapters, which is what \S\ref{sec:intro} and the abstract assert
-and all they assert. Part B is what would license a statement about published
-merging \emph{benchmarks}, and we make none: \S\ref{subsec:q1} reinstates the
-benchmark-confounding claim only as provisional and says there that the
-precondition is partly outstanding. Part A would explain the cause rather than
-establish the fact, and its absence is why \S\ref{subsec:mechanism} argues from
-the parameterisation rather than from a library's behaviour.
+\paragraph{Part A: when does a library hand two adapters the same $A$?} The
+registration asks for the exact condition, from the source at a pinned
+version, and fixes no threshold: it is a factual question about a library. The
+version is not ours to choose, since every adapter we shipped records the
+library that wrote it, and all of them record PEFT \texttt{0.19.1}. In
+\texttt{src/peft/tuners/lora/layer.py}, \texttt{reset\_lora\_parameters}
+initialises $A$ with \texttt{kaiming\_uniform\_} and $B$ with zeros whenever
+\texttt{init\_lora\_weights} is true, which is the default and what all our
+configs record. \texttt{kaiming\_uniform\_} draws from the \emph{global} torch
+RNG; PEFT takes no per-adapter seed and does not reseed around the call. Two
+separate invocations therefore receive identical $A$ exactly when the global
+RNG is in the same state as each layer is built, which needs the same seed set
+beforehand, the same modules targeted in the same order at the same rank, and
+the same device and dtype. Nothing about the task or the data enters, so the
+condition is settled before the first gradient step. That is why one seed line
+in a launcher decides it for a whole cohort, and why it is so rarely reported.
+
+Our own cohorts meet the condition by construction in the shared arm, where
+all four task configs carry one seed, and violate it by construction in the
+independent arm, where the four seeds differ. Both are checkable from the
+configs. What cannot be checked from the shipped adapters is the initial $A$
+itself: those tensors are post-training, and training moves $A$, so bitwise
+identity is not the right instrument and Appendix~\ref{app:geometry} reports
+the residue instead.
+
+The distinction between the parts matters for what may be claimed. Part C
+establishes prevalence in released adapters, which is what \S\ref{sec:intro}
+and the abstract assert and all they assert. Part B is what would license a
+statement about published merging \emph{benchmarks}, and we make none: the
+benchmark-confounding claim is withdrawn in \S\ref{subsec:withdrawn} and stays
+withdrawn.
 
 \subsection{Scope: one adapter in four did not learn}
 \label{subsec:scope}
 
-We report a defect rather than repairing it, because repairing it would
-invalidate every cell measured on these cohorts. On all four bases and in both
-conditions, the translation adapter fails to beat the base model at its own
-task or is beaten there by another task's adapter; the other three tasks train
-cleanly, improving $10$ to $70\%$ over base with the specialist best on its
-own task in every cell (Appendix~\ref{app:geometry}). Our cohorts are
-therefore $T=4$ nominal and $3$ effective, and we describe them that way
-throughout.
+On all four bases and in both conditions, the translation adapter fails to
+beat the base model at its own task or is beaten there by another task's
+adapter; the other three tasks train cleanly, improving $10$ to $70\%$ over
+base with the specialist best on its own task in every cell
+(Appendix~\ref{app:geometry}). Our cohorts are therefore $T=4$ nominal and
+$3$ effective, and we describe them that way throughout.
 
-Two things bound the damage and one does not. Worst-task excess is never
+\paragraph{We know why, and it is a data-pipeline defect rather than a
+training failure.} Failing on four bases in both arms is too systematic to
+be a bad run, so we diagnosed it, which needs no retraining. Translation is
+the only task in the matrix configured to stream its training set, and the
+streaming branch of our loader takes the first $n$ examples in corpus
+order, while the branch every other task takes shuffles first. WMT19 de-en
+is a concatenation of sub-corpora of roughly $35$M pairs, so an unshuffled
+prefix of $7500$ samples whichever sub-corpus is written first rather than
+the corpus. Measuring the prefix the trainer actually saw against a
+shuffled sample of the same split and against the evaluation split settles
+what happened: the prefix is parliamentary proceedings, at $17.4$
+occurrences per $1000$ tokens of a small set of parliamentary terms against
+$0.6$ in the shuffled control and $2.8$ in the news-domain evaluation
+split, with a type-token ratio of $0.11$ against $0.30$ shuffled. The
+adapter was trained on $7500$ consecutive sentences of one narrow register
+and evaluated on another.
+
+That is a defect in our configuration, not a property of translation as a
+task or of LoRA. \textbf{We report it rather than repairing it}, because
+repairing it means retraining the cohort and re-running every cell measured
+on it, and the pre-registered comparisons in \S\ref{sec:methods} are all
+paired \emph{within} a cohort: a cohort where one member is weak is a valid
+cohort for asking whether initialisation geometry changes a merge, so long
+as both arms contain the same weak member, which they do. What it is not is
+a cohort of four well-trained adapters, and we make no claim about that
+case.
+
+Two further things bound the damage and one does not. Worst-task excess is never
 driven by the degenerate adapter: across the $84$ independent-cohort cells the
 argmax is \texttt{gsm8k} in $64\%$ and \texttt{alpaca} in $36\%$, and
 translation never. And every geometry and conditioning quantity above is

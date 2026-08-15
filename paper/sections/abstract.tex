@@ -1,21 +1,20 @@
-Merging several LoRA adapters into one model sometimes costs almost nothing
-and sometimes destroys a task, and practitioners have had no cheap way to
-tell which. One CPU minute on the adapter weights, with no forward passes
-and no evaluation data, predicts it. The audit asks whether the cohort's
-task subspaces have collapsed onto each other, which is what happens when
-the adapters share one random draw of the LoRA $A$ factor: a detail almost
-never reported, and one a single global training seed silently decides. It
-moves the median principal cosine between task subspaces from $0.047$ to
-$0.995$, and under a sampling frame fixed before any download it holds for
-$37.8\%$ of $45$ public cohorts. We pre-registered what follows and report
-both halves. Collapse is invisible to the heuristics most people use, which
-return bounded-norm near-mean solutions: fifteen of twenty base-by-method
-cells show no effect at our $0.01$ nat resolution. It is decisive for
-methods that solve the linear system, which run $2.1$ to $65$ times worse on
-a collapsed cohort until one Tikhonov term repairs them, on two solvers of
-which one is not ours. And it reaches deployed behaviour: on Mistral the
-unregularised merge scores zero on both GSM8K and HumanEval, every
-generation scored and none discarded, and the same ridge recovers it. The
-route here was a rate-distortion lower bound, which we prove and report as
-provenance rather than as support. Several of our own earlier claims did not
-survive pre-registered replication, and we report all of them.
+Merging several LoRA adapters into one model sometimes costs almost
+nothing and sometimes destroys a task, with no cheap way to tell which in
+advance. We show that one detail of how the adapters were trained largely
+decides it, and that the detail can be read off the adapter files in about
+a minute of CPU time, without running the model. LoRA writes each weight
+update as a product $BA$ and initialises $A$ at random, and whether the
+$T$ adapters of a cohort drew one $A$ or $T$ independent ones is rarely
+reported: a single global training seed silently decides it. Sharing the
+draw leaves the tasks in nearly the same subspace, moving the median
+principal cosine across four base models from $0.05$ to $0.99$. Under a
+sampling frame fixed before any download, $17$ of $45$ public cohorts are
+in that state. The consequences split by method. Merges that average or
+sparsify task vectors are unaffected: fifteen of twenty base-by-method
+cells show no effect at our resolution. Merges that solve a linear system,
+ours and RegMean, run $2$ to $65$ times worse on a collapsed cohort, and
+on Mistral the merged model scores zero on GSM8K and on HumanEval; one
+Tikhonov term recovers both. So the advice is to measure the cosines
+before choosing a merging method. These tests were pre-registered. We
+reached them from a rate-distortion lower bound on merging, proved here,
+which is what pointed us at the operator the cosines measure.

@@ -9,10 +9,13 @@ DO-Merging~\citep{domerging2025}, Core~Space~\citep{panariello2025core},
 TARA~\citep{tara2025}, ARM~\citep{arm2026streaming}), and merge-time
 quantization (TVQ~\citep{kim2025tvq},
 1-bit-Merging~\citep{bit1merging2025}). All are \emph{constructions}:
-each proposes an encoder and evaluates it empirically; none
-establishes a fundamental limit on merging quality at a given storage
-budget. This paper supplies that limit and, in the generic regime, a
-matching construction.
+each proposes an encoder and evaluates it empirically. What none of them
+supplies, and what this paper does supply, is a way to tell in advance
+which of them will work on a given cohort. We do also prove a
+rate-distortion lower bound at a storage budget, but we report it as
+provenance rather than as a contribution, and
+\S\ref{subsec:floor-zero} and \S\ref{subsec:w3} say exactly how little
+of it survives contact with real adapters.
 
 \paragraph{Existing theoretical analyses of merging.}
 \emph{Weight disentanglement}~\citep{ortizjimenez2023disentanglement}
@@ -30,11 +33,13 @@ posted while this work was in progress and independently of it, study
 incompatibility between tasks as a strong correlate of it, and use
 rate-distortion theory to argue for a dimension-dependent limit on
 mergeability that holds regardless of the merging method. We therefore
-make no priority claim for the lens itself. What we add is specific: a
-bound on \emph{worst-task} rather than average distortion, stated for
-rank-$r$ adapters with arbitrary task-dependent curvature, together with
-a matching construction that makes the exponent tight in the generic
-regime.
+make no priority claim for the lens itself. Where ours differs
+technically is that it bounds \emph{worst-task} rather than average
+distortion, for rank-$r$ adapters with arbitrary task-dependent
+curvature, with a matching construction in the generic regime. We list
+the difference for the reader's orientation and not as a contribution
+claim; see \S\ref{sec:discussion} for what we think the bound is
+actually worth.
 
 We have not attempted to reconcile the two bounds, and it is worth being
 precise about why. Ours constrains $\max_t (w-\tau_t)^\top H_t (w-\tau_t)$ over

@@ -30,134 +30,60 @@ only downgrade a win or loss to a tie, never promote.
 \begin{table}[t]
 \centering
 \small
-\caption{Pre-registered replication on independently initialised cohorts.
-Worst-task NLL excess in nats, mean over three cohorts. Positive $d$
-favours the encoder. The gate is computed on the paired difference
-$d$, whose standard deviation across cohorts is $0.0003$ to $0.0020$;
-individual cells vary more, from $0.0001$ to $0.0034$ across all seven
-methods, because the encoder and the champion move together from cohort to
-cohort and the difference is quieter than either. The gate downgraded
-nothing.}
+\caption{Pre-registered replication on independently initialised cohorts,
+and the two controls applied to it. Entries are the paired difference $d$
+in worst-task NLL excess (nats), mean over three cohorts; positive favours
+the encoder. \emph{As published} is the registered primary arm.
+\emph{Matched} corrects an inference-path mismatch: at $\deff$ realisation
+the merged adapter has rank $64$ against the baselines' $16$, and the fused
+fast path does not take mixed-rank adapters, so the encoder alone ran
+vanilla \textsc{transformers}; the two paths differ by up to $0.0105$ nats
+on identical inputs. The rank-$16$ realisation is matched on both counts
+and needs no new measurement. $T = 3$ additionally drops the adapter that
+never learned its task (\S\ref{subsec:scope}). Levels are not comparable
+across $T$, so only the verdict transfers. The noise gate
+($2\times\mathrm{SE}$, one-directional) downgraded nothing; SE on $d$ runs
+$0.0002$ to $0.0012$.}
 \label{tab:q1}
-\begin{tabular}{lccccc}
+\begin{tabular}{lcccl}
 \toprule
-base & rd-encoder ridge & champion baseline & $d$ & $2\times\mathrm{SE}$ & result \\
+base & as published & matched & matched, $T=3$ & verdict \\
 \midrule
-Llama-3.1-8B & 0.0717 & 0.1052 \; (TVQ$_2$) & $+0.0335$ & 0.0010 & wins \\
-Mistral-7B   & 0.0597 & 0.0543 \; (TIES)    & $-0.0055$ & 0.0024 & loses \\
-Qwen2.5-7B   & 0.0143 & 0.0141 \; (TIES)    & $-0.0002$ & 0.0004 & ties \\
-Yi-1.5-9B    & 0.0637 & 0.0487 \; (TIES)    & $-0.0150$ & 0.0011 & loses \\
+Llama-3.1-8B & $+0.0335$ & $+0.0257$ & $+0.0033$ & wins $\to$ \textbf{ties} \\
+Mistral-7B   & $-0.0055$ & $-0.0022$ & $-0.0012$ & loses $\to$ \textbf{ties} \\
+Qwen2.5-7B   & $-0.0002$ & $-0.0004$ & $+0.0009$ & ties throughout \\
+Yi-1.5-9B    & $-0.0150$ & $-0.0154$ & $-0.0053$ & loses throughout \\
+\midrule
+\multicolumn{4}{l}{\emph{count}} & 1/1/2 $\to$ 1/2/1 $\to$ \textbf{0/3/1} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\paragraph{Outcome: it does not survive.} Table~\ref{tab:q1} gives one
-win, one tie and two losses. Both pre-specified robustness lines agree.
+\paragraph{Outcome: it does not survive.} The registered arm gives one win,
+one tie and two losses, and each control removes another piece: matching
+the inference path turns Mistral's loss into a tie, and dropping the
+untrained adapter turns Llama's win into a tie, leaving \textbf{no wins on
+any base}. Both pre-specified robustness lines agree with the primary arm.
 Re-selecting the champion inside each cohort, the variant deliberately
-biased against our method, returns the same one/one/two. Applying the
-original single-cohort rule three times returns a weakened verdict on
-\texttt{indep1} but a failure on \texttt{indep2} and \texttt{indep3}, so
-the earlier optimistic reading was the best of three draws.
+biased against our method, returns the same one/one/two; applying the
+original single-cohort rule three times succeeds on \texttt{indep1} and
+fails on \texttt{indep2} and \texttt{indep3}, so the earlier optimistic
+reading was the best of three draws. Two details we report rather than
+absorb: the rank-$64$ realisation disagrees at $T=3$, keeping Llama at
+$+0.0081$, and Mistral's champion changes from TIES to TVQ.
 
-\paragraph{One arm of that table was measured on a different inference
-path, and matching it moves a verdict.} We found this while checking an
-unrelated cell and report it because it bears directly on Table~\ref{tab:q1}.
-Of the seven methods in that matrix, the ridge-regularised encoder is the
-only one evaluated through vanilla \textsc{transformers}; the six others run
-a fused fast path. That is not a slip: at $\deff$ realisation the merged
-adapter has rank $64$ while the baselines have rank $16$, and the fast path
-does not support mixed-rank adapters, so the encoder had to take the other
-route. But the two paths are not numerically identical. On the same
-adapters and the same evaluation draw they differ by up to $0.0105$ nats,
-which is twice our tie threshold and comparable to three of the four margins
-in the table.
-
-The rank-$16$ realisation of the same encoder runs the fast path, so it is
-matched to the baselines on both counts and needs no new measurement:
-
-\begin{center}
-\small
-\begin{tabular}{lccc}
-\toprule
-base & $d$ as published & $d$ matched & verdict \\
-\midrule
-Llama-3.1-8B & $+0.0335$ & $+0.0257$ & wins, both \\
-Mistral-7B   & $-0.0055$ & $-0.0022$ & \textbf{loses $\to$ ties} \\
-Qwen2.5-7B   & $-0.0002$ & $-0.0004$ & ties, both \\
-Yi-1.5-9B    & $-0.0150$ & $-0.0154$ & loses, both \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-Matched, the count is one win, two ties and one loss rather than one win,
-one tie and two losses. Mistral was reported as a clear loss on a margin
-that cleared the threshold by $0.0005$ nats. The conclusion of this section
-does not change, and neither does the direction of any other base, but the
-matched arm is the one that should be read.
-
-\paragraph{Nor does the remaining win survive dropping the untrained
-adapter.} \S\ref{subsec:scope} reports that one of our four adapters never
-learned its task, and Appendix~\ref{app:t3} shows every geometric quantity
-is unchanged when it is removed. The merge results deserve the same
-treatment, so we re-ran the matrix at $T = 3$ on all three independent
-cohorts:
-
-\begin{center}
-\small
-\begin{tabular}{lcc}
-\toprule
-base & $d$ at $T = 4$ & $d$ at $T = 3$ \\
-\midrule
-Llama-3.1-8B & $+0.0257$ \; wins & $+0.0033$ \; \textbf{ties} \\
-Mistral-7B   & $-0.0022$ \; ties & $-0.0012$ \; ties \\
-Qwen2.5-7B   & $-0.0004$ \; ties & $+0.0009$ \; ties \\
-Yi-1.5-9B    & $-0.0154$ \; loses & $-0.0053$ \; loses \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-One win, two ties and one loss becomes \emph{zero} wins, three ties and one
-loss. The Llama win, the only clear win this method has left anywhere in
-the paper, falls from $0.0257$ to $0.0033$ nats and stops clearing the
-gate. The rank-$64$ realisation disagrees, keeping Llama at $+0.0081$ while
-moving Mistral from a loss to a tie, and two realisations of one method
-disagreeing about the same base is itself a measure of how thin that win
-is. The champion on Mistral changes from TIES to TVQ at $T = 3$, which we
-report rather than absorb.
-
-The $T = 4$ matrix was registered as primary and stays primary; we are not
-replacing it with the arm that happens to be less flattering, any more than
-we would the reverse. But levels are not comparable across $T$, since a
-maximum over three tasks is not a maximum over four, so what transfers is
-the verdict, and the verdict is that three separate controls have each
-removed a piece of this method's advantage: independent initialisation,
-matching the rank and inference path, and now removing the adapter that
-never trained.
-
-We are careful about how strongly to put this, because the margins do
-not all support the same strength of claim. The encoder wins clearly on
-Llama ($+0.0335$, well outside the gate) and loses clearly on Yi
-($-0.0150$). The other two are much weaker: Mistral at $-0.0055$ clears
-the $0.005$ tie threshold by $0.0005$, and Qwen at $-0.0002$ is a tie by
-any reading. So the accurate summary is \textbf{one clear win, one clear
-loss, and two bases where the encoder and a 2023 baseline are
-indistinguishable} on a metric whose own resolution we estimate at about
-$0.001$ nats (\S\ref{sec:discussion}). What does not survive is the
-earlier claim that the encoder is the better method: on properly
-initialised cohorts it is not distinguishable from TIES on half the
-bases and worse on a quarter. The Llama win is not a rank artifact:
-rank-matching the encoder to the baselines still leaves it at $0.0795$
-against the champion's $0.1052$.
-
-We think the honest reading is that the encoder's apparent advantage was
-substantially a property of the degenerate cohort it was developed on. On
-that cohort $\bar H$ is ill-conditioned by four orders of magnitude
-(\S\ref{subsec:conditioning}), which is precisely the situation the
-encoder's ridge term was introduced to handle, so it was tuned on the one
+The registered $T = 4$ arm stays primary; we are not substituting the less
+flattering arm any more than we would the reverse. But the direction is
+consistent across all three columns, and the reading we take is that the
+encoder's advantage was substantially a property of the degenerate cohort
+it was developed on. On that cohort $\bar H$ is ill-conditioned by four
+orders of magnitude (\S\ref{subsec:conditioning}), which is exactly what
+the ridge term was introduced to handle, so the method was tuned on the one
 regime where its distinguishing component has work to do.
-\S\ref{subsec:ridge} makes that reading concrete: the ridge gain on the
-shared cohort is $0.19$ to $9.73$ nats and on the independent cohort
-$0.00$ to $0.10$.
+\S\ref{subsec:ridge} makes that concrete: the ridge gain is $0.19$ to
+$9.73$ nats on the shared cohort and $0.00$ to $0.10$ on the independent
+one. What does not survive is the claim that the encoder is the better
+method.
 
 \subsection{Does the conditioning matter? Only for methods that solve}
 \label{subsec:ridge}
@@ -329,12 +255,22 @@ implementation, and the question is sharp enough to be worth answering
 with a pre-registered experiment rather than an argument.
 
 RegMean~\citep{jin2023regmean}, in the data-free adapter-only form, is a
-solver we did not design, whose ridge term is part of its own published
-formulation rather than something we added. We swept it on the same grid
-and the same two cohorts, registering two predictions in advance: that the
-ridge gain would be larger on the shared arm, and that the minimally
-regularised excess would be worse there by at least a factor of two, each
-on at least three of four bases.
+solver we did not design. We swept it on the same grid and the same two
+cohorts, registering two predictions in advance: that the ridge gain would
+be larger on the shared arm, and that the minimally regularised excess
+would be worse there by at least a factor of two, each on at least three of
+four bases.
+
+One thing to be exact about, since our practical recommendation reduces to
+regularising a solve-based merge and RegMean ships a regulariser of its
+own. Its published regulariser is \emph{not} the Tikhonov ridge swept
+below: RegMean scales the non-diagonal entries of each Gram by a scalar
+$\alpha$, default $0.9$, which is a data-set diagonal shrinkage rather than
+a free parameter. An earlier version of this section described the swept
+ridge as part of RegMean's published formulation. That was wrong: the
+$\lambda I$ is ours, and the comparison below is between our regulariser
+and theirs. \S\ref{subsec:regmean-default} reports what the published
+default does on these cohorts.
 
 \begin{table}[t]
 \centering
@@ -380,6 +316,40 @@ which is the cleanest statement of the claim available: on a
 well-conditioned cohort there is nothing to repair. And from
 $\lambda = 0.13$ upward the two arms agree to three decimals, because
 heavy regularisation washes the difference out entirely.
+
+\subsection{Does RegMean's published default already fix this?}
+\label{subsec:regmean-default}
+
+Our practical recommendation reduces to regularising a solve-based merge, and
+RegMean ships a regulariser. If its default were already strong enough on a
+collapsed cohort, the recommendation would shrink to the much smaller claim
+that the audit tells you when the default matters. The question is worth
+answering rather than leaving for a referee, and it is a lookup plus a
+CPU-only computation.
+
+RegMean's published regulariser scales the non-diagonal entries of each Gram
+by $\alpha$, default $0.9$, which is equivalent to adding
+$(1-\alpha)\operatorname{diag}(G)$: a shrinkage whose size the data sets,
+rather than a free parameter. It does regularise, and on a rank-deficient Gram
+it does make the system solvable. The question is whether it is enough.
+
+On the shared-initialisation cohorts it is not, by about an order of
+magnitude. Averaged over sampled layers, $\alpha = 0.9$ is equivalent to an
+isotropic ridge of $5.2\times10^{-4}$ to $6.1\times10^{-4}$ across the four
+bases, against the $\lambda^\star = 0.01$ the sweep selects on seven of eight
+arms: roughly $20$ times smaller. The conditioning it leaves behind reflects
+that. The $\alpha$-shrunk system has condition number $6.6\times10^{3}$ to
+$9.1\times10^{3}$, while $\lambda = 0.01$ brings the same layers to about
+$1.5\times10^{2}$, a factor of $55$ apart. The default is on the wrong side of
+the gap this paper is about.
+
+Two limits on what this shows, both worth stating. It is a statement about
+conditioning, computed from the adapter factors, not a merge we evaluated: we
+did not run a $\lambda$-free $\alpha$-shrunk RegMean through the NLL harness,
+so we do not report a task-loss number for it. And $\alpha$ is a documented
+knob with the default merely being $0.9$, so a practitioner who lowers it is
+doing exactly what \S\ref{subsec:ridge} recommends. The claim here is only
+that the shipped default does not do it for them.
 
 \subsection{The same test without rank truncation}
 \label{subsec:untruncated}
@@ -457,39 +427,40 @@ practice the pre-registration exists to prevent. We stated the defect and
 left the verdict, and registered a \emph{second} control rather than
 editing the first.
 
-\paragraph{The second control, and what it does and does not restore.} The
-margin-aware rule was fixed in the same registration that governs
-\S\ref{subsec:regmean}: a base counts as unstable only if its top-1 method
-changes \emph{and} the margin between the top two exceeds the tie threshold
-in at least one cohort where the change occurs. It needs no new cells. Run
-as written it returns \textbf{zero of four} bases unstable, against two of
-four for the margin-blind rule. Both flips are inside the threshold by a
-wide margin: Mistral's are $0.0004$, $0.0003$ and $0.0011$ nats, Qwen's
-$0.0001$, $0.0006$ and $0.0003$, against a threshold of $0.005$.
+\paragraph{A second control, reported but not used to reinstate anything.}
+We registered a margin-aware version of the rule afterwards, in the same
+document that governs \S\ref{subsec:regmean}: a base counts as unstable
+only if its top-1 method changes \emph{and} the margin between the top two
+exceeds the tie threshold in at least one cohort where the change occurs.
+It needs no new cells. Run as written it returns \textbf{zero of four}
+bases unstable against two of four for the margin-blind rule, because both
+flips sit well inside the threshold: Mistral's margins are $0.0004$,
+$0.0003$ and $0.0011$ nats and Qwen's $0.0001$, $0.0006$ and $0.0003$,
+against $0.005$.
 
-By the registered rule that reinstates the benchmark-confounding claim as
-\textsc{provisional}. Three things bound what that means, all of them fixed
-in advance. The margin-blind control was registered first and is not
-deleted or replaced; it is reported here alongside. The margin-aware control
-was registered after its data had been seen, which the registration states
-about itself, so it is secondary evidence and we treat it as such. And the
-parent registration attached a precondition to any claim about the field,
-which is that the shared-initialisation pattern must be shown to occur
-outside our own repository before we assert anything about published
-benchmarks. That precondition is \emph{partly} discharged.
-\S\ref{subsec:prevalence} shows the regime in $37.8\%$ of $45$ public
-cohorts, which is the prevalence half. The half that would bear directly on
-published benchmarks, auditing the cohorts those benchmarks actually
-release, is registered as Part B of that document and has not been run. So
-the reinstatement stays provisional on both counts, and we make no claim
-that any specific published evaluation is affected.
+Read literally, that rule would reinstate the benchmark-confounding claim
+as provisional. \textbf{We decline to reinstate it}, and the reason is
+worth stating plainly because it cuts against us. This control was
+registered after its data had been seen. The registration says so about
+itself, and we could bound it in various ways, but no amount of disclosure
+changes the fact that we would be resurrecting a claim we had already
+withdrawn using a rule written once we knew how the first one fell. That
+is the single thing pre-registration exists to prevent, and a paper making
+this much of the practice should not spend its credibility on a claim it
+does not need. The prevalence audit already carries the load of showing
+this matters outside our own repository.
+
+The margin-aware numbers stay in the paper as a measurement, because they
+say something true and useful: the ranking flips that triggered the
+withdrawal are all inside noise. That is a statement about the fragility of
+single-draw rankings, not about published benchmarks.
 
 So the claim we make is this, and no more: method rankings on this metric
 move between cohorts that differ only in initialisation draw, the movement
 is within noise once margin is accounted for, and the collapsed regime that
 would make such rankings hard to interpret is common in released adapters.
-We have not measured a published merging benchmark, and we do not claim one
-is wrong.
+The benchmark-confounding claim stays withdrawn. We have not measured a
+published merging benchmark, and we do not claim one is wrong.
 
 What survives independently of all of it is weaker and still worth saying:
 single-seed method rankings on this metric are not reproducible, so merging
@@ -574,127 +545,23 @@ was registered to answer.
 \subsection{The predicted rate exponent is unresolved}
 \label{subsec:w3}
 
-Theorem~\ref{thm:general} predicts distortion decaying as
-$2^{-2R/\deff}$, which on a log-rate axis is a slope in a narrow band. We
-pre-registered the band as $[-2.4, -1.6]$, to hold on at least three of
-four base models, and swept quantizer width $b \in \{1,2,3,4,8,16\}$ with
-the fit taken over $b \in \{2,3,4,8\}$, $b=1$ being clipping-dominated.
+Theorem~\ref{thm:general} predicts distortion decaying as $2^{-2R/\deff}$,
+and we registered that as a slope in $[-2.4, -1.6]$ on at least three of
+four bases. \textbf{The sweep cannot resolve it, and two earlier readings
+of it are withdrawn.} A previously reported falsification rested on
+asymptotes computed at a different ridge value, and the refitted sweep
+turns out to have too little dynamic range to measure an exponent at all:
+only two of the six quantizer widths sit above the metric's own noise
+floor, one of which the registered rule excludes as clipping-dominated.
+By the rule as written the outcome is \textsc{unresolved}, and this
+removes the only positive evidence for the rate term anywhere in this
+paper. Appendix~\ref{app:rate} gives the sweep, both faults and the rule
+applied to the result.
 
-An earlier version of this work reported the prediction falsified, on the
-strength of measured slopes of $-0.10$ and $-0.21$. \textbf{Those two
-numbers are withdrawn.} Each finite-rate curve was compared against a
-$b = \infty$ reference computed at a \emph{different} ridge value and
-aggregated over a different number of cohorts, so the quantity being
-differenced was not the same method. The symptom was visible in the
-output and we did not act on it at the time: on two bases the excess at
-finite rate came out \emph{below} its own asymptote, which the model does
-not permit. That is a measurement fault, not a property of the data.
-
-\begin{table}[t]
-\centering
-\small
-\caption{Rate sweep against matched asymptotes: same ridge $\lambda$, same
-realisation, same cohort for the curve and its $b = \infty$ reference, with
-the equality asserted from the configuration files before any fit is
-attempted. Worst-task NLL excess in nats, at four decimals because at three
-the reader cannot check the two facts that matter. \textbf{Ten of the
-twenty-four measured values fall below their own asymptote}, which the model
-forbids; all but one are smaller than $10^{-4}$ nats and are consistent with
-numerical noise, the exception being Llama at $b=3$ at $-0.0020$. The fit is
-ordinary least squares of $\log_2(\text{excess} - \text{asymptote})$ on $b$
-over $b \in \{2,3,4,8\}$, keeping residuals above $10^{-9}$; the ``fit''
-column names the points that survived that filter, and both surviving fits
-rest partly on residuals below this metric's own resolution of about
-$0.001$ nats (\S\ref{sec:discussion}).}
-\label{tab:w3}
-\begin{tabular}{lccccccccccc}
-\toprule
-base & $b{=}1$ & $b{=}2$ & $b{=}3$ & $b{=}4$ & $b{=}8$ & $b{=}16$ &
-$b{=}\infty$ & fit & slope & $R^2$ \\
-\midrule
-Llama-3.1-8B & 0.6329 & 0.0967 & 0.0803 & 0.0845 & 0.0823 & 0.0823 & 0.0823 & 2,4,8 & $-2.10$ & 0.9843 \\
-Mistral-7B & 0.2106 & 0.0497 & 0.0480 & 0.0471 & 0.0474 & 0.0473 & 0.0474 & 2,3 & --- & --- \\
-Qwen2.5-7B & 0.0746 & 0.0110 & 0.0102 & 0.0101 & 0.0101 & 0.0100 & 0.0102 & 2,3 & --- & --- \\
-Yi-1.5-9B & 0.2099 & 0.0413 & 0.0361 & 0.0357 & 0.0356 & 0.0355 & 0.0356 & 2,3,4 & $-3.50$ & 0.9996 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Refitted, the verdict is unresolved.} Table~\ref{tab:w3} gives
-the corrected sweep. Llama fits at $-2.10$ with $R^2 = 0.98$ against a
-predicted $-2$, and Yi at $-3.50$, steeper than predicted rather than
-flatter. Mistral and Qwen cannot be fitted, because only two of their four
-in-window points have a residual above the filter at all.
-
-\paragraph{A second fault in this analysis, found in preparing this
-version.} The first fault was the mismatched reference described above. The
-second is that neither surviving fit is supported by the data at the
-precision the metric provides, and the published three-decimal table
-concealed it.
-
-The fits are on the residual above the asymptote, and those residuals are
-mostly tiny. Llama's three fitted points have residuals $0.0144$, $0.0023$
-and $0.0000029$ nats. The last is the $b = 8$ point, and it is what makes
-the fit possible at all: without it Llama has two usable points and is
-unfittable like Mistral and Qwen. It sits about $350$ times below this
-metric's own stated resolution of $0.001$ nats
-(\S\ref{sec:discussion}), so on a $\log_2$ axis it carries enormous
-leverage while being, by our own account of the metric,
-indistinguishable from zero. Yi is worse in one respect: two of its three
-fitted residuals, $0.00046$ and $0.000044$, are below the resolution.
-
-We also withdraw the account this section previously gave of why Mistral
-and Qwen are unfittable. It said each ``reaches its asymptotic value
-inside the fit window'', which is benign and wrong. What actually happens
-is that their $b=4$ and $b=8$ points fall \emph{below} their asymptotes and
-are removed by the residual filter. That is the same anomaly this section
-opened by describing, and the caption of the published table asserted it no
-longer occurred. It occurs on all four bases, ten times in twenty-four
-measurements, and Table~\ref{tab:w3} now reports it.
-
-The honest reading is that this sweep does not have the dynamic range to
-measure a rate exponent. Only $b \in \{1, 2\}$ is comfortably above the
-noise floor on any base, and $b = 1$ is excluded by the registered rule as
-clipping-dominated. We are therefore not entitled to the claim that the
-exponent holds on Llama, and we withdraw it; it was the only positive
-evidence for the rate term anywhere in this paper.
-
-The rule fixed in advance requires the slope to lie in $[-2.4, -1.6]$ on
-at least three of four bases to void the falsification, and $|{\rm slope}|
-< 0.5$ on at least three of four for it to stand. We obtain one and zero
-respectively, so by the registered rule the outcome is
-\textsc{unresolved}. We apply the rule as written, to the fits as computed,
-rather than adjusting the residual filter now that we can see which points
-it admits: moving a threshold after seeing its consequences is the practice
-the pre-registration exists to prevent, and it would in this case move the
-verdict in our own favour. Note however that the reading above makes the
-outcome unresolved for a more basic reason than the rule contemplates. The
-rule presumes fits worth judging, and on this grid there are none. The
-registered window $\{2,3,4,8\}$ is too coarse for bases that reach their
-noise floor by three bits; a finer low-rate grid would settle it, and we
-have deliberately not chosen one after seeing which grid would produce a
-fit.
-
-What survives is an operational regularity rather than a test of the
-theory, and it is the one thing here the precision does support. With the
-ridge on, three bits buys essentially the whole effect: from $b = 3$ upward
-every base is within $0.005$ nats of its own asymptote, and sixteen bits
-adds nothing measurable over four. Only $b=1$, where clipping dominates, is
-far off. A practitioner quantizing a merged adapter can stop at three or
-four bits, and that recommendation does not depend on any exponent.
-
-Three caveats. This sweep is a single initialisation draw on the
-shared-initialisation cohort, so it says nothing about whether the
-finite-rate behaviour differs by regime; repeating it on an independent
-cohort would be a genuinely new measurement and needs its own registered
-rule, since it asks a different question from the one registered here.
-The faults corrected above were both ours and both in the analysis rather
-than the cells: the first in the reference the analyser selected, the
-second in the precision at which we reported and read the result. And we
-note that the second fault was invisible at three decimals and would have
-stayed invisible: a reader could not have derived it from the published
-table, which is the reason we now print the fitted points and the residual
-scale rather than the rounded values alone.
+One operational regularity does survive at the precision available: with
+the ridge on, every base is within $0.005$ nats of its own asymptote from
+three bits upward, so a practitioner quantizing a merged adapter can stop
+at three or four bits regardless of any exponent.
 
 \subsection{DARE: a negative result with a mechanism, and its limits}
 \label{subsec:dare}
