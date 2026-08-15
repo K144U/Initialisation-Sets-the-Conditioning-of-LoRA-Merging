@@ -25,44 +25,40 @@ are those in the audit-trail bundle released with the paper, which differ from
 our working repository's because anonymisation rewrites every commit; the
 ordering is unaffected, since rewriting does not change topology. Verify a row
 with \texttt{git merge-base -{}-is-ancestor <rules> <result>}, which exits zero
-exactly when the ordering claimed here holds, and fails on the reverse.
-\textbf{[BUILD NOTE, REMOVE BEFORE SUBMISSION: the last four rows currently
-carry working-repository hashes. The bundle must be rebuilt from the final
-history and every hash in this table regenerated from the mapping
-\texttt{build\_anon\_bundle.sh} prints.]}}
+exactly when the ordering claimed here holds, and fails on the reverse.}
 \label{tab:commits}
 \begin{tabular}{llll}
 \toprule
 test & rules & analyzer or implementation & result \\
 \midrule
-Replication, step 0 (\S\ref{subsec:q1}) & \texttt{0d9924b} &
-  --- & \texttt{175453f} \\
-Replication, $n=3$ (\S\ref{subsec:q1}) & \texttt{d503347} &
-  --- & \texttt{7edf68a} \\
-DARE with TIES (\S\ref{subsec:dare}) & \texttt{100cd43} &
-  \texttt{b94331c}, \texttt{672a72c} & \texttt{3a0822e} \\
-Conditioning and the ridge (\S\ref{subsec:ridge}) & \texttt{fa5f3c3} &
-  \texttt{6e51df3}, \texttt{de2aa10} & \texttt{25d7de0} \\
-Rate exponent (\S\ref{subsec:w3}) & \texttt{fa5f3c3} &
-  \texttt{40eae48} (corrected) & \texttt{dc2991a} \\
+Replication, step 0 (\S\ref{subsec:q1}) & \texttt{5693d9a} &
+  --- & \texttt{ee90491} \\
+Replication, $n=3$ (\S\ref{subsec:q1}) & \texttt{44c0d39} &
+  --- & \texttt{3723f96} \\
+DARE with TIES (\S\ref{subsec:dare}) & \texttt{0e0898d} &
+  \texttt{71bcf37}, \texttt{e59e79d} & \texttt{b1613fc} \\
+Conditioning and the ridge (\S\ref{subsec:ridge}) & \texttt{f48c4ef} &
+  \texttt{55dda26}, \texttt{6015e93} & \texttt{34a6c69} \\
+Rate exponent (\S\ref{subsec:w3}) & \texttt{f48c4ef} &
+  \texttt{b00e472} (corrected) & \texttt{6ae3937} \\
 \addlinespace
-Solver replication (\S\ref{subsec:regmean}) & \texttt{0c8b9e8} &
-  \texttt{c597e31}, \texttt{2a49b3e} & \texttt{a5e1ea1} \\
-Untruncated and gate (\S\ref{subsec:untruncated}) & \texttt{0c8b9e8} &
-  \texttt{fb21c0f} & \texttt{23c251b} \\
-Repaired KnOTS (\S\ref{sec:discussion}) & \texttt{0c8b9e8} &
-  \texttt{e8c968a} & \texttt{30d2c04} \\
-Merge matrix at $T=3$ (\S\ref{subsec:q1}) & \texttt{0c8b9e8} &
-  \texttt{7a12e2c} & \texttt{0d35789} \\
+Solver replication (\S\ref{subsec:regmean}) & \texttt{1eabc27} &
+  \texttt{0672c70}, \texttt{9b2b10c} & \texttt{758892a} \\
+Untruncated and gate (\S\ref{subsec:untruncated}) & \texttt{1eabc27} &
+  \texttt{51d8f62} & \texttt{f5323e2} \\
+Repaired KnOTS (\S\ref{sec:discussion}) & \texttt{1eabc27} &
+  \texttt{fa7ba37} & \texttt{86000cf} \\
+Merge matrix at $T=3$ (\S\ref{subsec:q1}) & \texttt{1eabc27} &
+  \texttt{66617ff} & \texttt{2a97774} \\
 \addlinespace
-Margin-aware control (\S\ref{subsec:q1}) & \texttt{0c8b9e8} &
-  \texttt{ae3fdf1} & \texttt{f20b13c} \\
-Shared arm at $n=3$ (\S\ref{subsec:shared-arm}) & \texttt{603e013} &
-  \texttt{778da6e} & \texttt{f20b13c} \\
-Public-cohort prevalence (\S\ref{subsec:prevalence}) & \texttt{84526b9} &
-  \texttt{11bc8a7} & \texttt{f20b13c} \\
-Downstream accuracy (\S\ref{subsec:downstream-cond}) & \texttt{df832fe} &
-  \texttt{e66d273} & \texttt{f20b13c} \\
+Margin-aware control (\S\ref{subsec:q1}) & \texttt{1eabc27} &
+  \texttt{9b9f98e} & \texttt{a9cf9c7} \\
+Shared arm at $n=3$ (\S\ref{subsec:shared-arm}) & \texttt{41d8adc} &
+  \texttt{b4360ea} & \texttt{a9cf9c7} \\
+Public-cohort prevalence (\S\ref{subsec:prevalence}) & \texttt{5e8e736} &
+  \texttt{5e7f3c0} & \texttt{a9cf9c7} \\
+Downstream accuracy (\S\ref{subsec:downstream-cond}) & \texttt{8845efa} &
+  \texttt{46d94ee} & \texttt{a9cf9c7} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -71,15 +67,15 @@ Three rows deserve a comment, and the first is the one a sceptical reader
 should check first.
 
 The replication appears as two rows because its amendment does \emph{not}
-precede the step-0 result: \texttt{d503347} was committed after
-\texttt{175453f} was read. That is the blindness limitation the amendment
+precede the step-0 result: \texttt{44c0d39} was committed after
+\texttt{ee90491} was read. That is the blindness limitation the amendment
 states about itself, made checkable rather than asserted, and it is why the
 amendment is paired with the $n=3$ verdict it actually governs. Running the
-ancestry check on \texttt{d503347} against \texttt{175453f} fails, and should.
+ancestry check on \texttt{44c0d39} against \texttt{ee90491} fails, and should.
 
 The DARE-TIES analyzer appears twice because the first version printed, under a
 mixed verdict, the consequence text belonging to a different verdict;
-\texttt{672a72c} is that repair, and it predates the verdict commit. The
+\texttt{e59e79d} is that repair, and it predates the verdict commit. The
 rate-exponent row names a \emph{corrected} analyzer, and that correction was
 made after the first analysis had been read, for the reason given in
 \S\ref{subsec:rate-prereg} below.
@@ -227,56 +223,56 @@ which is checkable with \texttt{git log -{}-follow} on the path.}
 \toprule
 document & introduced in & governs \\
 \midrule
-\texttt{prereg\_a1\_matrix} & \texttt{0d9924b} & replication, step 0 \\
-\texttt{prereg\_a1\_matrix\_amendment} & \texttt{d503347} & replication, $n=3$ \\
-\texttt{prereg\_dare\_ties} & \texttt{100cd43} & DARE with TIES \\
-\texttt{prereg\_conditioning} & \texttt{fa5f3c3} & ridge sweep, rate exponent \\
-\texttt{prereg\_tmlr} & \texttt{0c8b9e8} & solver replication, gate, KnOTS, $T=3$ \\
-\texttt{prereg\_tmlr\_amendment} & \texttt{c597e31} & RegMean's minimal $\lambda$ \\
-\texttt{prereg\_shared\_arm} & \texttt{603e013} & the shared arm at $n=3$ \\
-\texttt{prereg\_prevalence} & \texttt{84526b9} & public-cohort prevalence \\
-\texttt{prereg\_downstream} & \texttt{df832fe} & downstream accuracy \\
-\texttt{prereg\_downstream\_amendment} & \texttt{4d48987} & HumanEval's 164 items \\
+\texttt{prereg\_a1\_matrix} & \texttt{5693d9a} & replication, step 0 \\
+\texttt{prereg\_a1\_matrix\_amendment} & \texttt{44c0d39} & replication, $n=3$ \\
+\texttt{prereg\_dare\_ties} & \texttt{0e0898d} & DARE with TIES \\
+\texttt{prereg\_conditioning} & \texttt{f48c4ef} & ridge sweep, rate exponent \\
+\texttt{prereg\_tmlr} & \texttt{1eabc27} & solver replication, gate, KnOTS, $T=3$ \\
+\texttt{prereg\_tmlr\_amendment} & \texttt{0672c70} & RegMean's minimal $\lambda$ \\
+\texttt{prereg\_shared\_arm} & \texttt{41d8adc} & the shared arm at $n=3$ \\
+\texttt{prereg\_prevalence} & \texttt{5e8e736} & public-cohort prevalence \\
+\texttt{prereg\_downstream} & \texttt{8845efa} & downstream accuracy \\
+\texttt{prereg\_downstream\_amendment} & \texttt{9b20d1e} & HumanEval's 164 items \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \subsubsection{\texttt{prereg\_a1\_matrix\_2026-08-03.md}, committed
-\texttt{0d9924b}}
+\texttt{5693d9a}}
 \lstinputlisting{prereg/prereg_a1_matrix_2026-08-03.md}
 
 \subsubsection{\texttt{prereg\_a1\_matrix\_amendment\_2026-08-04.md},
-committed \texttt{d503347}}
+committed \texttt{44c0d39}}
 \lstinputlisting{prereg/prereg_a1_matrix_amendment_2026-08-04.md}
 
 \subsubsection{\texttt{prereg\_dare\_ties\_2026-08-04.md}, committed
-\texttt{100cd43}}
+\texttt{0e0898d}}
 \lstinputlisting{prereg/prereg_dare_ties_2026-08-04.md}
 
 \subsubsection{\texttt{prereg\_conditioning\_2026-08-07.md}, committed
-\texttt{fa5f3c3}}
+\texttt{f48c4ef}}
 \lstinputlisting{prereg/prereg_conditioning_2026-08-07.md}
 
 \subsubsection{\texttt{prereg\_tmlr\_2026-08-14.md}, committed
-\texttt{0c8b9e8}}
+\texttt{1eabc27}}
 \lstinputlisting{prereg/prereg_tmlr_2026-08-14.md}
 
 \subsubsection{\texttt{prereg\_tmlr\_amendment\_2026-08-14.md}, committed
-\texttt{c597e31}}
+\texttt{0672c70}}
 \lstinputlisting{prereg/prereg_tmlr_amendment_2026-08-14.md}
 
 \subsubsection{\texttt{prereg\_shared\_arm\_2026-08-15.md}, committed
-\texttt{603e013}}
+\texttt{41d8adc}}
 \lstinputlisting{prereg/prereg_shared_arm_2026-08-15.md}
 
 \subsubsection{\texttt{prereg\_prevalence\_2026-08-15.md}, committed
-\texttt{84526b9}}
+\texttt{5e8e736}}
 \lstinputlisting{prereg/prereg_prevalence_2026-08-15.md}
 
 \subsubsection{\texttt{prereg\_downstream\_2026-08-15.md}, committed
-\texttt{df832fe}}
+\texttt{8845efa}}
 \lstinputlisting{prereg/prereg_downstream_2026-08-15.md}
 
 \subsubsection{\texttt{prereg\_downstream\_amendment\_2026-08-15.md}, committed
-\texttt{4d48987}}
+\texttt{9b20d1e}}
 \lstinputlisting{prereg/prereg_downstream_amendment_2026-08-15.md}

@@ -2,7 +2,7 @@
 
 *Initialisation Sets the Conditioning of LoRA Merging*
 
-This directory contains one file, `audit-trail.bundle` (19 MB). It is a **git
+This directory contains one file, `audit-trail.bundle` (20 MB). It is a **git
 bundle**: a single file carrying the project's real version history, not a
 snapshot of it. The distinction is the point. The paper asks you to check that
 each pre-registration was committed *before* the compute it governs, and that
@@ -10,8 +10,8 @@ check is only meaningful against a commit graph. A directory of files, however
 complete, cannot support it.
 
 ```
-sha256  b35b5e4f01d1fed1b4143dd82161d2fa92a044e07b49997a16502e557cb11ece
-md5     25a0f7c0e5c689a14b6882002015eea6
+sha256  c020fdd11490c6f287f5a009fa32f6f185eca3c9dd88e432606a8fdd9419ca39
+md5     815d6fd8077c04152817edc4b73a246b
 ```
 
 ## Open it
@@ -21,7 +21,7 @@ git clone audit-trail.bundle rdmerge
 cd rdmerge
 ```
 
-You now have an ordinary git repository: 159 commits on two branches,
+You now have an ordinary git repository: 184 commits on two branches,
 `paper-consolidation` (checked out) and `phase3-bootstrap`. Every git command
 works normally. If you only want to read the files and do not care about the
 history, the clone's working tree is already the snapshot you want.
@@ -36,23 +36,27 @@ the decision rules and the commit that recorded the result. The caption asks you
 to verify the ordering yourself. From inside the clone:
 
 ```sh
-git merge-base --is-ancestor 0d9924b 175453f && echo ordering holds
+git merge-base --is-ancestor 5693d9a ee90491 && echo ordering holds
 ```
 
 which exits zero exactly when the rules commit precedes the result commit, and
-non-zero otherwise. The nine rows of Table 12 are:
+non-zero otherwise. The 13 rows of Table 12 are:
 
 | test | rules | result |
 |---|---|---|
-| Replication, step 0 | `0d9924b` | `175453f` |
-| Replication, n = 3 | `d503347` | `7edf68a` |
-| DARE with TIES | `100cd43` | `3a0822e` |
-| Conditioning and the ridge | `fa5f3c3` | `25d7de0` |
-| Rate exponent | `fa5f3c3` | `dc2991a` |
-| Solver replication | `0c8b9e8` | `a5e1ea1` |
-| Untruncated and gate | `0c8b9e8` | `23c251b` |
-| Repaired KnOTS | `0c8b9e8` | `30d2c04` |
-| Merge matrix at T = 3 | `0c8b9e8` | `0d35789` |
+| Replication, step 0 | `5693d9a` | `ee90491` |
+| Replication, n=3 | `44c0d39` | `3723f96` |
+| DARE with TIES | `0e0898d` | `b1613fc` |
+| Conditioning and the ridge | `f48c4ef` | `34a6c69` |
+| Rate exponent | `f48c4ef` | `6ae3937` |
+| Solver replication | `1eabc27` | `758892a` |
+| Untruncated and gate | `1eabc27` | `f5323e2` |
+| Repaired KnOTS | `1eabc27` | `86000cf` |
+| Merge matrix at T=3 | `1eabc27` | `2a97774` |
+| Margin-aware control | `1eabc27` | `a9cf9c7` |
+| Shared arm at n=3 | `41d8adc` | `a9cf9c7` |
+| Public-cohort prevalence | `5e8e736` | `a9cf9c7` |
+| Downstream accuracy | `8845efa` | `a9cf9c7` |
 
 The stronger check is that the rules files were not edited after they were
 first committed, since a pre-registration that can be revised afterwards is
@@ -99,4 +103,6 @@ mistaken for something else. The repository's own `README.md` and
 were written before the paper was restructured and were never updated; the
 paper's own sources under `paper/` are current. And a docstring in
 `code/phase3/scripts/gpu_opportunity.py` still says `gpu01` where the code says
-`gpu-node-01`, a leftover of the hostname rewrite.
+`gpu-node-01`, a leftover of the hostname rewrite. Commit timestamps are
+normalised to UTC: the epoch second of each commit is unchanged, only the
+recorded offset, so ordering is exactly as it was.
