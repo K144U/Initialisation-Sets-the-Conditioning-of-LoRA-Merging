@@ -22,8 +22,8 @@ governs, and that check is only meaningful against a commit graph. A directory
 of files, however complete, cannot support it.
 
 ```
-sha256  c020fdd11490c6f287f5a009fa32f6f185eca3c9dd88e432606a8fdd9419ca39
-md5     815d6fd8077c04152817edc4b73a246b
+sha256  cf7d7c71fa902676d45c1dce329098c03c9485106a6971bf64c127dec5523e90
+md5     93b2f32a63ee77e8feb7be168ad42eb8
 ```
 
 ## Open it
@@ -33,8 +33,8 @@ git clone audit-trail.bundle rdmerge
 cd rdmerge
 ```
 
-You now have an ordinary git repository: 184 commits on two branches,
-`paper-consolidation` (checked out) and `phase3-bootstrap`. Every git command
+You now have an ordinary git repository: 197 commits on three branches,
+`paper-consolidation` (checked out), `phase3-bootstrap` and `main`. Every git command
 works normally. If you only want to read the files and do not care about the
 history, the clone's working tree is already the snapshot you want.
 
