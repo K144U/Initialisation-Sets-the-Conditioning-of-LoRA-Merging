@@ -78,6 +78,32 @@ def get_json(url: str, tries: int = 3):
     return None
 
 
+def get_json_paged(url: str, tries: int = 3):
+    """Return (payload, next_url). The models API paginates with an opaque
+    cursor handed back in a Link: rel="next" header, not with anything present
+    in the body, so the body cannot be used to walk the list."""
+    for k in range(tries):
+        try:
+            req = urllib.request.Request(url, headers=UA)
+            with urllib.request.urlopen(req, timeout=45) as r:
+                body = json.load(r)
+                nxt = None
+                link = r.headers.get("Link")
+                if link:
+                    for part in link.split(","):
+                        if 'rel="next"' in part:
+                            nxt = part.split(">")[0].split("<")[-1].strip()
+                            break
+                return body, nxt
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403, 404):
+                return None, None
+            time.sleep(2 * (k + 1))
+        except Exception:
+            time.sleep(2 * (k + 1))
+    return None, None
+
+
 def get_bytes(url: str, dest: Path, tries: int = 3) -> bool:
     if dest.exists() and dest.stat().st_size > 0:
         return True
@@ -114,11 +140,10 @@ def phase1() -> int:
     print(f"walking {API} filter=peft sort=downloads desc, "
           f"stop at {TARGET_COHORTS} cohorts or {MAX_EXAMINED} models")
 
-    cursor = None
-    while examined < MAX_EXAMINED:
-        url = (f"{API}?filter=peft&sort=downloads&direction=-1&limit=100"
-               + (f"&cursor={cursor}" if cursor else ""))
-        page = get_json(url)
+    url = f"{API}?filter=peft&sort=downloads&direction=-1&limit=100"
+    while url and examined < MAX_EXAMINED:
+        page, next_url = get_json_paged(url)
+        url = next_url
         if not page:
             break
         if isinstance(page, dict):
@@ -160,10 +185,6 @@ def phase1() -> int:
                 {"repo": repo, "rank": r,
                  "target_modules": sorted(tm) if isinstance(tm, list) else [str(tm)],
                  "downloads": m.get("downloads", 0)})
-
-        cursor = page[-1].get("_id") if isinstance(page[-1], dict) else None
-        if not cursor:
-            break
 
         done = [k for k, v in candidates.items() if len(v) >= MIN_ADAPTERS]
         if len(done) >= TARGET_COHORTS:
