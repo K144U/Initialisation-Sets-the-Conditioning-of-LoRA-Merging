@@ -112,6 +112,25 @@ def main() -> int:
         shutil.rmtree(stale_pre)
         changed.append("prereg/ (removed: no longer inputted)")
 
+    # The registrations live in notes/ and are mirrored into paper/prereg/.
+    # That mirror went stale once: a registration was committed to notes/ and
+    # never copied across, so the supplementary shipped eleven of twelve while
+    # the paper claimed twelve. The bundle had it, which is what matters for
+    # the audit trail, but a reader counting files in the supplementary would
+    # have found one missing and no way to know it was an oversight rather
+    # than a document we chose not to show. Check rather than trust.
+    notes_pre = sorted(p.name for p in (REPO / "notes").glob("prereg_*.md"))
+    mirror_pre = sorted(p.name for p in (PAPER / "prereg").glob("*.md"))
+    if notes_pre != mirror_pre:
+        print("paper/prereg/ does not mirror notes/:")
+        for n in sorted(set(notes_pre) - set(mirror_pre)):
+            print(f"  in notes/ only: {n}")
+        for n in sorted(set(mirror_pre) - set(notes_pre)):
+            print(f"  in paper/prereg/ only: {n}")
+        print("
+Fix the mirror and re-run. Nothing copied.")
+        return 2
+
     # They do ship in the supplementary, and that copy is kept in sync here so
     # the two cannot drift.
     sup_pre = REPO / "tmlr_submission" / "supplementary" / "prereg"
