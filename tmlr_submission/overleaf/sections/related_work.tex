@@ -33,24 +33,45 @@ posted while this work was in progress and independently of it, study
 incompatibility between tasks as a strong correlate of it, and use
 rate-distortion theory to argue for a dimension-dependent limit on
 mergeability that holds regardless of the merging method. We therefore
-make no priority claim for the lens itself. Where ours differs
-technically is that it bounds \emph{worst-task} rather than average
-distortion, for rank-$r$ adapters with arbitrary task-dependent
-curvature, with a matching construction in the generic regime. We list
-the difference for the reader's orientation and not as a contribution
-claim; see \S\ref{sec:discussion} for what we think the bound is
-actually worth.
+make no priority claim for the lens itself.
 
-We have not attempted to reconcile the two bounds, and it is worth being
-precise about why. Ours constrains $\max_t (w-\tau_t)^\top H_t (w-\tau_t)$ over
-admissible rank-$r$ task tuples, at a storage budget of $R$ bits, and its
-content is a rate-distortion tradeoff: it says what no encoder can achieve at a
-given rate. Theirs, on the abstract's description, constrains mergeability as a
-function of representational incompatibility between tasks, with no rate
-appearing. The two would meet if their incompatibility measure were expressible
-through the geometry of the $V_t$, since that is what fixes both our $\deff$ and
-our $\kappa(\bar H)$; whether it is, we cannot tell without their construction
-in front of us. A reader interested in the limits of merging should read both.
+\textbf{The two bounds constrain different objects, and we correct one of our
+own descriptions of the difference.} An earlier draft distinguished ours as
+bounding worst-task rather than average distortion. That is not a difference:
+their Theorem~1 bounds $\delta_{\max}(\hat\theta) = \max_i
+\E_X\|h(X;\hat\theta) - h(X;\theta_i)\|_2^2$, which is also a maximum over
+tasks. The real differences are these. Theirs measures distortion in the
+\emph{hidden states} of a fixed layer and ours in \emph{parameter} space under
+a per-task curvature $H_t$, so their quantity needs forward passes and data
+while ours is read off the adapter files. Theirs assumes linear mode
+connectivity, that every convex combination of the fine-tuned minima attains
+the same loss, and derives $\delta_{\max} \geq \tfrac14\Delta^2$ with a convex
+merge achieving $\tfrac{d}{2(d+1)}\Delta^2$ by Jung's theorem, where $\Delta$
+is the diameter of the task representation clusters. Ours assumes rank-$r$
+structure and, for the rate term only, Assumption~\ref{asm:epr}. And the role
+of the rate differs sharply: their rate-distortion statement is that
+$R(D) = 0$ exactly when $D \geq \Delta^2/4$ and $R(D) \geq \log_2 N$ below it,
+a zero-rate threshold rather than a tradeoff, whereas the content of ours is
+the $R$-dependence itself.
+
+\textbf{Their central negative result deserves a direct answer, because it
+looks like a counterexample to ours.} They report that parameter-space
+conflict metrics correlate minimally with merging collapse while
+representational incompatibility correlates strongly, and this paper's
+headline instrument is a parameter-space measurement. We think the two agree
+where they overlap, for a reason our own null supplies. Their bound is proved
+for convex merges under LMC, and convex merges are precisely the class in
+which we \emph{also} find parameter-space geometry to have no detectable
+effect: fifteen of twenty base-by-method cells in NLL
+(\S\ref{subsec:ridge}) and zero of forty in downstream accuracy. Our positive
+claim is confined to merges that solve a linear system, which are not convex
+combinations of the fine-tuned models and which their assumption excludes.
+Read that way, both papers find that parameter-space quantities do not predict
+what averaging-type merges do; we add that one parameter-space quantity does
+predict what solve-based merges do. We have not tested their $\Delta$ on our
+cohorts, and doing so would need the forward passes our audit avoids, so we
+report the reconciliation as an argument and not as a measurement. A reader
+interested in the limits of merging should read both.
 
 \paragraph{Closed-form merging lineage.} Our encoder sits in a line of
 closed-form merges that invert a per-task curvature surrogate.

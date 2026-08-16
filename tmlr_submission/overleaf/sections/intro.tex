@@ -55,6 +55,19 @@ with rank truncation removed. A single Tikhonov term repairs it. We show
 this for our own encoder and for RegMean, so it is a property of the
 family rather than of our construction.
 
+\textbf{The obvious objection is that regularising a least-squares solve is
+standard practice, so we checked what the standard practice actually does.}
+RegMean ships a regulariser of its own, an $\alpha$-shrinkage of the
+off-diagonal Gram entries with a default of $\alpha = 0.9$. On a collapsed
+cohort it is equivalent to a ridge of about $5\times10^{-4}$, roughly $20$
+times smaller than the $\lambda^\star = 0.01$ the sweep selects, and it leaves
+the system at condition number $6.6$ to $9.1\times10^{3}$ against
+$1.5\times10^{2}$ with the ridge. It applies the same dose on a
+well-conditioned cohort, where it is ample. That is the practical content of
+this paper in one sentence: \textbf{the default regularisation does not know
+which regime it is in, and the audit is what tells you}
+(\S\ref{subsec:regmean-default}).
+
 \paragraph{The regime is common in released adapters.} Every cohort
 discussed so far is one we trained ourselves, in both conditions,
 deliberately. So we ran the same measurement over public LoRA cohorts under
@@ -97,8 +110,8 @@ $H_t = P_{V_t}$ we adopt (\S\ref{subsec:conditioning}).
 \paragraph{Where this came from.} We arrived at the conditioning question
 through a rate-distortion analysis of merging, which is in the paper because
 it is the reason we looked at $\bar H$ at all and for no stronger reason than
-that. \S\ref{sec:theory} states the bound, says what it did and did not do,
-and sends the formal development to Appendix~\ref{app:rd}. In short: its floor
+that. \S\ref{sec:setup} says what it did and did not do, and
+Appendix~\ref{app:rd} carries the formal development. In short: its floor
 term is exactly zero on every cohort we measured, its rate term rests on an
 assumption we state but do not prove and on an imported constant, and it
 derives none of the four results above. Everything in \S\ref{sec:regimes} and

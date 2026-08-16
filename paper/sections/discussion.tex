@@ -1,37 +1,69 @@
-\paragraph{What we think survives.} The bound and its matching construction,
-which are mathematics and do not depend on any empirical outcome here. The
-observation that the bound's floor term is \emph{vacuous} for LoRA cohorts in
-general position, together with the exact instance form
-$B^2 - \tauH^\top\bar H\tauH$ that should be evaluated in its place. The
-identification of $\kappa(\bar H)$ as the quantity cohort initialisation
-actually controls, measured across four base models and four cohorts, with an
-amplification that returns the orthogonal-subspace value $T$ to within
-$1.4\%$ at two values of $T$. The pre-registered finding that this conditioning
-is invisible to standard merging heuristics and decisive for solve-based ones,
-which holds on a second solver we did not design and survives removing the rank
-truncation, where the effect is larger rather than smaller. And the measurement
-behind it: the heuristics stay within a factor of two of the mean task delta
-with essentially none of their energy in the ill-conditioned directions, while
-the unregularised solvers reach $35$ to $57$ times with three quarters of
-theirs there.
+\paragraph{What we think survives.} That whether a cohort's adapters shared
+one initialisation of $A$ determines the conditioning of $\bar H$, by four
+orders of magnitude, measured across four base models and four cohorts, with
+an amplification returning the orthogonal-subspace value $T$ to within $1.4\%$
+at two values of $T$. That the regime is common in adapters we did not train:
+$17$ of $45$ public cohorts, under a frame fixed before any download. That the
+collapse is invisible to merging heuristics and decisive for solve-based
+merges, pre-registered, holding on a second solver we did not design,
+surviving the removal of rank truncation with the effect larger rather than
+smaller, and measured in two units, worst-task loss and downstream accuracy,
+which agree. That the mechanism is visible in the merged weights: the
+heuristics stay within a factor of two of the mean task delta with essentially
+none of their energy in the ill-conditioned directions, while the
+unregularised solvers reach $35$ to $57$ times with three quarters of theirs
+there. And that one CPU minute on the adapter files tells a practitioner which
+case they are in, which is the part of this we expect anyone to use.
 
-\paragraph{What does not.} Our own encoder. Three controls have each removed
-a piece of its advantage: moving to properly initialised cohorts, matching the
-rank and the inference path to the baselines, and dropping the adapter that
-never trained. After all three it beats the best baseline on no base model at
-all, and is worse than it on one. The middle control moved a verdict in our
-favour and the other two moved verdicts against us; we report all three the
-same way. The claim that published merging benchmarks are
-confounded by initialisation geometry was withdrawn by a control we wrote
-ourselves. Our earlier report that the finite-rate exponent is falsified is
-withdrawn: its two supporting slopes were fitted against an asymptote computed
-at a different ridge value, and against matched asymptotes the question is
-unresolved rather than settled either way. And worst-task NLL excess, the
-metric everything here is measured in, does not predict downstream accuracy on
-either benchmark we can test, and inverts on one of them. We have left all of these at full strength rather than retreating
-to the subset that flatters the method, because the conditioning result is
-only worth anything if the reader can believe we would have reported it the
-other way.
+Two smaller things survive on the theory side: that the bound's floor term is
+\emph{vacuous} for LoRA cohorts in general position, and the exact instance
+form $B^2 - \tauH^\top\bar H\tauH$ that should be evaluated in its place. The
+bound and its construction are mathematics and do not depend on any empirical
+outcome here, but \S\ref{sec:setup} is our account of how little that buys.
+
+\paragraph{What does not, collected in one place.} These are scattered through
+the paper at the point each is established, which is where a reader checking a
+number needs them. Collected here so that a reader who wants the list does not
+have to assemble it.
+
+\begin{enumerate}[itemsep=2pt]
+\item \textbf{Our own encoder's advantage.} Three controls each removed a
+  piece of it: independent initialisation, matching the rank and inference
+  path to the baselines, and dropping the adapter that never trained. After
+  all three it beats the best baseline on no base model and loses on one. The
+  middle control moved a verdict in our favour and the other two against us
+  (\S\ref{subsec:q1}).
+\item \textbf{That published merging benchmarks are confounded by
+  initialisation geometry.} Withdrawn by a control we wrote ourselves. A later
+  margin-aware control would reinstate it, and we decline to use it that way
+  because it was registered after its data had been seen
+  (\S\ref{subsec:withdrawn}).
+\item \textbf{That the finite-rate exponent is falsified.} Its two supporting
+  slopes were fitted against an asymptote computed at a different ridge value.
+  Against matched asymptotes the sweep has too little dynamic range to measure
+  the exponent at all, so the question is unresolved rather than settled
+  either way (Appendix~\ref{app:rate}).
+\item \textbf{A sixty-fold difference in the irreducible floor.} An artifact
+  of substituting a soft participation ratio into a formula derived for a
+  rank. The floor is zero in both regimes (\S\ref{subsec:floor-zero}).
+\item \textbf{That subspace-alignment methods have no overlap to exploit.}
+  Formal independence is not the absence of overlap, and our KnOTS
+  implementation reduced to task arithmetic under its default inner
+  combination, so it never tested the question
+  (\S\ref{sec:related_work}).
+\item \textbf{A figure for how far $A$ travels from its initialisation.} We
+  never measured it and cannot: no initial weights or intermediate
+  checkpoints were retained. Every geometry claim here is therefore scoped to
+  this training budget (Appendix~\ref{subsec:drift}).
+\item \textbf{Worst-task NLL excess as a proxy for deployed capability.} It
+  does not predict downstream accuracy across methods on either benchmark we
+  can test, and inverts on one. The scope of that failure is narrower than it
+  looks, and \S\ref{sec:discussion}'s second limitation is where we argue so.
+\end{enumerate}
+
+We have left each of these at full strength rather than retreating to the
+subset that flatters the method, because the conditioning result is only worth
+anything if a reader can believe we would have reported it the other way.
 
 \paragraph{Limitations.}
 \begin{enumerate}

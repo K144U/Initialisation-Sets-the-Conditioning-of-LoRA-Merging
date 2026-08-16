@@ -1,57 +1,20 @@
-Nothing in the empirical sections depends on this one. It is here because it
-is how we came to look at $\bar H$, and because a reader is entitled to know
-that the route was a theory rather than a hunch.
-
-We treat merging as lossy compression. A rate-$R$ merging code is an encoder
-and decoder pair that between them turn $T$ task vectors into one weight
-vector using $R$ bits, with both ends allowed to see $\boldsymbol H$ for free,
-and $\mathcal{D}^\star(T,d,r,B,R)$ is the best worst-task distortion any such
-code achieves against the hardest admissible task tuple. The formal
-definitions are in Appendix~\ref{app:rd}.
-
-Against a rotation-invariant hard distribution, every merging code obeys
-\begin{equation}\label{eq:bound-brief}
-  \mathcal{D}^\star
-  \;\geq\;
-  \underbrace{B^2\Bigl(1 - \frac{\E[\deff]}{Tr}\Bigr)}_{\text{irreducible floor}}
-  \;+\;
-  \underbrace{c_{\mathrm{TQ}}\cdot\frac{B^2\E[\deff]}{Tr}\,
-  2^{-2R/\E[\deff]}}_{\text{rate term}},
-\end{equation}
-and in the regime where the floor vanishes an explicit construction matches
-the exponent up to a universal constant. Statements, hypotheses and proofs are
-in Appendix~\ref{app:rd} (Theorems~\ref{thm:general} and~\ref{thm:achv}); the
-proofs themselves are in Appendix~\ref{app:proofs}.
-
-\paragraph{What it did.} It put $\deff$, and therefore the geometry of the
-union of the task subspaces, at the centre of the problem. That is what sent
-us to measure principal cosines between task row spaces, which is the
-measurement the rest of the paper is built on and the one we expect a
-practitioner to use. Nothing else we tried pointed there.
-
-\paragraph{What it does not do, stated here rather than in a limitations
-list.} It derives none of the empirical results that follow, and three
-specific things are wrong with using it as support.
-
-Its floor term is \textbf{exactly zero} on all four base models under every
-initialisation scheme we tried, because $T$ rank-$r$ adapters with $Tr \leq d$
-are linearly independent even when their subspaces are nearly collinear. Near
-collinear is not collinear. So on real LoRA cohorts the floor carries no
-operational content at all (\S\ref{subsec:floor-zero}). The trap worth
-naming is that substituting a soft participation-ratio surrogate for the
-rank makes the floor look large and cohort-dependent when it is neither.
-
-Its rate term rests on Assumption~\ref{asm:epr}, which we state and do not
-prove, and on a constant we import from TurboQuant~\citep{zandieh2025turboquant}
-rather than establish. Our attempt to measure the predicted exponent has too
-little dynamic range to do so, so we cannot claim the term is even consistent
-with our data (Appendix~\ref{app:rate}).
-
-And Theorem~\ref{thm:general} constrains a $w^\star$ carrying no rank
-constraint, while every merge we run is truncated to rank $r$. At that step it
-bears on our measurements by analogy and not by derivation
-(\S\ref{subsec:conditioning}).
-
-We think the lens earned its keep. But it is a lens, and everything in
-\S\ref{sec:regimes} and \S\ref{sec:methods} stands or falls on its own
+\paragraph{Where $\bar H$ came from.} We arrived at this operator through a
+rate-distortion analysis of merging, which treats the merge as lossy
+compression of $T$ task vectors into one weight vector and asks what worst-case
+distortion is achievable at a given storage budget. Appendix~\ref{app:rd}
+states the resulting lower bound and a matching construction, and
+Appendix~\ref{app:proofs} proves them. We report the analysis as provenance
+rather than as a contribution, for three reasons given in full there and
+summarised here: its floor term is exactly zero on all four base models under
+every initialisation we tried, so it carries no operational content for LoRA
+merging as practised (\S\ref{subsec:floor-zero}); its rate term rests on an
+assumption we state but do not prove and on a constant imported from
+TurboQuant~\citep{zandieh2025turboquant}, and our attempt to measure the
+exponent it predicts has too little dynamic range to do so
+(Appendix~\ref{app:rate}); and it constrains a merged model carrying no rank
+constraint, while every merge we run is truncated to rank $r$
+(\S\ref{subsec:conditioning}). What it did do is put the geometry of the union
+of the task subspaces at the centre of the problem, which is what sent us to
+measure principal cosines. Nothing else we tried pointed there, and everything
+in \S\ref{sec:regimes} and \S\ref{sec:methods} stands or falls on its own
 measurements.
