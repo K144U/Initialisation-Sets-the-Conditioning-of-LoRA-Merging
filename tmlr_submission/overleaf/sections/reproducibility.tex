@@ -7,8 +7,8 @@ before the compute it governs was dispatched; the commit ordering is
 recoverable from the repository history and is the audit trail we ask the
 reader to check rather than take on trust.
 
-\paragraph{Data splits.} We correct a claim made in an earlier version of
-this work. Training and evaluation splits are \emph{not} disjoint.
+\paragraph{Data splits.} Training and evaluation splits are \emph{not}
+disjoint.
 Training shuffles the source pool with the cohort seed while evaluation
 shuffles with a separate fixed seed, so on the two tasks whose evaluation
 split is the training split the held-out thousand is a different
@@ -19,8 +19,8 @@ mathematics and translation draw from genuinely separate splits and are
 unaffected. Absolute loss and accuracy numbers in this paper are therefore
 optimistic and should not be read as held-out performance.
 
-An earlier version went on to say that we did not \emph{believe} the
-overlap affected comparisons between methods. That belief is now tested.
+Whether that overlap affects comparisons \emph{between} methods is
+testable rather than a matter of belief, and we tested it.
 Every cell stores per-example loss in evaluation order, so the
 contaminated positions can be dropped and the whole matrix re-aggregated
 without retraining anything. On the disjoint subset the method ordering is
@@ -33,8 +33,8 @@ therefore a result rather than an assurance, and it is worth being precise
 about what it covers: comparisons, not levels. Absolute numbers remain
 optimistic.
 
-\paragraph{Evaluation harnesses.} An earlier version of this work reported
-downstream GSM8K and HumanEval numbers produced by scorers that discarded
+\paragraph{Evaluation harnesses.} The downstream GSM8K and HumanEval
+numbers in this paper are re-scored. The original scorers discarded
 a large and method-dependent fraction of generations: the HumanEval
 extractor returned an empty completion for markdown-fenced output, and the
 GSM8K extractor required the answer at end-of-string. Discard rates ran
@@ -88,4 +88,4 @@ data seeds, and merge-time mask seeds are independent and are recorded
 per cell in the released manifests. The distinction matters in this paper
 more than usual: \S\ref{sec:regimes} turns entirely on whether the
 initialisation seed is shared across the tasks of a cohort, and the
-shared-seed condition is the one our own earlier draft used throughout.
+shared-seed condition is the one that produces the collapsed regime.

@@ -70,11 +70,10 @@ fails on \texttt{indep2} and \texttt{indep3}, so the earlier optimistic
 reading was the best of three draws. Two further details: the rank-$64$ realisation disagrees at $T=3$, keeping Llama at
 $+0.0081$, and Mistral's champion changes from TIES to TVQ.
 
-The registered $T = 4$ arm stays primary; we are not substituting the less
-flattering arm any more than we would the reverse. But the direction is
-consistent across all three columns, and the reading we take is that the
-encoder's advantage was substantially a property of the degenerate cohort
-it was developed on. On that cohort $\bar H$ is ill-conditioned by four
+The registered $T = 4$ arm stays primary. The direction is consistent
+across all three columns, and the reading we take is that the encoder's
+advantage was substantially a property of the degenerate cohort it was
+developed on. On that cohort $\bar H$ is ill-conditioned by four
 orders of magnitude (\S\ref{subsec:conditioning}), which is exactly what
 the ridge term was introduced to handle, so the method was tuned on the one
 regime where its distinguishing component has work to do.

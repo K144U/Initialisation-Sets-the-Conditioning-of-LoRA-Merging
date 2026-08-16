@@ -195,16 +195,14 @@ retain the initial weights or any intermediate checkpoint. No script in our
 pipeline computes it and no result file contains it, which we verified
 directly rather than by recollection.
 
-\textbf{An earlier version of this work conflated the two}, quoting the
-measured $0.16$ to $0.19$ and describing it as the distance each adapter had
-moved from its initialisation. The number is correct and is the
-shared-cohort entry of the column above; the description of what it measures
-was wrong. We report the error here rather than silently relabelling it,
-because the two readings support different arguments: a small distance
-\emph{from initialisation} would say training barely moved $A$, which is the
-mechanism of \S\ref{subsec:mechanism}, whereas a small distance
-\emph{between adapters} says only that they ended up near each other, which
-is the phenomenon. We have the second and not the first.
+The two are easy to conflate and an earlier version of this work did,
+quoting the measured $0.16$ to $0.19$ as the distance each adapter had moved
+from its initialisation. The number is right and is the shared-cohort entry
+above; the description was not. The distinction decides what the number can
+support: a small distance \emph{from initialisation} would say training barely
+moved $A$, which is the mechanism of \S\ref{subsec:mechanism}, whereas a small
+distance \emph{between adapters} says only that they ended near each other,
+which is the phenomenon. We have the second.
 
 This has a registered consequence and we apply it. The E3 rule in
 \S\ref{subsec:prereg-docs} required $\|\Delta A\|/\|A\|$ at $25$, $50$, $75$
