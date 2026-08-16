@@ -109,6 +109,24 @@ if p.exists():
             None if r is None else round(r["d"], 3))
 
 
+# --- Table: drift across training (tab:drift), both arms.
+p = RES / "drift_summary.json"
+if p.exists():
+    d = json.loads(p.read_text())
+    for arm, printed_trace, printed_cos in [
+        ("drift_shared", [0.0922, 0.1106, 0.1262, 0.1308], 0.9960),
+        ("drift_indep", [0.0946, 0.1120, 0.1257, 0.1303], 0.0475),
+    ]:
+        a = d["arms"].get(arm, {})
+        # The raw trace repeats the 100% point, because the final checkpoint
+        # and the saved adapter are the same weights. The table prints it once.
+        trace = a.get("drift_trace") or []
+        for i, printed in enumerate(printed_trace):
+            add(f"tab:drift {arm} @{25*(i+1)}%", printed,
+                trace[i] if i < len(trace) else None)
+        add(f"tab:drift {arm} cos", printed_cos, a.get("cos_final"))
+
+
 def main() -> int:
     bad = skipped = 0
     for label, printed, actual in CHECKS:
