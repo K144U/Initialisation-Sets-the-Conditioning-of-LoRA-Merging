@@ -215,18 +215,18 @@ the clause and what followed it.
 
 \subsection{The pre-registration documents}\label{subsec:prereg-docs}
 
-Ten documents govern the tests in this paper. Table~\ref{tab:prereg-docs}
+Eleven documents govern the tests in this paper. Table~\ref{tab:prereg-docs}
 lists them with the commit that introduced each, and the rules are
 summarised below. \textbf{The documents themselves are in the supplementary
 material, complete and unedited}, and also inside the anonymised git bundle
 at the commits named here, which is the copy that cannot have been written
-afterwards. Earlier versions of this paper reproduced all ten verbatim in
+afterwards. Earlier versions of this paper reproduced them all verbatim in
 the appendix; that is what the bundle is for, and printing them twice made
 the paper longer without making anything more checkable.
 
 Each is the file as committed and none was modified after its commit, which
 is checkable with \texttt{git log -{}-follow} on the path. One character is
-altered across the ten: the first document records the wall-clock time at
+altered across the eleven: the first document records the wall-clock time at
 which a set of cells completed, with a timezone abbreviation that would
 narrow our geography under double-blind review, and it appears as
 \texttt{[tz]}. That is the only alteration.
@@ -310,12 +310,31 @@ widens it to roughly $11$ points on HumanEval against $6$ on GSM8K, so the
 two benchmarks are not equally powered and a null on HumanEval is not read
 as equivalent to a null on GSM8K. It makes our own predictions harder to
 satisfy, and was written before any cell ran.
+
+\item \textbf{\texttt{prereg\_heuristics\_downstream}} (\texttt{9cc2394})
+answers an asymmetry we found in our own reporting: the null of
+\S\ref{subsec:ridge} is measured only in worst-task NLL excess, the unit
+\S\ref{sec:discussion} disclaims, while the positive result beside it has
+two units. It registers the same five heuristics on the same two cohorts,
+scored on GSM8K and HumanEval, $80$ cells. Two features are worth naming
+because both cut against us. The gate is \emph{binomial} rather than the
+$2\times\mathrm{SE}$-over-cohorts gate used elsewhere, since this design has
+one cohort per arm, which makes it a weaker instrument with a minimum
+detectable effect of about $9$ accuracy points on GSM8K and $16$ on
+HumanEval; the document fixes the wording any null must be reported in so
+that it cannot later be read as ``no effect''. And it re-runs \emph{both}
+arms rather than reusing the $40$ shared-arm cells that already exist,
+because those were scored before the scorer repairs of
+\S\ref{subsec:downstream-cond} and a paired difference taken across two
+scorer versions would carry a known, method-dependent defect inside it. All
+four branches of the decision rule are written out in advance, and two of
+them remove or narrow contribution~3.
 \end{itemize}
 
 \begin{table}[htb]
 \centering
 \small
-\caption{The ten pre-registration documents and the commit that introduced
+\caption{The eleven pre-registration documents and the commit that introduced
 each. Every one was added in a single commit and never modified afterwards,
 which is checkable with \texttt{git log -{}-follow} on the path.}
 \label{tab:prereg-docs}
@@ -333,6 +352,7 @@ document & introduced in & governs \\
 \texttt{prereg\_prevalence} & \texttt{5e8e736} & public-cohort prevalence \\
 \texttt{prereg\_downstream} & \texttt{8845efa} & downstream accuracy \\
 \texttt{prereg\_downstream\_amendment} & \texttt{9b20d1e} & HumanEval's 164 items \\
+\texttt{prereg\_heuristics\_downstream} & \texttt{9cc2394} & the heuristics null in accuracy \\
 \bottomrule
 \end{tabular}
 \end{table}
