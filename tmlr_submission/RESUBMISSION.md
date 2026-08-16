@@ -6,17 +6,15 @@ what changed. Both go in the submission form, not in the paper.
 
 ---
 
-## Before you submit: one thing to check
+## Anonymity of the previous submission: confirmed
 
-**Confirm submission 9529 was never de-anonymised.** Revealing author identity
-on a rejected TMLR submission precludes submitting a revised version. That
-means checking, on 9529's OpenReview page, that no author names were added, no
-de-anonymising comment was posted by an author, and no camera-ready or
-non-anonymous PDF was uploaded at any point. If any of that happened, stop and
-write to the editors before submitting rather than after.
+Revealing author identity on a rejected TMLR submission precludes submitting a
+revised version, so this had to be established before anything was uploaded.
 
-Nothing in this repository can tell you the answer; it is a property of the
-OpenReview record.
+**The author confirmed on 2026-08-16 that submission 9529 was never
+de-anonymised.** That confirmation is a statement about the OpenReview record,
+which nothing in this repository can see or verify; it is recorded here so
+that the basis for proceeding is written down rather than remembered.
 
 ---
 
@@ -63,9 +61,13 @@ summary and it is also the strongest thing we can say.
 > RegMean, a solver we did not design, plus a measurement of what RegMean's own
 > shipped default regularisation does. Downstream accuracy for the conditioning
 > effect, and a further 80 cells replicating the null in accuracy rather than in
-> loss. Eleven pre-registration documents govern these, and the anonymised git
-> bundle in the supplementary material lets a reviewer verify by commit
-> ordering that each was written before the compute it governs.
+> loss. And a cohort retrained with checkpoints, to measure how far the A
+> factor travels from its initialisation: it moves about 13% of its own norm,
+> and moves by the same amount in both initialisation conditions while their
+> subspace geometries differ completely, which isolates the starting point as
+> the cause. Twelve pre-registration documents govern these, and the
+> anonymised git bundle in the supplementary material lets a reviewer verify
+> by commit ordering that each was written before the compute it governs.
 >
 > **Claims withdrawn.** Our own encoder's advantage does not survive the move to
 > properly initialised cohorts, and we say so. The claim that published merging
@@ -88,8 +90,8 @@ summary and it is also the strongest thing we can say.
 | paper PDF | `paper.pdf` (or compile `overleaf_tmlr.zip` on Overleaf) |
 | supplementary | `supplementary.zip` |
 
-`supplementary.zip` contains the anonymised git bundle and the eleven
-pre-registration documents. It is 23 MB.
+`supplementary.zip` contains the anonymised git bundle (212 commits) and the
+twelve pre-registration documents. It is 23.5 MB.
 
 ---
 
