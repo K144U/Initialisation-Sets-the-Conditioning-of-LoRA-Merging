@@ -39,9 +39,11 @@ and report both halves (\S\ref{sec:methods}). Across twenty
 base-by-method cells spanning five methods, task arithmetic, TIES, DARE,
 TVQ and a repaired KnOTS, fifteen show no detectable effect at our $0.01$
 nat resolution, five favour independent initialisation and none favours
-shared. The fifteen have a mechanism: each of these methods returns a
-bounded-norm near-mean solution that never enters the ill-conditioned
-directions, and its energy there is a rounding error. Of the five cells
+shared. Scored instead on GSM8K and HumanEval, a pre-registered replication
+of the same comparison finds no effect in any of forty cells. The fifteen
+have a mechanism: each of these methods returns a bounded-norm near-mean
+solution that never enters the ill-conditioned directions, and its energy
+there is a rounding error. Of the five cells
 that do clear the gate, three are the subspace-alignment method, which is
 the heuristic most exposed to a change in subspace geometry.
 
@@ -112,8 +114,9 @@ control would reinstate it, but that control was written after its data had
 been seen and we do not use it that way (\S\ref{subsec:withdrawn}). The rate exponent the bound predicts is unresolved:
 our sweep lacks the dynamic range to measure it (\S\ref{subsec:w3}). One of our four adapters never learned its
 task, so our cohorts are $T=4$ nominal and $3$ effective, and we report
-every geometric quantity at both. Appendix~\ref{app:prereg} summarises all ten
-pre-registrations and gives the commit ordering that makes them checkable;
+every geometric quantity at both. Appendix~\ref{app:prereg} summarises all
+eleven pre-registrations and gives the commit ordering that makes them
+checkable;
 the documents themselves are in the supplementary material.
 
 \paragraph{Contributions.}
@@ -133,7 +136,11 @@ the documents themselves are in the supplementary material.
   with the mechanism measured: the heuristics never place more than a
   rounding error of their norm in the ill-conditioned directions and the
   unregularised solvers place three quarters of it there
-  (\S\ref{subsec:ridge}, \S\ref{subsec:shared-arm}).
+  (\S\ref{subsec:ridge}, \S\ref{subsec:shared-arm}). The invisible half
+  is measured twice, in worst-task NLL excess and in downstream accuracy,
+  because the metric the first uses is one we ourselves criticise: zero of
+  forty accuracy cells show an effect, at a resolution of about six points
+  on GSM8K and eleven on HumanEval.
 \item \textbf{A pre-registered demonstration that this reaches downstream
   accuracy}, so it is not an artifact of the loss we measure it in: on
   Mistral the unregularised shared-cohort merge scores zero on GSM8K and on

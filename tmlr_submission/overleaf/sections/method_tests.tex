@@ -120,6 +120,99 @@ the heuristic most exposed to a change in that geometry, and it gains from
 the cohort whose subspaces are not near-collinear. The effect is small,
 consistent in direction, and we do not build anything on it.
 
+\paragraph{The same null in a unit we do not disclaim.} Everything above is
+worst-task NLL excess, and \S\ref{sec:discussion} reports that this metric does
+not track downstream accuracy across methods and on one benchmark ranks them
+backwards. That objection lands harder on a null than on an effect: the
+differences here are hundredths of a nat, which is the range in which we have
+told the reader not to trust the metric. Meanwhile the positive result beside
+it, the solver collapse, has two units. Reporting one half in a disputed unit
+and the other half in two is an asymmetry we would rather remove than defend,
+so we pre-registered the null in accuracy as well and ran it.
+
+\begin{table}[t]
+\centering
+\small
+\caption{The heuristics null, measured in downstream accuracy rather than in
+NLL. Each entry is $d = \mathrm{acc}_{\mathrm{indep}} -
+\mathrm{acc}_{\mathrm{shared}}$ for one method on one base; a cell counts as an
+effect only if $|d|$ exceeds both $0.05$ and $2\,\mathrm{SE}_{\mathrm{binom}}$,
+both fixed in advance. No cell does. \textbf{This design has one cohort per
+arm}, so its gate is binomial and its minimum detectable effect is about
+$0.06$ on GSM8K and $0.11$ on HumanEval: a null here means no effect detectable
+at that size, not no effect.}
+\label{tab:heur-downstream}
+\begin{tabular}{llcccc}
+\toprule
+ & & \multicolumn{2}{c}{GSM8K} & \multicolumn{2}{c}{HumanEval} \\
+base & method & shared & $d$ & shared & $d$ \\
+\midrule
+Llama-3.1-8B & task arithmetic & 0.792 & $-0.016$ & 0.646 & $-0.006$ \\
+ & TIES & 0.762 & $-0.016$ & 0.659 & $-0.104$ \\
+ & DARE & 0.786 & $-0.010$ & 0.640 & $-0.006$ \\
+ & TVQ$_2$ & 0.746 & $+0.002$ & 0.549 & $+0.030$ \\
+ & KnOTS & 0.778 & $+0.000$ & 0.610 & $+0.012$ \\
+\addlinespace
+Mistral-7B & task arithmetic & 0.468 & $+0.002$ & 0.360 & $-0.006$ \\
+ & TIES & 0.464 & $-0.010$ & 0.232 & $+0.018$ \\
+ & DARE & 0.484 & $-0.006$ & 0.378 & $-0.018$ \\
+ & TVQ$_2$ & 0.454 & $+0.024$ & 0.195 & $+0.067$ \\
+ & KnOTS & 0.496 & $+0.010$ & 0.287 & $-0.018$ \\
+\addlinespace
+Qwen2.5-7B & task arithmetic & 0.514 & $-0.010$ & 0.744 & $-0.049$ \\
+ & TIES & 0.622 & $+0.014$ & 0.738 & $-0.024$ \\
+ & DARE & 0.518 & $-0.022$ & 0.732 & $-0.006$ \\
+ & TVQ$_2$ & 0.616 & $+0.010$ & 0.768 & $-0.018$ \\
+ & KnOTS & 0.602 & $-0.018$ & 0.683 & $+0.055$ \\
+\addlinespace
+Yi-1.5-9B & task arithmetic & 0.798 & $-0.008$ & 0.128 & $-0.024$ \\
+ & TIES & 0.786 & $-0.008$ & 0.171 & $+0.000$ \\
+ & DARE & 0.804 & $-0.010$ & 0.128 & $-0.012$ \\
+ & TVQ$_2$ & 0.780 & $+0.002$ & 0.152 & $-0.030$ \\
+ & KnOTS & 0.810 & $-0.016$ & 0.085 & $-0.012$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Zero of the forty cells show a detectable effect}, so both registered
+predictions hold and by the registered rule the null carries over to accuracy
+(Table~\ref{tab:heur-downstream}). The median $|d|$ is $0.012$ and the largest
+is $0.104$. All $80$ cells produced a scorable generation for every item, with
+no empty outputs anywhere, which matters because the scorer defects of
+\S\ref{subsec:downstream-cond} were what made an earlier version of these
+benchmarks unusable; both arms were re-run here rather than reusing the
+existing shared-arm cells, precisely so that no comparison straddles a scorer
+change.
+
+The strength of that null is bounded by the design and we state the bound as
+registered: with one cohort per arm the gate is binomial, so this is
+\textbf{no effect detectable at about $6$ accuracy points on GSM8K and $11$ on
+HumanEval}, not no effect. A real effect of three or four points would sit
+inside it undetected.
+
+Two things in the table are worth a reader's attention and neither is settled
+by the registered rule.
+
+\emph{One cell nearly cleared, in the direction that would have hurt.} TIES on
+Llama at HumanEval gives $d = -0.104$ against a gate of $0.107$: $97\%$ of the
+way, and negative, meaning the \emph{shared} cohort scored higher. Had it
+cleared it would have been the one outcome the registration named as most
+informative against us. It did not clear and we do not treat it as an effect,
+but a reader recomputing this table will see it and should see it here first.
+
+\emph{The signs lean.} Of the $38$ non-zero cells, $26$ favour the shared arm
+and $12$ the independent one, which an exact sign test puts at $p = 0.034$,
+with the lean present on both benchmarks. \textbf{We did not register a sign
+test}, so this is an observation and not a verdict, and we neither claim an
+effect from it nor let it modify the registered outcome. We report it because
+it points the opposite way from the NLL null, whose five clearing cells all
+favoured independent initialisation. Taken at face value the two units
+disagree about a direction while agreeing that nothing is large. The honest
+reading is that both are consistent with no real difference plus noise, and
+that a design able to resolve a few accuracy points, which means several
+cohorts per arm rather than one, is what would settle it. That is a genuinely
+new experiment and it needs its own registration.
+
 \paragraph{Then the mechanism, measured.} The explanation for the other
 $15$ cells is that those methods never go near the ill-conditioned
 direction. That is a measurement rather than an assertion, and it needs no

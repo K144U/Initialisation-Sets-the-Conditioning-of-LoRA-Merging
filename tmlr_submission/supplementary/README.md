@@ -6,7 +6,7 @@ This directory contains two things:
 
 | path | what |
 |---|---|
-| `audit-trail.bundle` | the project's real version history, as a git bundle (20 MB) |
+| `audit-trail.bundle` | the project's real version history, as a git bundle (23 MB) |
 | `prereg/` | the eleven pre-registration documents, complete and unedited |
 
 `prereg/` is here for convenience, so the documents can be read without
@@ -22,8 +22,8 @@ governs, and that check is only meaningful against a commit graph. A directory
 of files, however complete, cannot support it.
 
 ```
-sha256  cf7d7c71fa902676d45c1dce329098c03c9485106a6971bf64c127dec5523e90
-md5     93b2f32a63ee77e8feb7be168ad42eb8
+sha256  c0fb02bb683a8ea8e96972abff245e3542d2546237e36aff5232b6dec43fbc91
+md5     df1f2a64e52079127222b73d4c04f758
 ```
 
 ## Open it
@@ -33,7 +33,7 @@ git clone audit-trail.bundle rdmerge
 cd rdmerge
 ```
 
-You now have an ordinary git repository: 197 commits on three branches,
+You now have an ordinary git repository: 202 commits on three branches,
 `paper-consolidation` (checked out), `phase3-bootstrap` and `main`. Every git command
 works normally. If you only want to read the files and do not care about the
 history, the clone's working tree is already the snapshot you want.
@@ -52,7 +52,7 @@ git merge-base --is-ancestor 5693d9a ee90491 && echo ordering holds
 ```
 
 which exits zero exactly when the rules commit precedes the result commit, and
-non-zero otherwise. The 13 rows of Table 12 are:
+non-zero otherwise. The 14 rows of Table 12 are:
 
 | test | rules | result |
 |---|---|---|
@@ -69,6 +69,7 @@ non-zero otherwise. The 13 rows of Table 12 are:
 | Shared arm at n=3 | `41d8adc` | `a9cf9c7` |
 | Public-cohort prevalence | `5e8e736` | `a9cf9c7` |
 | Downstream accuracy | `8845efa` | `a9cf9c7` |
+| Heuristics null in accuracy | `9cc2394` | `77a7f37` |
 
 The stronger check is that the rules files were not edited after they were
 first committed, since a pre-registration that can be revised afterwards is

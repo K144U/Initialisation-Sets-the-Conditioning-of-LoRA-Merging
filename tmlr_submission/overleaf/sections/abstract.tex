@@ -11,7 +11,8 @@ principal cosine across four base models from $0.05$ to $0.99$. Under a
 sampling frame fixed before any download, $17$ of $45$ public cohorts are
 in that state. The consequences split by method. Merges that average or
 sparsify task vectors are unaffected: fifteen of twenty base-by-method
-cells show no effect at our resolution. Merges that solve a linear system,
+cells show no effect on our loss metric, and none of forty show one on
+GSM8K or HumanEval. Merges that solve a linear system,
 ours and RegMean, run $2$ to $65$ times worse on a collapsed cohort, and
 on Mistral the merged model scores zero on GSM8K and on HumanEval; one
 Tikhonov term recovers both. So the advice is to measure the cosines
