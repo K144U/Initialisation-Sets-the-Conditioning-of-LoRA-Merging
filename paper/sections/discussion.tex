@@ -70,14 +70,23 @@ other way.
 
   \textbf{The scope of this limitation is narrower than it was.} What fails
   above is the ranking of merge \emph{methods} within a cohort, where the
-  differences are hundredths of a nat. The paper's own effect is not of that
-  size, and \S\ref{subsec:downstream-cond} tests it directly: the
-  conditioning collapse reaches GSM8K and HumanEval accuracy on four of four
-  bases, and on Mistral the unregularised shared-cohort merge scores zero on
-  both benchmarks with no scorer discards, recovering to $0.462$ and $0.244$
-  with one ridge term. So a claim about method rankings in this unit should
-  still not be read as a claim about accuracy. A claim about the
-  conditioning regime may be, and that is the claim this paper makes.
+  differences are hundredths of a nat. The paper's own effects are not of that
+  size, and both halves of the conditioning result are now measured in
+  accuracy as well, which is what makes this limitation survivable.
+
+  The positive half: \S\ref{subsec:downstream-cond} finds the collapse
+  reaching GSM8K and HumanEval on four of four bases, with the Mistral
+  unregularised merge scoring zero on both and recovering to $0.462$ and
+  $0.244$ with one ridge term. The null half: \S\ref{subsec:ridge} finds no
+  effect in any of forty accuracy cells, matching what the loss metric says
+  about the same methods. We name the second explicitly because a null carried
+  only in a disputed unit is worth much less than an effect carried in it, and
+  reporting the flattering half twice and the null once would have been the
+  more comfortable choice.
+
+  So a claim about method rankings in this unit should still not be read as a
+  claim about accuracy. A claim about the conditioning regime may be, in
+  either direction, and that is the claim this paper makes.
 \item \textbf{The finite-rate exponent is unmeasured, not merely
   unresolved.} Against matched asymptotes one base fits at $-2.10$
   ($R^2 = 0.98$) and one at $-3.50$, but neither fit is supported at the

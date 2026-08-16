@@ -1,0 +1,482 @@
+[
+  {
+    "name": "llama31_8b__dare_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__dare_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__dare_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__dare_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__dare_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__dare_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__knots_ties_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__knots_ties_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__knots_ties_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__knots_ties_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__knots_ties_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__knots_ties_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__task_arithmetic_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__task_arithmetic_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__task_arithmetic_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__task_arithmetic_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__task_arithmetic_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__task_arithmetic_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__ties_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__ties_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__ties_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__ties_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__ties_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__ties_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__tvq_b2_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__tvq_b2_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__tvq_b2_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__tvq_b2_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__tvq_b2_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__tvq_b2_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__dare_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__dare_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__dare_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__dare_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__dare_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__dare_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__knots_ties_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__knots_ties_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__knots_ties_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__knots_ties_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__knots_ties_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__knots_ties_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__task_arithmetic_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__task_arithmetic_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__task_arithmetic_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__task_arithmetic_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__task_arithmetic_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__task_arithmetic_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__ties_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__ties_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__ties_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__ties_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__ties_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__ties_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__tvq_b2_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__tvq_b2_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__tvq_b2_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__tvq_b2_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__tvq_b2_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__tvq_b2_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__dare_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__dare_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__dare_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__dare_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__dare_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__dare_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__knots_ties_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__knots_ties_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__knots_ties_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__knots_ties_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__knots_ties_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__knots_ties_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__task_arithmetic_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__task_arithmetic_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__task_arithmetic_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__task_arithmetic_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__task_arithmetic_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__task_arithmetic_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__ties_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__ties_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__ties_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__ties_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__ties_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__ties_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__tvq_b2_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__tvq_b2_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__tvq_b2_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__tvq_b2_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__tvq_b2_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__tvq_b2_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__dare_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__dare_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__dare_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__dare_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__dare_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__dare_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__knots_ties_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__knots_ties_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__knots_ties_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__knots_ties_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__knots_ties_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__knots_ties_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__task_arithmetic_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__task_arithmetic_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__task_arithmetic_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__task_arithmetic_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__task_arithmetic_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__task_arithmetic_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__ties_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__ties_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__ties_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__ties_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__ties_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__ties_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__tvq_b2_humaneval__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__tvq_b2_humaneval__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__tvq_b2_humaneval__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__tvq_b2_humaneval__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__tvq_b2_humaneval__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__tvq_b2_humaneval__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__dare_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__dare_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__dare_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__dare_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__dare_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__dare_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__knots_ties_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__knots_ties_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__knots_ties_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__knots_ties_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__knots_ties_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__knots_ties_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__task_arithmetic_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__task_arithmetic_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__task_arithmetic_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__task_arithmetic_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__task_arithmetic_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__task_arithmetic_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__ties_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__ties_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__ties_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__ties_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__ties_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__ties_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__tvq_b2_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__tvq_b2_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__tvq_b2_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "llama31_8b__tvq_b2_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/llama31_8b__tvq_b2_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/llama31_8b__tvq_b2_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__dare_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__dare_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__dare_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__dare_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__dare_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__dare_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__knots_ties_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__knots_ties_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__knots_ties_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__knots_ties_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__knots_ties_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__knots_ties_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__task_arithmetic_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__task_arithmetic_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__task_arithmetic_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__task_arithmetic_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__task_arithmetic_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__task_arithmetic_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__ties_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__ties_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__ties_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__ties_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__ties_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__ties_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__tvq_b2_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__tvq_b2_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__tvq_b2_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "mistral_7b__tvq_b2_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/mistral_7b__tvq_b2_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/mistral_7b__tvq_b2_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__dare_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__dare_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__dare_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__dare_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__dare_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__dare_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__knots_ties_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__knots_ties_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__knots_ties_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__knots_ties_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__knots_ties_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__knots_ties_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__task_arithmetic_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__task_arithmetic_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__task_arithmetic_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__task_arithmetic_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__task_arithmetic_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__task_arithmetic_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__ties_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__ties_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__ties_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__ties_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__ties_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__ties_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__tvq_b2_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__tvq_b2_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__tvq_b2_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "qwen25_7b__tvq_b2_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/qwen25_7b__tvq_b2_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/qwen25_7b__tvq_b2_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__dare_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__dare_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__dare_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__dare_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__dare_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__dare_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__knots_ties_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__knots_ties_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__knots_ties_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__knots_ties_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__knots_ties_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__knots_ties_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__task_arithmetic_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__task_arithmetic_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__task_arithmetic_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__task_arithmetic_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__task_arithmetic_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__task_arithmetic_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__ties_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__ties_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__ties_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__ties_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__ties_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__ties_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__tvq_b2_gsm8k__indep1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__tvq_b2_gsm8k__indep1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__tvq_b2_gsm8k__indep1.json",
+    "min_free_gb": 25.0
+  },
+  {
+    "name": "yi15_9b__tvq_b2_gsm8k__seed1",
+    "cmd": "python code/phase3/eval/run_downstream_cell.py --config code/phase3/configs/eval_heur_downstream/yi15_9b__tvq_b2_gsm8k__seed1.yaml",
+    "done": "results/phase3/eval_heur_downstream/yi15_9b__tvq_b2_gsm8k__seed1.json",
+    "min_free_gb": 25.0
+  }
+]

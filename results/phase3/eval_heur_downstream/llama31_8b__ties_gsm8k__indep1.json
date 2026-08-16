@@ -1,0 +1,3125 @@
+{
+  "meta": {
+    "git_sha": "c2787230da73b1f8c4c3d37a7ae5a8dd3b18bf1a",
+    "hostname": "jiit-gpu01",
+    "cuda_visible_devices": "3",
+    "pbs_jobid": "471.jiit-master",
+    "wallclock_iso": "2026-08-16T01:09:04+0200",
+    "wallclock_unix": 1786835344.534556,
+    "config_hash": "f84e9e2bad7a4171",
+    "config": {
+      "base_model": "/home/sanjay.g/projects/rdmerge/models/Llama-3.1-8B-Instruct",
+      "method": "ties",
+      "method_kwargs": {
+        "density": 0.2,
+        "majority_sign_method": "total"
+      },
+      "max_seq_length": 1024,
+      "seed": 20260518,
+      "min_free_gb": 25,
+      "adapter_specs": [
+        {
+          "name": "gsm8k",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/gsm8k/indep1",
+          "task_cfg": {
+            "name": "gsm8k",
+            "dataset": "openai/gsm8k",
+            "config": "main",
+            "split_train": "train",
+            "split_eval": "test",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "prompt_field": "question",
+            "answer_field": "answer"
+          }
+        },
+        {
+          "name": "alpaca",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/alpaca/indep1",
+          "task_cfg": {
+            "name": "alpaca",
+            "dataset": "yahma/alpaca-cleaned",
+            "config": null,
+            "split_train": "train",
+            "split_eval": "train",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "prompt_field": "instruction",
+            "answer_field": "output"
+          }
+        },
+        {
+          "name": "magicoder",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/magicoder/indep1",
+          "task_cfg": {
+            "name": "magicoder",
+            "dataset": "ise-uiuc/Magicoder-OSS-Instruct-75K",
+            "config": null,
+            "split_train": "train",
+            "split_eval": "train",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "prompt_field": "problem",
+            "answer_field": "solution"
+          }
+        },
+        {
+          "name": "translation",
+          "dir": "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/flores/indep1",
+          "task_cfg": {
+            "name": "translation",
+            "dataset": "wmt/wmt19",
+            "config": "de-en",
+            "split_train": "train",
+            "split_eval": "validation",
+            "n_train": 7500,
+            "n_eval": 1000,
+            "src_lang": "en",
+            "tgt_lang": "de",
+            "streaming": true
+          }
+        }
+      ],
+      "output_path": "/home/sanjay.g/projects/rdmerge/results/phase3/eval_heur_downstream/llama31_8b__ties_gsm8k__indep1.json",
+      "metric": "gsm8k_em",
+      "metric_task_spec": "gsm8k",
+      "metric_kwargs": {
+        "max_new_tokens": 256
+      },
+      "n_eval_metric": 500
+    }
+  },
+  "method": "ties",
+  "method_kwargs": {
+    "density": 0.2,
+    "majority_sign_method": "total"
+  },
+  "weights": [
+    0.25,
+    0.25,
+    0.25,
+    0.25
+  ],
+  "base_model": "/home/sanjay.g/projects/rdmerge/models/Llama-3.1-8B-Instruct",
+  "adapter_dirs": [
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/gsm8k/indep1",
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/alpaca/indep1",
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/magicoder/indep1",
+    "/home/sanjay.g/projects/rdmerge/artifacts/lora/llama31_8b/flores/indep1"
+  ],
+  "metric": "gsm8k_em",
+  "metric_kwargs": {
+    "max_new_tokens": 256
+  },
+  "metric_task": "gsm8k",
+  "metric_score": 0.746,
+  "n_eval_metric": 500,
+  "per_example": [
+    {
+      "score": 1,
+      "pred": "98",
+      "gold": "98",
+      "gen_text": "Since a gallon jar costs $5, a half-gallon jar costs $5 - $2 = $3. The total amount of money she spent on 10-gallon jars is 10 * $5 = $50. The total amount of money she spent on 16 half-gallon jars is 16 * $3 = $48. Therefore, the total amount of money she spent is $50 + $48 = $98."
+    },
+    {
+      "score": 0,
+      "pred": "34",
+      "gold": "36",
+      "gen_text": "Josh spent 4 hours working out every week except on some occasions. At one point, he spent 5 hours each for two consecutive weeks, which is 5 * 2 = 10 hours. Another time, he spent 6 hours in one week. So, the total number of hours he has spent working out across the 8 weeks is 4 * 6 + 10 + 6 = 34 hours."
+    },
+    {
+      "score": 1,
+      "pred": "12",
+      "gold": "12",
+      "gen_text": "There are 20 students in Miss Susan's class. 5 of them are good at math only, and 8 of them perform well in English only. So, the number of students who are good at both math and English is 20 - 5 - 8 = 7. The number of students who are good at math is 5 + 7 = 12."
+    },
+    {
+      "score": 1,
+      "pred": "120",
+      "gold": "120",
+      "gen_text": "The total number of pounds of carrots to be distributed is 200 pounds. Each restaurant is to receive 2 pounds of carrots, and there are 40 restaurants. So, the total number of pounds of carrots to be distributed is 2 x 40 = 80 pounds. Therefore, 200 - 80 = 120 pounds of carrots will not be used."
+    },
+    {
+      "score": 1,
+      "pred": "40",
+      "gold": "40",
+      "gen_text": "Candy has 15 + 45 = 60 light blue and dark blue spools of thread, and 40 + 50 = 90 light green and dark green spools of thread. So, she has 60 + 90 = 150 spools of thread in total. The percent of her spools that are blue is (60/150) x 100 = 40%."
+    },
+    {
+      "score": 1,
+      "pred": "60",
+      "gold": "60",
+      "gen_text": "Martha has been collecting shells for 5 years, and she collects one shell every month. So, she has collected 5 x 12 = 60 shells."
+    },
+    {
+      "score": 1,
+      "pred": "67",
+      "gold": "67",
+      "gen_text": "Cho hiked 14 * 8 = <<14*8=112>>112 kilometers.\nChloe hiked 9 * 5 = <<9*5=45>>45 kilometers.\nCho hiked 112 - 45 = <<112-45=67>>67 kilometers farther than Chloe.\nThe answer is 67."
+    },
+    {
+      "score": 1,
+      "pred": "172",
+      "gold": "172",
+      "gen_text": "Ophelia has 20 sofas, and she has 2 fewer sofas than chairs, so she has 20 + 2 = 22 chairs.\nJenna has 3 times as many chairs as Ophelia, so she has 3 x 22 = 66 chairs.\nJenna has 2 fewer sofas than chairs, so she has 66 - 2 = 64 sofas.\nIn total, Ophelia and Jenna have 20 + 22 + 64 + 66 = 172 sofas and chairs."
+    },
+    {
+      "score": 0,
+      "pred": "2",
+      "gold": "36",
+      "gen_text": "The total cost of the 2 shirts is $30 x 2 = $60.\nThe discount is $60 x 40% = $60 x 0.4 = $24.\nSo, Davos paid $60 - $24 = $36 for the 2 shirts."
+    },
+    {
+      "score": 0,
+      "pred": "6",
+      "gold": "3",
+      "gen_text": "Jamaar has spent $1.5 on peaches, $2 on pears, $2 on kiwis, and $3 on apples, for a total of $8.5. He has $1.5 left to spend. Since plums cost $.25 each, he can buy 6 plums."
+    },
+    {
+      "score": 1,
+      "pred": "428",
+      "gold": "428",
+      "gen_text": "Nikita scored 11 more than half as many as Pierson, so Nikita scored 11 + (278/2) = 11 + 139 = 150 points.\nPierson and Nikita scored a total of 278 + 150 = 428 points."
+    },
+    {
+      "score": 1,
+      "pred": "17",
+      "gold": "17",
+      "gen_text": "Charlie had 10 stickers initially. He bought 21 stickers and got 23 stickers for his birthday, so he had 10 + 21 + 23 = 54 stickers. He gave 9 stickers to his sister and used 28 stickers, so he had 54 - 9 - 28 = 17 stickers left."
+    },
+    {
+      "score": 1,
+      "pred": "80",
+      "gold": "80",
+      "gen_text": "The total number of burritos given to the students is 50 students * 10 burritos/student = 500 burritos. Mr. George ate 20 burritos, so the total number of burritos eaten is 500 + 20 = 520 burritos. The total number of leftover burritos is 600 - 520 = 80 burritos."
+    },
+    {
+      "score": 1,
+      "pred": "30",
+      "gold": "30",
+      "gen_text": "Nani's brother is 8 x 2 = <<8*2=16>>16 years old.\nNani's sister is 8 - (8 x 25/100) = 8 - 2 = <<8-(8*25/100)=6>>6 years old.\nThe total age of all three family members is 8 + 16 + 6 = <<8+16+6=30>>30 years.\nThe answer is 30."
+    },
+    {
+      "score": 1,
+      "pred": "-3",
+      "gold": "-3",
+      "gen_text": "The temperature was 2 degrees Celsius. It dropped 8 degrees Celsius overnight, so the temperature was 2 - 8 = -6 degrees Celsius. Then it increased 3 degrees Celsius in the morning, so the temperature was -6 + 3 = -3 degrees Celsius."
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "Ana peels 60/3 = 20 oranges in an hour, and Jane peels 60/4 = 15 oranges in an hour. So, Ana will have peeled 20 - 15 = 5 more oranges than Jane after an hour."
+    },
+    {
+      "score": 0,
+      "pred": "2.67",
+      "gold": "2",
+      "gen_text": "Fred started with 24 gallons of root beer.  His children drank 4 gallons, leaving 24 - 4 = 20 gallons.  Then, his wife spilled 7 gallons, leaving 20 - 7 = 13 gallons.  Then, his friend Ronnie drank 5 gallons, leaving 13 - 5 = 8 gallons.  Finally, 3 people shared the remaining 8 gallons, so each person got 8 / 3 = 2.67 gallons of root beer."
+    },
+    {
+      "score": 0,
+      "pred": "33.3",
+      "gold": "33",
+      "gen_text": "James has 30 fire type, 20 grass type, and 40 water type cards. He loses 8 water type cards, so he has 40 - 8 = 32 water type cards. He buys 14 grass type cards, so he has 20 + 14 = 34 grass type cards. The total number of cards is 30 + 34 + 32 = 96 cards. The probability of picking a water type card is 32/96 = 1/3 = 0.3333. Rounded to the nearest integer, the probability is 33.3%."
+    },
+    {
+      "score": 0,
+      "pred": "29",
+      "gold": "30",
+      "gen_text": "Let's say the number of red jelly beans is x. Then the number of blue jelly beans is 1.01x, and the number of green jelly beans is 1.01(1.01x) = 1.0201x. The total number of jelly beans is x + 1.01x + 1.0201x = 3.0311x. Since the total number of jelly beans is 4500, we have 3.0311x = 4500. Solving for x, we get x = 1481. So the number of red jelly beans is 1481, the number of blue jelly beans is 1.01(1481) = 1497, and the number of green jelly beans is 1.0201(1481) = 1510. The difference between the number of green jelly beans and the number of red jelly beans is 1510 - 1481 = 29."
+    },
+    {
+      "score": 1,
+      "pred": "85000",
+      "gold": "85000",
+      "gen_text": "The total number of mini cinnamon rolls is 200 and the total number of mini blueberry muffins is 300. So, the total number of mini pastries is 200 + 300 = 500. Each mini cinnamon roll has 1/3rd of the calories of a normal cinnamon roll, so each mini cinnamon roll has 600/3 = 200 calories. Each mini blueberry muffin has 1/3rd of the calories of a normal blueberry muffin, so each mini blueberry muffin has 450/3 = 150 calories. So, the total calories of the mini cinnamon rolls is 200 x 200 = 40,000 calories and the total calories of the mini blueberry muffins is 300 x 150 = 45,000 calories. Therefore, the total calories of the pastries he baked is 40,000 + 45,000 = 85,000 calories."
+    },
+    {
+      "score": 1,
+      "pred": "138",
+      "gold": "138",
+      "gen_text": "Sean has to memorize 54 lines for his solo song. The first scene has twice the number of lines as the song, so it has 54 x 2 = 108 lines. Only a third of these lines are his, so he has to memorize 108 / 3 = 36 lines. The second scene has six more lines than the song, so it has 54 + 6 = 60 lines. Four-fifths of these lines are his, so he has to memorize 60 x 4 / 5 = 48 lines. In total, Sean has to memorize 54 + 36 + 48 = 138 lines."
+    },
+    {
+      "score": 1,
+      "pred": "38",
+      "gold": "38",
+      "gen_text": "The total cost of the pots and the sack of garden soil is $19 + $26 = $45. After using the coupon, the total cost is $45 - $7 = $38. So, my mom spent $38 at the gardening shop."
+    },
+    {
+      "score": 1,
+      "pred": "7200",
+      "gold": "7200",
+      "gen_text": "Derrick makes 10 dozen doughnuts every day, which is 10 x 12 = 120 doughnuts. He sells each doughnut for $2, so he makes 120 x $2 = $240 per day. June has 30 days, so Derrick makes $240 x 30 = $7200 in June."
+    },
+    {
+      "score": 1,
+      "pred": "39",
+      "gold": "39",
+      "gen_text": "Chris has 100 math problems to complete in total. He completes 12 problems on Monday night. On Tuesday, he completes 3 times as many problems as he did on Monday, so he completes 3 x 12 = 36 problems. On Wednesday, he completes one-quarter of the remaining math problems, so he completes 100 - 12 - 36 = 52 / 4 = 13 problems. Therefore, Chris has 100 - 12 - 36 - 13 = 39 math problems left to complete on Thursday."
+    },
+    {
+      "score": 1,
+      "pred": "20",
+      "gold": "20",
+      "gen_text": "The discount on the jeans is $40 x 25% = $40 x 0.25 = $10.00.\nThe price of the jeans after the discount is $40 - $10 = $30.\nMike will have $50 - $30 = $20 left over."
+    },
+    {
+      "score": 1,
+      "pred": "375",
+      "gold": "375",
+      "gen_text": "Joe throws 25 punches per minute.  A fight lasts 5 rounds of 3 minutes, so the total time is 5 * 3 = 15 minutes.  Therefore, Joe threw 25 * 15 = 375 punches."
+    },
+    {
+      "score": 1,
+      "pred": "30",
+      "gold": "30",
+      "gen_text": "The Smith twins found 30 + 30 = 60 eggs.\nThe friends found 100 - 60 - 10 = 30 eggs."
+    },
+    {
+      "score": 1,
+      "pred": "132",
+      "gold": "132",
+      "gen_text": "The total cost of the items before the discount is $120.00 + $20.00 + $5.00 x 5 = $120.00 + $20.00 + $25.00 = $165.00.  The discount is 20% of $165.00, which is $165.00 x 0.20 = $33.00.  So the total cost of the order after the discount is $165.00 - $33.00 = $132.00."
+    },
+    {
+      "score": 1,
+      "pred": "10",
+      "gold": "10",
+      "gen_text": "The factory used to make $1000 per day, and now makes $1100 per day. This is an increase of $100 per day, or 10%."
+    },
+    {
+      "score": 0,
+      "pred": "8",
+      "gold": "13",
+      "gen_text": "Let's denote my age as A, my brother's age as B, and my sister's age as C. Since I am three years younger than my brother, B = A + 3. Since I am 2 years older than my sister, C = A - 2. Since my mom's age is one less than three times my brother's age, my mom's age is 3B - 1. The sum of all our ages is 87, so A + B + C + (3B - 1) = 87. Substituting B = A + 3 and C = A - 2 into the equation, we get A + (A + 3) + (A - 2) + 3(A + 3) - 1 = 87. Simplifying the equation, we get 9A + 9 = 87. Subtracting 9 from both sides, we get 9A = 78. Dividing both sides by 9, we get A = 78/9 = 8.6. Since age must be a whole number, we can conclude that A = 8."
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "To find the total amount of insects needed per day, we need to divide the total amount of insects needed per week by the number of days in a week. There are 7 days in a week, so the total amount of insects needed per day is 3.5 pounds/week / 7 days/week = 0.5 pounds/day. Since there are ten ducks, the total amount of insects needed per day is 0.5 pounds/day * 10 ducks = 5 pounds/day."
+    },
+    {
+      "score": 0,
+      "pred": "2",
+      "gold": "9",
+      "gen_text": "The firefighters have to raise $6300 - $2100 = $4200 more. Since they raise an equal amount in every hour, they have to fundraise for $4200 / $2100 = 2 more hours."
+    },
+    {
+      "score": 1,
+      "pred": "43",
+      "gold": "43",
+      "gen_text": "There are 54 red candies, twice that amount of orange candies, so there are 54 x 2 = 108 orange candies. There are half as many yellow candies as red candies, so there are 54 / 2 = 27 yellow candies. The total number of red, orange, and yellow candies is 54 + 108 + 27 = 189. Since there are 232 candies in total, the number of pink candies is 232 - 189 = 43."
+    },
+    {
+      "score": 1,
+      "pred": "16",
+      "gold": "16",
+      "gen_text": "Jaime can place 24 eggs on each tray. He has 2 trays, so he can place 24 x 2 = 48 eggs on the trays. He has 64 eggs, so he won't be able to place 64 - 48 = 16 eggs on the trays."
+    },
+    {
+      "score": 1,
+      "pred": "6",
+      "gold": "6",
+      "gen_text": "There are 9 unicorns in the Scottish Highlands.  Two thirds of them are female, so there are 6 female Scottish unicorns."
+    },
+    {
+      "score": 1,
+      "pred": "45",
+      "gold": "45",
+      "gen_text": "Marcell ate 3 x 14 = <<3*14=42>>42 fruit roll-ups.\nBeatrice ate 2 x 24 = <<2*24=48>>48 fruit roll-ups.\nTogether, they ate 42 + 48 = <<42+48=90>>90 fruit roll-ups.\nOn average, they ate 90/2 = <<90/2=45>>45 fruit roll-ups.\nThe answer is 45."
+    },
+    {
+      "score": 1,
+      "pred": "120",
+      "gold": "120",
+      "gen_text": "The farm has 30 cows and the zoo has 20 sheep. The zoo has twice as many cows as the farm does, so the zoo has 2 * 30 = 60 cows. The farm has half as many sheep as the zoo does, so the farm has 20 / 2 = 10 sheep. The farm and zoo have 30 + 60 + 20 + 10 = 120 animals combined."
+    },
+    {
+      "score": 0,
+      "pred": "240",
+      "gold": "48",
+      "gen_text": "You have 200 calories left for the day. Since each serving has 250 calories, you can eat 200/250 = 0.8 servings. Since there are 5 servings in the bag, you can eat 0.8 * 300g = 240g of chips."
+    },
+    {
+      "score": 1,
+      "pred": "36",
+      "gold": "36",
+      "gen_text": "Carol and Jennifer have 20 + 44 = 64 signatures in their books. They want to reach 100 signatures, so they need to collect 100 - 64 = 36 signatures between them."
+    },
+    {
+      "score": 0,
+      "pred": "12",
+      "gold": "16",
+      "gen_text": "Julia\u2019s boat took on 2 liters of water for every 10 feet she rowed back towards shore. It took her 16 seconds to row 20 feet, so she rowed 20/10 = 2 ten-foot segments. This means that her boat took on 2 x 2 = 4 liters of water for the first 20 feet. Since it took her 64 seconds to reach the shore, she rowed 64/16 = 4 ten-foot segments. This means that her boat took on 4 x 2 = 8 liters of water for the remaining 40 feet. In total, her boat took on 4 + 8 = 12 liters of water by the time Julia reached the shore."
+    },
+    {
+      "score": 0,
+      "pred": "160",
+      "gold": "200",
+      "gen_text": "Allan has 40 cannolis in his house. He bought 60 more cannolis at the store, so he now has 40 + 60 = 100 cannolis. He also bought 40 fewer corns than the number of cannolis, so he bought 100 - 40 = 60 corns. The total number of corns and cannolis Allan has in the house is 100 + 60 = 160."
+    },
+    {
+      "score": 1,
+      "pred": "450",
+      "gold": "450",
+      "gen_text": "Antonella earned 30% of $1000, which is $300. She also earned 10% of $1500, which is $150. So, Antonella earned $300 + $150 = $450."
+    },
+    {
+      "score": 1,
+      "pred": "36",
+      "gold": "36",
+      "gen_text": "Jim spends 2 hours watching TV and then reads for half as long, so he spends 2 + 1 = 3 hours on TV and reading each time.  He does this 3 times a week, so he spends 3 * 3 = 9 hours on TV and reading each week.  In 4 weeks, he spends 9 * 4 = 36 hours on TV and reading."
+    },
+    {
+      "score": 1,
+      "pred": "1100",
+      "gold": "1100",
+      "gen_text": "Mark bought 3 packs for $1800 each, so he spent 3 x $1800 = $5400.  He got 1 card worth $4000 and another card worth $1000, so he got $4000 + $1000 = $5000 in value.  He also got 30 cards worth an average of $50 each, so he got 30 x $50 = $1500 in value.  So, he got a total of $5000 + $1500 = $6500 in value.  His profit is $6500 - $5400 = $1100."
+    },
+    {
+      "score": 1,
+      "pred": "15",
+      "gold": "15",
+      "gen_text": "Let's denote the number of sheep as S and the number of geese as G. We know that the total number of animal heads is 20, so S + G = 20. We also know that the total number of animal legs is 70, so 4S + 2G = 70. We can solve the first equation for G to get G = 20 - S. Substituting this into the second equation, we get 4S + 2(20 - S) = 70. Simplifying, we get 4S + 40 - 2S = 70, which reduces to 2S = 30, and finally S = 15. Therefore, there are 15 sheep on Lee's farm."
+    },
+    {
+      "score": 1,
+      "pred": "160",
+      "gold": "160",
+      "gen_text": "The cost of the six-inch cold-cut combo sub is $40 x 3 = $120.\nThe total cost of the lunch is $40 + $120 = $160."
+    },
+    {
+      "score": 1,
+      "pred": "10",
+      "gold": "10",
+      "gen_text": "There are 40 apples in one box, so there are 40 x 2 = 80 apples in two boxes. Uncle Franky can make 80 / 8 = 10 packs of apples."
+    },
+    {
+      "score": 1,
+      "pred": "360",
+      "gold": "360",
+      "gen_text": "Vince stapled reports for 3 hours, or 180 minutes.  Since he can staple 30 reports every 15 minutes, he stapled 180/15 = 12 sets of 30 reports.  Therefore, he stapled 12 * 30 = 360 reports altogether."
+    },
+    {
+      "score": 1,
+      "pred": "30",
+      "gold": "30",
+      "gen_text": "The first player ate 6 ounces of meat. The second player ate 8 ounces of meat. The third player ate 16 ounces of meat. In total, the team consumed 6 + 8 + 16 = 30 ounces of meat."
+    },
+    {
+      "score": 1,
+      "pred": "20",
+      "gold": "20",
+      "gen_text": "There are 2 houses with 3 bedrooms each, so there are 2 x 3 = 6 bedrooms.  Each bedroom has 2 windows, so there are 6 x 2 = 12 windows in the bedrooms.  There are 4 additional windows in each house, so there are 2 x 4 = 8 additional windows.  In total, there are 12 + 8 = 20 windows between the houses."
+    },
+    {
+      "score": 1,
+      "pred": "26",
+      "gold": "26",
+      "gen_text": "Cherrie bought 5 gifts for 2 friends, which is 5 x 2 = 10 gifts. She also bought 2 gifts for 3 friends, which is 2 x 3 = 6 gifts. In addition, she bought 10 more random gifts. So, in total, Cherrie bought 10 + 6 + 10 = 26 gifts."
+    },
+    {
+      "score": 0,
+      "pred": "54.5",
+      "gold": "31",
+      "gen_text": "The total dollar amount in the jar is $32 + $9.50 + $6 + $7.50 = $54.50."
+    },
+    {
+      "score": 0,
+      "pred": "30",
+      "gold": "25",
+      "gen_text": "Mark has $50 in his bank account and he earns $10 per day at his work. He wants to buy a bike that costs $300. To find out how many days Mark has to save his money, we need to divide the cost of the bike by the amount he earns per day. $300 / $10 = 30 days. Therefore, Mark has to save his money for 30 days to buy the bike."
+    },
+    {
+      "score": 1,
+      "pred": "3",
+      "gold": "3",
+      "gen_text": "Zack's locker is half as big as Timothy's locker, so Zack's locker is 24 / 2 = 12 cubic inches.\nPeter's locker is 1/4 as big as Zack's locker, so Peter's locker is 12 / 4 = 3 cubic inches.\nThe answer is 3."
+    },
+    {
+      "score": 1,
+      "pred": "9",
+      "gold": "9",
+      "gen_text": "Toni has 60% more plants than Frederick, so Toni has 10 + (60/100) * 10 = 16 plants.\nShondra has 7 fewer plants than Toni, so Shondra has 16 - 7 = 9 plants.\nThe final answer is 9."
+    },
+    {
+      "score": 1,
+      "pred": "25",
+      "gold": "25",
+      "gen_text": "Let's call the son's age \"x\". Since Carver is 5 years less than twice the age of his son, we can write the equation: 2x - 5 = 45. Solving for x, we get x = 25. Therefore, the son is 25 years old."
+    },
+    {
+      "score": 1,
+      "pred": "840",
+      "gold": "840",
+      "gen_text": "The news website publishes 20 political and weather news articles every day, and its sister company publishes 10 business news articles daily. Therefore, the total number of articles published by the two websites every day is 20 + 10 = 30. Since there are 28 days in February, the total number of articles published by the two websites in February is 30 * 28 = 840."
+    },
+    {
+      "score": 1,
+      "pred": "1",
+      "gold": "1",
+      "gen_text": "The total cost of the 4 packs of bagels is $10.00 x 4 = $40.00.  With a 10% discount, the cost of the 4 packs of bagels will be $40.00 - $4.00 = $36.00.  Since there are 9 bagels in each pack, the total number of bagels is 9 x 4 = 36.  Therefore, the cost of each single bagel is $36.00 / 36 = $1.00."
+    },
+    {
+      "score": 1,
+      "pred": "306",
+      "gold": "306",
+      "gen_text": "Ali ordered 850 kilos of coal, which is 850/50 = 17 units of coal. Each unit costs $18, so the total cost of his order is 17 x 18 = $306."
+    },
+    {
+      "score": 1,
+      "pred": "1170",
+      "gold": "1170",
+      "gen_text": "The total cost of the ring is $600 + $300 = $900.  The premium is 30% of $900, which is $270.  So, James paid $900 + $270 = $1170."
+    },
+    {
+      "score": 1,
+      "pred": "250",
+      "gold": "250",
+      "gen_text": "Leo had 100 stickers two years ago. Last year, he collected 50 stickers, so he had 100 + 50 = 150 stickers. This year, he collected twice the number of stickers as the previous year, so he collected 2 x 50 = 100 stickers. So, Leo has 150 + 100 = 250 stickers in his collection."
+    },
+    {
+      "score": 1,
+      "pred": "440",
+      "gold": "440",
+      "gen_text": "Charlie will make $80 x 4 = $320 for the 4 standard lessons.  He will make $80 x 0.75 = $60 for each of the 2 lessons with a veteran, so he will make $60 x 2 = $120 for those lessons.  Therefore, he will make a total of $320 + $120 = $440 for the day."
+    },
+    {
+      "score": 1,
+      "pred": "50",
+      "gold": "50",
+      "gen_text": "Argo has 200 - 40 - 80 - 30 = 50 toys."
+    },
+    {
+      "score": 1,
+      "pred": "227",
+      "gold": "227",
+      "gen_text": "First, we need to find the total time it takes to string all the racquets. We can do this by multiplying the number of racquets by the time it takes to string each type of racquet. The total time is 3 racquets * 15 minutes = 45 minutes for synthetic gut, 5 racquets * 22 minutes = 110 minutes for polyester string, and 4 racquets * 18 minutes = 72 minutes for hybrid sets. The total time is 45 + 110 + 72 = 227 minutes."
+    },
+    {
+      "score": 1,
+      "pred": "750",
+      "gold": "750",
+      "gen_text": "Teddy placed 250 pieces in the first puzzle and 500 pieces in the second puzzle, for a total of 750 pieces."
+    },
+    {
+      "score": 0,
+      "pred": "9",
+      "gold": "7",
+      "gen_text": "The total cost of the chips, fried chicken, and soda is $2.00 + $8.00 + $1.00 = $11.00.  The apple pie cost $20.00 - $11.00 = $9.00."
+    },
+    {
+      "score": 1,
+      "pred": "2",
+      "gold": "2",
+      "gen_text": "The total cost of the watermelons is $80. The profit is 25% of the cost, which is $80 * 0.25 = $20. The total selling price is the cost plus the profit, which is $80 + $20 = $100. The selling price of each watermelon is $100 / 50 = $2."
+    },
+    {
+      "score": 1,
+      "pred": "17",
+      "gold": "17",
+      "gen_text": "There are 25 oranges in the basket. 1 is bad, 20% are unripe, and 2 are sour. So, the number of oranges that are bad, unripe, or sour is 1 + (20/100) * 25 + 2 = 1 + 5 + 2 = 8. The number of good oranges is 25 - 8 = 17."
+    },
+    {
+      "score": 1,
+      "pred": "20",
+      "gold": "20",
+      "gen_text": "The number of kids allergic to dairy or peanuts is 9 + 6 - 3 = 12. So, 32 - 12 = 20 kids aren't allergic to anything."
+    },
+    {
+      "score": 0,
+      "pred": "73",
+      "gold": "803",
+      "gen_text": "The total interest Karan has to pay is $3,650 x 10% = $365. Since she has to pay an equal amount every month, she has to pay $365 / 5 = $73 per month."
+    },
+    {
+      "score": 1,
+      "pred": "40",
+      "gold": "40",
+      "gen_text": "Mack saw a total of 50 + 0 + 120 + 20 + 90 = 280 birds over the week. There are 7 days in a week, so the average number of birds Mack saw in a day is 280 / 7 = 40."
+    },
+    {
+      "score": 1,
+      "pred": "85",
+      "gold": "85",
+      "gen_text": "The baseball coach spent 9 x $3 = $<<9*3=27>>27 on baseballs.\nThe basketball coach spent 8 x $14 = $<<8*14=112>>112 on basketballs.\nThe basketball coach spent $112 - $27 = $<<112-27=85>>85 more than the baseball coach.\nThe answer is 85."
+    },
+    {
+      "score": 1,
+      "pred": "300",
+      "gold": "300",
+      "gen_text": "The chef bought 4 bags of onions, each weighing 50 pounds, so the total weight of onions is 4 x 50 = 200 pounds. Since a pound of onions costs $1.50, the total cost of the onions is 200 x $1.50 = $300."
+    },
+    {
+      "score": 1,
+      "pred": "32",
+      "gold": "32",
+      "gen_text": "Ali has 4 x $10 = $40 from the $10 bills and 6 x $20 = $120 from the $20 bills. So, he has a total of $40 + $120 = $160.\nHe gives his sister half of the total money, which is $160 / 2 = $80. So, he has $160 - $80 = $80 left.\nHe uses 3/5 of the remaining amount of money to buy dinner, which is 3/5 x $80 = $48. So, he has $80 - $48 = $32 left after buying the dinner."
+    },
+    {
+      "score": 1,
+      "pred": "10",
+      "gold": "10",
+      "gen_text": "First, we need to find the number of riders who can stay upright on the wave. Since 25% of the riders can stay upright, we can find this number by multiplying the total number of riders by 0.25. 100 * 0.25 = 25 riders can stay upright on the wave. Next, we need to find the number of women who can stay upright on the wave. Since 60% of the riders who can stay upright are women, we can find this number by multiplying the number of riders who can stay upright by 0.6. 25 * 0.6 = 15 women can stay upright on the wave. Finally, we can find the number of men who can stay upright on the wave by subtracting the number of women who can stay upright from the total number of riders who can stay upright. 25 - 15 = 10 men can stay upright on the wave."
+    },
+    {
+      "score": 1,
+      "pred": "1218",
+      "gold": "1218",
+      "gen_text": "Mamou has 1,360 - 64 - 30 - 48 = 1,218 meals left to distribute."
+    },
+    {
+      "score": 0,
+      "pred": "10.93",
+      "gold": "410",
+      "gen_text": "Zoey spits 40 seeds 10 feet each for a total of 400 feet. Sydney spits 35 seeds 12 feet each for a total of 420 feet. The total distance spat is 400 + 420 = 820 feet. There are 40 + 35 = 75 seeds. The average distance spat is 820 / 75 = 10.93 feet."
+    },
+    {
+      "score": 1,
+      "pred": "34",
+      "gold": "34",
+      "gen_text": "The number of blue sticks is 9 + 5 = 14.\nThe number of yellow sticks is 14 - 3 = 11.\nThe total number of sticks is 9 + 14 + 11 = 34."
+    },
+    {
+      "score": 1,
+      "pred": "14",
+      "gold": "14",
+      "gen_text": "Leila spent $2 x 3 = $6 on cucumbers.\nJack spent $1 x 5 = $5 on tomatoes.\nChase spent $3 on lettuce.\nTogether, they spent $6 + $5 + $3 = $14 to make a salad for the potluck."
+    },
+    {
+      "score": 0,
+      "pred": "340",
+      "gold": "100",
+      "gen_text": "May's haircut cost $30 per inch, and her hair was 10 inches long, so the haircut cost 10 x $30 = $300. The color cost $40, so the total cost was $300 + $40 = $340."
+    },
+    {
+      "score": 1,
+      "pred": "64",
+      "gold": "64",
+      "gen_text": "The total weight of the tunas caught by Deandre is 56 + 46 + 26 = 128 kilograms. If a kilogram of tuna costs $0.50, then the total amount he will earn is 128 x $0.50 = $64."
+    },
+    {
+      "score": 1,
+      "pred": "104",
+      "gold": "104",
+      "gen_text": "On Monday, Meredith wrote 5 articles, so she spent 5 x 4 = 20 hours writing articles.\nOn Tuesday, she wrote 2/5 times more articles than on Monday, so she wrote 5 + (2/5 x 5) = 7 articles. She spent 7 x 4 = 28 hours writing articles.\nOn Wednesday, she wrote twice the number of articles she wrote on Tuesday, so she wrote 2 x 7 = 14 articles. She spent 14 x 4 = 56 hours writing articles.\nIn total, she spent 20 + 28 + 56 = 104 hours writing articles in the three days."
+    },
+    {
+      "score": 1,
+      "pred": "300",
+      "gold": "300",
+      "gen_text": "The cost of the printer is $1,100 - $400 = $700.\nThe total cost of the computer and the printer is $1,100 + $700 = $1,800.\nThe cost of the two monitors is $2,400 - $1,800 = $600.\nThe cost of one monitor is $600 / 2 = $300.\nThe answer is $300."
+    },
+    {
+      "score": 1,
+      "pred": "16",
+      "gold": "16",
+      "gen_text": "The first glue stick has 1/6 left, so the length of the glue stick that is not used is 12 * 1/6 = 2 millimeters.\nThe second glue stick has 2/3 left, so the length of the glue stick that is not used is 12 * 2/3 = 8 millimeters.\nThe third glue stick has 1/2 left, so the length of the glue stick that is not used is 12 * 1/2 = 6 millimeters.\nThe total length of the glue sticks that are not used is 2 + 8 + 6 = 16 millimeters."
+    },
+    {
+      "score": 1,
+      "pred": "15",
+      "gold": "15",
+      "gen_text": "There are 45 rooms in one-half of the motel. It takes 20 minutes to clean each room, so it would take 45 * 20 = 900 minutes to clean one-half of the rooms. There are 60 minutes in an hour, so it would take 900 / 60 = 15 hours to clean one-half of the rooms."
+    },
+    {
+      "score": 1,
+      "pred": "157",
+      "gold": "157",
+      "gen_text": "The total number of balls in the store is 3 + 11 + 25 = 39 balls. The total amount of money the store will receive is 3 * 9 + 11 * 5 + 25 * 3 = 27 + 55 + 75 = 157 dollars."
+    },
+    {
+      "score": 0,
+      "pred": "90",
+      "gold": "45",
+      "gen_text": "To peel 90 shrimp, it will take Emily 90/6 = 15 minutes. To cook 90 shrimp, it will take her 90/30 = 3 minutes. So, in total, it will take her 15 + 3 = 18 minutes to peel and cook 90 shrimp."
+    },
+    {
+      "score": 1,
+      "pred": "9",
+      "gold": "9",
+      "gen_text": "The number of cards with the letter A on them is 2/5 * 80 = 32.\nThe number of cards with the letter B on them is 1/2 * (80 - 32) = 24.\nThe number of cards with the letter C on them is 5/8 * (80 - 32 - 24) = 15.\nThe number of cards with the letter D on them is 80 - 32 - 24 - 15 = 9.\nThe answer is 9."
+    },
+    {
+      "score": 1,
+      "pred": "14",
+      "gold": "14",
+      "gen_text": "Dean has 30 marbles. He gives 1/5 of them to Jamie, which is 30 * 1/5 = 6 marbles. He also gives 10 marbles to Donald. So, he has 30 - 6 - 10 = 14 marbles left."
+    },
+    {
+      "score": 1,
+      "pred": "360",
+      "gold": "360",
+      "gen_text": "In the first week, Alani wrote 20 stories, Braylen wrote 40 stories, and Margot wrote 60 stories. So, the total number of stories they wrote in the first week is 20 + 40 + 60 = 120 stories. In the second week, Alani wrote 20 x 2 = 40 stories, Braylen wrote 40 x 2 = 80 stories, and Margot wrote 60 x 2 = 120 stories. So, the total number of stories they wrote in the second week is 40 + 80 + 120 = 240 stories. Therefore, the total number of stories they wrote altogether is 120 + 240 = 360 stories."
+    },
+    {
+      "score": 0,
+      "pred": "580",
+      "gold": "880",
+      "gen_text": "The cost of 4 watermelons is 4 * 3 * 15 = 180$.\nThe cost of 20 peppers is 20 * 15 = 300$.\nThe cost of 10 oranges is 10 * (15 - 5) = 10 * 10 = 100$.\nThe total amount of money Dillon will spend is 180 + 300 + 100 = 580$.\nThe final answer is 580$."
+    },
+    {
+      "score": 1,
+      "pred": "34",
+      "gold": "34",
+      "gen_text": "Jonathan has 2 dozen measuring cups, which is 2 x 12 = 24 measuring cups. Since he has 2/3 as many measuring spoons as measuring cups, he has 2/3 x 24 = 16 measuring spoons. After gifting Pedro 6 measuring spoons, Jonathan has 16 - 6 = 10 measuring spoons remaining. Therefore, Jonathan has a total of 24 measuring cups and 10 measuring spoons, for a total of 24 + 10 = 34 utensils."
+    },
+    {
+      "score": 0,
+      "pred": "93",
+      "gold": "98",
+      "gen_text": "To get an average of 93, Brinley needs a total of 93 * 6 = 558 points. She has 89 + 71 + 92 + 100 + 86 = 338 points from the first five tests. She needs 558 - 338 = 220 points from the sixth test. Therefore, she needs a score of 220 on the sixth test to get an average of 93."
+    },
+    {
+      "score": 0,
+      "pred": "9.5",
+      "gold": "17",
+      "gen_text": "The time it took James to swim 60% of the distance is 60% of 20 miles / 2 miles per hour = 1 hour.  He rested for half as long as the swimming time, so he rested for 1/2 hour.  The remaining distance is 20 miles - 60% of 20 miles = 8 miles.  He swims at half the speed, so it takes him 8 miles / 1 mile per hour = 8 hours to finish the remaining distance.  The total time it took him to get across the lake is 1 hour + 1/2 hour + 8 hours = 9.5 hours."
+    },
+    {
+      "score": 0,
+      "pred": "3",
+      "gold": "8",
+      "gen_text": "Rose bought 5 dozens of eggs for $2.40 a dozen, so she paid $2.40 x 5 = $12.00 for the eggs. She will sell the eggs for $1 for 3 eggs, so she will sell 5 dozens of eggs for $1 x 5 x 3 = $15.00. Her profit will be $15.00 - $12.00 = $3.00."
+    },
+    {
+      "score": 1,
+      "pred": "15",
+      "gold": "15",
+      "gen_text": "Paul has 8 + 40 = 48 cupcakes already. He needs 63 cupcakes, so he should buy 63 - 48 = 15 more cupcakes."
+    },
+    {
+      "score": 1,
+      "pred": "8",
+      "gold": "8",
+      "gen_text": "Charmaine will be 16 years old in 12 years, so she is currently 16 - 12 = 4 years old. 4 years from now, she will be 4 + 4 = 8 years old."
+    },
+    {
+      "score": 1,
+      "pred": "21",
+      "gold": "21",
+      "gen_text": "Rachel had 23 cookies and Janet gave her 42 cookies, so she had 23 + 42 = 65 cookies. Her brother ate 44 cookies, so she has 65 - 44 = 21 cookies left."
+    },
+    {
+      "score": 1,
+      "pred": "175",
+      "gold": "175",
+      "gen_text": "Mark scored 20 fewer goals than Richie, so Mark scored 80 - 20 = 60 goals.\nAnna scored 45 fewer goals than Richie, so Anna scored 80 - 45 = 35 goals.\nThe total number of goals scored by the three teenagers is 80 + 60 + 35 = 175 goals.\nThe final answer is 175."
+    },
+    {
+      "score": 0,
+      "pred": "240",
+      "gold": "160",
+      "gen_text": "The bed measures 6 feet long by 8 feet wide, so the comforter will be 8 + 2 = 10 feet long and 10 + 2 = 12 feet wide. The area of the comforter is 10 * 12 = 120 square feet. Since Jim needs two pieces of fabric, he needs to buy 2 * 120 = 240 square feet of fabric."
+    },
+    {
+      "score": 1,
+      "pred": "540",
+      "gold": "540",
+      "gen_text": "James runs 3 sprints 3 times a week, so he runs 3 x 3 = 9 sprints a week.  Each sprint is 60 meters, so he runs 9 x 60 = 540 meters a week."
+    },
+    {
+      "score": 0,
+      "pred": "280",
+      "gold": "80",
+      "gen_text": "Blake runs 15 times back and forth, so he runs 15 x 2 x 100 = 3000 yards.\nKelly runs 34 times to the 40-yard line and back, so she runs 34 x 2 x 40 = 2720 yards.\nThe difference between the two is 3000 - 2720 = 280 yards.\nThe winner runs 280 yards farther than the loser."
+    },
+    {
+      "score": 0,
+      "pred": "50",
+      "gold": "450",
+      "gen_text": "Grandpa can eat 75 large beans, 2 * 75 = 150 medium beans, and 150 / 3 = 50 small beans."
+    },
+    {
+      "score": 1,
+      "pred": "12",
+      "gold": "12",
+      "gen_text": "Heather has 27 cups of raisins in the bag. If she divides the raisins equally among the oatmeal cookies, granola, and snack mix, she will have 27/3 = 9 cups of raisins for each of the three recipes. Since a batch of oatmeal cookies takes 3/4 of a cup of raisins, Heather can make 9/(3/4) = 9*4/3 = 12 batches of oatmeal cookies."
+    },
+    {
+      "score": 1,
+      "pred": "2600",
+      "gold": "2600",
+      "gen_text": "The weight of each chocolate bar is 40g, and each chocolate bar weighs twice as much as each candied apple, so each candied apple weighs 40/2 = 20g. The total weight of the chocolate bars is 25 * 40 = 1000g, and the total weight of the candied apples is 80 * 20 = 1600g. Therefore, the total weight of Joe's bag of candy is 1000 + 1600 = 2600g."
+    },
+    {
+      "score": 1,
+      "pred": "70",
+      "gold": "70",
+      "gen_text": "There are 4 times 12, or 48, pink gumballs. There are 22 more pink gumballs than blue gumballs, so there are 48 + 22, or 70, pink gumballs."
+    },
+    {
+      "score": 1,
+      "pred": "16",
+      "gold": "16",
+      "gen_text": "The car in the slow lane is traveling at half the speed of the car in the fast lane, so it is traveling at 60/2 = 30 miles/hour. The time the car in the slow lane took to cover the same distance is 480/30 = 16 hours."
+    },
+    {
+      "score": 1,
+      "pred": "15",
+      "gold": "15",
+      "gen_text": "Bill's dad saw the comet when he was 30 years old. Bill saw the comet a second time when he was three times the age his father was when he saw the comet. So, Bill was 3 * 30 = 90 years old when he saw the comet for the second time. Since the comet orbits the sun every 75 years, Bill saw the comet for the first time when he was 90 - 75 = 15 years old."
+    },
+    {
+      "score": 1,
+      "pred": "5600",
+      "gold": "5600",
+      "gen_text": "The total amount of milk Mr. Marcellus purchased was 4000 gallons. 2/5 of the milk was sour and could not be sold, so the amount of sour milk was 2/5 * 4000 = 1600 gallons. The cost of the sour milk was 1600 * $3.5 = $5600. Mr. Marcellus got a refund of $5600."
+    },
+    {
+      "score": 1,
+      "pred": "7",
+      "gold": "7",
+      "gen_text": "The sweet potatoes weighed 5 x 2 = <<5*2=10>>10 pounds.\nThe carrots weighed 10 - 3 = <<10-3=7>>7 pounds.\nDaisy bought 7 pounds of carrots."
+    },
+    {
+      "score": 0,
+      "pred": "1000",
+      "gold": "3000",
+      "gen_text": "Oliver must climb 4,000 - 3,000 = 1,000 feet to reach the elevation of Stanley's comb."
+    },
+    {
+      "score": 1,
+      "pred": "93000",
+      "gold": "93000",
+      "gen_text": "There are 31 days in March. If each member posts an average of 3 posts per day, the total number of posts in March will be 31 * 3 * 1000 = 93000."
+    },
+    {
+      "score": 1,
+      "pred": "800",
+      "gold": "800",
+      "gen_text": "Hannah burns 500 calories/hour for 2 hours, so she burns 500 * 2 = 1000 calories. She also burns 600 calories/hour for 1 hour, so she burns 600 * 1 = 600 calories. In total, she burns 1000 + 600 = 1600 calories. For every 200 calories she burns, she needs to drink 100 ml of water. So, she needs to drink 1600 / 200 * 100 = 800 ml of water."
+    },
+    {
+      "score": 1,
+      "pred": "56",
+      "gold": "56",
+      "gen_text": "Let the number of camels be represented by the variable C and the number of dromedaries by the variable D. We know that the total number of heads is 180, so C + D = 180. We also know that the total number of humps is 304, so 2C + D = 304. Subtracting the first equation from the second equation, we get C = 124. Substituting this value into the first equation, we get D = 56. Therefore, there are 56 dromedaries in the herd."
+    },
+    {
+      "score": 1,
+      "pred": "460",
+      "gold": "460",
+      "gen_text": "Eliza's earnings for the first 40 hours she worked this week is 40 * $10 = $400. For the 5 hours she worked overtime, her earnings is 5 * $10 * 1.2 = $60. Therefore, her total earnings for this week is $400 + $60 = $460."
+    },
+    {
+      "score": 0,
+      "pred": "2",
+      "gold": "7",
+      "gen_text": "Mr. Jackson needs 27 students * 2 glue sticks/student = 54 glue sticks. Since glue sticks come in packs of 8, he will need to buy 54 glue sticks / 8 glue sticks/pack = 6.75 packs. Since he can only buy whole packs, he will need to buy 7 packs. This will give him 7 packs * 8 glue sticks/pack = 56 glue sticks, which is 2 glue sticks more than he needs."
+    },
+    {
+      "score": 1,
+      "pred": "10",
+      "gold": "10",
+      "gen_text": "Tim has 7 blue shoe boxes and 9 red shoe boxes. He uses 3 blue shoe boxes and 1/3 of his red shoe boxes to go fishing. 1/3 of 9 red shoe boxes is 3 red shoe boxes. So, Tim has 7 - 3 = 4 blue shoe boxes left and 9 - 3 = 6 red shoe boxes left. In total, Tim has 4 + 6 = 10 shoe boxes left."
+    },
+    {
+      "score": 0,
+      "pred": "10",
+      "gold": "14",
+      "gen_text": "Martha invited 2 families with 6 people, so 2 * 6 = 12 people. She also invited 3 families with 4 people, so 3 * 4 = 12 people. In total, she invited 12 + 12 = 24 people. 8 people couldn't come due to illness, so 24 - 8 = 16 people. 1/4 of 8 is 2, so 8 - 2 = 6 people had previous commitments. In total, 16 - 6 = 10 people show up for Martha's party."
+    },
+    {
+      "score": 1,
+      "pred": "54",
+      "gold": "54",
+      "gen_text": "Howie, his teacher, and his 25 classmates make a total of 1 + 1 + 25 = 27 people. Since each person gets 2 cupcakes, Howie should buy 27 x 2 = 54 cupcakes."
+    },
+    {
+      "score": 0,
+      "pred": "541",
+      "gold": "500",
+      "gen_text": "The oven is off by 18 degrees (468 - 450 = 18). To find the percentage, we divide 18 by 450 and multiply by 100: 18/450 * 100 = 4%. To find the temperature she should set it at, we add 4% of 520 to 520: 520 + 520 * 0.04 = 520 + 20.8 = 540.8. So, she should set it to 541 degrees."
+    },
+    {
+      "score": 1,
+      "pred": "9",
+      "gold": "9",
+      "gen_text": "Jam has 3 boxes full of pencils and 2 loose pencils, which gives a total of 3 + 2 = 5 boxes. Meg has 46 pencils, which is 46 / 12 = 3.83 boxes. So, Jam and Meg need 5 + 3.83 = 8.83 boxes to store all their pencils. Since you can't have a fraction of a box, they need 9 boxes."
+    },
+    {
+      "score": 0,
+      "pred": "180",
+      "gold": "142",
+      "gen_text": "On Tuesday, Clara paid $20 - $2 = $18 for 20 pomegranates, so the total cost was $18 x 20 = $360. On Wednesday, Sheila paid $30 x 20 = $600 for 20 pomegranates, but she got a 10% discount, so she paid $600 - $60 = $540. The difference between the final prices paid for the pomegranates on the two days is $540 - $360 = $180."
+    },
+    {
+      "score": 1,
+      "pred": "38",
+      "gold": "38",
+      "gen_text": "The cost of the adult tickets is 2 * $12 = $24. The cost of the child ticket is $8. The cost of the popcorns is 2 * $3 = $6. The total cost is $24 + $8 + $6 = $38."
+    },
+    {
+      "score": 1,
+      "pred": "240",
+      "gold": "240",
+      "gen_text": "Billy can help 2 people per hour for 3 hours a day, so he can help 2 * 3 = 6 people per day. There are 31 days in March and 20% of those days are off, so he works 31 * 0.8 = 24.8 days in March. In April, there are 19 days and he takes 20% of those days off, so he works 19 * 0.8 = 15.2 days in April. In total, he works 24.8 + 15.2 = 40 days. So, he helps 40 * 6 = 240 people."
+    },
+    {
+      "score": 1,
+      "pred": "720",
+      "gold": "720",
+      "gen_text": "Tom gets 4 car washes a month, so in a year he gets 4 car washes/month x 12 months/year = 48 car washes/year. Each car wash costs $15, so he pays 48 car washes/year x $15/car wash = $720/year."
+    },
+    {
+      "score": 1,
+      "pred": "36",
+      "gold": "36",
+      "gen_text": "In the 60-item quiz, 40% of the questions are easy, so there are 0.4 * 60 = 24 easy questions. Aries is sure to get 75% of the easy questions, so she is sure to get 0.75 * 24 = 18 points from the easy questions. The rest of the questions are equally divided as average and difficult questions, so there are 60 - 24 = 36 average and difficult questions. Aries is sure to get half of the average and difficult questions correctly, so she is sure to get 0.5 * 36 = 18 points from the average and difficult questions. In total, Aries is sure to get 18 + 18 = 36 points."
+    },
+    {
+      "score": 1,
+      "pred": "29",
+      "gold": "29",
+      "gen_text": "The total cost of the subs is 2 x $7.50 = $15.00. The total cost of the chips is 2 x $1.50 = $3.00. The total cost of the cookies is 2 x $1.00 = $2.00. The total cost of the food is $15.00 + $3.00 + $2.00 = $20.00. The delivery fee is 20% of $20.00, which is 0.20 x $20.00 = $4.00. The total cost of the food and delivery is $20.00 + $4.00 = $24.00. Adding the $5.00 tip, the total cost of the delivery order is $24.00 + $5.00 = $29.00."
+    },
+    {
+      "score": 0,
+      "pred": "3",
+      "gold": "20",
+      "gen_text": "John spent 6 hours boating and half that time swimming, so he spent 6/2 = 3 hours swimming.  He also watched 3 different shows which were 2 hours each, so he spent 3*2 = 6 hours watching shows.  This was 30% of the time he spent, so he spent 100/30 = 10/3 hours in total.  He spent 40% of his time sightseeing, so he spent 10/3 * 40/100 = 4/3 hours sightseeing."
+    },
+    {
+      "score": 0,
+      "pred": "160",
+      "gold": "110",
+      "gen_text": "At the first stop, 20 more people boarded the train, so the total number of people on the train is 120 + 20 = 140.\nAt the second stop, 50 people descended from the train while twice that number boarded the train, so the total number of people on the train is 140 - 50 + 2 * 50 = 140 + 100 = 240.\nAt the third station, 80 more people descended from the train, so the total number of people on the train is 240 - 80 = 160.\nTherefore, the total number of people on the train at the final stop is 160."
+    },
+    {
+      "score": 1,
+      "pred": "6",
+      "gold": "6",
+      "gen_text": "The first leg of the trip took 200/70 = 2.86 hours.  The detour added 10/70 = 0.14 hours.  The second leg of the trip took 240/80 = 3 hours.  The total time for the trip was 2.86 + 0.14 + 3 = 6 hours."
+    },
+    {
+      "score": 1,
+      "pred": "130",
+      "gold": "130",
+      "gen_text": "Lloyd earned $10 x 5 = $<<10*5=50>>50 for the first week.\nHe earned $10 x 8 = $<<10*8=80>>80 for the second week.\nSo, he earned $50 + $80 = $<<50+80=130>>130 for the first two weeks.\nThe final answer is $130."
+    },
+    {
+      "score": 0,
+      "pred": "30",
+      "gold": "8",
+      "gen_text": "Parker chews 4 pieces of gum a day, so in 30 days, he will chew 4 * 30 = 120 pieces of gum.  A pack of gum has 15 pieces of gum, so he will need 120 / 15 = 8 packs of gum to last him 30 days."
+    },
+    {
+      "score": 1,
+      "pred": "3528",
+      "gold": "3528",
+      "gen_text": "The boat depreciated 30% in the first year, so it was worth 70% of its original value, or 0.7 x $9000 = $6300.\nThe boat depreciated another 30% in the second year, so it was worth 70% of its value after the first year, or 0.7 x $6300 = $4410.\nThe boat depreciated 20% in the third year, so it was worth 80% of its value after the second year, or 0.8 x $4410 = $3528.\nThe boat is worth $3528 after the three years."
+    },
+    {
+      "score": 1,
+      "pred": "40",
+      "gold": "40",
+      "gen_text": "The Doubtfire sisters have 7 kittens from the animal shelter. Patchy has had thrice the number of adopted kittens, so Patchy has had 3 * 7 = 21 kittens. Trixie has had 12 kittens. So, the Doubtfire family now has 7 + 21 + 12 = 40 kittens."
+    },
+    {
+      "score": 1,
+      "pred": "34",
+      "gold": "34",
+      "gen_text": "Raphael spent $1.5 x 4 = $6 on pens, $4 x 2 = $8 on notebooks, and $20 on the bond paper. So, he spent $6 + $8 + $20 = $34 on everything."
+    },
+    {
+      "score": 1,
+      "pred": "75",
+      "gold": "75",
+      "gen_text": "Damien finds 10 bottle caps a day and each bottle cap is worth $.25, so he makes 10 * $.25 = $2.50 a day. In a 30 day month, he makes 30 * $2.50 = $75."
+    },
+    {
+      "score": 0,
+      "pred": "30",
+      "gold": "75",
+      "gen_text": "Terry eats 2 yogurts a day, so over 30 days he eats 2 x 30 = 60 yogurts.  Since they are on sale at 4 yogurts for $5.00, he will spend 60 / 4 = 15 sets of 4 yogurts.  Therefore, he will spend 15 x $5.00 = $75.00 on yogurt over 30 days."
+    },
+    {
+      "score": 0,
+      "pred": "5",
+      "gold": "1",
+      "gen_text": "Martha had 7 - 5 = <<7-5=2>>2 notebooks.\nJoseph had 3 times as many notebooks as Martha, so he had 3 * 2 = <<3*2=6>>6 notebooks.\nMartha now has 7 - 2 = <<7-2=5>>5 more notebooks than Joseph.\nThe answer is 5."
+    },
+    {
+      "score": 1,
+      "pred": "32",
+      "gold": "32",
+      "gen_text": "The price of one banana is $0.5 x 2 = $1. The price of one orange is $1 x 3 = $3. The price of one apple is $0.5. The total price for one crate of fruit is $1 x 5 + $0.5 x 12 + $3 x 7 = $5 + $6 + $21 = $32."
+    },
+    {
+      "score": 1,
+      "pred": "3",
+      "gold": "3",
+      "gen_text": "Haley is 26 years old, so half of her age is 26/2 = 13 years old. Geb is 10 years less than half of Haley's age, so Geb is 13 - 10 = 3 years old."
+    },
+    {
+      "score": 1,
+      "pred": "100",
+      "gold": "100",
+      "gen_text": "The number of Chinese on the team is 240 - 80 = 160.\nThe number of girls on the Chinese team is 160 - 60 = 100."
+    },
+    {
+      "score": 0,
+      "pred": "50",
+      "gold": "100",
+      "gen_text": "Robert will need 2 slats for every foot of fencing, so for the 15 foot long side, he will need 15 * 2 = 30 slats. For the 10 foot wide side, he will need 10 * 2 = 20 slats. In total, he will need 30 + 20 = 50 slats."
+    },
+    {
+      "score": 1,
+      "pred": "159",
+      "gold": "159",
+      "gen_text": "First, find the total amount of hay needed for the goats: 15 goats * 5 pounds/goat = <<15*5=75>>75 pounds\nThen, find the amount of hay each sheep needs: 2 * 5 pounds - 3 pounds = 7 pounds\nThen, find the total amount of hay needed for the sheep: 12 sheep * 7 pounds/sheep = <<12*7=84>>84 pounds\nFinally, add the total amount of hay needed for the goats and the sheep: 75 pounds + 84 pounds = <<75+84=159>>159 pounds\nNate needs 159 pounds of hay."
+    },
+    {
+      "score": 0,
+      "pred": "4.2",
+      "gold": "15",
+      "gen_text": "They made 25 dollars in profit, so they made 25 + 3 = 28 dollars in total. They made 20 glasses per gallon, so they made 28 / 20 = 1.4 gallons. They spent 3 dollars on lemons per gallon, so they spent 1.4 * 3 = 4.2 dollars on lemons."
+    },
+    {
+      "score": 1,
+      "pred": "270",
+      "gold": "270",
+      "gen_text": "Maddison has 5 boxes with 50 marbles in each box, so she has 5 x 50 = 250 marbles. Then she gets 20 marbles from her friend, so she now has 250 + 20 = 270 marbles."
+    },
+    {
+      "score": 1,
+      "pred": "120",
+      "gold": "120",
+      "gen_text": "If it took 30 minutes to cook rice, then it took 30 + 20 = 50 minutes to cook pork. The combined cooking time for pork and rice is 50 + 30 = 80 minutes. Since beans took half the combined cooking time of pork and rice, it took 80 / 2 = 40 minutes to cook beans. The total cooking time for all the food is 30 + 50 + 40 = 120 minutes."
+    },
+    {
+      "score": 1,
+      "pred": "160",
+      "gold": "160",
+      "gen_text": "There are 10 rows of flowers with 20 flowers in each row, so there are 10 x 20 = 200 flowers in the garden. Since only 4/5 of the flowers have bloomed, the number of bloomed flowers is 4/5 x 200 = 160."
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "Shannon eats 2 cookies a night, so she will need 2 cookies/night x 30 nights = 60 cookies for 30 days. Since her recipe makes 1 dozen cookies, she will need to make 60 cookies / 12 cookies/dozen = 5 dozen cookies."
+    },
+    {
+      "score": 0,
+      "pred": "500",
+      "gold": "9500",
+      "gen_text": "The brokerage fee is 5% of $350 000, which is 0.05 x $350 000 = $17 500. The transfer fee is 12% of $350 000, which is 0.12 x $350 000 = $42 000. The total price of the house is $350 000 + $17 500 + $42 000 = $409 500. The difference between the total price and Mrs. Cruz's budget is $409 500 - $400 000 = $9 500."
+    },
+    {
+      "score": 0,
+      "pred": "371",
+      "gold": "251",
+      "gen_text": "Kayla invited 25 classmates + 7 dance class girls + 13 family members = 45 people. 45 - 4 = 41 people will attend the party. The cost of the party will be $125 + $6 * 41 = $125 + $246 = $371."
+    },
+    {
+      "score": 1,
+      "pred": "385000",
+      "gold": "385000",
+      "gen_text": "The company had planned to spend $700 for each computer, but the price was 10% higher than they had planned for. So, the new price for each computer is $700 + 10% of $700 = $700 + $70 = $770. The total amount of money they paid to buy the computers at the new prices is $770 * 500 = $385,000."
+    },
+    {
+      "score": 0,
+      "pred": "178.75",
+      "gold": "205",
+      "gen_text": "The labor charge was $35 x 2.25 = $78.75. The total charge was $40 + $78.75 + $60 = $178.75."
+    },
+    {
+      "score": 1,
+      "pred": "1",
+      "gold": "1",
+      "gen_text": "Doctor Jones will spend 20 minutes per inpatient, so for 9 inpatients, he will spend 9 x 20 = 180 minutes. Converting this to hours, we get 180/60 = 3 hours. He also has 10 appointments, which will take 10 x 30 = 300 minutes, or 300/60 = 5 hours. In total, he will spend 3 + 5 = 8 hours on rounds and appointments. Subtracting this from his total time at the clinic, we get 9 - 8 = 1 hour left to update his records."
+    },
+    {
+      "score": 0,
+      "pred": "60",
+      "gold": "16",
+      "gen_text": "Jenny bought 15 roses, so she paid 15 * 2 = $30 for the roses. She also paid $15 for a dozen roses, so she paid a total of $30 + $15 = $45. She arrived with five $5 bills, so she had 5 * 5 = $25. She left with $25 - $45 = -$20. Since she can't leave with a negative amount of money, she must have used some of her quarters to pay for the flowers. Since she paid $45 and she had $25, she used $45 - $25 = $20 in quarters. Since each quarter is worth $0.25, she used 20 / 0.25 = 80 quarters. She left with 80 - 20 = 60 quarters."
+    },
+    {
+      "score": 1,
+      "pred": "90",
+      "gold": "90",
+      "gen_text": "Let the smallest angle be x. Then the other two angles are 2x and 3x. Since the sum of the angles in a triangle is 180 degrees, we have the equation x + 2x + 3x = 180. Combining like terms, we get 6x = 180. Dividing both sides by 6, we get x = 30. Therefore, the smallest angle is 30 degrees, the middle angle is 60 degrees, and the largest angle is 90 degrees."
+    },
+    {
+      "score": 1,
+      "pred": "390",
+      "gold": "390",
+      "gen_text": "Ali has 22 medals, and Izzy has 5 less, so Izzy has 22 - 5 = 17 medals. Together they have 22 + 17 = 39 medals. If this is 10 times less than the total number of medals given out, then the total number of medals given out is 39 * 10 = 390."
+    },
+    {
+      "score": 0,
+      "pred": "1800",
+      "gold": "2800",
+      "gen_text": "Gordy's truck can haul 4,000 + 800 = 4,800 pounds of gravel.\nThe three trucks combined can haul 4,000 + 4,800 + Gary's truck = 11,600 pounds of gravel.\nSo, Gary's truck can haul 11,600 - 4,000 - 4,800 = 1,800 pounds of gravel.\nThe final answer is 1,800."
+    },
+    {
+      "score": 1,
+      "pred": "70",
+      "gold": "70",
+      "gen_text": "Katherine will need 5 x 3 = <<5*3=15>>15 petunias.\nShe will need 5 x 2 = <<5*2=10>>10 sweet potato vines.\nThe total cost of the petunias will be 15 x $3.00 = $<<15*3=45.00>>45.00.\nThe total cost of the sweet potato vines will be 10 x $2.50 = $<<10*2.5=25.00>>25.00.\nThe total cost of filling all 5 hanging baskets will be $45.00 + $25.00 = $<<45+25=70.00>>70.00.\nThe answer is 70."
+    },
+    {
+      "score": 0,
+      "pred": "1047.2",
+      "gold": "826",
+      "gen_text": "To find the volume of the pool, we need to multiply the width, length, and depth of the pool. The volume of the pool is 14 * 25 * 4 = 1400 cubic feet. To find the number of gallons of water needed, we need to multiply the volume of the pool by 7.48 (since there are 7.48 gallons in a cubic foot). The number of gallons of water needed is 1400 * 7.48 = 10472 gallons. The cost to fill the pool is 10472 * $0.10 = $1047.20."
+    },
+    {
+      "score": 1,
+      "pred": "36",
+      "gold": "36",
+      "gen_text": "The original price of the two T-shirts is $8 x 2 = $16. Since Jake gets one T-shirt for 50% off, he pays $8 for one T-shirt and $8 x 0.5 = $4 for the other T-shirt. So, the total amount Jake pays for the T-shirts is $8 + $4 = $12. The original price of the shoes is $40, and Jake gets 40% off, so he pays $40 x 0.6 = $24 for the shoes. The total amount Jake spends at the store is $12 + $24 = $36."
+    },
+    {
+      "score": 1,
+      "pred": "3200",
+      "gold": "3200",
+      "gen_text": "Watson works 10 hours a day, five days a week, so he works 10 * 5 = 50 hours per week. He earns $10 per hour, so he earns 50 * $10 = $500 per week. He also gets a $300 bonus each week, so he earns $500 + $300 = $800 per week. April has 4 weeks, so Watson earns $800 * 4 = $3200 in April."
+    },
+    {
+      "score": 1,
+      "pred": "14",
+      "gold": "14",
+      "gen_text": "Jean has 30 - 2 = 28 lollipops left.\nJean can fill 28 / 2 = 14 bags."
+    },
+    {
+      "score": 1,
+      "pred": "120",
+      "gold": "120",
+      "gen_text": "Fireman Frank has 200 shoes. On Monday, he gets 5 pairs of shoes, which is 5 x 2 = 10 shoes. On Wednesday, he gains 15 new pairs, which is 15 x 2 = 30 shoes. On Friday, he gains 30 new pairs, which is 30 x 2 = 60 shoes. So, he has 200 + 10 + 30 + 60 = 300 shoes. On Saturday, he gets rid of 180 shoes, so he has 300 - 180 = 120 shoes. Therefore, on Sunday, he will have 120 shoes."
+    },
+    {
+      "score": 1,
+      "pred": "20",
+      "gold": "20",
+      "gen_text": "Carlos collected 27 - 5 = 22 seashells.\nCarrey collected 22 / 2 = 11 seashells.\nIn total, they collected 27 + 22 + 11 = 60 seashells.\nEach person got 60 / 3 = 20 seashells."
+    },
+    {
+      "score": 1,
+      "pred": "6",
+      "gold": "6",
+      "gen_text": "Vincent can buy 18 flowers in packages of 3 for $2.50 each, so he will spend $2.50 x 6 = $15.00. He can also buy 18 flowers in packages of 2 for $1 each, so he will spend $1 x 9 = $9.00. Therefore, he saves $15.00 - $9.00 = $6.00 by buying the flowers at the better price."
+    },
+    {
+      "score": 1,
+      "pred": "27",
+      "gold": "27",
+      "gen_text": "Cindy had 5 green eggs, 5 x 2 = 10 blue eggs, 10 - 1 = 9 pink eggs, and 9 / 3 = 3 yellow eggs. So, Cindy had 5 + 10 + 9 + 3 = 27 eggs altogether."
+    },
+    {
+      "score": 1,
+      "pred": "80",
+      "gold": "80",
+      "gen_text": "Celinda bakes 30 x 2 = <<30*2=60>>60 cookies.\nTogether, they bake 30 + 60 = <<30+60=90>>90 cookies.\nAfter eating 10 cookies, they have 90 - 10 = <<90-10=80>>80 cookies left.\nSo, there are 80 cookies in the box."
+    },
+    {
+      "score": 0,
+      "pred": "18",
+      "gold": "45",
+      "gen_text": "Olivia had 72/8 = 9 pictures in each album. 3 albums were selfies only, so she had 3 x 9 = 27 selfies. 2 albums were portraits, so she had 2 x 9 = 18 portraits."
+    },
+    {
+      "score": 1,
+      "pred": "90000",
+      "gold": "90000",
+      "gen_text": "Let's say the cost of the lot is x. Then the cost of the house is 3x. The total cost of the house and the lot is $120,000, so we can write the equation x + 3x = 120,000. Combining like terms, we get 4x = 120,000. Dividing both sides by 4, we get x = 30,000. So the cost of the lot is $30,000, and the cost of the house is 3x = 3(30,000) = $90,000."
+    },
+    {
+      "score": 0,
+      "pred": "5",
+      "gold": "48",
+      "gen_text": "If one person can paint half a house in 5 days, then it would take 10 days for one person to paint a whole house. If 5 people are painting a whole house, then it would take 10/5 = 2 days for 5 people to paint a whole house. Since there are 24 hours in a day, it would take 2 x 24 = 48 hours for 5 people to paint a whole house."
+    },
+    {
+      "score": 1,
+      "pred": "310",
+      "gold": "310",
+      "gen_text": "The total number of legs of the tables with 4 legs is 40 * 4 = 160.\nThe total number of legs of the tables with 3 legs is 50 * 3 = 150.\nThe total number of legs of the tables is 160 + 150 = 310."
+    },
+    {
+      "score": 1,
+      "pred": "2",
+      "gold": "2",
+      "gen_text": "Juice Box B is 5 dollars more than Juice Box A, so it is 4 + 5 = 9 dollars.\nJuice Box C is 7 dollars more than Juice Box A, so it is 4 + 7 = 11 dollars.\nJuice Box C is 11 - 9 = 2 dollars more than Juice Box B."
+    },
+    {
+      "score": 1,
+      "pred": "273",
+      "gold": "273",
+      "gen_text": "Mariah used 1/4 of a skein of yarn, which is 364 * 1/4 = 91 yards.\nHer grandma used 1/2 of a skein of yarn, which is 364 * 1/2 = 182 yards.\nAltogether, they used 91 + 182 = 273 yards of yarn."
+    },
+    {
+      "score": 1,
+      "pred": "6",
+      "gold": "6",
+      "gen_text": "The total number of guns is 8 + 10 + 1 + 5 = 24. If they were to share their guns equally, each of them would have 24/4 = 6 guns."
+    },
+    {
+      "score": 1,
+      "pred": "100",
+      "gold": "100",
+      "gen_text": "The school will cover half the cost of the trip, which is $300 / 2 = $150. John has $50, so he is missing $150 - $50 = $100."
+    },
+    {
+      "score": 1,
+      "pred": "500",
+      "gold": "500",
+      "gen_text": "The Ben and Aggie Burrito Shop makes 125 chimichangas on Tuesdays and 125 chimichangas on Wednesdays, for a total of 125 + 125 = 250 chimichangas. On Friday, they make twice as many, so they make 2 * 125 = 250 chimichangas. In total, they make 250 + 250 = 500 chimichangas on those three days."
+    },
+    {
+      "score": 0,
+      "pred": "2.5",
+      "gold": "15",
+      "gen_text": "If Martin eats Cheerios every day for breakfast, he'll lose 1.25 pounds/week for 5 weeks, so he'll lose 1.25 * 5 = 6.25 pounds.\nIf he eats donuts every day for breakfast, he'll gain 1.75 pounds/week for 5 weeks, so he'll gain 1.75 * 5 = 8.75 pounds.\nThe difference in his weight at the end of 5 weeks between the two breakfast options will be 8.75 - 6.25 = 2.5 pounds."
+    },
+    {
+      "score": 1,
+      "pred": "7",
+      "gold": "7",
+      "gen_text": "Since Jason carried 2 balls, and he carried twice as many balls as Jeffrey, then Jeffrey must have carried 1 ball.  Since Jordan carried twice as many balls as Jason, then Jordan must have carried 4 balls.  The total number of balls that the coach brought to practice is 1 + 2 + 4 = 7 balls."
+    },
+    {
+      "score": 0,
+      "pred": "54",
+      "gold": "27",
+      "gen_text": "Gomer ate 23 - 5 = <<23-5=18>>18 scoops of mashed potatoes.\nIt takes 6 - 3 = <<6-3=3>>3 potatoes to make 3 - 1 = 2 scoops of mashed potatoes.\nSo, Gomer ate 18 * 3 = <<18*3=54>>54 potatoes.\nThe answer is 54."
+    },
+    {
+      "score": 1,
+      "pred": "87",
+      "gold": "87",
+      "gen_text": "Laurel received 24 baby outfits from her friend, and then she received twice that amount at her baby shower, so she received 24 x 2 = 48 baby outfits.  Then, her mom gave her 15 more outfits, so she has a total of 24 + 48 + 15 = 87 baby outfits."
+    },
+    {
+      "score": 1,
+      "pred": "10",
+      "gold": "10",
+      "gen_text": "The watch was bought at 75% of its original price, so the price that Mr. Rogers paid was 75% of $2000, which is $1500. He then sold the watch to his friend at 120% of the price that he bought it, so the price that his friend paid was 120% of $1500, which is $1800. The percentage discount obtained by Mr. Roger's friend from the original price is therefore 100% - 90% = 10%."
+    },
+    {
+      "score": 1,
+      "pred": "15",
+      "gold": "15",
+      "gen_text": "Cayley earns a 10% commission on each copy of the New York Times, so he earns 0.1 * $5 = $0.5 per copy. He sells 6 copies, so he earns 6 * $0.5 = $3 from the New York Times. He earns an 8% commission on each copy of the Wall Street Journal, so he earns 0.08 * $15 = $1.20 per copy. He sells 10 copies, so he earns 10 * $1.20 = $12 from the Wall Street Journal. In total, he earns $3 + $12 = $15."
+    },
+    {
+      "score": 1,
+      "pred": "10000",
+      "gold": "10000",
+      "gen_text": "The hospital sees 500 people a day, each for an average of 24 minutes, so the total time spent on visits is 500 * 24 = 12000 minutes.  There are 60 minutes in an hour, so the total time spent on visits is 12000 / 60 = 200 hours.  The doctors charge $150 an hour to the hospital, so the total cost to the hospital is 200 * $150 = $30000.  The hospital charges the patients $200 an hour, so the total revenue from the visits is 200 * $200 = $40000.  The profit made from these visits is $40000 - $30000 = $10000."
+    },
+    {
+      "score": 1,
+      "pred": "3160",
+      "gold": "3160",
+      "gen_text": "The area of one bedroom is 20 x 12 = 240 square feet.  The area of the living room is 5 x 240 = 1200 square feet.  The total area of the bedrooms is 4 x 240 = 960 square feet.  The total area of the house is 1200 + 960 + 1000 = 3160 square feet."
+    },
+    {
+      "score": 0,
+      "pred": "114",
+      "gold": "104",
+      "gen_text": "Steve gets 5 games for his birthday, and 5 games for Christmas every year, so he gets 5 + 5 = 10 games per year.  In the first year, he buys 1 game per month, so he buys 1 x 12 = 12 games.  In the second year, he buys 2 games per month, so he buys 2 x 12 = 24 games.  In the third year, he buys 4 games per month, so he buys 4 x 12 = 48 games.  In total, he buys 12 + 24 + 48 = 84 games.  Adding the 30 games he got for his birthday and Christmas, he has 84 + 30 = 114 games."
+    },
+    {
+      "score": 1,
+      "pred": "1",
+      "gold": "1",
+      "gen_text": "9 kids will eat 9 x 2 = 18 smores and 6 adults will eat 6 x 1 = 6 smores. So, in total, they will eat 18 + 6 = 24 smores. Since each sleeve of graham crackers makes the base for 8 smores, they will need 24 / 8 = 3 sleeves. Since there are 3 sleeves in a box, they will need 3 / 3 = 1 box of graham crackers."
+    },
+    {
+      "score": 1,
+      "pred": "84",
+      "gold": "84",
+      "gen_text": "Anne went down the slide 30% less than Mitchel, so she went down 30 * 0.7 = 21 times.\nRobert went down 4 times as much as Anne, so he went down 21 * 4 = 84 times.\nThe answer is 84."
+    },
+    {
+      "score": 0,
+      "pred": "5677",
+      "gold": "6277",
+      "gen_text": "The number of children in Soda is 23786 - 8417 - 9092 = 5677."
+    },
+    {
+      "score": 0,
+      "pred": "30",
+      "gold": "31",
+      "gen_text": "Ram starts with 25 pens. He then uses 5 pens to make 1 new pen, so he has 25 - 5 = 20 pens left. He then uses 5 of those 20 pens to make 1 new pen, so he has 20 - 5 = 15 pens left. He then uses 5 of those 15 pens to make 1 new pen, so he has 15 - 5 = 10 pens left. He then uses 5 of those 10 pens to make 1 new pen, so he has 10 - 5 = 5 pens left. He then uses 5 of those 5 pens to make 1 new pen, so he has 5 - 5 = 0 pens left. In total, he has 25 + 1 + 1 + 1 + 1 + 1 = 30 pens."
+    },
+    {
+      "score": 1,
+      "pred": "8",
+      "gold": "8",
+      "gen_text": "Peyton\u2019s after-work activities will take 1 + 3 + 0.5 + 1.5 + 2 = 8 hours."
+    },
+    {
+      "score": 0,
+      "pred": "42",
+      "gold": "30",
+      "gen_text": "Let's say the number of players on the defense is x. Then the number of players on the offense is 2x, and the number of players on the special teams is x/2. The total number of players is 105, so we can write the equation: x + 2x + x/2 = 105. Combining like terms, we get 5x/2 = 105. Multiplying both sides by 2, we get 5x = 210. Dividing both sides by 5, we get x = 42. Therefore, there are 42 players on the defense."
+    },
+    {
+      "score": 1,
+      "pred": "44",
+      "gold": "44",
+      "gen_text": "Lori needs to make $352.00 to buy the shoes and the belt. She earns $8.00 an hour, so she will have to work 352/8 = 44 hours to make her purchase."
+    },
+    {
+      "score": 1,
+      "pred": "350",
+      "gold": "350",
+      "gen_text": "The tomato vendor used to spend $.5 x 500 = $250 a day on tomatoes.  He now spends $.4 x 500 = $200 a day on tomatoes.  So he saves $250 - $200 = $50 a day.  In a week, he saves $50 x 7 = $350."
+    },
+    {
+      "score": 1,
+      "pred": "21",
+      "gold": "21",
+      "gen_text": "Since John has twice as many candies as Robert, Robert has 54/2 = 27 candies.\nJames has 6 more candies than Robert, so James has 27 + 6 = 33 candies.\nJohn has 54 - 33 = 21 more candies than James."
+    },
+    {
+      "score": 1,
+      "pred": "10",
+      "gold": "10",
+      "gen_text": "Bill can dig 4 feet/hour through soil, so it will take him 24/4 = 6 hours to dig through the soil. He can dig half as fast through clay, so it will take him 8/(4/2) = 4 hours to dig through the clay. In total, it will take him 6 + 4 = 10 hours to dig the well."
+    },
+    {
+      "score": 0,
+      "pred": "10",
+      "gold": "12",
+      "gen_text": "John's speed after training is 2.5 times faster than his starting speed, so his new speed is 2.5 * 150 = 375 WPM.\nThere are 10 pages with 450 words per page, so there are 10 * 450 = 4500 words in total.\nAt a speed of 375 WPM, it would take John 4500 / 375 = 12 minutes to speak 10 pages."
+    },
+    {
+      "score": 0,
+      "pred": "105",
+      "gold": "75",
+      "gen_text": "James paid for 4 hours of carriage rental. The first hour cost $15, and each subsequent hour cost $15 x 2 = $30. So, the total cost for the 4 hours is $15 + $30 + $30 + $30 = $105."
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "Anna had a budget of $16 and has already spent $4, so she has $16 - $4 = $12 left in her budget. She also has $2 left, so she spent $12 - $2 = $10 on the books. Since she bought 2 books and they cost the same amount of money, each book cost $10 / 2 = $5."
+    },
+    {
+      "score": 1,
+      "pred": "2",
+      "gold": "2",
+      "gen_text": "Let's say Ronnie was given $5 and Rissa was given $15. After giving an equal amount of money to their little sister, Rissa is left with 4/5 of her money, which is $12. This means that Ronnie gave $3 to their little sister. So, Ronnie is left with $5 - $3 = $2."
+    },
+    {
+      "score": 1,
+      "pred": "60",
+      "gold": "60",
+      "gen_text": "James reads 18 pages of his book, and it takes him 10 minutes to read 3 pages. So, he spends 10 * 6 = 60 minutes reading his book."
+    },
+    {
+      "score": 1,
+      "pred": "58",
+      "gold": "58",
+      "gen_text": "Mary has 2 potted plants on each of the 40 window ledges, so she has 2 x 40 = 80 potted plants. She gives 1 potted plant from each ledge to friends and family, so she gives away 40 potted plants. She also received 18 new potted plants yesterday, so she now has 80 - 40 + 18 = 58 potted plants."
+    },
+    {
+      "score": 1,
+      "pred": "539",
+      "gold": "539",
+      "gen_text": "The salesman sold 17 sneakers for $20 each, so he earned 17 x 20 = $340 from the flash sale. He sold the rest of the sneakers, 48 - 17 = 31, for $25 each, so he earned 31 x 25 = $775 from the department store. In total, he earned $340 + $775 = $1115. The cost of the sneakers was $576, so his profit was $1115 - $576 = $539."
+    },
+    {
+      "score": 1,
+      "pred": "132",
+      "gold": "132",
+      "gen_text": "Ella earns $33 for 3 hours of dog walking, so she earns $33/3 = $11 per hour. After 12 hours, she would earn $11 * 12 = $132."
+    },
+    {
+      "score": 1,
+      "pred": "490",
+      "gold": "490",
+      "gen_text": "George has 45% more pears than bananas, so he has 1.45 times as many pears as bananas. Since he has 200 bananas, he has 1.45 * 200 = 290 pears. In total, George has 290 + 200 = 490 fruits."
+    },
+    {
+      "score": 0,
+      "pred": "21",
+      "gold": "54",
+      "gen_text": "Chase and Rider ride their bikes thrice a day for 5 days, so they ride 3 * 5 = 15 times on those days. On the other two days, they ride twice the times they do on usual days, so they ride 2 * 3 = 6 times on those days. In total, they ride 15 + 6 = 21 times a week."
+    },
+    {
+      "score": 1,
+      "pred": "2640",
+      "gold": "2640",
+      "gen_text": "Madeline spends $25 per week on food, so she spends $25 x 4 = $100 per month on food. She spends $100 per month on medicine and $20 per month on treats, so she spends $100 + $20 + $100 = $220 per month on her dog. There are 12 months in a year, so she spends $220 x 12 = $2,640 per year on her dog."
+    },
+    {
+      "score": 1,
+      "pred": "105",
+      "gold": "105",
+      "gen_text": "Mark completed 75 questions in 8 hours at a rate of 5 questions per hour, so he completed 8 * 5 = 40 questions in the first test. He left 75 - 40 = 35 questions incomplete in the first test. In the second test, he completed 6 * 5 = 30 questions in 6 hours. He left 100 - 30 = 70 questions incomplete in the second test. In total, Mark left 35 + 70 = 105 questions incomplete."
+    },
+    {
+      "score": 1,
+      "pred": "60",
+      "gold": "60",
+      "gen_text": "The bus traveled 60 * 5 = 300 miles. The car traveled 30 * 8 = 240 miles. The bus traveled 300 - 240 = 60 miles farther than the car."
+    },
+    {
+      "score": 1,
+      "pred": "15",
+      "gold": "15",
+      "gen_text": "Lindsay has washed 10 pairs of socks, which is 10 x 2 = 20 socks. She has also washed 15 loose socks. So, in total, Lindsay has washed 20 + 15 = 35 socks. Since there are 50 socks that need washing, Lindsay has missed 50 - 35 = 15 socks."
+    },
+    {
+      "score": 1,
+      "pred": "57500",
+      "gold": "57500",
+      "gen_text": "Jill earns $20 per hour as a teacher and works 35 hours a week, so she earns $20 * 35 = $700 per week as a teacher. She earns $30 per hour as a coach and works 15 hours a week, so she earns $30 * 15 = $450 per week as a coach. Her total weekly salary is $700 + $450 = $1150. If she works 50 weeks a year, her annual salary is $1150 * 50 = $57,500."
+    },
+    {
+      "score": 0,
+      "pred": "166.67",
+      "gold": "200",
+      "gen_text": "Tom has to pay $3000 - $1000 = $<<3000-1000=2000>>2000 for the bedroom set.\nHe has to pay $2000 / 12 = $<<2000/12=166.67>>166.67 per month.\nThe answer is $166.67"
+    },
+    {
+      "score": 1,
+      "pred": "8",
+      "gold": "8",
+      "gen_text": "Ferdinand has half the number of trees that Chris has, so Ferdinand has 6/2 = 3 trees.\nHarry has 5 more than twice the number of trees that Ferdinand has, so Harry has 2*3 + 5 = 11 trees.\nThe difference between the number of trees in Harry's yard and Ferdinand's yard is 11 - 3 = 8 trees."
+    },
+    {
+      "score": 1,
+      "pred": "4",
+      "gold": "4",
+      "gen_text": "Nate's dog digs 6 holes a day for 14 days, so the dog digs 6 * 14 = 84 holes. Nate fills in 9 holes a day, but the dog digs 6 new holes every night, so the net number of holes filled in per day is 9 - 6 = 3. It takes Nate 84 / 3 = 28 days to fill in all the holes. Since there are 7 days in a week, it takes Nate 28 / 7 = 4 weeks to fill in all the holes."
+    },
+    {
+      "score": 0,
+      "pred": "160000",
+      "gold": "162000",
+      "gen_text": "The number of likes after 3 weeks is 70 * 2000 = 140000.\nThe total number of likes is 140000 + 20000 = 160000.\nThe answer is 160000."
+    },
+    {
+      "score": 1,
+      "pred": "160",
+      "gold": "160",
+      "gen_text": "The restaurant has 170 - 20 = 150 normal chairs left.\nThe restaurant has 23 - 13 = 10 baby chairs left.\nThe restaurant has 150 + 10 = 160 chairs left."
+    },
+    {
+      "score": 1,
+      "pred": "14400",
+      "gold": "14400",
+      "gen_text": "The builder works for 4 weeks every month, which is 4 x 6 = 24 days. He gets paid $50 every day, so he earns $50 x 24 = $1200 every month. If he works for a year, he earns $1200 x 12 = $14400."
+    },
+    {
+      "score": 0,
+      "pred": "101",
+      "gold": "19",
+      "gen_text": "Let x be the number of bandages the nurses started with on the first day. On the first day, they used 38 bandages and ordered one bulk pack of bandages, so they had x - 38 + 50 = x + 12 bandages left. On the second day, they used ten fewer bandages, so they had x + 12 - 10 = x + 2 bandages left. On the third day, they ordered two bulk packs of bandages and only used half a pack, so they had x + 2 - 25 = x - 23 bandages left. They had 78 bandages left at the end of the third day, so x - 23 = 78. Solving for x, we get x = 101. Therefore, the nurses started with 101 bandages on the first day."
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "The distance between Bob and Tom is 75 miles. Bob is driving at 55 miles per hour, and Tom is driving at 70 miles per hour. The difference in their speeds is 70 - 55 = 15 miles per hour. To catch up with Bob, Tom needs to cover the distance of 75 miles at a speed of 15 miles per hour. The time it will take Tom to catch up with Bob is 75 / 15 = 5 hours."
+    },
+    {
+      "score": 1,
+      "pred": "25",
+      "gold": "25",
+      "gen_text": "There are 100 plants in Mrs. Smith's garden. One-fourth of her plants are indoor plants, so there are 100/4 = 25 indoor plants. The remaining plants are 100 - 25 = 75 plants. Two-thirds of the remaining plants are outdoor plants, so there are 75 * 2/3 = 50 outdoor plants. The rest of the plants are flowering plants, so there are 75 - 50 = 25 flowering plants. The percent of the plants that are flowering plants is 25/100 * 100% = 25%."
+    },
+    {
+      "score": 1,
+      "pred": "2",
+      "gold": "2",
+      "gen_text": "Peter uses 3 * 4 = 12 ounces of water for the giant cubes, 7 * 2 = 14 ounces for the medium cubes, and 8 * 0.5 = 4 ounces for the small cubes. In total, he uses 12 + 14 + 4 = 30 ounces of water. He has 32 - 30 = 2 ounces of water left."
+    },
+    {
+      "score": 1,
+      "pred": "200",
+      "gold": "200",
+      "gen_text": "Aiden and his 12 friends make 13 people, and when they meet up with 7 more friends, there are 20 people in total. Each seat can hold one person, two drinks, and three snacks, so there are 20 people, 40 drinks, and 60 snacks. The total number of drinks and snacks is 40 + 60 = 100. Each drink and snack costs $2, so the total amount of money spent on snacks and drinks is 100 * $2 = $200."
+    },
+    {
+      "score": 0,
+      "pred": "4",
+      "gold": "6",
+      "gen_text": "Marissa has already walked 4 + 2 = 6 miles in 2 hours, so her average speed for the first 6 miles is 6/2 = 3 miles per hour. To achieve an average speed of 4 miles per hour for the entire 12-mile trail, she needs to walk the remaining 12 - 6 = 6 miles in 6/4 = 1.5 hours. Thus, she needs to walk the remaining distance at a speed of 6/1.5 = 4 miles per hour."
+    },
+    {
+      "score": 1,
+      "pred": "42",
+      "gold": "42",
+      "gen_text": "The total number of teaspoons of sugar and cups of water used by Katy is 120. The ratio of sugar to water is 7:13, so the total number of parts in the ratio is 7 + 13 = 20. The number of teaspoonfuls of sugar used by Katy is 7/20 of the total number of teaspoons of sugar and cups of water used, which is 7/20 * 120 = 42."
+    },
+    {
+      "score": 1,
+      "pred": "45",
+      "gold": "45",
+      "gen_text": "Katelyn saw 50 fairies. Her friend saw half as many, so her friend saw 50/2 = 25 fairies. The total number of fairies is 50 + 25 = 75. After 30 fairies flew away, there are 75 - 30 = 45 fairies remaining."
+    },
+    {
+      "score": 1,
+      "pred": "80",
+      "gold": "80",
+      "gen_text": "Mason travels 8 miles per hour for 4 hours, so he travels 8 * 4 = 32 miles. He then travels for another 6 hours at the same rate, so he travels 8 * 6 = 48 miles. In total, he has traveled 32 + 48 = 80 miles."
+    },
+    {
+      "score": 0,
+      "pred": "30",
+      "gold": "32",
+      "gen_text": "Anakin caught 10 + 6 + 3 = 19 fish. Locsin caught 10 - 5 + 6 - 3 + 3 = 11 fish. So, they were able to catch 19 + 11 = 30 fish."
+    },
+    {
+      "score": 1,
+      "pred": "4",
+      "gold": "4",
+      "gen_text": "It takes Matthew 3 minutes to dig a small hole and 10 minutes to dig a large hole. So, it takes him 3 + 10 = 13 minutes to dig one small hole and one large hole. If he digs 30 small holes and 15 large holes, it will take him 30 * 3 + 15 * 10 = 90 + 150 = 240 minutes to dig all the holes. Since there are 60 minutes in an hour, it will take him 240 / 60 = 4 hours to dig all the holes."
+    },
+    {
+      "score": 0,
+      "pred": "68",
+      "gold": "8",
+      "gen_text": "Colorado City uses 40% of the water from the Colorado River, and 80% of that water is used for industrial purposes. This means that 40% * 80% = 32% of the river's total water is used by the city for industrial purposes. Therefore, the percentage of the river's total water used by the city for non-industrial purposes is 100% - 32% = 68%."
+    },
+    {
+      "score": 1,
+      "pred": "1000",
+      "gold": "1000",
+      "gen_text": "The orchard sold 2000 apples in bags of 10, so they sold 2000/10 = 200 bags of apples. Each bag was sold for $5, so the total amount earned was 200 * 5 = $1000."
+    },
+    {
+      "score": 0,
+      "pred": "72",
+      "gold": "45",
+      "gen_text": "In three years, Harriet will be 21 + 3 = 24 years old.\nAdrian's age is three times the age of Harriet, so in three years, Adrian will be 3 * 24 = 72 years old.\nHarriet is half the age of Zack, so in three years, Zack will be 2 * 24 = 48 years old.\nThe average age of the three in three years will be (24 + 72 + 48) / 3 = 72 years old."
+    },
+    {
+      "score": 1,
+      "pred": "32",
+      "gold": "32",
+      "gen_text": "The ball bounces to 2/3rds of its starting height with each bounce. So, on the first bounce, it goes to 2/3 * 72 = 48 feet. On the second bounce, it goes to 2/3 * 48 = 32 feet."
+    },
+    {
+      "score": 0,
+      "pred": "96000",
+      "gold": "95200",
+      "gen_text": "Adrien's salary four years ago was $40000, and his salary increased by 30% compared to Lylah's. This means that Lylah's salary four years ago was $40000 / 1.3 = $30769.23. Four years later, Adrien's salary increased by 40%, so his new salary is $40000 * 1.4 = $56000. Lylah's salary increased by 30%, so her new salary is $30769.23 * 1.3 = $40000. The total salary the two were receiving four years later is $56000 + $40000 = $96000."
+    },
+    {
+      "score": 1,
+      "pred": "44",
+      "gold": "44",
+      "gen_text": "40 percent of 220 castles are ruins, so there are 0.4 * 220 = 88 ruined castles. Half of the ruined castles are unmanned, so there are 88 / 2 = 44 unmanned ruined castles in Scotland."
+    },
+    {
+      "score": 1,
+      "pred": "1",
+      "gold": "1",
+      "gen_text": "The boots on eBay cost $13 + $8 = $21.\nThe boots on Amazon cost $16 + $4 = $20.\nThe boots on eBay are $21 - $20 = $1 more expensive than on Amazon."
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "Tom travels 10 miles per hour for 3 hours, so he travels 30 miles.  He then travels 6 miles per hour for x hours, so he travels 6x miles.  Since he travels the same distance back, 6x = 30, so x = 5.  Therefore, it takes him 5 hours to get back."
+    },
+    {
+      "score": 0,
+      "pred": "16",
+      "gold": "1",
+      "gen_text": "Colby has spent $10 x 5 = $50 on Friday and Saturday movies, $7 x 8 = $56 on other day movies, $8 x 2 = $16 on popcorn, and $2 x 4 = $8 on candy. So he has spent $50 + $56 + $16 + $8 = $130. He has $150 - $130 = $20 left. Since tickets for Fridays and Saturdays cost $10, he can see 1 more movie on a Friday or Saturday. Since tickets for other days cost $7, he can see 2 more movies on other days. So he can see 1 + 2 = 3 more movies. In total, he can see 5 + 8 + 3 = 16 movies."
+    },
+    {
+      "score": 1,
+      "pred": "665",
+      "gold": "665",
+      "gen_text": "The total number of seashells found is 214 + 432 + 86 = 732. The number of cracked seashells is 67. So, the number of good seashells is 732 - 67 = 665."
+    },
+    {
+      "score": 0,
+      "pred": "292.5",
+      "gold": "255",
+      "gen_text": "The Llesis family drove for 6 - 1.5 = 4.5 hours. They drove an average of 50 miles per hour, so they drove 50 * 4.5 = 225 miles. They hiked an average of 50 - 5 = 45 miles per hour. They hiked for 1.5 hours, so they hiked 45 * 1.5 = 67.5 miles. Their vacation spot was 225 + 67.5 = 292.5 miles away."
+    },
+    {
+      "score": 1,
+      "pred": "6000",
+      "gold": "6000",
+      "gen_text": "Wanda filled 1/4 of the tank's capacity on the first day, which is 1/4 * 18000 = 4500 gallons. Ms. B pumped 3/4 as much water as Wanda, which is 3/4 * 4500 = 3375 gallons. On the second day, Wanda pumped 2/3 of the amount she pumped on the first day, which is 2/3 * 4500 = 3000 gallons. Ms. B only pumped 1/3 of the number of gallons she pumped on the first day, which is 1/3 * 3375 = 1125 gallons. The total amount of water pumped on the first day is 4500 + 3375 = 7875 gallons, and the total amount of water pumped on the second day is 3000 + 1125 = 4125 gallons. The total amount of water pumped is 7875 + 4125 = 12000 gallons. The remaining amount of water needed to fill the tank is 18000 - 12000 = 6000 gallons."
+    },
+    {
+      "score": 1,
+      "pred": "32",
+      "gold": "32",
+      "gen_text": "3 trees each had 7 blue birds, so 3 x 7 = 21 blue birds. 2 trees each had 4 blue birds, so 2 x 4 = 8 blue birds. 1 tree had 3 blue birds. So, 21 + 8 + 3 = 32 blue birds."
+    },
+    {
+      "score": 1,
+      "pred": "2100",
+      "gold": "2100",
+      "gen_text": "Let's denote the total sales of the first month as x. Then, the sales from red hats were $400, and the sales from green hats were $800. The total sales of the first month are $1200. In the second month, her sales were 3/4 of the total sales of the first month, so the sales of the second month are 3/4 * $1200 = $900. The total sales of the two months are $1200 + $900 = $2100."
+    },
+    {
+      "score": 1,
+      "pred": "3",
+      "gold": "3",
+      "gen_text": "To find the number of groups needed, we divide the total number of students by the number of students per group. 54 students / 6 students per group = 9 groups. Since 12 groups are required, we need 12 - 9 = 3 more groups."
+    },
+    {
+      "score": 1,
+      "pred": "14",
+      "gold": "14",
+      "gen_text": "Darren caught 17 - 6 = 11 fish.\nTommy caught 11 + 3 = 14 fish.\nThe answer is 14."
+    },
+    {
+      "score": 1,
+      "pred": "55",
+      "gold": "55",
+      "gen_text": "Sam was closed on Monday and Friday, so he had 5 days to sell bread. He sold 20 crates over the weekend, 15 on Tuesday, 12 on Wednesday, and 18 on Thursday. That's a total of 20 + 15 + 12 + 18 = 65 crates. He was 120 - 65 = 55 crates off from his target for the week."
+    },
+    {
+      "score": 1,
+      "pred": "16",
+      "gold": "16",
+      "gen_text": "Let's denote Brooke's age as B and Seth's age as S. We know that S = 2B. In 2 years, their ages will be B + 2 and S + 2. The sum of their ages will be 28, so we can write the equation: B + 2 + S + 2 = 28. Substituting S = 2B, we get B + 2 + 2B + 2 = 28. Combining like terms, we get 3B + 4 = 28. Subtracting 4 from both sides, we get 3B = 24. Dividing both sides by 3, we get B = 8. Since S = 2B, we get S = 2(8) = 16. Therefore, Seth is 16 years old."
+    },
+    {
+      "score": 1,
+      "pred": "250",
+      "gold": "250",
+      "gen_text": "Jamie earns $20 per hour for 8 hours of work each day, so she earns $20 * 8 = $160 per day for her regular hours. For her additional 3 hours of work, she is paid a special hourly rate that is 150% of her regular hourly rate, so she earns $20 * 1.5 = $30 per hour for her additional hours. Therefore, she earns $30 * 3 = $90 for her additional hours. In total, she earns $160 + $90 = $250 for her work that day."
+    },
+    {
+      "score": 1,
+      "pred": "30",
+      "gold": "30",
+      "gen_text": "The first side takes 5 minutes. The second and third sides each take twice that long, so 5 x 2 = 10 minutes. The last 2 sides each take half as long as the first, so 5 / 2 = 2.5 minutes. The total time is 5 + 10 + 10 + 2.5 + 2.5 = 30 minutes."
+    },
+    {
+      "score": 1,
+      "pred": "15",
+      "gold": "15",
+      "gen_text": "There are 4 roses in the vase. There are 7 more dahlias than roses in the vase, so there are 4 + 7 = 11 dahlias in the vase. In total, there are 4 + 11 = 15 flowers in the vase."
+    },
+    {
+      "score": 1,
+      "pred": "14",
+      "gold": "14",
+      "gen_text": "Let's denote the number of people who got on the bus at the terminal as x. At the first bus stop, 5 more people got in, so the total number of people on the bus is x + 5. At the second bus stop, 7 people got down, so the total number of people on the bus is x + 5 - 7 = x - 2. Then, 8 more people got in, so the total number of people on the bus is x - 2 + 8 = x + 6. We are given that there were a total of 20 people heading to the third stop, so we can set up the equation x + 6 = 20. Solving for x, we get x = 14. Therefore, 14 people got on the bus at the terminal."
+    },
+    {
+      "score": 0,
+      "pred": "6",
+      "gold": "12",
+      "gen_text": "Freda used 2 cans of tomatoes because 32 ounces is half of 64 ounces. Each can contains 3 tomatoes, so she used 2 x 3 = 6 tomatoes."
+    },
+    {
+      "score": 1,
+      "pred": "6",
+      "gold": "6",
+      "gen_text": "Let's denote Sam's current age as S and Ruby's current age as R. We know that R = 6S. In 9 years, Ruby's age will be R + 9 and Sam's age will be S + 9. We also know that R + 9 = 3(S + 9). Substituting R = 6S into the equation, we get 6S + 9 = 3(S + 9). Simplifying the equation, we get 6S + 9 = 3S + 27. Subtracting 3S from both sides, we get 3S + 9 = 27. Subtracting 9 from both sides, we get 3S = 18. Dividing both sides by 3, we get S = 6. Therefore, Sam is currently 6 years old."
+    },
+    {
+      "score": 1,
+      "pred": "140",
+      "gold": "140",
+      "gen_text": "Andy plants 90 geraniums and 40 fewer petunias than geraniums, so he plants 90 - 40 = 50 petunias. In total, he plants 90 + 50 = 140 flowers."
+    },
+    {
+      "score": 0,
+      "pred": "9925.48",
+      "gold": "7400",
+      "gen_text": "The price of the car in 2008 is 20000 * (1 - 0.21) = 20000 * 0.79 = 15800.\nThe price of the car in 2009 is 15800 * (1 - 0.21) = 15800 * 0.79 = 12532.\nThe price of the car in 2010 is 12532 * (1 - 0.21) = 12532 * 0.79 = 9925.48.\nThe price of the car in 2010 is $9925.48."
+    },
+    {
+      "score": 1,
+      "pred": "20",
+      "gold": "20",
+      "gen_text": "The winner got 3/4 of the votes, which is 3/4 * 80 = 60 votes. The loser got 80 - 60 = 20 votes."
+    },
+    {
+      "score": 1,
+      "pred": "70",
+      "gold": "70",
+      "gen_text": "There were 21 buttons in the bag. Seven of them had two holes, so they had 7 x 2 = 14 holes. The rest of the buttons had four holes, so they had 21 - 7 = 14 buttons with 14 x 4 = 56 holes. In total, there were 14 + 56 = 70 holes in all the buttons in the bag."
+    },
+    {
+      "score": 1,
+      "pred": "50",
+      "gold": "50",
+      "gen_text": "Tatiana has 7 + 5 = 12 hours in her weekend. She spends 3 hours reading, so she has 12 - 3 = 9 hours left. She spends 1/3 of the remaining time playing video games, so she spends 1/3 * 9 = 3 hours playing video games. This means she spends 9 - 3 = 6 hours playing soccer. The percentage of her weekend she spends playing soccer is 6/12 = 0.5, or 50%."
+    },
+    {
+      "score": 1,
+      "pred": "940",
+      "gold": "940",
+      "gen_text": "Joseph's expenditure in June was $500 - $60 = $440.\nHis total expenditure for the two months was $500 + $440 = $940."
+    },
+    {
+      "score": 1,
+      "pred": "360",
+      "gold": "360",
+      "gen_text": "If 40% of the school population is made up of 240 boys, then 100% of the school population is made up of 240 / 0.4 = 600 students. Therefore, the number of girls in the school is 600 - 240 = 360."
+    },
+    {
+      "score": 1,
+      "pred": "315",
+      "gold": "315",
+      "gen_text": "The collar takes 900 / 10 = 90 stitches.\nThe rosette takes 90 x 2 = 180 stitches.\nThe body and the collar and the rosette take 900 + 90 + 180 = 1170 stitches.\nThe two sleeves take 1800 - 1170 = 630 stitches.\nEach sleeve takes 630 / 2 = 315 stitches."
+    },
+    {
+      "score": 1,
+      "pred": "20",
+      "gold": "20",
+      "gen_text": "Let's start by finding the number of yellow blocks. Since there are twice as many yellow blocks as blue blocks, there are 2 * 4 = 8 yellow blocks. The total number of blue and yellow blocks is 4 + 8 = 12. Since there are 32 blocks in total, the number of red blocks is 32 - 12 = 20."
+    },
+    {
+      "score": 1,
+      "pred": "180",
+      "gold": "180",
+      "gen_text": "Carlos will pay $30 x 3 = $<<30*3=90>>90 for his canoe rental.\nBenji will pay $18 x 5 = $<<18*5=90>>90 for his banana boat raft rental.\nTogether, they will pay $90 + $90 = $<<90+90=180>>180 for their rentals.\nThe final answer is $180."
+    },
+    {
+      "score": 1,
+      "pred": "8",
+      "gold": "8",
+      "gen_text": "Alyana is 10 - 4 = 6 years old.\nAnne is 6 + 2 = 8 years old."
+    },
+    {
+      "score": 1,
+      "pred": "160",
+      "gold": "160",
+      "gen_text": "The red car is 40% cheaper than the blue car, which means it costs 60% of the price of the blue car. 60% of $100 is $60. So the red car costs $60. The total cost of both cars is $100 + $60 = $160."
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "Shawnda made 5 x 2 x 0.25 = $2.50 from the bicycles, 3 x 3 x 0.25 = $2.25 from the tricycles, and 1 x 1 x 0.25 = $0.25 from the unicycle. So in total, she made $2.50 + $2.25 + $0.25 = $5.00."
+    },
+    {
+      "score": 1,
+      "pred": "75",
+      "gold": "75",
+      "gen_text": "If there were 50 ants, then there were half as many bugs as ants, so there were 50/2 = 25 bugs. The total number of insects in the garden is 50 + 25 = 75."
+    },
+    {
+      "score": 0,
+      "pred": "0.9032",
+      "gold": "7",
+      "gen_text": "Sitti and Juris have a total of 34 + 22 = 56 oranges. If they share them equally with their 6 other friends, there will be 56 + 6 = 62 people. So, each person will get 56/62 = 0.9032 oranges."
+    },
+    {
+      "score": 1,
+      "pred": "1430",
+      "gold": "1430",
+      "gen_text": "Janet paid $500 for the material and $800 for the jeweler, so she paid $500 + $800 = $1300 for the brooch.\nShe then paid 10% of $1300 to get it insured, which is $1300 x 0.1 = $130.\nSo, in total, Janet paid $1300 + $130 = $1430 for the brooch."
+    },
+    {
+      "score": 1,
+      "pred": "3",
+      "gold": "3",
+      "gen_text": "Jenny gives 1/3 of the pizza to Bill, which is 12 * 1/3 = 4 slices. She gives 1/4 of the pizza to Mark, which is 12 * 1/4 = 3 slices. So, in total, Jenny gives 4 + 3 = 7 slices to Bill and Mark. Jenny eats 2 slices, so there are 12 - 7 - 2 = 3 slices left."
+    },
+    {
+      "score": 1,
+      "pred": "27",
+      "gold": "27",
+      "gen_text": "The total cost of the items Daniel wants to buy is 5 * $1.50 + 2 * $0.25 + $12 + $10 = $7.50 + $0.50 + $12 + $10 = $30. Daniel will get a 10% discount on the total cost, so he will have to spend $30 - $30 * 0.10 = $30 - $3 = $27."
+    },
+    {
+      "score": 1,
+      "pred": "34",
+      "gold": "34",
+      "gen_text": "The height of the second tree is 6 + 5 = 11 feet.\nThe combined height of the two trees is 6 + 11 = 17 feet.\nThe height of the tallest tree is 2 * 17 = 34 feet.\nThe tallest tree is 34 feet tall."
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "Prince sells 15kg of meat every hour he works, and he works 10 hours a day, so he sells 15 * 10 = 150kg of meat every day. The bull weighs 750kg, so it will take Prince 750 / 150 = 5 days to sell all the meat from the bull."
+    },
+    {
+      "score": 1,
+      "pred": "45",
+      "gold": "45",
+      "gen_text": "Brady has 100 pennies, which is 100 x $0.01 = $1.00. He has 40 nickels, which is 40 x $0.05 = $2.00. He has 20 dimes, which is 20 x $0.10 = $2.00. He has 40 dollar bills, which is 40 x $1.00 = $40.00. So, Brady has $1.00 + $2.00 + $2.00 + $40.00 = $45.00 in his piggy bank."
+    },
+    {
+      "score": 1,
+      "pred": "34",
+      "gold": "34",
+      "gen_text": "Jen will earn $9 from selling the yams, $20 from selling the sweet potatoes, and $5 from selling the carrots. In total, she will earn $9 + $20 + $5 = $34."
+    },
+    {
+      "score": 1,
+      "pred": "1128",
+      "gold": "1128",
+      "gen_text": "Britany spends 18 * 4 = 72 minutes recording videos each week. She spends 2 * 60 = 120 minutes writing songs each week. She spends 15 * 6 = 90 minutes doing her makeup each week. So, she spends 72 + 120 + 90 = 282 minutes on TikTok each week. In a month with four weeks, she spends 282 * 4 = 1128 minutes on TikTok."
+    },
+    {
+      "score": 1,
+      "pred": "2",
+      "gold": "2",
+      "gen_text": "Rozanne uses 4 dozen eggs, which is 4 x 12 = 48 eggs. She also uses 2 loose eggs, so she uses a total of 48 + 2 = 50 eggs. Each tray holds 5 glasses of eggnog, and each glass needs 5 eggs, so each tray needs 5 x 5 = 25 eggs. Therefore, Rozanne can put out 50 / 25 = 2 trays."
+    },
+    {
+      "score": 1,
+      "pred": "24",
+      "gold": "24",
+      "gen_text": "There are 4 teachers who take turns using the classroom, each with 2 lessons per day, so there are 4 x 2 = 8 lessons per day. Each lesson has the whiteboard cleaned 3 times, so the whiteboard is cleaned 8 x 3 = 24 times per day."
+    },
+    {
+      "score": 0,
+      "pred": "25",
+      "gold": "750",
+      "gen_text": "To sell 15 cars, Jason needs 30 customers to come into the car dealership, since for every two customers, one will buy a car.  To get 30 customers, Jason needs to make 750 telephone calls, since for every 25 telephone calls, one person will come into the car dealership."
+    },
+    {
+      "score": 1,
+      "pred": "60",
+      "gold": "60",
+      "gen_text": "Pam rode the roller coaster 2 times and the luge 2 times, so she rode a total of 2 + 2 = 4 rides. Fred rode the roller coaster 4 times and the luge 2 times, so he rode a total of 4 + 2 = 6 rides. In total, they rode 4 + 6 = 10 rides. Each ride cost 6 tickets, so they used 10 x 6 = 60 tickets that day."
+    },
+    {
+      "score": 1,
+      "pred": "120",
+      "gold": "120",
+      "gen_text": "Hannah needs to run 8 laps, and each lap is 0.25 km, so she needs to run 8 x 0.25 = 2 km. For each kilometer, she needs to drink 60 ml of water, so she needs to drink 60 x 2 = 120 ml of water."
+    },
+    {
+      "score": 1,
+      "pred": "16",
+      "gold": "16",
+      "gen_text": "George had 3 candies left after eating 5, so he had 3 + 5 = 8 candies before eating. Since Nick had twice as many candies as George, Nick had 2 * 8 = 16 candies."
+    },
+    {
+      "score": 1,
+      "pred": "82",
+      "gold": "82",
+      "gen_text": "The sun starts at the tip of the pyramid, so it is already at an angle of 32 degrees from the ground. It moves 5 degrees an hour, so in 10 hours it will have moved 5 * 10 = 50 degrees. Therefore, the total angle from the ground to the sun will be 32 + 50 = 82 degrees."
+    },
+    {
+      "score": 1,
+      "pred": "60",
+      "gold": "60",
+      "gen_text": "The main phone costs $20, and each additional phone costs half of that, which is $10. There are four additional phones, so the total cost of the additional phones is $10 x 4 = $40. The total cost of the phone plan is $20 + $40 = $60."
+    },
+    {
+      "score": 0,
+      "pred": "4",
+      "gold": "2",
+      "gen_text": "Lana has 27 cups of tea, and she divides these into 3 rows. So, each row has 27/3 = 9 cups of tea. Since she creates equal amounts of chamomile and mint tea cups in each row, there are 9/2 = 4.5 cups of mint tea in each row. Since you can't have half a cup of tea, Lana must have 4 cups of mint tea in each row."
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "Let's say the number of chickens is x and the number of cows is 20 - x. Since chickens have 2 legs and cows have 4 legs, the total number of legs is 2x + 4(20 - x) = 70. Simplifying the equation, we get 2x + 80 - 4x = 70, which gives us -2x = -10, and x = 5. So, there are 5 chickens on Farmer Brown's farm."
+    },
+    {
+      "score": 1,
+      "pred": "30",
+      "gold": "30",
+      "gen_text": "Miss Maria has 6 decks of basketball cards, so she has 6 x 25 = 150 basketball cards. She also has 5 boxes of baseball cards, so she has 5 x 40 = 200 baseball cards. In total, she has 150 + 200 = 350 cards. She keeps 50 cards, so she gives 350 - 50 = 300 cards to her students. If each student got 10 cards, then she has 300 / 10 = 30 students."
+    },
+    {
+      "score": 1,
+      "pred": "280",
+      "gold": "280",
+      "gen_text": "Jen works 7.5 hours a day for 6 days a week, so she works 7.5 * 6 = 45 hours a week. Since there are 4 weeks in April, she works 45 * 4 = 180 hours in April. Her hourly rate is $1.5, so she earns 180 * $1.5 = $270 for her work. She also receives an additional $10 for complete attendance, so she will receive $270 + $10 = $280."
+    },
+    {
+      "score": 0,
+      "pred": "15",
+      "gold": "10",
+      "gen_text": "Sara needs to earn $30 + $20 + $20 = $<<30+20+20=70>>70 to buy the jacket and shoes.\nShe already has $10 saved, so she needs to earn $70 - $10 = $<<70-10=60>>60 more.\nShe earns $5 each time she babysits, so she needs to babysit 60 / 5 = 12 times to earn the money.\nShe earns $4 each time she mows the lawn, so she needs to mow the lawn 60 / 4 = 15 times to earn the money.\nThe answer is 15."
+    },
+    {
+      "score": 1,
+      "pred": "27",
+      "gold": "27",
+      "gen_text": "Morisette brought 5 apples and 8 oranges, for a total of 13 fruits. Kael brought twice the number of apples, so he brought 5 x 2 = 10 apples. He also brought half the number of oranges, so he brought 8 / 2 = 4 oranges. In total, Kael brought 10 + 4 = 14 fruits. Together, they have 13 + 14 = 27 fruits."
+    },
+    {
+      "score": 1,
+      "pred": "3",
+      "gold": "3",
+      "gen_text": "Beck has 100 - 23 = 77 apples.\nAfter Boris gives Beck 10 apples, Beck has 77 + 10 = 87 apples.\nBoris has 100 - 10 = 90 apples.\nSo, Beck has 90 - 87 = 3 fewer apples than Boris."
+    },
+    {
+      "score": 1,
+      "pred": "33",
+      "gold": "33",
+      "gen_text": "The total cost of the rocks is 2 x $2.50 = $<<2*2.5=5.00>>5.00.\nThe total cost of the coral is 3 x $2.00 = $<<3*2=6.00>>6.00.\nThe total cost of the fish is 20 x $0.50 = $<<20*0.5=10.00>>10.00.\nThe total cost of the fish food is $2.00.\nThe total cost of the aquarium, rocks, coral, fish, and fish food is $10.00 + $5.00 + $6.00 + $10.00 + $2.00 = $<<10+5+6+10+2=33.00>>33.00.\nThe final answer is $33.00."
+    },
+    {
+      "score": 1,
+      "pred": "64",
+      "gold": "64",
+      "gen_text": "Kylar needs to buy 16 glasses, but every second glass costs only 60% of the price. So, he needs to buy 8 glasses at the full price and 8 glasses at the reduced price. The cost of the full-priced glasses is 8 * $5 = $40. The cost of the reduced-priced glasses is 8 * $5 * 0.6 = $24. The total cost is $40 + $24 = $64."
+    },
+    {
+      "score": 1,
+      "pred": "6",
+      "gold": "6",
+      "gen_text": "Jeremy drives 400 miles a month, so he drives 400/2 = 200 times every 2 miles.  This means that the tires rotate 725 * 200 = 145,000 times a month.  Since there are 12 months in a year, the tires rotate 145,000 * 12 = 1,740,000 times a year.  Since each tire can undergo 10,440,000 rotations, the tire will need to be replaced in 10,440,000 / 1,740,000 = 6 years."
+    },
+    {
+      "score": 1,
+      "pred": "63",
+      "gold": "63",
+      "gen_text": "Edgar's brother eats 18/2 = 9 pretzels a day. In a week, he eats 9 x 7 = 63 pretzels."
+    },
+    {
+      "score": 1,
+      "pred": "8",
+      "gold": "8",
+      "gen_text": "There are 4 tables, each with 4 legs, so there are 4 x 4 = 16 legs. Each leg needs 2 screws, so there are 16 x 2 = 32 screws needed. James has 40 screws, so he will have 40 - 32 = 8 screws left over."
+    },
+    {
+      "score": 0,
+      "pred": "20",
+      "gold": "38",
+      "gen_text": "Let's denote Adam's age four years ago as x. Then, eight years ago, Adam's age was x - 4. Since Duncan's age eight years ago was two times Adam's age four years ago, we have the equation: x - 4 = 2(x - 4). Solving for x, we get x = 8. Therefore, Adam's age four years ago was 8, and his age now is 12. In 8 years, Adam will be 20 years old."
+    },
+    {
+      "score": 0,
+      "pred": "46",
+      "gold": "70",
+      "gen_text": "The number of third-graders who passed the test is 340, and the number of fourth-graders who passed the test is 40. The number of fifth-graders who passed the test is 2 times the number of fourth-graders who passed the test, which is 2 * 40 = 80. The total number of students who passed the test is 340 + 40 + 80 = 460. The total number of students who took the test is 500 + 100 + 400 = 1000. The school's overall pass rate is 460/1000 = 0.46, or 46%."
+    },
+    {
+      "score": 1,
+      "pred": "49",
+      "gold": "49",
+      "gen_text": "The oven raises the house's temperature by 5 degrees every hour, so after 3 hours, the house's temperature is 5 * 3 = 15 degrees higher than it was when Marcus woke up. So the house's temperature is 40 + 15 = 55 degrees. Then Marcus opens a window for 30 minutes, and the house cools down 2 degrees for every 10 minutes the window is open. So the house cools down 2 * 3 = 6 degrees. So the house's final temperature is 55 - 6 = 49 degrees."
+    },
+    {
+      "score": 1,
+      "pred": "14",
+      "gold": "14",
+      "gen_text": "The total number of toys Sophie had before buying the tube of bouncy balls is 31 + 8 + 9 = 48. Therefore, the number of bouncy balls in the tube is 62 - 48 = 14."
+    },
+    {
+      "score": 1,
+      "pred": "22",
+      "gold": "22",
+      "gen_text": "The first two zebras have 17 stripes each, so they have 2 x 17 = 34 stripes in total. The third zebra has 36 stripes. The fourth zebra has half the number of stripes of the third zebra, so it has 36 / 2 = 18 stripes. In total, the four zebras have 34 + 36 + 18 = 88 stripes. The average number of stripes per zebra is 88 / 4 = 22."
+    },
+    {
+      "score": 0,
+      "pred": "63.33",
+      "gold": "70",
+      "gen_text": "To find the mean score, we need to add up all the scores and then divide by the number of scores. The sum of the scores is 50 + 80 + 80 + 60 + 40 + 90 + 100 + 70 + 60 = 570. There are 9 scores, so the mean score is 570/9 = 63.33."
+    },
+    {
+      "score": 0,
+      "pred": "605",
+      "gold": "55",
+      "gen_text": "A whirligig spins at 5 * 121 = 605 meters per second."
+    },
+    {
+      "score": 1,
+      "pred": "49",
+      "gold": "49",
+      "gen_text": "There were 43 girls and 96 - 43 = 53 boys. 5 girls and 4 boys were absent, so there were 43 - 5 = 38 girls and 53 - 4 = 49 boys at school. The answer is 49."
+    },
+    {
+      "score": 1,
+      "pred": "14",
+      "gold": "14",
+      "gen_text": "The glee club ate 70% of 20 pizzas, which is 0.7 x 20 = 14 pizzas. The football team ordered twice as many pizzas as the glee club, so they ordered 2 x 20 = 40 pizzas. They ate 80% of them, which is 0.8 x 40 = 32 pizzas. In total, 14 + 32 = 46 pizzas were eaten. There were originally 20 + 40 = 60 pizzas. So, 60 - 46 = 14 pizzas are left."
+    },
+    {
+      "score": 1,
+      "pred": "60",
+      "gold": "60",
+      "gen_text": "On Monday, Rita removed 39 Junebugs.  On Tuesday and Wednesday, she removed twice as many Junebugs as she did on Monday, so she removed 2 * 39 = 78 Junebugs on each of those days.  On Thursday, she removed 48 Junebugs and on Friday, she removed 57 Junebugs.  The total number of Junebugs she removed is 39 + 78 + 78 + 48 + 57 = 300.  The average number of Junebugs she removes per day is 300 / 5 = 60."
+    },
+    {
+      "score": 1,
+      "pred": "2",
+      "gold": "2",
+      "gen_text": "Ryan earned $6 each week for 3 weeks, so he earned 6 * 3 = $18. He spent $1.25 each on ice cream cones for himself and 3 friends, so he spent 1.25 * 4 = $5.00. He has $18 - $5 = $13 left. Movie tickets cost $6.50 each, so he can buy 13 / 6.5 = 2 movie tickets."
+    },
+    {
+      "score": 0,
+      "pred": "0",
+      "gold": "8",
+      "gen_text": "The candle will be 4 centimeters shorter after burning from 1:00 PM to 5:00 PM."
+    },
+    {
+      "score": 1,
+      "pred": "10",
+      "gold": "10",
+      "gen_text": "The beanstalk was 3 inches tall after the first week. It doubled in height the second week, so it was 3 x 2 = 6 inches tall after the second week. It grew another 4 inches in the third week, so it was 6 + 4 = 10 inches tall after the third week."
+    },
+    {
+      "score": 0,
+      "pred": "36",
+      "gold": "7",
+      "gen_text": "The cost of 5 lollipops is 5 x $0.40 = $2.00. The cost of 4 candies is $3.20. So, the total cost of 5 lollipops and 4 candies is $2.00 + $3.20 = $5.20. If Manolo buys 10 lollipops and 10 candies, the total cost will be 10 x $0.40 + 10 x $3.20 = $4.00 + $32.00 = $36.00."
+    },
+    {
+      "score": 1,
+      "pred": "12",
+      "gold": "12",
+      "gen_text": "The younger son is 12 - 4 = 8 years old.\nSo, James needs 12 + 8 = 20 candles.\nHe buys 4 packs of candles, each containing 5 candles, so he buys 4 x 5 = 20 candles.\nThe cost of the candles is 4 x $3 = $12.\nJames spends $12 on candles."
+    },
+    {
+      "score": 0,
+      "pred": "30",
+      "gold": "35",
+      "gen_text": "The total bill is $50 + $10 (20% of $50) = $60. Since you and your wife split the bill evenly, you each paid $60 / 2 = $30."
+    },
+    {
+      "score": 1,
+      "pred": "6",
+      "gold": "6",
+      "gen_text": "Dolly will read 3 books (her own and Pandora's two books) and Pandora will read 3 books (her own and Dolly's two books). So, they will collectively read 3 + 3 = 6 books."
+    },
+    {
+      "score": 1,
+      "pred": "74",
+      "gold": "74",
+      "gen_text": "Carl\u2019s weight is 55 + 16 = 71 kg.\nChristian\u2019s weight is 71 + 8 = 79 kg.\nHarry\u2019s weight is 79 - 5 = 74 kg."
+    },
+    {
+      "score": 1,
+      "pred": "75",
+      "gold": "75",
+      "gen_text": "Pauline visits the museum 3 times a year, so in 5 years, she visited the museum 3 * 5 = 15 times. The cost of one visit is $2, so the total cost of 15 visits is 15 * 2 = $30. After 5 years, the cost of one visit has increased by 150%, so the new cost of one visit is 2 + (2 * 1.5) = $5. Pauline continued to visit the museum for 3 more years, so she visited the museum 3 * 3 = 9 times. The total cost of 9 visits is 9 * 5 = $45. The total cost of all visits to the museum is $30 + $45 = $75."
+    },
+    {
+      "score": 1,
+      "pred": "7",
+      "gold": "7",
+      "gen_text": "Joe caught 3 pounds of crawfish on Thursday, 4 times that amount on Friday, which is 3 x 4 = 12 pounds, and half that amount on Saturday, which is 12 / 2 = 6 pounds. So, he caught a total of 3 + 12 + 6 = 21 pounds of crawfish. Since 1 serving of crawfish is 3 pounds, he has 21 / 3 = 7 servings of crawfish."
+    },
+    {
+      "score": 1,
+      "pred": "350",
+      "gold": "350",
+      "gen_text": "Let's denote the number of apples Joanne gathered from the average trees as x. Since Joanne gathered 30 apples from the tallest trees and half this amount from the shortest trees, she gathered 30/2 = 15 apples from the shortest trees. Thus, the total number of apples Joanne gathered is 30 + 15 + x = 45 + x.\nSince her sister gathered twice as many apples from the tallest trees, she gathered 2 * 30 = 60 apples from the tallest trees. Since she gathered 3 times as many apples from the shortest trees, she gathered 3 * 15 = 45 apples from the shortest trees. Thus, the total number of apples her sister gathered is 60 + 45 = 105.\nSince the sisters have gathered a combined total of 500 apples, the number of apples Joanne gathered is 500 - 105 = 395. Since Joanne gathered 45 + x apples, we have the equation 45 + x = 395. Solving for x, we get x = 350.\nTherefore, Joanne gathered 350 apples from the average trees."
+    },
+    {
+      "score": 1,
+      "pred": "500",
+      "gold": "500",
+      "gen_text": "The electronics seller bought 5 phones for $700 each, so the total cost of the phones is 5 x $700 = $3500. The seller gave the seller $4000 in dollar bills, so the change the seller will give back is $4000 - $3500 = $500."
+    },
+    {
+      "score": 1,
+      "pred": "35",
+      "gold": "35",
+      "gen_text": "John spends 5 hours a day taking care of the dogs.  There are 7 days in a week, so he spends 35 hours a week taking care of the dogs."
+    },
+    {
+      "score": 1,
+      "pred": "20",
+      "gold": "20",
+      "gen_text": "Carol spent 4 hours writing, 2 hours recording, and 1.5 hours editing, for a total of 7.5 hours. She spent 1.5 hours editing, so she spent 1.5/7.5 = 0.2 or 20% of her total work time editing."
+    },
+    {
+      "score": 1,
+      "pred": "20000",
+      "gold": "20000",
+      "gen_text": "The company spent $15000 on advertising for the first year. For the second year, they spent a third of that amount, which is $15000/3 = $5000. The total amount spent on advertising for the two years is $15000 + $5000 = $20000."
+    },
+    {
+      "score": 1,
+      "pred": "11",
+      "gold": "11",
+      "gen_text": "Carla needs 2 cups of flour to make 12 cookies. To make 36 cookies, she will need 36/12 * 2 = 6 cups of flour. To make 30 cookies, she will need 30/12 * 2 = 5 cups of flour. In total, Carla will need 6 + 5 = 11 cups of flour to bake the cookies today and tomorrow."
+    },
+    {
+      "score": 0,
+      "pred": "6",
+      "gold": "4",
+      "gen_text": "Josh starts with 3 balls and adds 1 ball each week for 4 weeks, so he has 3 + 4 = 7 balls.  He drops 3 balls, but 2 are caught, so he has 7 - 3 + 2 = 6 balls left."
+    },
+    {
+      "score": 1,
+      "pred": "1920",
+      "gold": "1920",
+      "gen_text": "The volume of each raised bed is 2 x 8 x 2 = 32 cubic feet. So, the total volume of all 10 raised beds is 10 x 32 = 320 cubic feet. Since each bag of potting soil holds 2 cubic feet, Bob will need 320 / 2 = 160 bags of potting soil. Each bag costs $12, so the total cost will be 160 x $12 = $1920."
+    },
+    {
+      "score": 1,
+      "pred": "1509",
+      "gold": "1509",
+      "gen_text": "The first DVD can be played 1000 - 356 = 644 times before it breaks.\nThe second DVD can be played 1000 - 135 = 865 times before it breaks.\nSo, both DVDs can be played 644 + 865 = 1509 times before they break."
+    },
+    {
+      "score": 1,
+      "pred": "96",
+      "gold": "96",
+      "gen_text": "Let x be the number of strawberry cubes. Then the number of blueberry cubes is 5x - 4. The total number of cubes is x + (5x - 4) = 116. Combining like terms, we get 6x - 4 = 116. Adding 4 to both sides, we get 6x = 120. Dividing both sides by 6, we get x = 20. So Mary makes 20 strawberry cubes. The number of blueberry cubes is 5x - 4 = 5(20) - 4 = 100 - 4 = 96. Mary makes 96 blueberry cubes."
+    },
+    {
+      "score": 1,
+      "pred": "112",
+      "gold": "112",
+      "gen_text": "Beatrice bought 6 packets of crayons with 8 pieces of colors each, so she bought 6 x 8 = 48 pieces of colors. She also bought 4 packets of crayons with 16 pieces of colors each, so she bought 4 x 16 = 64 pieces of colors. In total, Beatrice bought 48 + 64 = 112 pieces of colors."
+    },
+    {
+      "score": 1,
+      "pred": "4",
+      "gold": "4",
+      "gen_text": "Let's say the number of red chickens is x. Then the number of white chickens is x + 2. The total number of eggs produced by the red chickens is 3x, and the total number of eggs produced by the white chickens is 5(x + 2). The total number of eggs collected is 42, so we can write the equation 3x + 5(x + 2) = 42. Solving for x, we get x = 4. Therefore, Jerry has 4 red chickens."
+    },
+    {
+      "score": 1,
+      "pred": "50",
+      "gold": "50",
+      "gen_text": "The store sold 14 pairs of tennis shoes on Friday. On Saturday, they sold double that number, so they sold 14 x 2 = 28 pairs. On Sunday, they sold one-half the number of shoes they sold on Saturday, so they sold 28 / 2 = 14 pairs. In total, they sold 14 + 28 + 14 = 56 pairs of tennis shoes. However, six people returned their pairs, so the total number of tennis shoes sold by the end of the sale is 56 - 6 = 50."
+    },
+    {
+      "score": 0,
+      "pred": "7",
+      "gold": "2",
+      "gen_text": "Let's denote the number of test tubes Igor gathered as T, the number of beakers as B, and the number of Petri dishes as P.  We know that T = 8, P = 12, and T + B + P = 29.  We can solve for B as follows: B = 29 - T - P = 29 - 8 - 12 = 9.  Therefore, Igor lost 7 beakers."
+    },
+    {
+      "score": 1,
+      "pred": "36",
+      "gold": "36",
+      "gen_text": "6 erasers cost 6 x $2 = $12.\n8 pencils cost 8 x $3 = $24.\nSo, 6 erasers and 8 pencils cost $12 + $24 = $36."
+    },
+    {
+      "score": 1,
+      "pred": "48",
+      "gold": "48",
+      "gen_text": "The final value of the number train is 20 + 10 = 30, 30/5 = 6, 6 * 8 = 48."
+    },
+    {
+      "score": 1,
+      "pred": "14",
+      "gold": "14",
+      "gen_text": "The air conditioner cooled the room 2 degrees an hour on low and 3 degrees an hour on high. The room will warm up at 2 degrees an hour with no air conditioner running. The air conditioner ran on low for 3 hours, then it was turned up to high for 4 hours. Afterward, it was turned off for 2 hours. The air conditioner cooled the room 2 * 3 = 6 degrees on low and 3 * 4 = 12 degrees on high. The room warmed up 2 * 2 = 4 degrees while the air conditioner was turned off. The final temperature was 6 + 12 - 4 = 14 degrees lower than the starting temperature."
+    },
+    {
+      "score": 1,
+      "pred": "10",
+      "gold": "10",
+      "gen_text": "Violetta needs 5 crayons, and each crayon costs $2, so the total cost of the crayons is 5 * 2 = $10. She has $20, so she will get 20 - 10 = $10 in change."
+    },
+    {
+      "score": 0,
+      "pred": "14",
+      "gold": "7",
+      "gen_text": "Let's denote the number of fish in each aquarium as x. The difference between the number of snails in the two aquariums is 32 - 4 = 28. This difference is twice the amount of fish in both aquariums, so 2x = 28. Solving for x, we get x = 14. Therefore, there are 14 fish in each aquarium."
+    },
+    {
+      "score": 1,
+      "pred": "5600",
+      "gold": "5600",
+      "gen_text": "The redwood is 200 feet tall, so it has 20 sections of wood, each weighing 400 pounds. So, the total weight of the redwood is 20 * 400 = 8000 pounds. Since termites ate 30% of the wood, the redwood now weighs 70% of its original weight, which is 0.7 * 8000 = 5600 pounds."
+    },
+    {
+      "score": 1,
+      "pred": "20",
+      "gold": "20",
+      "gen_text": "There are 25 books written in English and 5 books written in German. The remaining books are written in Spanish, so there are 50 - 25 - 5 = 20 Spanish books."
+    },
+    {
+      "score": 1,
+      "pred": "650",
+      "gold": "650",
+      "gen_text": "Craig spelled out 20 words with 15 letters each, so the total number of letters in the words he spelled is 20 * 15 = 300. His brother spelled words with a total count of letters 50 more than Craig, so the total number of letters in the words his brother spelled is 300 + 50 = 350. The total number of letters in the words they've spelled after the ten rounds is 300 + 350 = 650."
+    },
+    {
+      "score": 1,
+      "pred": "2",
+      "gold": "2",
+      "gen_text": "The total weight of the sugar cubes is 2 * 1 = <<2*1=2>>2 pounds.\nThe total weight of the carrots is 4 * 12 = <<4*12=48>>48 pounds.\nThe total weight of the hay is 42 * 75 = <<42*75=3150>>3150 pounds.\nThe total weight of the oats is 20 * 65 = <<20*65=1300>>1300 pounds.\nThe total weight of all the feed is 2 + 48 + 3150 + 1300 = <<2+48+3150+1300=3400>>3400 pounds.\nThe farmer needs to make 3400 / 2250 = <<3400/2250=1.51111>>1.51111 trips to transport all the feed.\nSince the farmer can't make a fraction of a trip, he needs to make 2 trips to transport all the feed."
+    },
+    {
+      "score": 1,
+      "pred": "9",
+      "gold": "9",
+      "gen_text": "Liam is 16 years old now. Two years ago, Liam was 16 - 2 = 14 years old. Two years ago, Vince was 14 / 2 = 7 years old. Vince is now 7 + 2 = 9 years old."
+    },
+    {
+      "score": 0,
+      "pred": "1764",
+      "gold": "294",
+      "gen_text": "Lloyd makes $252 x 7 = $1,764 per week."
+    },
+    {
+      "score": 1,
+      "pred": "92",
+      "gold": "92",
+      "gen_text": "Wendy wants to place 20 more than double the number of books in a shelving system with 6 rows and 6 columns. The number of books in the shelving system is 6 x 6 = 36. Double the number of books is 2 x 36 = 72. 20 more than double the number of books is 72 + 20 = 92. Therefore, Wendy will need to carry 92 books to complete her task."
+    },
+    {
+      "score": 1,
+      "pred": "19",
+      "gold": "19",
+      "gen_text": "Sam ran 3 miles on Monday, Wednesday and Friday, so he ran 3 x 3 = 9 miles on those days.  On Tuesday and Thursday, Sam ran 5 miles, so he ran 5 x 2 = 10 miles on those days.  In total, Sam ran 9 + 10 = 19 miles this week."
+    },
+    {
+      "score": 1,
+      "pred": "576",
+      "gold": "576",
+      "gen_text": "If 6 potatoes make 36 hash browns, then 1 potato makes 36/6 = 6 hash browns. Therefore, 96 potatoes will make 96 x 6 = 576 hash browns."
+    },
+    {
+      "score": 1,
+      "pred": "19",
+      "gold": "19",
+      "gen_text": "Amy had 2 palettes with 4 colors each, so she had 2 x 4 = 8 eyeshadow colors from the palettes. She also had 3 makeup sets with 6 colors each, so she had 3 x 6 = 18 eyeshadow colors from the makeup sets. In total, she had 8 + 18 = 26 eyeshadow colors. Her sister stole one palette, so she had 8 - 4 = 4 eyeshadow colors from the palettes. She used up half of the colors from one makeup set, so she used up 6 / 2 = 3 eyeshadow colors from the makeup sets. In total, she had 4 + 18 - 3 = 19 eyeshadow colors left."
+    },
+    {
+      "score": 1,
+      "pred": "320",
+      "gold": "320",
+      "gen_text": "Elaine initially had 20 Pokemon cards. After a month, she collected three times that number, which is 3 x 20 = 60 cards. In the second month, she collected 20 fewer cards than those she collected in the first month, which is 60 - 20 = 40 cards. In the third month, she collected twice the combined number of Pokemon cards she collected in the first and second months, which is 2 x (60 + 40) = 2 x 100 = 200 cards. In total, Elaine now has 20 + 60 + 40 + 200 = 320 Pokemon cards."
+    },
+    {
+      "score": 1,
+      "pred": "12",
+      "gold": "12",
+      "gen_text": "Kira bought 3 + 5 + 6 = 14 pieces of fruit. Lola ate 2 pieces, so there are 14 - 2 = 12 pieces of fruit left."
+    },
+    {
+      "score": 1,
+      "pred": "64800",
+      "gold": "64800",
+      "gen_text": "The Widgeteer 3000 makes 60 widgets an hour, so in 24 hours it makes 60 * 24 = 1440 widgets. In 30 days, it makes 1440 * 30 = 43200 widgets. Each widget sells for $6, so the Widgeteer 3000 makes 43200 * 6 = $259200 in 30 days.\n\nThe WidgetMaster 9000 makes 45 widgets an hour, so in 24 hours it makes 45 * 24 = 1080 widgets. In 30 days, it makes 1080 * 30 = 32400 widgets. Each widget sells for $6, so the WidgetMaster 9000 makes 32400 * 6 = $194400 in 30 days.\n\nThe difference in the amount of money Fern will make from the Widgeteer 3000 vs. the WidgetMaster 9000 is $259200 - $194400 = $64800."
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "The total amount of rain on Monday is 2 inches. Twice of Monday\u2019s total is 2 x 2 = 4 inches. 1 more inch than twice of Monday\u2019s total is 4 + 1 = 5 inches. Therefore, there will be 5 inches of rain on Tuesday."
+    },
+    {
+      "score": 1,
+      "pred": "123",
+      "gold": "123",
+      "gen_text": "The total cost of 3 baskets of green food is 3 x $25 = $75. The total cost of 3 baskets of red food is 3 x $18 = $54. Since you get $2 off for each basket of red food, the total discount is 3 x $2 = $6. Therefore, the total cost of 3 baskets of green food and red food is $75 + $54 - $6 = $123."
+    },
+    {
+      "score": 0,
+      "pred": "2",
+      "gold": "4",
+      "gen_text": "3 loaves of bread cost 3 x $2 = $6. 2 bagels cost 2 x $1 = $2. So, 3 loaves of bread cost $6 - $2 = $4 more than 2 bagels."
+    },
+    {
+      "score": 1,
+      "pred": "6",
+      "gold": "6",
+      "gen_text": "Jamal's phone can hold 1800 photographs, and his phone can hold 6 times more photographs than Brittany's phone, so Brittany's phone can hold 1800/6 = 300 photographs. The maximum number of photographs that Brittany's phone can hold is 50 times more than the number of birds in Jamal's photograph of the ducks at the zoo, so the number of ducks in Jamal's photograph of the ducks at the zoo is 300/50 = 6.\nThe final answer is 6."
+    },
+    {
+      "score": 1,
+      "pred": "36",
+      "gold": "36",
+      "gen_text": "Lee runs the 400-meter hurdles in 38 seconds, and Gerald runs 2 seconds slower than Lee, so Gerald runs the 400-meter hurdles in 38 + 2 = 40 seconds.  Gerald's speed improved by 10%, so he can now run the 400-meter hurdles in 40 - (40 * 0.10) = 40 - 4 = 36 seconds."
+    },
+    {
+      "score": 1,
+      "pred": "105",
+      "gold": "105",
+      "gen_text": "James has 25 cents from the quarter, 10 cents from the two nickels, and 70 cents from the 7 dimes. So, in total, James has 25 + 10 + 70 = 105 cents."
+    },
+    {
+      "score": 1,
+      "pred": "1210",
+      "gold": "1210",
+      "gen_text": "Jake sees 80 spiders with 8 legs each, so he sees 80 x 8 = 640 legs from the spiders. He sees 90 insects with 6 legs each, so he sees 90 x 6 = 540 legs from the insects. He sees 3 rare mutant invertebrates with 10 legs each, so he sees 3 x 10 = 30 legs from the invertebrates. In total, Jake sees 640 + 540 + 30 = 1210 legs."
+    },
+    {
+      "score": 1,
+      "pred": "40",
+      "gold": "40",
+      "gen_text": "Let x be the number of people who attended the concert. Courtney said that there were 48 people in attendance, but Kelly said that Courtney had overstated the number by 20%. This means that 48 is 120% of the actual number of people who attended the concert. So, 48 = 1.2x. Solving for x, we get x = 48/1.2 = 40. Therefore, 40 people attended the concert."
+    },
+    {
+      "score": 1,
+      "pred": "230",
+      "gold": "230",
+      "gen_text": "The cost of the radiator at the junk shop is 80% off, so it is 20% of the original price, which is 0.2 * 400 = $80. The cost of the mechanic is 3 hours * $50 an hour = $150. So the total cost is $80 + $150 = $230."
+    },
+    {
+      "score": 1,
+      "pred": "34",
+      "gold": "34",
+      "gen_text": "The total cost of the tickets is $20.25. The total cost of the food is $20.25 - $4.50 = $15.75. The total cost of the rides is $33 x 2 = $66. The total cost of the trip is $20.25 + $15.75 + $66 = $102. The cost per person is $102 / 3 = $34."
+    },
+    {
+      "score": 1,
+      "pred": "18",
+      "gold": "18",
+      "gen_text": "The rug is 5 feet wider than the chair, so it is 3 + 5 = 8 feet wide.\nThe couch is 2 feet longer than twice the width of the rug, so it is 2 + 2 * 8 = 18 feet long."
+    },
+    {
+      "score": 1,
+      "pred": "24",
+      "gold": "24",
+      "gen_text": "Let's assume that the number of students in each class is x. Since there are two classes, the total number of students is 2x = 80, so x = 40. In each class, 40% of the students are girls, so the number of girls in each class is 0.4x = 0.4(40) = 16. The number of boys in each class is then 40 - 16 = 24."
+    },
+    {
+      "score": 0,
+      "pred": "350",
+      "gold": "250",
+      "gen_text": "On the first day, Sloane counted 100 customers. On the second day, she counted 50 more customers than the first day, so she counted 100 + 50 = 150 customers. The total number of customers by the third day was 500, so she counted 500 - 150 = 350 customers on the third day."
+    },
+    {
+      "score": 0,
+      "pred": "10",
+      "gold": "2",
+      "gen_text": "The total time required to make the cake is 20 minutes + 30 minutes + 2 hours + 10 minutes = 2 hours and 50 minutes.  Since Jordan wants to serve the cake at 5:00 pm, she should start making the cake at 2:10 pm."
+    },
+    {
+      "score": 1,
+      "pred": "842",
+      "gold": "842",
+      "gen_text": "The teacher has 9 coupons, each of which can be redeemed for 100 bottles of apple juice, so she has 9 x 100 = 900 bottles of apple juice. She gives each of the 29 students 2 bottles of apple juice, so she gives out 29 x 2 = 58 bottles of apple juice. After giving out the apple juice, the teacher has 900 - 58 = 842 bottles of apple juice for herself."
+    },
+    {
+      "score": 0,
+      "pred": "12",
+      "gold": "4",
+      "gen_text": "Adam needs to grow 4 - 40 = 24 inches to be tall enough to ride the roller coaster. Since he grows 2 inches a year, he will be tall enough to ride the roller coaster in 24 / 2 = 12 years."
+    },
+    {
+      "score": 1,
+      "pred": "26",
+      "gold": "26",
+      "gen_text": "Bob has 60 - 2*12 = 60 - 24 = 36 marbles.\nIf he loses 10 marbles, he will have 36 - 10 = 26 marbles."
+    },
+    {
+      "score": 1,
+      "pred": "10800",
+      "gold": "10800",
+      "gen_text": "The total cost of the suits is 10 * $750 = $7500.\nThe total cost of the dress pants is 10 * $750 / 5 = $1500.\nThe total cost of the dress shirts is 10 * 3 * $60 = $1800.\nThe total cost of everything is $7500 + $1500 + $1800 = $10800."
+    },
+    {
+      "score": 1,
+      "pred": "23",
+      "gold": "23",
+      "gen_text": "Bruce works 5 hours on Tuesday. On Wednesday, he works twice the time he works on Tuesday, so he works 5 x 2 = 10 hours. On Thursday, he works 2 hours less than the time he works on Wednesday, so he works 10 - 2 = 8 hours. In all these three days, Bruce works 5 + 10 + 8 = 23 hours."
+    },
+    {
+      "score": 1,
+      "pred": "48",
+      "gold": "48",
+      "gen_text": "John drank 2 glasses of milk, so he drank 2 x 8 = 16 ounces of milk.  Since milk has 3 calories per ounce, he consumed 16 x 3 = 48 calories."
+    },
+    {
+      "score": 1,
+      "pred": "3",
+      "gold": "3",
+      "gen_text": "Artemis and her father have 30 pounds of soil. They plant 4 sunflowers, which need 4 x 3 = 12 pounds of soil. They plant 10 carnations, which need 10 x 1.5 = 15 pounds of soil. So, they have 30 - 12 - 15 = 3 pounds of soil left. Since each rose needs 1 pound of soil, they can plant 3 roses."
+    },
+    {
+      "score": 1,
+      "pred": "70",
+      "gold": "70",
+      "gen_text": "The discount is 30% of $100, which is $30.  So the cost of the grooming is $100 - $30 = $70."
+    },
+    {
+      "score": 1,
+      "pred": "78",
+      "gold": "78",
+      "gen_text": "Anne kept 2 packs of sweets, so she gave 15 - 2 = 13 packs to her friends. Each pack has 60 pieces, so she gave 13 * 60 = 780 pieces of sweets to her friends. Since she gave the sweets equally to her 10 friends, each friend received 780 / 10 = 78 pieces of sweets."
+    },
+    {
+      "score": 1,
+      "pred": "8",
+      "gold": "8",
+      "gen_text": "There are 20 - 4 = 16 pencils in the box. Since there are 2 pencils in a pair, there are 16 / 2 = 8 pairs of pencils in the box."
+    },
+    {
+      "score": 1,
+      "pred": "45",
+      "gold": "45",
+      "gen_text": "Shawna is 3 * 3 = <<3*3=9>>9 years old.\nShawna's father is 5 * 9 = <<5*9=45>>45 years old.\nThe answer is 45."
+    },
+    {
+      "score": 1,
+      "pred": "80",
+      "gold": "80",
+      "gen_text": "Let's say Brad gets x dollars. Then Jeff gets 4x dollars. Since the total amount is 100 dollars, we can write the equation x + 4x = 100. Combining like terms, we get 5x = 100. Dividing both sides by 5, we get x = 20. So Brad gets 20 dollars, and Jeff gets 4x = 4(20) = 80 dollars."
+    },
+    {
+      "score": 0,
+      "pred": "5",
+      "gold": "240",
+      "gen_text": "Thomas starts with 1000/20 = 50 bills. He loses 10, so he has 50 - 10 = 40 bills. He uses half of the remaining bills to pay for a bill, so he has 40/2 = 20 bills. He triples his money, so he now has 20 * 3 = 60 bills. He converts all his bills to 5 dollar bills, so he has 60 * 5 = 300 5 dollar bills."
+    },
+    {
+      "score": 1,
+      "pred": "12",
+      "gold": "12",
+      "gen_text": "The volume of the pool is 6*4*5=120 cubic feet.  It will cost 120*.1=$12 to fill."
+    },
+    {
+      "score": 1,
+      "pred": "655",
+      "gold": "655",
+      "gen_text": "Bernice has driven 325 kilometers for 4 days, so she has driven a total of 325 * 4 = 1300 kilometers. The total distance from San Diego, California to New York City, New York is 1955 kilometers. Therefore, Bernice still needs to drive 1955 - 1300 = 655 kilometers."
+    },
+    {
+      "score": 0,
+      "pred": "246",
+      "gold": "98",
+      "gen_text": "Since the area of the room is 360 square feet, and the length of the room is 3 yards, the width of the room is 360/3 = 120 feet. The perimeter of the room is 2(3 + 120) = 2(123) = 246 feet."
+    },
+    {
+      "score": 1,
+      "pred": "2",
+      "gold": "2",
+      "gen_text": "James walked 4 miles to the store, then 4 miles back home, for a total of 8 miles.  Since he walks 4 miles per hour, it took him 8/4 = 2 hours to reach the store."
+    },
+    {
+      "score": 1,
+      "pred": "120",
+      "gold": "120",
+      "gen_text": "Linus bought 2 devices last Monday and 4 devices last Tuesday, so he bought a total of 2 + 4 = 6 devices. He sold each device for twice the amount of the original price, so he sold each device for $20 x 2 = $40. Therefore, he earned a profit of $40 - $20 = $20 per device. Since he bought 6 devices, he earned a total profit of $20 x 6 = $120."
+    },
+    {
+      "score": 1,
+      "pred": "360",
+      "gold": "360",
+      "gen_text": "John collects peaches for 3 hours, which is 3 x 60 = 180 minutes.  He can collect 2 peaches a minute, so he collects 180 x 2 = 360 peaches."
+    },
+    {
+      "score": 1,
+      "pred": "68",
+      "gold": "68",
+      "gen_text": "Joan is 5 years older than Jessa, so Joan is 20 + 5 = 25 years old.\nMary is 2 years younger than Joan, so Mary is 25 - 2 = 23 years old.\nThe sum of the ages of the three girls is 20 + 25 + 23 = 68 years."
+    },
+    {
+      "score": 0,
+      "pred": "12",
+      "gold": "108",
+      "gen_text": "The number of groups formed is 90/9 = 10. The number of groups that brought back seashells is 3/5 * 10 = 6. The number of seashells brought back is 6 * 2 = 12."
+    },
+    {
+      "score": 1,
+      "pred": "9",
+      "gold": "9",
+      "gen_text": "The light blinks 255 times in 5 minutes, so it blinks 255/5 = 51 times per minute. To find the time it takes for the light to blink 459 times, we can divide 459 by 51, which gives us 9 minutes."
+    },
+    {
+      "score": 0,
+      "pred": "48",
+      "gold": "3000",
+      "gen_text": "In 48 hours, the factory would make 100 quarts of chocolate ice cream per 2 hours x 24 = 1200 quarts of chocolate ice cream.\nIn 48 hours, the factory would make 50 quarts of vanilla ice cream per 4 hours x 12 = 600 quarts of vanilla ice cream.\nIn total, the factory would make 1200 + 600 = 1800 quarts of ice cream in 48 hours."
+    },
+    {
+      "score": 0,
+      "pred": "40",
+      "gold": "20",
+      "gen_text": "The singer was able to arrange 40 pairs of microphones on the stage."
+    },
+    {
+      "score": 0,
+      "pred": "111",
+      "gold": "100",
+      "gen_text": "Let's start by setting up an equation to represent the situation. Let x be the number of cases of shingles needed for the second house. Then, the first house needs 1/2 of that, or 1/2x, and the third house needs double that, or 2x. The total number of cases needed for all three houses is 250, so we can write the equation: 1/2x + x + 2x = 250. Combining like terms, we get 4.5x = 250. Dividing both sides by 4.5, we find that x = 55.5. Since the third house needs double the first, it needs 2(55.5) = 111 cases of shingles."
+    },
+    {
+      "score": 1,
+      "pred": "10",
+      "gold": "10",
+      "gen_text": "The bakery produces 60 loaves of bread each day. Two-thirds of the loaves are sold in the morning, so 60 * 2/3 = 40 loaves are sold in the morning. Half of what is left is sold equally in the afternoon and evening, so 60 - 40 = 20 loaves are left. Half of 20 is 10, so 10 loaves are sold in the afternoon."
+    },
+    {
+      "score": 0,
+      "pred": "13800",
+      "gold": "15400",
+      "gen_text": "The hotel cost 20% more than the normal price of $1500 per day, so the cost for the 3 days is $1500 * 1.2 = $1800 per day.  The total cost for the hotel is $1800 * 3 = $5400.  The total cost for the trip is $5000 * 2 + $5400 = $13800."
+    },
+    {
+      "score": 1,
+      "pred": "135",
+      "gold": "135",
+      "gen_text": "Hannah will see 15 x 20 x 0.4 = 120 fireworks from the city display. She will also set off 3 x 5 = 15 fireworks in her backyard. So, in total, Hannah will see 120 + 15 = 135 fireworks."
+    },
+    {
+      "score": 1,
+      "pred": "1240",
+      "gold": "1240",
+      "gen_text": "There are 40 classes with 25 students each, so the total number of students is 40 x 25 = 1000. Each student plants 1 tree, so the total number of trees planted by the students is 1000 x 1 = 1000. There are 40 classes with 3 teachers each, so the total number of teachers is 40 x 3 = 120. Each teacher plants 2 trees, so the total number of trees planted by the teachers is 120 x 2 = 240. The total number of trees planted at the end of the campaign is 1000 + 240 = 1240."
+    },
+    {
+      "score": 1,
+      "pred": "27",
+      "gold": "27",
+      "gen_text": "Timothy has 3 times the number of pens that George owns, so he has 3 * 18 = 54 pens.\nSarah has half as many pens as Timothy, so she has 54 / 2 = 27 pens.\nThe answer is 27."
+    },
+    {
+      "score": 1,
+      "pred": "70",
+      "gold": "70",
+      "gen_text": "Let G be the number of gold coins and S be the number of silver coins. We know that G + S = 110 and G = S + 30. Substituting the second equation into the first, we get S + 30 + S = 110, which simplifies to 2S + 30 = 110. Subtracting 30 from both sides, we get 2S = 80. Dividing both sides by 2, we get S = 40. Substituting S = 40 into G = S + 30, we get G = 40 + 30 = 70. Therefore, Gretchen has 70 gold coins."
+    },
+    {
+      "score": 0,
+      "pred": "20",
+      "gold": "10",
+      "gen_text": "Mike will finish his reading in 20 days, because 200 pages / 10 pages per day = 20 days."
+    },
+    {
+      "score": 0,
+      "pred": "60",
+      "gold": "5",
+      "gen_text": "Jay can build 20 snowballs in an hour, so he can build 20/60 = 1/3 of a snowball every 15 minutes. Since 2 snowballs melt every 15 minutes, Jay will have 1/3 - 2 = -5/3 snowballs every 15 minutes. Since he starts with 0 snowballs, he will have -5/3 snowballs after 15 minutes, -5/3 + 1/3 = -2/3 snowballs after 30 minutes, -2/3 + 1/3 = -1/3 snowballs after 45 minutes, and -1/3 + 1/3 = 0 snowballs after 60 minutes. Since he has 0 snowballs after 60 minutes, he will have 60 snowballs after 60 + 60 = 120 minutes. Therefore, it will take Jay 120 minutes, or 2 hours, to have 60 snowballs."
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "The total cost of the items is $4.20 + $9.45 + $1.35 = $15.00. The cashier gives back $20 - $15.00 = $5.00."
+    },
+    {
+      "score": 1,
+      "pred": "150",
+      "gold": "150",
+      "gen_text": "Lillian has 3 bird feeders she made herself and 3 she bought. The homemade feeders attract 10 more birds than the store-bought ones, so the store-bought ones attract 20 birds each. The homemade feeders attract 20 + 10 = 30 birds each. So, the total number of birds Lillian can expect to see in her garden each day is 3 homemade feeders * 30 birds + 3 store-bought feeders * 20 birds = 90 + 60 = 150 birds."
+    },
+    {
+      "score": 0,
+      "pred": "1800",
+      "gold": "1300",
+      "gen_text": "Elise sold 45 books this year, and there are 50 unsold books, so she sold 250 - 50 = 200 books in the first year. Since she sold twice as many books in the first year as she has sold in the current year, she sold 2 * 45 = 90 books in the second year. The total amount of money she earned in the second year is 90 * 20 = 1800$."
+    },
+    {
+      "score": 1,
+      "pred": "1",
+      "gold": "1",
+      "gen_text": "The total cost of the salad and the yogurt is $6 + $3 = $9. Since Ellen pays $11 for all her goods, she pays $11 - $9 = $2 for the two carrots. Therefore, the cost of one carrot is $2 / 2 = $1."
+    },
+    {
+      "score": 0,
+      "pred": "23",
+      "gold": "17",
+      "gen_text": "Cindy has 5 math and science books, so they weigh 5 x 2 = 10 pounds. Her French book weighs 4 pounds, her English book weighs 3 pounds, and her history book weighs 3 x 2 = 6 pounds. So the total weight of the books she is carrying is 10 + 4 + 3 + 6 = 23 pounds."
+    },
+    {
+      "score": 1,
+      "pred": "100",
+      "gold": "100",
+      "gen_text": "John manufactured 4 wooden tables for $20 each, so the total cost of the tables is 4 x $20 = $80. He also manufactured 2 roof frames for $10 each, so the total cost of the roof frames is 2 x $10 = $20. Therefore, Ali has to pay John $80 + $20 = $100."
+    },
+    {
+      "score": 1,
+      "pred": "21",
+      "gold": "21",
+      "gen_text": "Steve eats 6 tomatoes per day, so he eats 6 x 7 = 42 tomatoes per week. Since he eats twice as much as his girlfriend, she eats 42 / 2 = 21 tomatoes per week. Together, they eat 42 + 21 = 63 tomatoes per week. Since each vine produces 3 tomatoes per week, they need 63 / 3 = 21 vines."
+    },
+    {
+      "score": 1,
+      "pred": "3",
+      "gold": "3",
+      "gen_text": "Sally spent $3 for the first pound of taffy and $1.50 for the second pound, for a total of $4.50.  She also spent $1.50 for the seashells and $1.00 for the magnets, for a total of $2.50.  So, she spent $4.50 + $2.50 = $7.00.  She had $10 to start with, so she has $10 - $7.00 = $3.00 left."
+    },
+    {
+      "score": 1,
+      "pred": "8",
+      "gold": "8",
+      "gen_text": "Tracy used a piece of wire 4 feet long to support tomato plants in the garden. The wire was cut into pieces 6 inches long. How many pieces did she obtain?\n4 feet = 48 inches\n48 inches / 6 inches = 8 pieces\nTracy obtained 8 pieces of wire."
+    },
+    {
+      "score": 1,
+      "pred": "3",
+      "gold": "3",
+      "gen_text": "Ned is 7 - 2 = 5 feet tall.\nCarl is 5 + 1 = 6 feet tall.\nCarl's cane is 6 / 2 = 3 feet long.\nThe final answer is 3."
+    },
+    {
+      "score": 1,
+      "pred": "30",
+      "gold": "30",
+      "gen_text": "Martha is 24 - 4 = 20 years old.\nJeff is 10 years older than Martha, so Jeff is 20 + 10 = 30 years old."
+    },
+    {
+      "score": 1,
+      "pred": "150",
+      "gold": "150",
+      "gen_text": "The jacket costs three times as much as the hat, so it costs 3 * $25 = $75.\nThe pants cost the average of the costs of the hat and jacket, so they cost ($25 + $75) / 2 = $50.\nThe total cost of each uniform is $25 + $75 + $50 = $150."
+    },
+    {
+      "score": 1,
+      "pred": "50",
+      "gold": "50",
+      "gen_text": "The time it took to mow the lawn in turtle mode is 1 hour, which is 60 minutes. The time it took to mow the lawn in rabbit mode is 40 minutes. So, the total time it took to mow the lawn is 60 + 40 = 100 minutes. Since he mowed half the lawn in turtle mode and half in rabbit mode, the total time it took to mow the lawn is 100/2 = 50 minutes."
+    },
+    {
+      "score": 0,
+      "pred": "35",
+      "gold": "25",
+      "gen_text": "Henry traveled 20 miles before his first stop and 15 miles after his second stop. So, he traveled 20 + 15 = 35 miles between his first and second stops."
+    },
+    {
+      "score": 1,
+      "pred": "10",
+      "gold": "10",
+      "gen_text": "Let x be the length of one of Bobby\u2019s shoes in inches.  Then 9x + 10 = 8*12 + 4 = 100.  So, 9x = 90 and x = 10."
+    },
+    {
+      "score": 1,
+      "pred": "2000",
+      "gold": "2000",
+      "gen_text": "Elliott took 5,000 steps on his walks to and from school, and 1,000 steps on his short walk with his friend, so he had 4,000 steps left to take. Since he had 2,000 steps left after his jog, he must have taken 4,000 - 2,000 = 2,000 steps during his jog."
+    },
+    {
+      "score": 1,
+      "pred": "110",
+      "gold": "110",
+      "gen_text": "James buys 2 pairs of shoes a month, so he buys 2 x 12 = 24 pairs of shoes a year.  He spends $2640 on shoes each year, so he pays $2640 / 24 = $110 per pair of shoes."
+    },
+    {
+      "score": 1,
+      "pred": "18",
+      "gold": "18",
+      "gen_text": "Ashley should give the delivery man a tip of $15 x 1/5 = $3. The total amount that Ashley should give the delivery man is $15 + $3 = $18."
+    },
+    {
+      "score": 1,
+      "pred": "452",
+      "gold": "452",
+      "gen_text": "Kim usually sleeps for 8 hours, which is 480 minutes. She woke up 5 minutes earlier than usual, so she slept for 480 - 5 = 475 minutes. She was sleepwalking from 2:15 to 2:38 am, which is 23 minutes. So, she slept for 475 - 23 = 452 minutes."
+    },
+    {
+      "score": 0,
+      "pred": "2",
+      "gold": "284",
+      "gen_text": "Bill paid $8 a month for the first 6 months, so he paid 6 * 8 = $48 for the first 6 months. Then he paid $12 a month for 8 months, so he paid 8 * 12 = $96 for the next 8 months. After that, the price went up to $14 a month, and he paid that for the remaining 8 months of the year, so he paid 8 * 14 = $112 for the last 8 months of the year. In total, he paid 48 + 96 + 112 = $256 for the first year. For the second year, he paid 12 * 12 = $144 for the first 12 months, and 14 * 8 = $112 for the last 8 months, so he paid 144 + 112 = $256 for the second year. In total, he paid 256 + 256 = $512 for 2 years of the service."
+    },
+    {
+      "score": 1,
+      "pred": "4",
+      "gold": "4",
+      "gen_text": "Let's say the number of white fish Bob bought is x. Then the number of orange fish he bought is 17 - x. The total number of fish in the pond is 7 + 17 = 24. The number of white fish in the pond is 4 + x, and the number of orange fish is 3 + (17 - x) = 20 - x. Since Bob has twice as many orange fish as white fish, we can set up the equation 20 - x = 2(4 + x). Solving for x, we get 20 - x = 8 + 2x, 20 - 8 = 2x + x, 12 = 3x, x = 4. So Bob bought 4 white fish at the store."
+    },
+    {
+      "score": 0,
+      "pred": "13332",
+      "gold": "11232",
+      "gen_text": "The area of the bedroom is 18 feet x 12 feet = 216 square feet. The cost of the new carpet is $12 per square foot x 216 square feet = $2592. The cost of the padding is $2 per square foot x 216 square feet = $432. The cost of removing the old carpet is $4 per square foot x 216 square feet = $864. The cost of installing the new carpet is $34 per square foot x 216 square feet = $7344. The total cost is $2592 + $432 + $864 + $7344 = $13332."
+    },
+    {
+      "score": 1,
+      "pred": "1520",
+      "gold": "1520",
+      "gen_text": "Rafaela received 40 x $20 = $<<40*20=800>>800 in tips.\nJulieta received 10% less than Rafaela, so she received $800 x 0.1 = $<<800*0.1=80>>80 less.\nJulieta received $800 - $80 = $<<800-80=720>>720 in tips.\nTogether, Rafaela and Julieta received $720 + $800 = $<<720+800=1520>>1520 in tips.\nThe answer is 1520"
+    },
+    {
+      "score": 1,
+      "pred": "48",
+      "gold": "48",
+      "gen_text": "Sadie slept 8 hours on Monday. For the next two days, she slept 2 hours less, each, because she had to complete some assignments. So, she slept 8 - 2 = 6 hours each day. For the rest of the week, she slept 1 hour more than those two days, so she slept 6 + 1 = 7 hours each day. The total number of hours she slept throughout the week is 8 + 6 + 6 + 7 + 7 + 7 + 7 = 48 hours."
+    },
+    {
+      "score": 1,
+      "pred": "3",
+      "gold": "3",
+      "gen_text": "20% of 50 employees are management, which is 10 employees. 30% of 10 employees oversee the company, which is 3 employees."
+    },
+    {
+      "score": 1,
+      "pred": "72",
+      "gold": "72",
+      "gen_text": "Matthew has 12 unique toy soldiers. He wants to sell half of them for $5 each and the other half for $7 each. Half of 12 is 6, so he would sell 6 toy soldiers for $5 each and 6 for $7 each. The total amount he would earn from the first half is 6 x $5 = $30. The total amount he would earn from the second half is 6 x $7 = $42. The total amount he would earn is $30 + $42 = $72."
+    },
+    {
+      "score": 0,
+      "pred": "1225",
+      "gold": "1125",
+      "gen_text": "The IRS received 5168 - 1907 - 2136 = 1225 reports on Wednesday."
+    },
+    {
+      "score": 1,
+      "pred": "72",
+      "gold": "72",
+      "gen_text": "Ashley\u2019s internet connection speed in Mb per second is 20/1000 = 0.02 Mb per second. In one hour, she can download 0.02 * 3600 = 72 Mb."
+    },
+    {
+      "score": 0,
+      "pred": "1.2",
+      "gold": "92",
+      "gen_text": "The price of a bag of marbles increases by 20% every two months. After 36 months, the price would increase by 20% 18 times. The price after 36 months would be 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2^18 * 20 = 1.2"
+    },
+    {
+      "score": 1,
+      "pred": "72",
+      "gold": "72",
+      "gen_text": "The first child is 6 feet tall, which is 72 inches tall.  The second child is 2 inches taller than the first child, so the second child is 72 + 2 = 74 inches tall.  The third child is 5 inches shorter than the second child, so the third child is 74 - 5 = 69 inches tall.  The fourth child is 3 inches taller than the third child, so the fourth child is 69 + 3 = 72 inches tall."
+    },
+    {
+      "score": 1,
+      "pred": "31",
+      "gold": "31",
+      "gen_text": "Oscar has 24 - 2 - 14 = 8 lollipops left after school. He buys 14 x 2 = 28 lollipops on his way home. He eats 3 + 2 = 5 lollipops that night and in the morning. So, he has 8 + 28 - 5 = 31 lollipops."
+    },
+    {
+      "score": 1,
+      "pred": "90",
+      "gold": "90",
+      "gen_text": "The total cost of the manicure and pedicure is $35 + $40 = $75. With the 20% discount, the cost would be $75 * 0.8 = $60. The cost of the nail art is $3 * 10 = $30. Therefore, Karen would pay $60 + $30 = $90 in all."
+    },
+    {
+      "score": 1,
+      "pred": "63",
+      "gold": "63",
+      "gen_text": "Martha needs 2 skeins of wool for each hat, 3 hats, so 2 x 3 = 6 skeins for the hats. She needs 4 skeins of wool for each scarf, 3 scarves, so 4 x 3 = 12 skeins for the scarves. She needs 12 skeins of wool for each sweater, 3 sweaters, so 12 x 3 = 36 skeins for the sweaters. She needs 1 skein of wool for each pair of mittens, 3 pairs, so 1 x 3 = 3 skeins for the mittens. She needs 2 skeins of wool for each pair of socks, 3 pairs, so 2 x 3 = 6 skeins for the socks. In total, she needs 6 + 12 + 36 + 3 + 6 = 63 skeins of wool."
+    },
+    {
+      "score": 1,
+      "pred": "180",
+      "gold": "180",
+      "gen_text": "Susan weighs 150 - 20 = 130 pounds.\nBob weighs 2 * 130 = 260 pounds.\nThe total weight of the three friends is 150 + 130 + 260 = 540 pounds.\nThe average weight of the three friends is 540 / 3 = 180 pounds."
+    },
+    {
+      "score": 1,
+      "pred": "2",
+      "gold": "2",
+      "gen_text": "Tobias howls for 20 seconds, Chikote howls for 2 x 20 = 40 seconds, and Igneous howls for 20 + 40 = 60 seconds.  The combined length of time of the three wolves' howls is 20 + 40 + 60 = 120 seconds.  Since there are 60 seconds in a minute, the combined length of time of the three wolves' howls is 120/60 = 2 minutes."
+    },
+    {
+      "score": 1,
+      "pred": "16",
+      "gold": "16",
+      "gen_text": "There are 52 members in the choir, 50% of which are boys and 50% of which are girls.  This means that there are 26 boys and 26 girls in the choir.  The choir decides to perform with just its female members, so there are 26 girls performing.  However, half of the people performing can't make it to the show because their bus breaks down, so there are 13 girls left.  The choir's 3 teachers then decide to sing with them, so there are 13 + 3 = 16 people singing in the performance."
+    },
+    {
+      "score": 1,
+      "pred": "25",
+      "gold": "25",
+      "gen_text": "The number of students who like to play video games or music is 50 - 10 - 5 = 35. If the number of students who like to play music is twice the number that prefer playing basketball, then the number of students who like to play music is 2 * 5 = 10. Therefore, the number of students who like to play video games is 35 - 10 = 25."
+    },
+    {
+      "score": 1,
+      "pred": "36",
+      "gold": "36",
+      "gen_text": "Tim will need 4 * 6 = 24 lemons for the 4 gallons of lemonade.  For the extra gallon, he will need 2 * 6 = 12 lemons.  In total, he will need 24 + 12 = 36 lemons."
+    },
+    {
+      "score": 1,
+      "pred": "2400",
+      "gold": "2400",
+      "gen_text": "John buys 10 bottles of scotch for $600, so each bottle costs $600/10 = $60. He also buys twice as many bottles of cognac, so he buys 10*2 = 20 bottles of cognac. Each bottle of cognac costs 50% more than a bottle of scotch, so each bottle of cognac costs $60*1.5 = $90. The total cost of the cognac is $90*20 = $1800. The total cost of everything is $600 + $1800 = $2400."
+    },
+    {
+      "score": 1,
+      "pred": "200",
+      "gold": "200",
+      "gen_text": "There are 20 minutes per episode, and there are half as many episodes as there are minutes per episode, so there are 20/2 = 10 episodes.  If John watches every episode, he will spend 10 x 20 = 200 minutes watching the show."
+    },
+    {
+      "score": 1,
+      "pred": "81",
+      "gold": "81",
+      "gen_text": "Walter ate 2/5 of 60 apples, which is 2/5 * 60 = 24 apples. So, he had 60 - 24 = 36 apples left. He gave his sister 25% of 36 apples, which is 0.25 * 36 = 9 apples. So, he had 36 - 9 = 27 apples left. He sold 27 apples at $3 each, so he received 27 * 3 = $81."
+    },
+    {
+      "score": 1,
+      "pred": "52",
+      "gold": "52",
+      "gen_text": "Kimberly bought 8 packages of cat food, each containing 11 tins, so she bought 8 x 11 = 88 tins of cat food. She also bought 6 packages of dog food, each containing 6 tins, so she bought 6 x 6 = 36 tins of dog food. The difference between the number of tins of cat food and dog food is 88 - 36 = 52."
+    },
+    {
+      "score": 0,
+      "pred": "5",
+      "gold": "6",
+      "gen_text": "Bubbles has 3 + 5 + 2 + 4 = 14 stuffed animals. If she wants to buy enough stuffed goats, such that the percentage of stuffed goats is 30% of all of her stuffed animals, she should buy 30% of 14, which is 0.3 * 14 = 4.2. Since she can only buy a whole number of stuffed goats, she should buy 5 stuffed goats."
+    },
+    {
+      "score": 1,
+      "pred": "308",
+      "gold": "308",
+      "gen_text": "The kitten's spaying cost $200, the 3 vaccines cost $20 each, so that's $60, and the 4 vases cost $12 each, so that's $48. So the kitten has cost $200 + $60 + $48 = $308."
+    },
+    {
+      "score": 1,
+      "pred": "3",
+      "gold": "3",
+      "gen_text": "The youngest son is 8 / 2 = 4 years old.\nSo, the total number of oranges washed is 8 + 4 = 12.\nTherefore, the number of oranges left unwashed is 15 - 12 = 3."
+    },
+    {
+      "score": 1,
+      "pred": "4",
+      "gold": "4",
+      "gen_text": "Each horse consumes 5 pounds of oats per meal, and he feeds them twice a day, so each horse consumes 5 x 2 = 10 pounds of oats per day. Since he has four horses, he needs 10 x 4 = 40 pounds of oats per day. For five days, he needs 40 x 5 = 200 pounds of oats. Since one bag contains 50 pounds of oats, he needs 200 / 50 = 4 bags of oats."
+    },
+    {
+      "score": 0,
+      "pred": "31",
+      "gold": "48",
+      "gen_text": "Let x be the number of french fries in the pack. Dave ate 14 fries, leaving x - 14 fries. The seagull ate half of the amount Dave ate, so the seagull ate 14/2 = 7 fries. The number of fries left after the seagull ate was x - 14 - 7 = x - 21. The three pigeons ate 3 fries each, so they ate 3 * 3 = 9 fries. The number of fries left after the pigeons ate was x - 21 - 9 = x - 30. The raccoon ate two thirds of the remaining fries, so the raccoon ate 2/3 * (x - 30) fries. The number of fries left after the raccoon ate was x - 30 - 2/3 * (x - 30) = 1/3 * (x - 30) fries. The ants ate one french fry, leaving 1/3 * (x - 30) - 1 = 1/3 * (x - 31) fries. Since there are 5 fries left, we can set up the equation 1/3 * (x - 31) ="
+    },
+    {
+      "score": 0,
+      "pred": "21",
+      "gold": "84",
+      "gen_text": "Grayson drinks 3 cans of soda and 5 bottles of water a week, so she drinks 3 + 5 = 8 cans and bottles a week. In a month, she drinks 8 cans and bottles a week x 4 weeks = 32 cans and bottles. Aluminum cans are worth 2 cents each, so she earns 2 cents x 3 cans = 6 cents from the cans. Plastic bottles are worth 3 cents each, so she earns 3 cents x 5 bottles = 15 cents from the bottles. In total, she earns 6 cents + 15 cents = 21 cents from recycling in a month."
+    },
+    {
+      "score": 1,
+      "pred": "4",
+      "gold": "4",
+      "gen_text": "Let's say the amount of citrus zest she uses is x. Then the amount of fragrance she uses is also x. The amount of salt she uses is 2x, and the amount of sugar she uses is also 2x. The amount of oil she uses is 4x, since she uses twice as much oil as salt. The total amount of ingredients she uses is 10 ounces, so we can set up the equation x + x + 2x + 2x + 4x = 10. Combining like terms, we get 10x = 10. Dividing both sides by 10, we get x = 1. So the amount of oil she uses is 4x = 4(1) = 4 ounces."
+    },
+    {
+      "score": 0,
+      "pred": "18",
+      "gold": "24",
+      "gen_text": "Christina invited 16 friends, but 1/4 of them won't show up, so she expects 16 - (1/4) * 16 = 12 guests. She needs.75 gift bags per guest, so she needs 12 *.75 = 9 gift bags. Each gift bag costs $2, so she will spend 9 * $2 = $18."
+    },
+    {
+      "score": 0,
+      "pred": "315",
+      "gold": "45",
+      "gen_text": "John drives for 3 hours at 60 mph, so he travels 3 * 60 = 180 miles. He then spends 2 hours in standstill traffic, so he doesn't travel any distance. He then drives for 0.5 hours at 30 mph, so he travels 0.5 * 30 = 15 miles. He then drives for 1.5 hours at 80 mph, so he travels 1.5 * 80 = 120 miles. In total, he travels 180 + 15 + 120 = 315 miles."
+    },
+    {
+      "score": 1,
+      "pred": "7",
+      "gold": "7",
+      "gen_text": "Billy sold 3 + 2 * 2 = 7 DVDs on Tuesday."
+    },
+    {
+      "score": 1,
+      "pred": "15",
+      "gold": "15",
+      "gen_text": "Let's say the number of games they lost is x. Then the number of games they won is x + 8. Since they played 22 games in total, we can write the equation x + (x + 8) = 22. Combining like terms, we get 2x + 8 = 22. Subtracting 8 from both sides, we get 2x = 14. Dividing both sides by 2, we get x = 7. So the number of games they lost is 7, and the number of games they won is 7 + 8 = 15."
+    },
+    {
+      "score": 0,
+      "pred": "7.5",
+      "gold": "60",
+      "gen_text": "The top level has a square footage of 16, the second level has a square footage of 16/2 = 8, the third level has a square footage of 8/2 = 4, and the fourth level has a square footage of 4/2 = 2. The total square footage of the sandcastle is 16 + 8 + 4 + 2 = 30. The average square footage of a level is 30/4 = 7.5."
+    },
+    {
+      "score": 1,
+      "pred": "216",
+      "gold": "216",
+      "gen_text": "The volume of the hole is 6 x 4 x 3 = 72 cubic feet. It will take Bob 72 x 3 = 216 seconds to dig the hole."
+    },
+    {
+      "score": 1,
+      "pred": "6",
+      "gold": "6",
+      "gen_text": "Benny threw 2 pieces of bologna at each of the 20 red balloons, for a total of 2 x 20 = 40 pieces of bologna. This means that he threw 58 - 40 = 18 pieces of bologna at the yellow balloons. Since he threw 3 pieces of bologna at each yellow balloon, there were 18 / 3 = 6 yellow balloons. Therefore, there were 6 yellow balloons in the bundle."
+    },
+    {
+      "score": 0,
+      "pred": "280",
+      "gold": "560",
+      "gen_text": "John visits his parents twice a month, so he makes 2 round trips a month.  Each round trip takes 2 hours, so he spends 4 hours a month driving to visit his parents.  At a speed of 70 mph, he drives 70 * 4 = 280 miles a month."
+    },
+    {
+      "score": 1,
+      "pred": "480",
+      "gold": "480",
+      "gen_text": "Mark works 8 hours a day for 5 days a week, so he works 8 * 5 = 40 hours a week.  He used to make $10 an hour but they raised his pay by $2 per hour, so he now makes $10 + $2 = $12 an hour.  Therefore, he makes $12 * 40 = $480 a week."
+    },
+    {
+      "score": 1,
+      "pred": "700",
+      "gold": "700",
+      "gen_text": "Melanie's father starts with 50 cows and 20 chickens. Milkie Cows Limited brings him 20 cows per day for three weeks, which is 20 * 7 * 3 = 420 cows. Broilers Limited brings him 10 chickens per day for three weeks, which is 10 * 7 * 3 = 210 chickens. The total number of animals on the farm after three weeks is 50 + 420 + 20 + 210 = 700."
+    },
+    {
+      "score": 1,
+      "pred": "27",
+      "gold": "27",
+      "gen_text": "Trinity sells the magazines at 11/8 of the price she bought them, which is 11/8 * 72 = $99. Her profit is $99 - $72 = $27."
+    },
+    {
+      "score": 0,
+      "pred": "22.5",
+      "gold": "6",
+      "gen_text": "Michael's horse runs 5 miles in 30 minutes, so he needs 5 * 1/2 = 2.5 bails of hay. The cost of the hay is 2.5 * 3 = $7.50. Michael has 6 * 5 = $30, so he has $30 - $7.50 = $22.50 in change."
+    },
+    {
+      "score": 1,
+      "pred": "16",
+      "gold": "16",
+      "gen_text": "The total weight of the car and its contents is 1200 + 250 + 75 + 75 = 1600 pounds.  The force needed to move the car is 1% of the weight, so the force needed is 1600 * 0.01 = 16 pounds."
+    },
+    {
+      "score": 1,
+      "pred": "800",
+      "gold": "800",
+      "gen_text": "The discount is 20% of $1000, which is $200. So, you have to pay $1000 - $200 = $800."
+    },
+    {
+      "score": 1,
+      "pred": "16",
+      "gold": "16",
+      "gen_text": "Since Joey loses 8 pounds in 4 weeks, Sandy will lose the same amount of weight in 4 x 4 = 16 weeks."
+    },
+    {
+      "score": 1,
+      "pred": "48",
+      "gold": "48",
+      "gen_text": "Mrs. Sherman made a dozen bread rolls, which is 12 rolls. She fed 6 of them to her children, so she had 12 - 6 = 6 rolls left. She broke each of the remaining rolls into 8 pieces, so she had 6 * 8 = 48 pieces of rolls to feed to the chickens."
+    },
+    {
+      "score": 1,
+      "pred": "7",
+      "gold": "7",
+      "gen_text": "To make 1 dozen croissants, Juan will need 1/4 pound of butter.  To make 4 dozen croissants, he will need 4 * 1/4 = 1 pound of butter.  Since he wants to make 4 dozen croissants for a week, he will need 1 pound of butter per day for 7 days.  Therefore, he will need 1 * 7 = 7 pounds of butter."
+    },
+    {
+      "score": 1,
+      "pred": "18",
+      "gold": "18",
+      "gen_text": "There are 6 girls in the park. If there are twice the number of boys in the park, then there are 6 x 2 = 12 boys in the park. The total number of kids in the park is 6 + 12 = 18."
+    },
+    {
+      "score": 1,
+      "pred": "4",
+      "gold": "4",
+      "gen_text": "Let's say the regular price of popcorn is x. Then the total cost of the movie ticket, popcorn, and soda is 12 + x + 3 = 15 + x. If you bought the super ticket, the total cost would be 20 + 1 = 21. Since you saved $2, the total cost of the movie ticket, popcorn, and soda is 21 - 2 = 19. So, 15 + x = 19, and x = 4."
+    },
+    {
+      "score": 0,
+      "pred": "350",
+      "gold": "120",
+      "gen_text": "Erika has $150 from her part-time job and $80 from her mom, so she has $150 + $80 = $<<150+80=230>>230.\nThe price of the laptop is reduced by $200, so the price of the laptop is $600 - $200 = $400.\nErika needs an extra $50 to buy the laptop, so she has $400 - $50 = $350.\nErika has $350 in her purse, so the answer is $350."
+    },
+    {
+      "score": 0,
+      "pred": "-25",
+      "gold": "25",
+      "gen_text": "Ava receives 10 points for every enemy she jumps on, so she receives 10 * 8 = 80 points for jumping on 8 more enemies than Emma. She also receives 5 points for each berry she collects, so she receives 5 * 3 = 15 points for collecting 3 more berries than Emma. However, she finishes the level 4 seconds slower than Emma, so she receives 30 * -4 = -120 points for finishing the level 4 seconds slower. The difference between their two scores is 80 + 15 - 120 = -25 points."
+    },
+    {
+      "score": 0,
+      "pred": "7",
+      "gold": "35",
+      "gen_text": "Sofie will walk 10 miles/day x 7 days = 70 miles in 7 days.\nBrian will walk half the distance that Sofie will walk, so Brian will walk 70 miles / 2 = 35 miles in 7 days."
+    },
+    {
+      "score": 1,
+      "pred": "2304",
+      "gold": "2304",
+      "gen_text": "The cost of the insurance is 60% more than the normal cost, so the cost is 120 + (120 * 0.6) = 120 + 72 = $192 a month.  Since there are 12 months in a year, the total cost is 192 * 12 = $2304 a year."
+    },
+    {
+      "score": 0,
+      "pred": "2800",
+      "gold": "1600",
+      "gen_text": "Frederick can buy 6 2 x 4 pieces of wood for $24 because 24 / 4 = 6. He can make 1200 sticks from the 2 x 4 pieces of wood because 6 x 200 = 1200. He can buy 4 2 x 8 pieces of wood for $24 because 24 / 6 = 4. He can make 1600 sticks from the 2 x 8 pieces of wood because 4 x 400 = 1600. He can make 2800 sticks in total because 1200 + 1600 = 2800."
+    },
+    {
+      "score": 1,
+      "pred": "3",
+      "gold": "3",
+      "gen_text": "It takes 2 bolts of blue fiber and half that much white fiber, which is 2/2 = 1 bolt of white fiber. So, in total, it takes 2 + 1 = 3 bolts of fiber."
+    },
+    {
+      "score": 1,
+      "pred": "60",
+      "gold": "60",
+      "gen_text": "20% of 20 students enrolled in contemporary dance, which is 20 x 0.2 = 4 students.\nThe remaining students are 20 - 4 = 16 students.\n25% of the remaining students enrolled in jazz dance, which is 16 x 0.25 = 4 students.\nThe rest of the students, which is 16 - 4 = 12 students, enrolled in hip-hop dance.\nTherefore, the percentage of the entire students who enrolled in hip-hop dance is 12/20 = 60%."
+    },
+    {
+      "score": 0,
+      "pred": "55",
+      "gold": "145",
+      "gen_text": "The first train will stay in the station for 20 minutes, so the second train will arrive 10 minutes after the first train leaves the station, which is 30 minutes after the first train arrives. The second train will stay in the station for 20/4 = 5 minutes, so the third train will arrive 5 minutes after the second train leaves the station, which is 35 minutes after the first train arrives. The third train will leave the station immediately after it arrives, so the fourth train will arrive 20 minutes after the third train leaves, which is 55 minutes after the first train arrives. Paul will wait for 55 minutes for his train."
+    },
+    {
+      "score": 1,
+      "pred": "140000",
+      "gold": "140000",
+      "gen_text": "The company produces 5000 bars per day. In two weeks, it will produce 5000 * 14 = 70,000 bars. Selling each bar for $2, the company will receive 70,000 * 2 = $140,000."
+    },
+    {
+      "score": 0,
+      "pred": "2",
+      "gold": "3",
+      "gen_text": "Let's say the number of cupcakes Carly made is x. Then the number of brownies she made is 3x - 2. Since each person gets two treats, the total number of treats is 2x + (3x - 2) = 5x - 2. Since there are 5 people in the class, the total number of treats is 5 * 2 = 10. So, 5x - 2 = 10. Solving for x, we get x = 2. Therefore, Carly made 2 cupcakes."
+    },
+    {
+      "score": 1,
+      "pred": "25",
+      "gold": "25",
+      "gen_text": "Let x be the length of Elaina's usual concerts. The final concert is twice as long as her usual concerts, so it is 2x minutes long. The encore is 15 minutes long, so the total runtime of the final concert is 2x + 15 minutes. We are given that the total runtime of the final concert is 65 minutes, so we can set up the equation 2x + 15 = 65. Subtracting 15 from both sides of the equation gives 2x = 50. Dividing both sides of the equation by 2 gives x = 25. Therefore, Elaina's usual concerts run for 25 minutes."
+    },
+    {
+      "score": 0,
+      "pred": "29",
+      "gold": "125",
+      "gen_text": "The profit from the jewelry purchase would be $5,000 x 2.5% = $125. The profit from the electronic gadgets purchase would be $8,000 x 1.2% = $96. The merchant would make a profit of $125 - $96 = $29 by choosing the jewelry purchase plan."
+    },
+    {
+      "score": 0,
+      "pred": "1",
+      "gold": "7425",
+      "gen_text": "Judy teaches 5 classes per day, 5 days a week, for a total of 5 x 5 = 25 classes. She also teaches 8 classes on Saturday, for a total of 25 + 8 = 33 classes. Each class has 15 students, so she has 33 x 15 = 495 students. She charges $15.00 per student, so she makes 495 x $15.00 = $7,425.00 in 1 week."
+    },
+    {
+      "score": 0,
+      "pred": "4800",
+      "gold": "480",
+      "gen_text": "The dance studio has 10 students and is rented 3 days a week, so the total number of sessions per week is 10 students * 3 days = 30 sessions. The total number of sessions per month is 30 sessions/week * 4 weeks = 120 sessions. The cost of renting the studio per session is $25, so the total cost of renting the studio per month is $25/session * 120 sessions = $3000. The cost per student per session is $1.50, so the total cost per month is $1.50/student * 10 students * 120 sessions = $1800. The total expected earnings of the dance studio in a month is $3000 (rent) + $1800 (students) = $4800."
+    },
+    {
+      "score": 1,
+      "pred": "15",
+      "gold": "15",
+      "gen_text": "Adam slices 3 large apples, which gives him 3 x 5 = 15 slices. He also slices 5 small apples, which gives him 5 x 3 = 15 slices. In total, he has 15 + 15 = 30 slices. After eating 15 slices, he has 30 - 15 = 15 slices left."
+    },
+    {
+      "score": 0,
+      "pred": "8",
+      "gold": "7",
+      "gen_text": "John and DeSean made a total of 9 + 9 = <<9+9=18>>18 S'mores.\nThey dropped 3 marshmallows on the ground, so they have 35 - 3 = <<35-3=32>>32 marshmallows left.\nThey have 32 marshmallows left, so they can make 32/2 = <<32/2=16>>16 S'mores.\nEach kid can have 16/2 = <<16/2=8>>8 S'mores.\nThe answer is 8."
+    },
+    {
+      "score": 0,
+      "pred": "65",
+      "gold": "130",
+      "gen_text": "Elise has written the alphabet twice, which is 26 letters, and half of it once, which is 13 letters. So, she has written 26 + 26 + 13 = 65 letters in total."
+    },
+    {
+      "score": 0,
+      "pred": "27",
+      "gold": "11",
+      "gen_text": "Jack plays for 240 minutes, his two friends play for 120 minutes, and his one friend plays for 360 minutes.  The total time is 240 + 120 + 360 = 720 minutes.  Since they play for 4 hours, they play for 240 minutes.  So, Jack plays for 240/720 = 1/3 of the time, his two friends play for 2/3 of the time, and his one friend plays for 1/3 of the time.  Since Jack plays for 1/3 of the time, he uses 1/3 of the quarters.  Since his two friends play for 2/3 of the time, they use 2/3 of the quarters.  Since his one friend plays for 1/3 of the time, he uses 1/3 of the quarters.  So, the total number of quarters used is 1/3 + 2/3 + 1/3 = 4/3.  Since Jack can play for 20 minutes with 1 quarter, he uses 4/3 * 20 = 80/3 quarters.  Since 80/3 is 26.67, he uses 27 quarters"
+    },
+    {
+      "score": 1,
+      "pred": "60000",
+      "gold": "60000",
+      "gen_text": "The total number of songs in the 20 playlists is 300 * 20 = 6000. Since each song is 10 hours long, the total number of hours the 20 playlists will last is 6000 * 10 = 60000."
+    },
+    {
+      "score": 0,
+      "pred": "6",
+      "gold": "42",
+      "gen_text": "Patrick sold 15 cups of lemonade per hour for 4 hours, so he sold 15 * 4 = 60 cups of lemonade for the first 4 hours.  He sold 10 cups of lemonade per hour for 2 hours, so he sold 10 * 2 = 20 cups of lemonade for the next 2 hours.  In total, he sold 60 + 20 = 80 cups of lemonade.  He sold lemonade at a price of $0.50 per cup for the first 4 hours, so he earned 60 * 0.50 = $30 for the first 4 hours.  He sold lemonade at a price of $0.60 per cup for the next 2 hours, so he earned 20 * 0.60 = $12 for the next 2 hours.  In total, he earned $30 + $12 = $42 from selling lemonade for 6 hours."
+    },
+    {
+      "score": 1,
+      "pred": "5",
+      "gold": "5",
+      "gen_text": "Hallie had dance practice for 1 hour on Tuesdays and 2 hours on Thursdays, for a total of 1 + 2 = 3 hours.  On Saturdays, she had dance practice that lasted twice as long as Tuesday's night class, so she had 2 * 1 = 2 hours of dance practice on Saturdays.  In total, she had 3 + 2 = 5 hours of dance practice per week."
+    },
+    {
+      "score": 1,
+      "pred": "180",
+      "gold": "180",
+      "gen_text": "Avery needs 12 dinner plates, 12 salad plates, and 12 bowls.  The total cost of the dinner plates will be 12 x $6.00 = $72.00.  The total cost of the salad plates will be 12 x $4.00 = $48.00.  The total cost of the bowls will be 12 x $5.00 = $60.00.  The total cost of the place settings will be $72.00 + $48.00 + $60.00 = $180.00."
+    },
+    {
+      "score": 0,
+      "pred": "140",
+      "gold": "160",
+      "gen_text": "First, Carla downloads 40% of the file, which is 0.4 * 200 GB = 80 GB. This takes 80 GB / 2 GB/minute = 40 minutes. Then, Windows forces a restart, which takes 20 minutes. Carla has to restart the download from the beginning, so she has to download the remaining 160 GB. This takes 160 GB / 2 GB/minute = 80 minutes. In total, it takes 40 minutes + 20 minutes + 80 minutes = 140 minutes to download the file."
+    },
+    {
+      "score": 0,
+      "pred": "2400",
+      "gold": "4400",
+      "gen_text": "First, we need to find out how many movies are in series.  600 movies / 3 = 200 movies in series.  600 movies - 200 movies in series = 400 movies not in series.  40% of 400 movies = 160 movies.  160 movies * $5/movie = $800.  200 movies in series * $4/movie = $800.  $800 + $800 = $1600.  400 movies * $10/movie = $4000.  $4000 - $1600 = $2400."
+    },
+    {
+      "score": 0,
+      "pred": "5280",
+      "gold": "5760",
+      "gen_text": "Rong has been saving 20 coins every month for 10 years, so he has 20 x 12 x 10 = 2400 coins in his piggy bank.\nNeil has been saving 2/5 times more coins than Rong, so he has been saving 20 + (2/5 x 20) = 24 coins every month.\nNeil has been saving 24 coins every month for 10 years, so he has 24 x 12 x 10 = 2880 coins in his piggy bank.\nIn total, Rong and Neil have 2400 + 2880 = 5280 coins in their piggy bank."
+    },
+    {
+      "score": 1,
+      "pred": "15",
+      "gold": "15",
+      "gen_text": "The total number of petals on the orchids is 5 x 5 = 25. The total number of petals on the daisies is 4 x 10 = 40. The difference in the number of petals is 40 - 25 = 15."
+    },
+    {
+      "score": 1,
+      "pred": "1200",
+      "gold": "1200",
+      "gen_text": "Since a shark has three times as much blood as a whale, a shark has 3 x 40 = 120 gallons of blood. Ten sharks swimming in the sea have 10 x 120 = 1200 gallons of blood."
+    },
+    {
+      "score": 1,
+      "pred": "20",
+      "gold": "20",
+      "gen_text": "Marisa gets $5 as pocket money every day and buys 4 lollipops worth 25 cents each, so she saves $5 - $1 = $4 every day. If she saves for 5 days, she will have $4 x 5 = $20 in her piggy bank."
+    },
+    {
+      "score": 1,
+      "pred": "2000",
+      "gold": "2000",
+      "gen_text": "Anthony and his father fill the tank with half the amount of water in the pool, which is 10000/2 = 5000 gallons. After 6 days, the tank will be emptied at a rate of 500 gallons per day, so the total amount of water emptied from the tank will be 500*6 = 3000 gallons. Therefore, the remaining amount of water in the tank will be 5000 - 3000 = 2000 gallons."
+    },
+    {
+      "score": 1,
+      "pred": "31800",
+      "gold": "31800",
+      "gen_text": "John's work is 30 miles away and he has to go there and back each day, so he travels 60 miles per day.  He goes to work 5 days a week for 50 weeks a year, so he travels 60 miles/day * 5 days/week * 50 weeks/year = 15,000 miles/year.  He gets charged $2 per mile driven, so he pays $2/mile * 15,000 miles/year = $30,000/year for driving.  He also gives his driver a $150 bonus per month, so he pays $150/month * 12 months/year = $1,800/year for the bonus.  Therefore, he pays $30,000/year + $1,800/year = $31,800/year for driving."
+    },
+    {
+      "score": 1,
+      "pred": "30",
+      "gold": "30",
+      "gen_text": "Claire earns 1 badge per month, so in a year she earns 12 badges. Amber takes twice as long to earn a badge, so she earns 1/2 badge per month, or 6 badges in a year. Wendy earns three times the amount of badges as Claire, so she earns 3 badges per month, or 36 badges in a year. The difference between Wendy and Amber is 36 - 6 = 30 badges."
+    },
+    {
+      "score": 1,
+      "pred": "84",
+      "gold": "84",
+      "gen_text": "Madeline ate 6 grapes. Her brother used 5 times as many grapes as Madeline to make a full glass, so he used 5 * 6 = 30 grapes. The total number of grapes used by Madeline and her brother is 6 + 30 = 36 grapes. Their mother used the remaining grapes to make 4 pies, and each pie recipe calls for 12 grapes, so she used 4 * 12 = 48 grapes. The total number of grapes used is 36 + 48 = 84 grapes. Therefore, there were 84 grapes at the beginning."
+    },
+    {
+      "score": 1,
+      "pred": "11",
+      "gold": "11",
+      "gen_text": "Tom spent $44 on the headphone set, so he could have bought 11 more CDs with that money."
+    },
+    {
+      "score": 1,
+      "pred": "35",
+      "gold": "35",
+      "gen_text": "Hunter counted 50 cars when he entered class. During the first break, he counted 20 more cars, so the total number of cars he counted during the first break is 50 + 20 = 70. When he got out of class for the lunch break, he realized that 1/2 the number of cars in the parking lot had gone, so the number of cars that remained in the parking lot is 70 / 2 = 35. Therefore, the total number of cars he counted during lunch break is 70 - 35 = 35."
+    },
+    {
+      "score": 1,
+      "pred": "144",
+      "gold": "144",
+      "gen_text": "The total area of the four walls is 10 x 8 + 10 x 8 + 5 x 8 + 5 x 8 = 80 + 80 + 40 + 40 = 240 square feet. Since a gallon of paint can cover 20 square feet, it will take 240 / 20 = 12 gallons of paint. The cost of painting the room will be 12 x $12 = $144."
+    },
+    {
+      "score": 0,
+      "pred": "0",
+      "gold": "1000",
+      "gen_text": "By midday, 2/5 of 5000 people had voted, which is 2/5 * 5000 = 2000 people. So, 5000 - 2000 = 3000 people remained to vote. By 16:00, 2/3 of the remaining people had voted, which is 2/3 * 3000 = 2000 people. So, 3000 - 2000 = 1000 people had not voted by 16:00."
+    },
+    {
+      "score": 1,
+      "pred": "60",
+      "gold": "60",
+      "gen_text": "The second recipe has 20 x 2 = 40 instructions.\nKelian has to read 20 + 40 = 60 instructions to prepare the two dishes."
+    },
+    {
+      "score": 1,
+      "pred": "2",
+      "gold": "2",
+      "gen_text": "Morgan's dad said that she had $90 budgeted for her birthday party. She wants to make sure she and her friends all get to play one round of mini-golf, have $5 in arcade tokens, and get to ride the go-karts twice. A round of mini-golf is $5. The Go-karts cost $10 a ride. So, the total cost for mini-golf is $5, the total cost for arcade tokens is $5, and the total cost for go-karts is $20. So, the total cost for all of these activities is $5 + $5 + $20 = $30. This means that she has $90 - $30 = $60 left for her friends. Since each friend will cost $30, she can invite 2 friends."
+    },
+    {
+      "score": 0,
+      "pred": "3240",
+      "gold": "3140",
+      "gen_text": "Tom traveled 200 kilometers every day for the first 4 days, so he traveled 200 * 4 = 800 kilometers in the first 4 days. Over the next two days, he traveled 30% of the distance traveled over the first four days, which is 0.3 * 800 = 240 kilometers. So, in the first 6 days, he traveled 800 + 240 = 1040 kilometers. On the next day, he wasn't traveling at all, so he traveled 0 kilometers. During the second week, he made 300 kilometers every day, so he traveled 300 * 7 = 2100 kilometers. In total, Tom made 1040 + 0 + 2100 = 3240 kilometers during his two-week-long trip."
+    }
+  ],
+  "env": {
+    "hf_home": "/home/sanjay.g/projects/rdmerge/cache/hf_home",
+    "cuda_visible_devices": "3",
+    "pbs_jobid": "471.jiit-master",
+    "hostname": "jiit-gpu01"
+  }
+}
