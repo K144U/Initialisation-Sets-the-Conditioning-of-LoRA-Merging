@@ -78,6 +78,26 @@ def train_one_lora(cfg: dict, project_root: Path) -> dict:
         random_state=cfg["seeds"]["train"],
     )
 
+    # Snapshot the LoRA A factors BEFORE any optimiser step, for the drift
+    # measurement registered in notes/prereg_drift_2026-08-16.md. Off by
+    # default so every existing config trains byte-identically; the
+    # registration forbids reconstructing A_0 from a seed after the fact,
+    # since that would be a claim about RNG determinism and not a measurement.
+    if cfg.get("save_init_weights"):
+        from safetensors.torch import save_file
+        init = {}
+        for name, param in model.named_parameters():
+            if "lora_A" in name:
+                init[name] = param.detach().clone().to(torch.float32).cpu()
+        if not init:
+            raise RuntimeError(
+                "save_init_weights set but no lora_A parameters found; "
+                "the drift measurement would be undefined")
+        a0_path = out_dir / "adapter_A0.safetensors"
+        save_file(init, str(a0_path))
+        print(f"[train:{task_name}] wrote {len(init)} lora_A tensors to "
+              f"{a0_path.name} before the first step", flush=True)
+
     # Data-shuffle seed, decoupled from the LoRA-init seed. Defaults to
     # seeds.global so every existing config behaves exactly as before.
     #
@@ -125,8 +145,18 @@ def train_one_lora(cfg: dict, project_root: Path) -> dict:
         optim=cfg["train"]["optim"],
         bf16=True,
         logging_steps=max(1, cfg["train"].get("logging_steps", 10)),
-        save_strategy="epoch",
-        save_total_limit=1,
+        # Drift runs need intermediate checkpoints; everything else keeps the
+        # historical behaviour of one final checkpoint. A float save_steps in
+        # (0, 1) is read by HF as a fraction of total training steps, so 0.25
+        # gives exactly the 25/50/75/100% grid the drift registration asks for.
+        # save_total_limit must be lifted too, or the earlier ones are deleted
+        # as the later ones are written, which is what left the original
+        # cohorts unable to answer E3.
+        **({"save_strategy": "steps",
+            "save_steps": float(cfg["train"]["checkpoint_fraction"]),
+            "save_total_limit": None}
+           if cfg["train"].get("checkpoint_fraction")
+           else {"save_strategy": "epoch", "save_total_limit": 1}),
         report_to="none",
         seed=cfg["seeds"]["train"],
         max_length=cfg["train"]["max_seq_length"],
