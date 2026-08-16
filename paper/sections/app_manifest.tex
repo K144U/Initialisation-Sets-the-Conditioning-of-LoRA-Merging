@@ -1,10 +1,10 @@
 This appendix lists the experiments this paper reports, so that the
 released code and result files can be matched to the claims they support.
-It is a manifest for \emph{this} version. An earlier version of this work
-reported a larger experiment set built on the shared-initialisation
-cohort; those results are not repeated here, because \S\ref{sec:regimes}
-shows that cohort sits in a different regime and \S\ref{subsec:q1} shows
-the method conclusions drawn from it do not transfer.
+Results built on the shared-initialisation cohort alone are not
+carried over as method conclusions, because \S\ref{sec:regimes} shows that
+cohort sits in a different regime and \S\ref{subsec:q1} shows conclusions
+drawn there do not transfer. Where that cohort appears below it is as one arm
+of a paired comparison, never on its own.
 
 \paragraph{Cohorts and adapters.} Four base models (Llama-3.1-8B,
 Mistral-7B-v0.3, Qwen2.5-7B, Yi-1.5-9B-Chat), four tasks per cohort at
@@ -54,24 +54,35 @@ for every method, so no method gains capacity over another.
 
 \paragraph{Methods compared.} Task arithmetic~\citep{ilharco2023task},
 TIES~\citep{yadav2023ties}, DARE~\citep{yu2024dare}, DARE composed with
-TIES, task-vector quantisation~\citep{kim2025tvq}, and our
-rate-distortion encoder with and without the Tikhonov ridge. Our
-KnOTS~\citep{stoica2025knots} baseline is excluded from the headline
-comparison for the reason given in \S\ref{sec:discussion}: with the
-default inner combination our implementation reduces algebraically to
-task arithmetic, so it was not measuring what we intended. It is retained
-in the regime null of \S\ref{subsec:ridge}, where the question is whether
-a method responds to cohort conditioning at all and a method that is
-task arithmetic under another name is still a valid data point.
+TIES, task-vector quantisation~\citep{kim2025tvq},
+KnOTS~\citep{stoica2025knots}, data-free RegMean~\citep{jin2023regmean}, and
+our rate-distortion encoder with and without the Tikhonov ridge.
 
-The data-free RegMean~\citep{jin2023regmean} and
-AdaMerging~\citep{adamerging2024} variants an earlier version of this work
-compared against are not carried over. They were run on the
-shared-initialisation cohort only, and \S\ref{subsec:q1} is our reason for
-not transferring conclusions from that cohort. Their absence means the
-closed-form least-squares family, the closest structural relative of our
-own encoder, is represented in this version only by that encoder, which we
-note as a gap rather than defend.
+\textbf{KnOTS appears in two forms and the distinction matters.} Under its
+default inner combination our implementation reduces algebraically to task
+arithmetic ($VV^\top = I$ cancels), so it was not measuring what we intended;
+that version is excluded from any claim about subspace alignment
+(\S\ref{sec:discussion}). The repaired version, with a TIES inner
+combination, is the one carried in the regime null of \S\ref{subsec:ridge},
+in the $80$-cell accuracy replication of the same null, and in the five
+methods \S\ref{sec:intro} names. Where this paper says ``a repaired KnOTS''
+it means the second. We make no claim about the reference implementation of
+published KnOTS, which we did not run.
+
+RegMean~\citep{jin2023regmean} is run here in its data-free
+adapter-only form on both cohorts, on the same grid and under a registered
+rule (\S\ref{subsec:regmean}), and its published $\alpha$-shrinkage default
+is measured separately (\S\ref{subsec:regmean-default}). That is what
+licenses talking about the closed-form least-squares family rather than about
+our encoder alone, and it is the second solver Contribution~3 rests on.
+
+Data-free AdaMerging~\citep{adamerging2024} is \emph{not} carried over. It was
+run on the shared-initialisation cohort only, and \S\ref{subsec:q1} is our
+reason for not transferring conclusions from that cohort. LoRM and RegMean++
+are not run either, for the reasons in \S\ref{sec:related_work}: neither has a
+data-free adapter-only form we could implement without inventing the part that
+makes it that method. So the family claim rests on \textbf{two} members, our
+encoder and RegMean, and not on five.
 
 \paragraph{Geometry audit cost.} The audit of \S\ref{subsec:audit} reads
 the adapter weight files, computes principal angles between the $T$ task

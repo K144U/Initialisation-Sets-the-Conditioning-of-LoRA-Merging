@@ -251,6 +251,47 @@ cohort sits on the conditioning axis of Table~\ref{tab:conditioning}, which
 \S\ref{subsec:ridge} shows determines whether an unregularised solve-based
 merge will work at all.
 
+The whole of it is five lines. Given $T$ adapters, for each of a sample of
+layers, orthonormalise the rows of each adapter's $A$ factor and measure how
+aligned the resulting subspaces are.
+
+\begin{center}
+\fbox{\begin{minipage}{0.94\linewidth}
+\textbf{The audit.} For each sampled layer $\ell$ and each task $t$:
+\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=3pt]
+  \item $V_t \gets \mathrm{orth}\bigl(A_t^{(\ell)\top}\bigr)$, an orthonormal
+        basis for that task's row space.
+  \item For each pair $i \neq j$, take the singular values of
+        $V_i^{\top} V_j$; these are the cosines of the principal angles.
+  \item Report $\bar c$, the median over pairs and over layers.
+\end{enumerate}
+\textbf{How to read it:}
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=3pt]
+  \item $\bar c > 0.9$ --- \textbf{collapsed}. Do not run an unregularised
+        solve-based merge. Add a ridge, starting at $\lambda \approx 0.01$,
+        or use a method that averages.
+  \item $\bar c < 0.5$ --- \textbf{separated}. Conditioning is not your
+        problem; the ridge buys between $0.00$ and $0.10$ nats.
+  \item Between the two --- one of our $45$ public cohorts landed here and we
+        have no advice for it.
+\end{itemize}
+\smallskip
+Cost $O(T^{2} r^{2} d)$ per layer: about one CPU minute at $T = 4$, $r = 16$
+over eight layers, with no forward passes and no evaluation data.
+Implementation: \texttt{measure\_subspace\_geometry.py}.
+\end{minipage}}
+\end{center}
+
+The $0.9$ and $0.5$ cutoffs are those registered before the public-cohort
+audit of \S\ref{subsec:prevalence} and are used unchanged here. They are not
+tuned, and on this evidence they do not need to be: the two populations differ
+by more than an order of magnitude in $\bar c$, so any cutoff between them
+gives the same partition, and $44$ of $45$ public cohorts fall outside the
+interval entirely. \textbf{The $\lambda \approx 0.01$ is a starting point, not
+a derived optimum.} \S\ref{subsec:ridge} finds $\lambda^\star = 0.01$ on seven
+of eight arms, but also finds that how much regularisation is needed does not
+track the conditioning, so a short sweep is worth more than our number.
+
 \paragraph{Can I repair the adapters instead of the merge?} It is the first
 thing a practitioner with a collapsed cohort and no budget to retrain will
 think of, so it deserves an answer even though we did not test it. Orthogonalise

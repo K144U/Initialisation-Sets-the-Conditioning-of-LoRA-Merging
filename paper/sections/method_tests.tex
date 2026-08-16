@@ -468,7 +468,16 @@ being re-run.
 excess in nats at $\lambda = 0$, and the shared-to-independent ratio with and
 without truncation. The truncated column is the sweep of
 Table~\ref{tab:ridge}, reproduced here as the comparison arm rather than
-re-run.}
+re-run. \textbf{Two entries here invite a second look and we have taken it.}
+Mistral's shared value, $11.6283$, sits exactly $1.0000$ above RegMean's
+$10.6283$ in Table~\ref{tab:regmean} at four decimals; the underlying numbers
+are $11.628281$ and $10.628309$, so the gap is $0.999973$ and the agreement is
+a coincidence between two different methods on two different runs rather than
+a transcription. And Qwen's independent value matches
+Table~\ref{tab:ridge}'s to four decimals, $0.025571$ against $0.025638$;
+that one is not coincidence but the point of the table, since on a
+well-conditioned cohort there is almost nothing in the discarded directions
+for truncation to remove.}
 \label{tab:untruncated}
 \begin{tabular}{lcccc}
 \toprule
