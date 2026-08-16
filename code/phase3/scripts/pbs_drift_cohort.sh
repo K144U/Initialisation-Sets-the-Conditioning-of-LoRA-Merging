@@ -33,7 +33,11 @@ export ORCH_STATE="orchestrator_state_drift.json"
 if [ -n "${GPUS_FILE:-}" ] && [ -f "$GPUS_FILE" ]; then
   GPUS=$(cat "$GPUS_FILE")
 fi
-export GPUS="${GPUS:-1,2,3,4,6}"
+# Two lanes, not five. Each run loads an 8B base into host RAM before
+# it reaches the GPU, and five concurrent loads exhausted the node:
+# every training died at step 0 with no traceback, which is what a
+# kernel kill looks like.
+export GPUS="${GPUS:-1,6}"
 
 MANIFEST="${MANIFEST:-code/phase3/configs/drift_cohort_manifest.json}"
 if [ ! -f "$MANIFEST" ]; then

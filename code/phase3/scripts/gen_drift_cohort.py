@@ -83,7 +83,11 @@ def build(problems: list[str]) -> list[dict]:
                 "name": name,
                 "cmd": ("python code/phase3/training/train_lora.py --config "
                         f"{(OUT_CFG / (name + '.yaml')).relative_to(ROOT)}"),
-                "done": f"{adir}/adapter_A0.safetensors",
+                # The trained adapter, NOT adapter_A0: A_0 lands ~90s
+                # into a run, and the orchestrator skips any cell whose
+                # done-marker exists at dispatch, so marking on A_0
+                # would make every requeue skip unfinished training.
+                "done": f"{adir}/adapter_model.safetensors",
                 "min_free_gb": 40.0,
             })
 

@@ -31,7 +31,7 @@ while true; do
     exit 0
   fi
 
-  done_n=$(ls artifacts/lora/llama31_8b/*/drift_*/adapter_A0.safetensors 2>/dev/null | wc -l)
+  done_n=$(ls artifacts/lora/llama31_8b/*/drift_*/adapter_model.safetensors 2>/dev/null | wc -l)
   if [ "$done_n" -ge "$TARGET" ]; then
     echo "[$(date '+%F %T')] $done_n/$TARGET cells complete."
     echo "  Rules: notes/prereg_drift_2026-08-16.md (9202d3b)."
