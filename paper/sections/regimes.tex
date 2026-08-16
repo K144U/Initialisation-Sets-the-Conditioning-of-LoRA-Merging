@@ -10,11 +10,11 @@ organised around conditioning rather than around the floor.
 In the reference LoRA implementation~\citep{hu2022lora} an adapter is
 $\Delta W = BA$ with $A$ randomly initialised and $B$ initialised to zero. Two
 consequences matter. Because $B = 0$ at the start, the gradient with respect
-to $A$ is proportional to $B$ and vanishes at initialisation, which is a
-property of the parameterisation rather than a measurement: we did not
-retain initial weights, so how far $A$ actually travelled is not something
-this paper measures (Appendix~\ref{subsec:drift}). What we measure is the
-consequence. And in most pipelines the initialisation
+to $A$ is proportional to $B$ and vanishes at initialisation, so $A$ moves
+comparatively little over training. That second step is a measurement rather
+than an inference: on a cohort trained with the checkpoints to answer it, $A$
+ends training about $13\%$ of its own norm away from where it started
+(Appendix~\ref{subsec:drift-result}). And in most pipelines the initialisation
 is drawn from a single global seed, so if the $T$ adapters of a cohort are
 trained with that seed, as is natural when the seed is meant to control
 run-to-run reproducibility, all $T$ begin from an \emph{identical} $A$.
@@ -23,6 +23,14 @@ Since $\range(\Delta W_t^\top) \subseteq \range(A_t^\top)$, if every $A_t$ is
 a small perturbation of one shared matrix then the task subspaces are
 near-collinear. This is not a statement about the tasks being related; it is
 an artifact of initialisation and survives when the tasks are unrelated.
+
+The same experiment separates the two candidate causes, which is what makes it
+worth running rather than merely reassuring. A shared-initialisation cohort and
+an independently initialised one drift by $0.1308$ and $0.1303$, a difference
+of $0.0005$, and end with median principal cosines of $0.996$ and $0.047$.
+Training displaces $A$ by the same amount in both conditions, so the collapse
+is attributable to where the adapters started and not to anything training
+does to them.
 
 \subsection{Measurement}
 \label{subsec:measurement}

@@ -189,11 +189,13 @@ moved, so the ratio measures that difference directly, and at $0.16$ it is
 an order of magnitude below the independent value.
 \S\ref{subsec:prevalence} finds the same two populations in public adapters.
 
-\textbf{Not measured: the distance each adapter travelled from its own
-initialisation,} $\|A - A_0\|_F/\|A_0\|_F$. This needs $A_0$, and we did not
-retain the initial weights or any intermediate checkpoint. No script in our
-pipeline computes it and no result file contains it, which we verified
-directly rather than by recollection.
+\textbf{Also measured, on a cohort trained for the purpose: the distance each
+adapter travelled from its own initialisation,} $\|A - A_0\|_F/\|A_0\|_F$. The
+cohorts the rest of this paper uses cannot answer this, because they retained
+neither the initial weights nor any intermediate checkpoint. Registration E3
+asked for it across training and we reported it as unevaluable. It is
+evaluable on a cohort trained with the checkpoints, which is what
+\S\ref{subsec:drift-result} reports.
 
 The two are easy to conflate and an earlier version of this work did,
 quoting the measured $0.16$ to $0.19$ as the distance each adapter had moved
@@ -204,13 +206,58 @@ moved $A$, which is the mechanism of \S\ref{subsec:mechanism}, whereas a small
 distance \emph{between adapters} says only that they ended near each other,
 which is the phenomenon. We have the second.
 
-This has a registered consequence and we apply it. The E3 rule in
-\S\ref{subsec:prereg-docs} required $\|\Delta A\|/\|A\|$ at $25$, $50$, $75$
-and $100\%$ of training steps, and scopes every geometry claim to ``at this
-training budget'' if the rule cannot be evaluated. It cannot: the
-checkpoints do not exist. \textbf{So every geometry claim in this paper is
-scoped to this training budget}, and we do not claim that a longer or
-shorter run would show the same subspace collapse.
+\subsection{How far \texorpdfstring{$A$}{A} actually travels}
+\label{subsec:drift-result}
+
+Registration E3 required $\|A - A_0\|_F/\|A_0\|_F$ at $25$, $50$, $75$ and
+$100\%$ of training, and scoped every geometry claim to ``at this training
+budget'' if it could not be evaluated. We report it here on a cohort trained
+for the purpose: one base model, both initialisation arms, four tasks each,
+with $A_0$ written before the first optimiser step and checkpoints at exactly
+those four fractions (steps $118$, $236$, $354$ and $470$).
+
+\begin{table}[htb]
+\centering
+\small
+\caption{How far $A$ moves from its initialisation, and what that does to the
+geometry. Median over the four tasks and over eight sampled layers, on
+Llama-3.1-8B. The two arms differ only in whether the four tasks drew one
+initialisation or four.}
+\label{tab:drift}
+\begin{tabular}{lccccc}
+\toprule
+ & \multicolumn{4}{c}{$\|A - A_0\|_F/\|A_0\|_F$ at} &
+   median principal \\
+cohort & $25\%$ & $50\%$ & $75\%$ & $100\%$ & cosine at $100\%$ \\
+\midrule
+shared        & 0.0922 & 0.1106 & 0.1262 & 0.1308 & 0.9960 \\
+independent   & 0.0946 & 0.1120 & 0.1257 & 0.1303 & 0.0475 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+$A$ moves about $13\%$ of its own norm over the whole of training, rising
+monotonically and flattening after the three-quarter mark. All three
+registered predictions hold, so by the registered rule \textbf{E3 is
+discharged} and geometry claims are no longer scoped to an unmeasured training
+budget. The scope of the discharge is what the registration fixed and no
+more: one base model at one budget.
+
+\textbf{The control is the part worth reading.} The two arms drift by
+$0.1308$ and $0.1303$, a difference of $0.0005$, while their median principal
+cosines are $0.9960$ and $0.0475$, a difference of $0.948$. Training moves $A$
+by the same small amount whether the cohort started from one draw or four. So
+the collapse is not something training does; it is the starting point,
+surviving a displacement that is identical in both conditions. That is the
+mechanism of \S\ref{subsec:mechanism} measured rather than argued, and it is a
+sharper statement than the drift number alone.
+
+Two details we report rather than smooth. The final checkpoint and the saved
+adapter are the same weights, so the $100\%$ column appears twice in the raw
+trace and we print it once. And the translation task drifts furthest in both
+arms, $0.178$ and $0.183$ against roughly $0.13$ for the others, which is
+consistent with it being the adapter that never learned its task
+(\S\ref{subsec:scope}) but which we did not predict and do not build on.
 
 What the argument rests on instead is the consequence rather than the
 intermediate. That $B$ starts at zero and therefore suppresses $A$'s early

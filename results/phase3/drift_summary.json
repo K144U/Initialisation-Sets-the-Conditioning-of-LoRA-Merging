@@ -1,0 +1,46 @@
+{
+ "base": "llama31_8b",
+ "arms": {
+  "drift_shared": {
+   "drift_trace": [
+    0.09223882108926773,
+    0.11064539104700089,
+    0.12621717154979706,
+    0.13081125915050507,
+    0.13081125915050507
+   ],
+   "drift_final": 0.13081125915050507,
+   "cos_final": 0.9959505200386047,
+   "per_task_final": {
+    "alpaca": 0.13081125915050507,
+    "gsm8k": 0.11637167073786259,
+    "magicoder": 0.13184018526226282,
+    "flores": 0.1783023402094841
+   }
+  },
+  "drift_indep": {
+   "drift_trace": [
+    0.09460806846618652,
+    0.11195539683103561,
+    0.1256731003522873,
+    0.13031113147735596,
+    0.13031113147735596
+   ],
+   "drift_final": 0.13031113147735596,
+   "cos_final": 0.047525715082883835,
+   "per_task_final": {
+    "alpaca": 0.13031112682074308,
+    "gsm8k": 0.1211658800020814,
+    "magicoder": 0.13556146062910557,
+    "flores": 0.18279825523495674
+   }
+  }
+ },
+ "verdict": {
+  "P1": true,
+  "P2": true,
+  "P3": true,
+  "branch": 1,
+  "action": "E3 discharged for this base and this training budget. C.3 becomes a measurement; drop the scoping caveat from geometry claims."
+ }
+}

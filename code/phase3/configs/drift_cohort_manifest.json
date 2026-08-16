@@ -1,0 +1,50 @@
+[
+  {
+    "name": "llama31_8b_alpaca_drift_shared",
+    "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_drift/llama31_8b_alpaca_drift_shared.yaml",
+    "done": "artifacts/lora/llama31_8b/alpaca/drift_shared/adapter_model.safetensors",
+    "min_free_gb": 40.0
+  },
+  {
+    "name": "llama31_8b_gsm8k_drift_shared",
+    "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_drift/llama31_8b_gsm8k_drift_shared.yaml",
+    "done": "artifacts/lora/llama31_8b/gsm8k/drift_shared/adapter_model.safetensors",
+    "min_free_gb": 40.0
+  },
+  {
+    "name": "llama31_8b_magicoder_drift_shared",
+    "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_drift/llama31_8b_magicoder_drift_shared.yaml",
+    "done": "artifacts/lora/llama31_8b/magicoder/drift_shared/adapter_model.safetensors",
+    "min_free_gb": 40.0
+  },
+  {
+    "name": "llama31_8b_flores_drift_shared",
+    "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_drift/llama31_8b_flores_drift_shared.yaml",
+    "done": "artifacts/lora/llama31_8b/flores/drift_shared/adapter_model.safetensors",
+    "min_free_gb": 40.0
+  },
+  {
+    "name": "llama31_8b_alpaca_drift_indep",
+    "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_drift/llama31_8b_alpaca_drift_indep.yaml",
+    "done": "artifacts/lora/llama31_8b/alpaca/drift_indep/adapter_model.safetensors",
+    "min_free_gb": 40.0
+  },
+  {
+    "name": "llama31_8b_gsm8k_drift_indep",
+    "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_drift/llama31_8b_gsm8k_drift_indep.yaml",
+    "done": "artifacts/lora/llama31_8b/gsm8k/drift_indep/adapter_model.safetensors",
+    "min_free_gb": 40.0
+  },
+  {
+    "name": "llama31_8b_magicoder_drift_indep",
+    "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_drift/llama31_8b_magicoder_drift_indep.yaml",
+    "done": "artifacts/lora/llama31_8b/magicoder/drift_indep/adapter_model.safetensors",
+    "min_free_gb": 40.0
+  },
+  {
+    "name": "llama31_8b_flores_drift_indep",
+    "cmd": "python code/phase3/training/train_lora.py --config code/phase3/configs/lora_drift/llama31_8b_flores_drift_indep.yaml",
+    "done": "artifacts/lora/llama31_8b/flores/drift_indep/adapter_model.safetensors",
+    "min_free_gb": 40.0
+  }
+]

@@ -43,9 +43,26 @@ P3_MIN_COS = 0.9
 N_LAYERS = 8
 
 
+def _norm_key(k: str) -> str:
+    """Drop the PEFT adapter name so A_0 and the saved adapter agree.
+
+    A_0 comes from model.named_parameters() and carries the adapter name:
+        ...lora_A.default.weight
+    PEFT's save_pretrained does not:
+        ...lora_A.weight
+    Without this every lookup misses, every trace is empty, and the analyzer
+    reports nothing rather than reporting a drift of zero, which is the
+    failure mode worth avoiding.
+    """
+    return k.replace(".default.weight", ".weight")
+
+
 def a_factors(path: Path) -> dict[str, torch.Tensor]:
     sd = load_file(str(path))
-    return {k: v.float() for k, v in sd.items() if "lora_A" in k}
+    out = {_norm_key(k): v.float() for k, v in sd.items() if "lora_A" in k}
+    if not out:
+        raise SystemExit(f"{path}: no lora_A tensors")
+    return out
 
 
 def checkpoints(task_dir: Path) -> list[tuple[int, Path]]:
@@ -108,6 +125,12 @@ def main() -> int:
                         rel.append(float((Af[k] - A0[k]).norm() / A0[k].norm()))
                 if rel:
                     trace.append((step, sum(rel) / len(rel)))
+            if not trace:
+                raise SystemExit(
+                    f"{arm}/{task}: every checkpoint produced an empty trace, "
+                    f"which means the tensor names did not match between A_0 "
+                    f"and the checkpoints. Refusing to report a drift of zero "
+                    f"that is really a lookup failure.")
             per_task_traces[task] = trace
 
         if not per_task_traces:

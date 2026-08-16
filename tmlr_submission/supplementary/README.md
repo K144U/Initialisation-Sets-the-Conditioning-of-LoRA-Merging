@@ -7,10 +7,10 @@ This directory contains two things:
 | path | what |
 |---|---|
 | `audit-trail.bundle` | the project's real version history, as a git bundle (23 MB) |
-| `prereg/` | the eleven pre-registration documents, complete and unedited |
+| `prereg/` | the twelve pre-registration documents, complete and unedited |
 
 `prereg/` is here for convenience, so the documents can be read without
-cloning. It is **not** the authoritative copy. The same eleven files are inside
+cloning. It is **not** the authoritative copy. The same twelve files are inside
 the bundle at the commits Appendix D names, and only the copies in the bundle
 carry the evidence that they were written when they claim to have been. If the
 two ever disagree, the bundle is right.
