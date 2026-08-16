@@ -127,8 +127,7 @@ def main() -> int:
             print(f"  in notes/ only: {n}")
         for n in sorted(set(mirror_pre) - set(notes_pre)):
             print(f"  in paper/prereg/ only: {n}")
-        print("
-Fix the mirror and re-run. Nothing copied.")
+        print("\nFix the mirror and re-run. Nothing copied.")
         return 2
 
     # They do ship in the supplementary, and that copy is kept in sync here so
