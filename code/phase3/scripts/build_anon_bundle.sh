@@ -77,6 +77,11 @@ echo "[1/6] mirror clone"
 git clone --mirror -q "$REPO" "$WORK/anon.git"
 cd "$WORK/anon.git"
 
+# POST_ACCEPTANCE_TODO.md is excluded for a reason the filename does not give
+# away: it names the venue, the submission number and the Zenodo preprint, so
+# it identifies the authors even though it contains none of their names and
+# therefore trips none of the LEAKPAT checks below. Do not drop it from this
+# list on the grounds that the scan comes back clean; the scan cannot see it.
 echo "[2-4/6] strip identifying paths, rewrite text and identity"
 "${FR[@]}" \
   --invert-paths \
@@ -87,6 +92,7 @@ echo "[2-4/6] strip identifying paths, rewrite text and identity"
   --path "notes/garg_message_2026-06-23.md" \
   --path "Alignment Forum research note.pdf" \
   --path-glob "A_Rate_Distortion_*.pdf" \
+  --path "POST_ACCEPTANCE_TODO.md" \
   --path "tmlr_submission/supplementary/audit-trail.bundle" \
   --path "tmlr_submission/supplementary.zip" \
   --path "tmlr_submission/overleaf_tmlr.zip" \
