@@ -186,10 +186,11 @@ ae3fdf1 603e013 778da6e 84526b9 11bc8a7 df832fe e66d273 f20b13c
 "
 
 missing=0
+absent=0
 for want in $WANTED; do
-  full=$(git -C "$REPO" rev-parse "$want^{commit}" 2>/dev/null || true)
+  full=$(git -C "$REPO" rev-parse -q --verify "$want^{commit}" 2>/dev/null || true)
   if [ -z "$full" ]; then
-    printf "  %-9s NOT FOUND in the working repository\n" "$want"; missing=1; continue
+    printf "  %-9s not in this clone (pre-anonymisation hash from another machine)\n" "$want"; absent=$((absent+1)); continue
   fi
   new=$(awk -v o="$full" '$1==o {print $2}' "$WORK/anon.git/filter-repo/commit-map")
   if [ -z "$new" ] || [ "$new" = "0000000000000000000000000000000000000000" ]; then
@@ -201,7 +202,14 @@ done
 
 echo
 if [ "$missing" -ne 0 ]; then
-  echo "WARNING: some cited commits could not be mapped. The table cannot be"
-  echo "regenerated correctly until that is resolved."
+  echo "WARNING: a cited commit was DROPPED by the filter. That one is real:"
+  echo "the bundle no longer contains a commit the paper's table cites."
+fi
+if [ "$absent" -ne 0 ]; then
+  echo "note: $absent cited hash(es) are not in this clone. The early"
+  echo "registrations were committed on the cluster, so their"
+  echo "pre-anonymisation hashes do not resolve here. This does not affect"
+  echo "the table, which cites the anonymised hashes; check those with"
+  echo "  python code/phase3/scripts/verify_commit_table.py <clone-of-bundle>"
 fi
 echo "bundle: $OUT"
