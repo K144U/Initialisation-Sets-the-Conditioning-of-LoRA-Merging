@@ -32,21 +32,21 @@ Training displaces $A$ by the same amount in both conditions, so the collapse
 is attributable to where the adapters started and not to anything training
 does to them.
 
-A concurrent submission measures a different consequence of the same
-initialisation and arrives at the displacement of $A$ as the quantity that
-would settle it. \citet{concurrentanon} report that entrywise sign
-disagreement between LoRA adapters trained on \emph{different tasks} is
-barely distinguishable from the disagreement between adapters that differ
-only in seed, and propose that $A$ remaining near its random draw is why: if
-the sign of an entry is set mostly by which random basis the run received,
-then two runs agree on the update as a linear map while disagreeing
-coordinate by coordinate about how to write it down. That paper names the
+A concurrent anonymous submission measures a different consequence of the
+same initialisation and arrives at the displacement of $A$ as the quantity
+that would settle it.\footnote{\emph{REDACTED in LoRA adapter merging
+are pervasive, not localized}, anonymous submission under review at this
+venue, \url{https://openreview.net/forum?id=REDACTED-FORUM-ID}.} It reports that
+entrywise sign disagreement between LoRA adapters trained on \emph{different
+tasks} is barely distinguishable from the disagreement between adapters that
+differ only in seed, and proposes that $A$ remaining near its random draw is
+why: if the sign of an entry is set mostly by which random basis the run
+received, then two runs agree on the update as a linear map while disagreeing
+coordinate by coordinate about how to write it down. It names the
 displacement measurement as its natural next experiment and does not run it.
 Appendix~\ref{subsec:drift-result} runs it. We draw no support from the
-coincidence, which is why it appears here rather than among the related
-work: the two papers are not independent tests of one
-hypothesis, and the only thing exchanged between them is a measurement one of
-them asked for.
+agreement: the two are not independent tests of one hypothesis, and the only
+thing exchanged between them is a measurement one of them asked for.
 
 \subsection{Measurement}
 \label{subsec:measurement}
