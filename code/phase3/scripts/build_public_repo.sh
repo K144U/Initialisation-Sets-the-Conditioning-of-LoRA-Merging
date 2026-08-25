@@ -13,14 +13,22 @@
 #   1. Private correspondence and external review notes. Nobody consented to
 #      those being published, and a public push is permanent: GitHub caches
 #      unreachable objects and anyone can have cloned before a later fix.
+#      The JAIR cover letter counts: it is a message to an editor, and it
+#      names the concurrent submission outright.
 #   2. Build artifacts that bloat history (two 19 MB bundles and the zips).
-#   3. Every reference to the concurrent a concurrent anonymous submission, which is still under
+#   3. Every reference to the concurrent submission that is still under
 #      double-blind review elsewhere. Its forum id and title sit in
 #      paper/references.bib and tmlr_submission/overleaf/references.bib in two
 #      commits. Publishing them under our own names would identify its authors
 #      to its own reviewers, which is the exact thing removing the citation
 #      from the paper was meant to prevent. Removing it from HEAD is not
 #      enough; git history is the whole point of this repository.
+#      HANDOFF_2026-08-16.md is dropped entirely rather than scrubbed: it
+#      discusses that submission's shared authorship repeatedly, and
+#      whack-a-mole on a file whose subject is the thing you are hiding is how
+#      leaks survive.
+#   4. Internal infrastructure: cluster host, login accounts, and a shared
+#      student account belonging to someone who is not an author.
 #
 # Filtering is DETERMINISTIC. Re-running this after adding commits gives the
 # already-published commits the same hashes, so the next push is a
@@ -47,16 +55,36 @@ else
   echo "GIT_FILTER_REPO=/path/to/git-filter-repo" >&2; exit 2
 fi
 
-# Only the 9930 scrub. No identity rules: the names stay.
-# The title is broken in two places rather than matched whole, because it is
-# line-wrapped in the bib entry and a single pattern would have to span the
-# newline. Breaking either half is enough to make it unsearchable.
+# No AUTHOR identity rules: the names stay, that is the point of this repo.
+# But the anonymiser's text rules were not all about anonymity, and dropping
+# them wholesale was a mistake this script made once already. Two kinds remain:
+#
+#   a. The concurrent submission. The title is broken in two places rather than
+#      matched whole, because it is line-wrapped in the bib entry and a single
+#      pattern would have to span the newline. Breaking either half is enough
+#      to make it unsearchable. Both cases of the topic phrase are listed:
+#      --replace-text is literal and case-sensitive, and the lowercase form is
+#      the one that actually leaked.
+#   b. Infrastructure. The cluster host, the login accounts and the shared
+#      student account are nobody's business and are not anonymity concerns at
+#      all: the student account belongs to a third party who is not an author
+#      and never consented to appear here. The IP is RFC1918 so it is not
+#      remotely reachable, but it names the institution's internal estate.
+#
+# Note the self-reference: this script lives in the repository it filters, so
+# the literal strings below get rewritten inside the published copy of this
+# file. That is why every term in the step-4 scan must be one of these LHSs.
 cat > "$WORK/rules.txt" <<'RULES'
 REDACTED-FORUM-ID==>REDACTED-FORUM-ID
 REDACTED==>REDACTED
 REDACTED==>REDACTED
+REDACTED==>REDACTED
+a concurrent anonymous submission==>a concurrent anonymous submission
 a concurrent anonymous submission==>a concurrent anonymous submission
 concurrentanon==>concurrentanon
+CLUSTER-HOST==>CLUSTER-HOST
+jiit-master.cm.cluster==>CLUSTER-HOST
+STUDENT-ACCOUNT==>STUDENT-ACCOUNT
 RULES
 
 echo "[1/5] mirror clone"
@@ -80,6 +108,8 @@ echo "[2/5] drop private paths and build artifacts, scrub 9930"
   --path "tmlr_submission/overleaf_tmlr.zip" \
   --path "tmlr_submission/paper.pdf" \
   --path "JAIR/overleaf_jair.zip" \
+  --path "JAIR/COVER_LETTER.md" \
+  --path "HANDOFF_2026-08-16.md" \
   --replace-text "$WORK/rules.txt" \
   --replace-message "$WORK/rules.txt" \
   --force >/dev/null
@@ -102,7 +132,8 @@ echo "  repo readable, $ncommits commits"
 gone=0
 for p in "SentEmail" "final review" "handoff_2026-05-25_review_to_garg.md" \
          "handoff_to_garg_2026-06-13.md" "notes/garg_message_2026-06-14.md" \
-         "notes/garg_message_2026-06-23.md" "POST_ACCEPTANCE_TODO.md"; do
+         "notes/garg_message_2026-06-23.md" "POST_ACCEPTANCE_TODO.md" \
+         "JAIR/COVER_LETTER.md" "HANDOFF_2026-08-16.md"; do
   if git log --all --oneline -- "$p" | grep -q .; then
     echo "  LEAK: $p still reachable in history" >&2; gone=1
   fi
@@ -110,20 +141,28 @@ done
 [ "$gone" -eq 0 ] || { echo "ABORT" >&2; exit 3; }
 echo "  clean"
 
-echo "[4/5] verify no reference to the concurrent submission survives"
+echo "[4/5] verify no concurrent-submission or infrastructure leak survives"
 # Same self-reference trap as the anonymiser: this script is itself in the
-# repository it scans, so every term below must be one the rules above rewrite.
-# That is why the bare number 9930 is NOT checked: it occurs legitimately as a
-# float in dozens of result JSONs, and a rule for it would corrupt data.
+# repository it scans, so every term below must be one the rules above rewrite,
+# or the scan reports a leak against its own source.
+#
+# The bare number 9930 is still NOT checked: it occurs legitimately as a float
+# in dozens of result JSONs, and a rule for it would corrupt data. The check is
+# bounded to the phrase "a concurrent anonymous submission" instead, which no float can produce.
+# Matching is case-insensitive on purpose: the leak that got through the first
+# build was a lowercase "REDACTED" against a capitalised rule, so an
+# uncovered case variant must fail the build rather than pass it.
 PAT='REDACTED-FORUM-ID|REDACTED|REDACTED|concurrentanon'
+PAT="$PAT"'|a concurrent anonymous submission|CLUSTER-HOST|jiit-master|STUDENT-ACCOUNT'
 leak=0
 while read -r o; do
   [ "$(git cat-file -t "$o" 2>/dev/null)" = "blob" ] || continue
-  if git cat-file blob "$o" 2>/dev/null | grep -qaE "$PAT"; then
-    echo "  LEAK in blob $o" >&2; leak=1
+  if git cat-file blob "$o" 2>/dev/null | grep -qaiE "$PAT"; then
+    echo "  LEAK in blob $o ($(git rev-list --objects --all | grep "^$o " | cut -d' ' -f2-))" >&2
+    leak=1
   fi
 done < <(git rev-list --objects --all | awk '{print $1}' | sort -u)
-git log --all --format='%B' | grep -qaE "$PAT" && {
+git log --all --format='%B' | grep -qaiE "$PAT" && {
     echo "  LEAK in a commit message" >&2; leak=1; }
 [ "$leak" -eq 0 ] || { echo "ABORT: not pushed" >&2; exit 3; }
 echo "  clean"
