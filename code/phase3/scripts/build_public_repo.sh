@@ -85,6 +85,20 @@ echo "[2/5] drop private paths and build artifacts, scrub 9930"
   --force >/dev/null
 
 echo "[3/5] verify the private paths are gone from every commit"
+# Every check below this line is `git ... | grep -q`, so a git that ERRORS
+# produces no output and the check reports "clean". That is the worst possible
+# failure mode for a script whose output authorises a permanent public push,
+# and it is reachable: filter-repo packs every ref, and if it leaves $GIT_DIR
+# without a refs/ directory git refuses the repository outright. So assert the
+# repo is readable and non-empty before believing anything the checks say.
+mkdir -p refs
+git rev-parse --git-dir >/dev/null 2>&1 || {
+  echo "  ABORT: $OUT is not a readable git repo; checks would be vacuous" >&2
+  exit 3; }
+ncommits="$(git rev-list --count --all 2>/dev/null || echo 0)"
+[ "$ncommits" -gt 0 ] 2>/dev/null || {
+  echo "  ABORT: no commits reachable; checks would be vacuous" >&2; exit 3; }
+echo "  repo readable, $ncommits commits"
 gone=0
 for p in "SentEmail" "final review" "handoff_2026-05-25_review_to_garg.md" \
          "handoff_to_garg_2026-06-13.md" "notes/garg_message_2026-06-14.md" \
