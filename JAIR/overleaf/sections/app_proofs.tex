@@ -1,0 +1,186 @@
+This appendix supplies the proofs that \S\ref{sec:lower_bound} defers. An
+an earlier pointer sent the reader to supplementary material;
+no such material existed, and we correct that here.
+
+We are explicit about what is fully proved and what is not.
+Lemma~\ref{lem:id} and Lemma~\ref{lem:floor-general} are proved completely
+below. Theorem~\ref{thm:general} is proved modulo one constant, and we isolate
+exactly which step carries it rather than absorbing it silently.
+
+\subsection{Proof of Lemma~\ref{lem:id}}
+
+Fix any $w \in \R^d$ and recall $\bar H = \frac1T\sum_t H_t$ and that $\tauH$
+is any solution of $\bar H \tauH = \frac1T\sum_t H_t \tau_t$ lying in
+$\range(\bar H)$. Decompose $w - \tau_t = (w - \tauH) + (\tauH - \tau_t)$ and
+expand the quadratic form:
+\begin{align*}
+  (w-\tau_t)^\top H_t (w-\tau_t)
+  &= (w-\tauH)^\top H_t (w-\tauH) \\
+  &\quad + 2 (w-\tauH)^\top H_t (\tauH - \tau_t)
+   + (\tauH-\tau_t)^\top H_t (\tauH-\tau_t).
+\end{align*}
+Average over $t \in [T]$. The first term averages to
+$(w-\tauH)^\top \bar H (w-\tauH)$ by linearity. The cross term averages to
+\begin{equation*}
+  2 (w-\tauH)^\top\Bigl[\bar H \tauH - \tfrac1T\sum_t H_t \tau_t\Bigr] = 0,
+\end{equation*}
+which vanishes by the defining property of $\tauH$ and is the only place that
+property is used. The third term does not involve $w$. This gives
+\eqref{eq:id-eq}. Since a maximum is at least an average,
+$\max_t (w-\tau_t)^\top H_t (w-\tau_t)$ is at least the right-hand side.
+\hfill$\square$
+
+\paragraph{Two consequences used later.} First, any component of $w$
+orthogonal to $\range(\bar H) = V_1 + \cdots + V_T$ annihilates against every
+$H_t$, so a decoder may be assumed without loss to emit
+$w \in \range(\bar H)$, a space of dimension $\deff$. Second, the bound
+separates: a $w$-dependent compression term in the $\bar H$ metric, and a
+$w$-independent floor.
+
+\paragraph{An exact instance form.} Expanding the floor and using
+$\frac1T\sum_t H_t\tau_t = \bar H\tauH$ and
+$\tau_t^\top H_t \tau_t = B^2$ under $P^\star$,
+\begin{equation}\label{eq:floor-exact}
+  \frac1T\sum_t (\tau_t-\tauH)^\top H_t (\tau_t-\tauH)
+  \;=\; B^2 - \tauH^\top \bar H \tauH .
+\end{equation}
+This form is worth stating because it is computable for any given cohort from
+the adapters alone, with no appeal to $P^\star$. We use it in
+\S\ref{sec:regimes}, and we note that it is the quantity a practitioner should
+evaluate; the prior-averaged expression of Lemma~\ref{lem:floor-general} is a
+statement about $P^\star$, not about the cohort in front of them.
+
+\subsection{Proof of Lemma~\ref{lem:floor-general}}
+
+We first record the second-moment identity that makes the result independent
+of the spectra $D_t$.
+
+\begin{claim}\label{clm:second-moment}
+Under $P^\star$, for every $t$,
+$\E[H_t \tau_t \tau_t^\top H_t \mid U_t] = (B^2/r)\, H_t$, and
+$\tau_t^\top H_t \tau_t = B^2$ almost surely.
+\end{claim}
+
+\begin{proof}
+With $H_t = U_t D_t U_t^\top$ and $\tau_t = U_t B D_t^{-1/2} u_t$, using
+$U_t^\top U_t = I_r$,
+\begin{equation*}
+  H_t \tau_t = U_t D_t U_t^\top U_t B D_t^{-1/2} u_t
+             = B\, U_t D_t^{1/2} u_t .
+\end{equation*}
+Hence $H_t \tau_t \tau_t^\top H_t = B^2 U_t D_t^{1/2} u_t u_t^\top D_t^{1/2}
+U_t^\top$. Since $u_t \sim \mathrm{Unif}(S^{r-1})$ has
+$\E[u_t u_t^\top] = I_r / r$, taking the conditional expectation gives
+$(B^2/r)\,U_t D_t U_t^\top = (B^2/r) H_t$. For the second statement,
+$\tau_t^\top H_t \tau_t = B^2 u_t^\top D_t^{-1/2} D_t D_t^{-1/2} u_t
+= B^2 \|u_t\|^2 = B^2$. The $D_t^{-1/2}$ stretch in $P^\star$ is exactly what
+makes both statements free of $D_t$.
+\end{proof}
+
+Now write $g := \frac1T\sum_t H_t \tau_t = \bar H \tauH$, so that by
+\eqref{eq:floor-exact} the floor equals $B^2 - \tauH^\top \bar H \tauH$, and
+since $\tauH = \bar H^+ g$ with $g \in \range(\bar H)$,
+\begin{equation*}
+  \tauH^\top \bar H \tauH
+  = g^\top \bar H^+ \bar H \bar H^+ g = g^\top \bar H^+ g .
+\end{equation*}
+Condition on $\boldsymbol H$, equivalently on $(U_t, D_t)_{t}$. The $u_t$ are
+independent across $t$ with $\E[u_t] = 0$, so $\E[H_t\tau_t] = 0$ and the
+cross terms vanish:
+\begin{equation*}
+  \E[g g^\top \mid \boldsymbol H]
+  = \frac{1}{T^2}\sum_{t=1}^T \E[H_t\tau_t\tau_t^\top H_t \mid \boldsymbol H]
+  = \frac{1}{T^2}\sum_{t=1}^T \frac{B^2}{r} H_t
+  = \frac{B^2}{rT}\,\bar H ,
+\end{equation*}
+using Claim~\ref{clm:second-moment}. Therefore
+\begin{equation*}
+  \E\bigl[g^\top \bar H^+ g \mid \boldsymbol H\bigr]
+  = \tr\bigl(\bar H^+ \E[g g^\top \mid \boldsymbol H]\bigr)
+  = \frac{B^2}{rT}\tr(\bar H^+ \bar H)
+  = \frac{B^2}{rT}\rank(\bar H)
+  = \frac{B^2 \deff}{Tr},
+\end{equation*}
+where $\tr(\bar H^+\bar H) = \rank(\bar H)$ because $\bar H^+\bar H$ is the
+orthogonal projector onto $\range(\bar H)$, and
+$\rank(\bar H) = \dim(V_1 + \cdots + V_T) = \deff$ since the $H_t$ are PSD, so
+no cancellation can occur in the sum. Taking expectations over
+$\boldsymbol H$ and substituting into \eqref{eq:floor-exact},
+\begin{equation*}
+  \E_{P^\star}\Bigl[\tfrac1T\sum_t (\tau_t-\tauH)^\top H_t(\tau_t-\tauH)\Bigr]
+  = B^2 - \frac{B^2\,\E[\deff]}{Tr}
+  = B^2\Bigl(1 - \frac{\E[\deff]}{Tr}\Bigr).
+  \tag*{$\square$}
+\end{equation*}
+
+\paragraph{Remark: the floor is vacuous for LoRA cohorts in general
+position.} The floor vanishes precisely when $\deff = Tr$, that is when the
+$V_t$ are in direct sum. Under Stiefel-random sampling with $Tr \leq d$ this
+holds almost surely, which is the regime the theorem's second display
+assumes. It also holds for every real cohort we measured, including the
+shared-initialisation ones whose subspaces are numerically near-collinear
+(\S\ref{sec:regimes}). Near-collinear is not collinear: the $V_t$ remain
+independent, $\deff = Tr$ exactly, and by \eqref{eq:floor-exact} the exact
+floor is zero. What degrades in that regime is not the floor but the
+conditioning of $\bar H$, and hence the norm of the interpolator achieving it.
+We regard this as the main practical lesson of the lower bound and we develop
+it in \S\ref{sec:regimes}.
+
+\subsection{Proof of Theorem~\ref{thm:general}, and what it rests on}
+
+By Yao's principle \eqref{eq:yao} it suffices to lower-bound the Bayes risk
+under $P^\star$. By Lemma~\ref{lem:id}, for any code with output $w^\star$,
+\begin{equation*}
+  \E\bigl[\max_t D_t(w^\star)\bigr]
+  \;\geq\;
+  \underbrace{B^2\Bigl(1 - \frac{\E[\deff]}{Tr}\Bigr)}_{\text{Lemma
+  \ref{lem:floor-general}}}
+  \;+\;
+  \E\bigl[(w^\star-\tauH)^\top \bar H (w^\star-\tauH)\bigr].
+\end{equation*}
+It remains to lower-bound the second term. As noted, the decoder may be
+assumed to emit $w^\star \in \range(\bar H)$. Put
+$\eta := \bar H^{1/2}\tauH$ and $\hat\eta := \bar H^{1/2} w^\star$, both in a
+space of dimension $\deff$; the term equals $\E\|\hat\eta - \eta\|^2$, so the
+subproblem is rate-$R$ quantisation of $\eta$ under squared error.
+
+Condition on $\boldsymbol H$. Given $\boldsymbol H$ the only remaining
+randomness is the directions $u_t$, and a conditional Shannon converse
+therefore applies to every rate-$R$ code, \emph{including codebooks chosen
+with knowledge of $\boldsymbol H$}. This is the step that makes the bound valid
+against the $\boldsymbol H$-aware decoder of Appendix~\ref{app:rd-achv}: we do not
+average over rotations, we condition. The standard converse for a
+$\deff$-dimensional source under squared error gives
+\begin{equation*}
+  \E\bigl[\|\hat\eta - \eta\|^2 \bigm| \boldsymbol H\bigr]
+  \;\geq\; \deff \cdot \frac{2^{2h(\eta \mid \boldsymbol H)/\deff}}
+  {2\pi e}\cdot 2^{-2R/\deff},
+\end{equation*}
+with $h$ the differential entropy. From Lemma~\ref{lem:floor-general},
+$\E[\|\eta\|^2 \mid \boldsymbol H] = B^2\deff/(Tr)$, so the per-coordinate
+scale is pinned.
+
+\paragraph{The constant, isolated.} This is the step, and the only step, that
+uses Assumption~\ref{asm:epr}. Writing the entropy power of $\eta$ as a
+constant fraction of its variance turns the display above into
+\begin{equation*}
+  c_{\mathrm{TQ}}\cdot \frac{B^2\,\E[\deff]}{Tr}\cdot 2^{-2R/\E[\deff]},
+\end{equation*}
+which is \eqref{eq:thm-lb}. The step we do not prove here is that the
+entropy-power-to-variance ratio of $\eta$ is bounded below by an absolute
+constant, uniformly in $(T, r, d)$ and in the spectra $D_t$. It is finite for
+each fixed instance because $\eta$ has a density, and the scale is pinned by
+$\tau_t^\top H_t\tau_t = B^2$; what we do not establish is uniformity. We
+therefore quote $c_{\mathrm{TQ}}$ from TurboQuant
+\citep{zandieh2025turboquant}, Theorem~3, which supplies exactly such a
+constant for the rotation-invariant case, and we flag that transferring it to
+our conditional setting is an assumption rather than a consequence of the
+argument above.
+
+\paragraph{Honest scope.} With that caveat, Theorem~\ref{thm:general} should
+be read as: the floor term is exact and unconditional (it is
+Lemma~\ref{lem:floor-general}), and the rate term has the stated
+\emph{form} $2^{-2R/\deff}$ with a constant we import rather than derive. Our
+empirical work bears on the rate term only through
+\S\ref{subsec:w3}, where the exponent is not resolved at the rates we could
+sweep. Nothing in \S\ref{sec:regimes} depends on the constant.

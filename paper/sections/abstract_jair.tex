@@ -1,0 +1,63 @@
+% Structured abstract for the JAIR build only. Every claim and every number
+% here is the one in sections/abstract.tex; the headings are JAIR's
+% Background/Objectives/Methods/Results/Conclusions and the content is
+% reorganised into them, not rewritten. If a number changes in one file it
+% must change in the other.
+%
+% The FRAMING does diverge from sections/abstract.tex, deliberately and only
+% here: Objectives and Conclusions name the pre-merge diagnostic as the
+% artefact. That is the same contribution the intro's list has always led
+% with, stated as a noun. It answers the question that desk-rejected a sister
+% paper at Springer's Machine Learning, namely what a diagnostic study
+% contributes, without altering a single claim or number. Do not sync the
+% wording of these two paragraphs back; do sync the numbers.
+%
+% Numerals are deliberately NOT in math mode: JAIR
+% renders the abstract as HTML on the article page and asks authors to avoid
+% notation that does not survive that.
+
+{\bf Background:}
+Merging several LoRA adapters into one model sometimes costs almost nothing
+and sometimes destroys a task, with no cheap way to tell which in advance.
+LoRA starts each adapter from a random matrix, and whether the $T$ adapters of
+a cohort started from one such matrix or from $T$ independent ones is rarely
+reported: a single global training seed silently decides it.
+
+{\bf Objectives:}
+We set out to turn that unreported detail into a pre-merge diagnostic: a check
+that is run on the adapter files before any merge is attempted, that says
+whether a cohort has collapsed into a shared subspace, and that predicts what
+this implies for the merging method about to be applied to it.
+
+{\bf Methods:}
+We measure the subspace geometry of adapter cohorts across four base models
+under both conditions, audit 45 publicly released cohorts under a sampling
+frame fixed before any download, and test the consequences for five merging
+methods in loss and in downstream accuracy. Every test was pre-registered
+before the compute it governs, with the registrations and the commit ordering
+included so that a reader can check the sequence rather than take it on trust.
+
+{\bf Results:}
+Sharing the initialisation leaves the tasks in nearly the same subspace,
+moving the median principal cosine across four base models from 0.05 to 0.99,
+and 17 of the 45 public cohorts are in that state. The consequences split by
+method. Merges that average or sparsify task vectors are unaffected: fifteen
+of twenty base-by-method cells show no effect on our loss metric, and none of
+forty show one on GSM8K or HumanEval. Merges that solve a linear system, ours
+and RegMean, run 2 to 65 times worse on a collapsed cohort, and on Mistral the
+merged model scores zero on GSM8K and on HumanEval; one Tikhonov term recovers
+both. Regularising such a solve is standard practice, but RegMean's shipped
+default is about 20 times too small on a collapsed cohort and applies the same
+dose either way.
+
+{\bf Conclusions:}
+Which regime a cohort is in is decided before merging begins, is invisible to
+the merging method, and is readable from the weight files in about a minute of
+CPU time without running the model. That makes it a practical pre-merge check
+rather than a post-hoc explanation: it is available at the moment the decision
+is actually taken, it is independent of which merging method follows, and on a
+collapsed cohort it is the difference between a working merge and a model that
+scores zero. The shipped default does not know which regime it is in, and the
+diagnostic is what tells you. Several of our own earlier claims did not survive
+the pre-registered tests, and we report those outcomes alongside the ones that
+did.

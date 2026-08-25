@@ -98,3 +98,7 @@ tmlr_submission/supplementary/audit-trail.bundle
 tmlr_submission/*.zip
 tmlr_submission/paper.pdf
 tmlr_submission/overleaf/out/
+
+# Build artifact: regenerate with `python JAIR/sync_from_paper.py`. Committing
+# it is how a 19 MB bundle got into history twice and tripled the repo size.
+JAIR/overleaf_jair.zip

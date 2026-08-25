@@ -1,0 +1,121 @@
+% JAIR build root. Fourth venue root alongside tmlr.tex, arxiv.tex and
+% iclr2027.tex, and the only one that is NOT anonymous.
+%
+% JAIR's stated policy hides reviewers from authors and says nothing about
+% hiding authors from reviewers, and their own template carries a full author
+% block with names, emails, ORCIDs and affiliations. So this build shows the
+% authors. Confirm at the submission wizard before uploading; if it turns out
+% they want a blinded PDF, acmart takes an "anonymous" class option and
+% jair.cls forwards unknown options straight through to it.
+%
+% Three option passes have to happen BEFORE \documentclass, because jair.cls
+% loads acmart which loads all three packages itself. Requesting an option
+% later that the earlier load did not receive is an option clash, and in
+% xcolor's case the clash is silent in the worst way: [table] gets dropped,
+% colortbl never loads, \cellcolor is undefined, and every shaded cell in the
+% result tables prints a literal "green!18". Same trap that is documented in
+% iclr2027.tex and tmlr.tex, one class deeper.
+\PassOptionsToPackage{table}{xcolor}
+\PassOptionsToPackage{T1}{fontenc}
+\PassOptionsToPackage{utf8}{inputenc}
+
+% acmthm=false is load-bearing, not tidiness. acmart defines its own theorem,
+% lemma, corollary, proposition and definition environments numbered
+% \newtheorem{theorem}{Theorem}[section], i.e. per section. This paper's prose
+% refers to "Lemma 2", "Theorem 3" and "Remark 5" by absolute number and
+% preamble.tex deliberately runs one shared counter across all of them. Under
+% acmart's defaults those references would silently renumber to 3.1, 4.1 and
+% so on, every cross-reference in the theory sections would point somewhere
+% else, and nothing would error. Suppressing acmthm lets preamble.tex keep the
+% single counter it declares.
+%
+% manuscript+review are the submission options from JAIR's own example file.
+% For a camera-ready both come off and the class is used bare.
+\documentclass[manuscript, screen, review, acmthm=false]{jair}
+
+\setcopyright{cc}
+\acmDOI{10.1613/jair.1.xxxxx}
+
+% Filled in by JAIR on acceptance. Left at the template's placeholders on
+% purpose: inventing a volume or article number here would put a false
+% citation into the PDF metadata.
+\JAIRAE{}
+\JAIRTrack{}
+\acmVolume{0}
+\acmArticle{0}
+\acmMonth{8}
+\acmYear{2026}
+
+% biblatex, not natbib: jair.cls loads acmart with natbib=false. The paper's
+% 57 \citep and 3 \citet calls survive untouched because acmauthoryear.cbx
+% aliases them to \parencite and \textcite. Backend is biber, so the Overleaf
+% project must be set to compile with biber rather than bibtex.
+% acmnumeric is explicitly forbidden by JAIR; do not "fix" the style here.
+\RequirePackage[
+  datamodel=acmdatamodel,
+  style=acmauthoryear,
+  backend=biber,
+  giveninits=true,
+  uniquename=init
+  ]{biblatex}
+
+\renewcommand*{\bibopenbracket}{(}
+\renewcommand*{\bibclosebracket}{)}
+
+\addbibresource{references.bib}
+
+\input{preamble}
+
+\begin{document}
+
+\title[Initialisation and LoRA Merging]{Initialisation Sets the Conditioning
+  of LoRA Merging}
+
+\author{Sankalp Pathak}
+\authornote{Corresponding author.}
+\orcid{0009-0006-5666-8271}
+\email{pathaksankalp04@gmail.com}
+\affiliation{%
+  \department{Department of Computer Science and Engineering}
+  \institution{Jaypee University of Engineering and Technology}
+  \city{Guna}
+  \state{Madhya Pradesh}
+  \country{India}
+}
+
+\author{Sanjay Garg}
+\orcid{0000-0002-2279-9373}
+\email{gargsv@gmail.com}
+\affiliation{%
+  \department{Department of Computer Science and Engineering}
+  \institution{Jaypee University of Engineering and Technology}
+  \city{Guna}
+  \state{Madhya Pradesh}
+  \country{India}
+}
+
+\renewcommand{\shortauthors}{Pathak \& Garg}
+
+% Structured abstract, in the five headings JAIR's template uses. acmart puts
+% the abstract in the topmatter, so unlike every other root in this directory
+% it has to appear before \maketitle rather than inside the body.
+\begin{abstract}
+\input{sections/abstract_jair}
+\end{abstract}
+
+\maketitle
+
+% Tells main.tex that the title block and abstract are already set, and that
+% the bibliography is biblatex rather than natbib. Nothing else in the build
+% reads it, and the other three roots never define it.
+\def\TopmatterAlreadySet{}
+
+\input{body}
+
+% main.tex ends inside \appendix, so this lands as the final appendix section.
+% It is MANDATORY: JAIR desk-rejects any submission without a completed
+% reproducibility checklist. It is used only during review and comes out of
+% the camera-ready.
+\input{sections/app_checklist}
+
+\end{document}

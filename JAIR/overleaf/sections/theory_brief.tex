@@ -1,0 +1,20 @@
+\paragraph{Where $\bar H$ came from.} We arrived at this operator through a
+rate-distortion analysis of merging, which treats the merge as lossy
+compression of $T$ task vectors into one weight vector and asks what worst-case
+distortion is achievable at a given storage budget. Appendix~\ref{app:rd}
+states the resulting lower bound and a matching construction, and
+Appendix~\ref{app:proofs} proves them. We report the analysis as provenance
+rather than as a contribution, for three reasons given in full there and
+summarised here: its floor term is exactly zero on all four base models under
+every initialisation we tried, so it carries no operational content for LoRA
+merging as practised (\S\ref{subsec:floor-zero}); its rate term rests on an
+assumption we state but do not prove and on a constant imported from
+TurboQuant~\citep{zandieh2025turboquant}, and our attempt to measure the
+exponent it predicts has too little dynamic range to do so
+(Appendix~\ref{app:rate}); and it constrains a merged model carrying no rank
+constraint, while every merge we run is truncated to rank $r$
+(\S\ref{subsec:conditioning}). What it did do is put the geometry of the union
+of the task subspaces at the centre of the problem, which is what sent us to
+measure principal cosines. Nothing else we tried pointed there, and everything
+in \S\ref{sec:regimes} and \S\ref{sec:methods} stands or falls on its own
+measurements.

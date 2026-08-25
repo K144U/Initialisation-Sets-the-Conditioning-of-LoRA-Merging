@@ -1,0 +1,97 @@
+This appendix lists the experiments this paper reports, so that the
+released code and result files can be matched to the claims they support.
+Results built on the shared-initialisation cohort alone are not
+carried over as method conclusions, because \S\ref{sec:regimes} shows that
+cohort sits in a different regime and \S\ref{subsec:q1} shows conclusions
+drawn there do not transfer. Where that cohort appears below it is as one arm
+of a paired comparison, never on its own.
+
+\paragraph{Cohorts and adapters.} Four base models (Llama-3.1-8B,
+Mistral-7B-v0.3, Qwen2.5-7B, Yi-1.5-9B-Chat), four tasks per cohort at
+LoRA rank $r=16$, so $T=4$ and $Tr=64$. Four cohorts per base: one
+\emph{shared} cohort in which all four adapters are initialised from a
+single global seed, and three \emph{independent} cohorts
+(\texttt{indep1}, \texttt{indep2}, \texttt{indep3}) in which each task
+draws its own initialisation. That is $4 \times 4 \times 4 = 64$ trained
+adapters. Training data and data-ordering seed are identical across
+cohorts, so the only variable is the initialisation draw.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Experiments reported in this paper. Cell counts are completed
+evaluation cells, excluding adapter training.}
+\label{tab:manifest}
+\begin{tabular}{lllr}
+\toprule
+experiment & where & driver & cells \\
+\midrule
+Subspace geometry audit & \S\ref{subsec:measurement}, App.~\ref{app:geometry}
+  & \texttt{measure\_subspace\_geometry.py} & 16 (CPU) \\
+Merge matrix, independent cohorts & \S\ref{subsec:q1}
+  & orchestrator & 84 \\
+Merge matrix, shared cohort (the null) & \S\ref{subsec:ridge}
+  & orchestrator & 20 \\
+Ridge sweep, both cohorts & \S\ref{subsec:ridge}
+  & \texttt{run\_eval\_cell.py} & 56 \\
+Rate sweep, quantiser width $b$ & \S\ref{subsec:w3}
+  & \texttt{run\_eval\_cell.py} & $24 + 4$ \\
+DARE density sweep & \S\ref{subsec:dare}
+  & \texttt{run\_eval\_cell.py} & 20 \\
+DARE-TIES composition & \S\ref{subsec:dare}
+  & orchestrator & 36 \\
+Synthetic validation & App.~\ref{app:synthetic}
+  & \texttt{run\_synthetic.py} & CPU \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Metric.} Worst-task negative log-likelihood excess in nats,
+relative to the per-task fine-tuned adapter, evaluated on a held-out
+draw with the evaluation seed pinned across every arm of every
+comparison. The merged model is truncated back to rank $r$ after merging
+for every method, so no method gains capacity over another.
+
+\paragraph{Methods compared.} Task arithmetic~\citep{ilharco2023task},
+TIES~\citep{yadav2023ties}, DARE~\citep{yu2024dare}, DARE composed with
+TIES, task-vector quantisation~\citep{kim2025tvq},
+KnOTS~\citep{stoica2025knots}, data-free RegMean~\citep{jin2023regmean}, and
+our rate-distortion encoder with and without the Tikhonov ridge.
+
+\textbf{KnOTS appears in two forms and the distinction matters.} Under its
+default inner combination our implementation reduces algebraically to task
+arithmetic ($VV^\top = I$ cancels), so it was not measuring what we intended;
+that version is excluded from any claim about subspace alignment
+(\S\ref{sec:discussion}). The repaired version, with a TIES inner
+combination, is the one carried in the regime null of \S\ref{subsec:ridge},
+in the $80$-cell accuracy replication of the same null, and in the five
+methods \S\ref{sec:intro} names. Where this paper says ``a repaired KnOTS''
+it means the second. We make no claim about the reference implementation of
+published KnOTS, which we did not run.
+
+RegMean~\citep{jin2023regmean} is run here in its data-free
+adapter-only form on both cohorts, on the same grid and under a registered
+rule (\S\ref{subsec:regmean}), and its published $\alpha$-shrinkage default
+is measured separately (\S\ref{subsec:regmean-default}). That is what
+licenses talking about the closed-form least-squares family rather than about
+our encoder alone, and it is the second solver Contribution~3 rests on.
+
+Data-free AdaMerging~\citep{adamerging2024} is \emph{not} carried over. It was
+run on the shared-initialisation cohort only, and \S\ref{subsec:q1} is our
+reason for not transferring conclusions from that cohort. LoRM and RegMean++
+are not run either, for the reasons in \S\ref{sec:related_work}: neither has a
+data-free adapter-only form we could implement without inventing the part that
+makes it that method. So the family claim rests on \textbf{two} members, our
+encoder and RegMean, and not on five.
+
+\paragraph{Geometry audit cost.} The audit of \S\ref{subsec:audit} reads
+the adapter weight files, computes principal angles between the $T$ task
+row spaces over eight sampled layers, and returns soft and hard effective
+dimension with the implied floor. It runs on CPU in about one minute per
+cohort, needs no evaluation data and performs no forward passes, which is
+the property that makes it usable as a pre-merge check.
+
+\paragraph{Compute.} All GPU work ran on a single node with A100-80GB
+cards, one evaluation cell per card, each holding 18 to 21 GiB. Cells are
+dispatched by an orchestrator that records a per-cell done marker, so an
+interrupted run resumes without recomputing completed cells.

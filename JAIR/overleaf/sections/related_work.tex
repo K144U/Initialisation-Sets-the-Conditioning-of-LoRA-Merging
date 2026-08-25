@@ -1,0 +1,135 @@
+\paragraph{Model merging: constructions without limits.}
+A wave of post-hoc merging methods followed Task
+Arithmetic~\citep{ilharco2023task}: Fisher-weighted
+averaging~\citep{matena2022fisher}, sparsification approaches
+(TIES~\citep{yadav2023ties}, DARE~\citep{yu2024dare},
+DELLA~\citep{della2024}), rotation- and subspace-alignment families
+(KnOTS~\citep{stoica2025knots}, TSPA~\citep{tspa2025},
+DO-Merging~\citep{domerging2025}, Core~Space~\citep{panariello2025core},
+TARA~\citep{tara2025}, ARM~\citep{arm2026streaming}), and merge-time
+quantisation (TVQ~\citep{kim2025tvq},
+1-bit-Merging~\citep{bit1merging2025}). All are \emph{constructions}:
+each proposes an encoder and evaluates it empirically. What none of them
+supplies, and what this paper does supply, is a way to tell in advance
+which of them will work on a given cohort. We do also prove a
+rate-distortion lower bound at a storage budget, but we report it as
+provenance rather than as a contribution, and
+\S\ref{subsec:floor-zero} and \S\ref{subsec:w3} say exactly how little
+of it survives contact with real adapters.
+
+\paragraph{Existing theoretical analyses of merging.}
+\emph{Weight disentanglement}~\citep{ortizjimenez2023disentanglement}
+identifies the rank-$r$ Hessian structure of LoRA fine-tunes and
+provides the $H_t = U_t D_t U_t^\top$ formalism we adopt, but gives no
+rate-distortion bounds. Task-Vector Bases~\citep{jang2025taskvectorbases}
+posits a thin-Gaussian-shell geometry; ATM~\citep{atm2024alternating}
+and its successor~\citep{gradients2025taskvectorsgradients} develop a
+second-order Taylor bound on task-arithmetic error. None of these frames
+merging as lossy source coding.
+
+\paragraph{Concurrent work using the same lens.} \citet{cao2026collapse},
+posted while this work was in progress and independently of it, study
+``merging collapse'' in fine-tuned LLMs, identify representational
+incompatibility between tasks as a strong correlate of it, and use
+rate-distortion theory to argue for a dimension-dependent limit on
+mergeability that holds regardless of the merging method. We therefore
+make no priority claim for the lens itself.
+
+\textbf{The two bounds constrain different objects, and we correct one of our
+own descriptions of the difference.} An earlier draft distinguished ours as
+bounding worst-task rather than average distortion. That is not a difference:
+their Theorem~1 bounds $\delta_{\max}(\hat\theta) = \max_i
+\E_X\|h(X;\hat\theta) - h(X;\theta_i)\|_2^2$, which is also a maximum over
+tasks. The real differences are these. Theirs measures distortion in the
+\emph{hidden states} of a fixed layer and ours in \emph{parameter} space under
+a per-task curvature $H_t$, so their quantity needs forward passes and data
+while ours is read off the adapter files. Theirs assumes linear mode
+connectivity, that every convex combination of the fine-tuned minima attains
+the same loss, and derives $\delta_{\max} \geq \tfrac14\Delta^2$ with a convex
+merge achieving $\tfrac{d}{2(d+1)}\Delta^2$ by Jung's theorem, where $\Delta$
+is the diameter of the task representation clusters. Ours assumes rank-$r$
+structure and, for the rate term only, Assumption~\ref{asm:epr}. And the role
+of the rate differs sharply: their rate-distortion statement is that
+$R(D) = 0$ exactly when $D \geq \Delta^2/4$ and $R(D) \geq \log_2 N$ below it,
+a zero-rate threshold rather than a tradeoff, whereas the content of ours is
+the $R$-dependence itself.
+
+\textbf{Their central negative result deserves a direct answer, because it
+looks like a counterexample to ours.} They report that parameter-space
+conflict metrics correlate minimally with merging collapse while
+representational incompatibility correlates strongly, and this paper's
+headline instrument is a parameter-space measurement. We think the two agree
+where they overlap, for a reason our own null supplies. Their bound is proved
+for convex merges under LMC, and convex merges are precisely the class in
+which we \emph{also} find parameter-space geometry to have no detectable
+effect: fifteen of twenty base-by-method cells in NLL
+(\S\ref{subsec:ridge}) and zero of forty in downstream accuracy. Our positive
+claim is confined to merges that solve a linear system, which are not convex
+combinations of the fine-tuned models and which their assumption excludes.
+Read that way, both papers find that parameter-space quantities do not predict
+what averaging-type merges do; we add that one parameter-space quantity does
+predict what solve-based merges do. We have not tested their $\Delta$ on our
+cohorts, and doing so would need the forward passes our audit avoids, so we
+report the reconciliation as an argument and not as a measurement. A reader
+interested in the limits of merging should read both.
+
+\paragraph{Closed-form merging lineage.} Our encoder sits in a line of
+closed-form merges that invert a per-task curvature surrogate.
+RegMean~\citep{jin2023regmean} solves a least-squares system in the
+per-task input-activation Grams (data-dependent, forward passes
+required); LoRM~\citep{lorm2024} carries the closed form over to LoRA
+modules in federated continual learning, and
+RegMean++~\citep{regmeanpp2025} adds cross-layer dependencies to
+RegMean's objective so that merged earlier layers are accounted for
+when merging deeper ones. Ours differs in two ways: it is
+\emph{data-free}, since the projector comes from the adapter factors
+alone, and it is derived from a worst-task rate-distortion lower bound
+rather than from an empirical fit. What it shares with that line is more
+important here than what separates it. All of these methods solve a linear
+system in a curvature surrogate, and all carry a ridge term whose role
+\S\ref{subsec:ridge} is about. We test RegMean directly on both cohorts
+(\S\ref{subsec:regmean}) and find the same conditioning effect there, which
+is what licenses talking about the family rather than about our encoder.
+LoRM and RegMean++ are not run: RegMean++'s distinguishing mechanism is a
+cross-layer dependency in the activation Gram and LoRM's setting is
+federated continual learning, so neither has a data-free adapter-only form
+we could implement without inventing the part that makes it that method.
+The family claim therefore rests on two members of it, not five.
+
+\paragraph{Rate-distortion and rotation-for-quantisation ancestry.}
+Classical rate-distortion theory~\citep{shannon1959rd,coverthomas}
+covers the single-source setting; multi-description
+coding~\citep{elgamalcover1982md} treats \emph{average}, not maximum,
+distortion, which Lemma~\ref{lem:id} shows is strictly weaker. The
+direct ancestor of our achievability construction is
+TurboQuant~\citep{zandieh2025turboquant}, whose Theorem~3 our
+Theorem~\ref{thm:achv} recovers at $T = 1$. Structured rotations as
+quantisation pre-conditioners (QuIP~\citep{tseng2024quip},
+QuaRot~\citep{ashkboos2024quarot}, SpinQuant~\citep{liu2025spinquant},
+RoLoRA~\citep{xi2024rolora}) motivate our randomised orthogonal mixers
+but are single-source.
+
+\paragraph{A recent negative result, and why a lower bound still
+matters.} A large-scale empirical study~\citep{systematic2025merging}
+reports that across four LLM families only Task Arithmetic reliably
+produces constructive interference, with subspace-alignment methods
+often failing. Their result is an \emph{upper bound} on specific
+algorithms; our Theorem~\ref{thm:general} is a \emph{lower bound} on
+every algorithm. Our measurements bear on theirs, but less directly than
+an earlier reading of ours suggested. We find $\deff = Tr$ in every
+layer of all four bases and in both initialisation conditions, so the
+task subspaces are indeed linearly independent and the irreducible floor
+is zero throughout (\S\ref{subsec:floor-zero}). We previously took that
+to mean subspace-alignment methods have no overlap to exploit, and cited
+our own KnOTS measurement as support. We withdraw both. Formal
+independence is not the absence of overlap: under shared initialisation
+the subspaces are near-collinear and $\bar H$ is ill-conditioned
+(\S\ref{sec:regimes}), which is exactly the situation an alignment
+method might be expected to address. And our KnOTS implementation
+reduced algebraically to Task Arithmetic under its default inner
+combination, so it never tested the question (\S\ref{sec:discussion}).
+We make no claim here about published KnOTS. Where our ordering differs
+from theirs, the
+difference is one of metric and setup (average interference across
+$16$ heterogeneous benchmarks vs.\ worst-task NLL excess on a
+controlled matrix), not a contradiction.

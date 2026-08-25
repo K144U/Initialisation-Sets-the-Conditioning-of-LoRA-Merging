@@ -1,0 +1,53 @@
+\paragraph{Task vectors and per-task geometry.} Fix integers $T \geq 1$,
+$d \geq 2$, $1 \leq r \leq d$, and a radius $B > 0$. Each of the $T$
+tasks is specified by a pair $(\tau_t, H_t) \in \R^d \times \R^{d\times d}$
+with
+\begin{equation}\label{eq:admissibility}
+  H_t \succeq 0,\quad \rank(H_t) \leq r,\quad \tau_t \in V_t :=
+  \range(H_t),\quad \tau_t^\top H_t \tau_t \leq B^2.
+\end{equation}
+Per-task loss is the quadratic $f_t(w) := \tfrac12 (w - \tau_t)^\top
+H_t (w - \tau_t)$. We write $\boldsymbol\tau := (\tau_t)_{t=1}^T$,
+$\boldsymbol H := (H_t)_{t=1}^T$, and call tuples satisfying
+\eqref{eq:admissibility} \emph{admissible}. The specialisation
+$H_t = P_{V_t}$ recovers the weight-disentangled LoRA setting
+of~\citet{ortizjimenez2023disentanglement}; general $H_t \succeq 0$
+subsumes Fisher-metric surrogates for cross-entropy.
+
+\paragraph{Worst-task distortion.} A merged model $w^\star \in \R^d$
+incurs per-task distortion $D_t(w^\star) := (w^\star - \tau_t)^\top H_t
+(w^\star - \tau_t)$, and the figure of merit throughout is the
+\emph{worst-task} distortion
+\begin{equation}\label{eq:worst-task}
+  \Delta(w^\star; \boldsymbol\tau, \boldsymbol H)
+  \;:=\; \max_{t\in[T]} D_t(w^\star),
+\end{equation}
+because a merged model that collapses on a single task is not deployable.
+Empirically we report the same quantity as worst-task NLL excess: the largest,
+over tasks, of the merged model's negative log-likelihood on a task minus that
+of the task's own adapter.
+
+\paragraph{Key derived quantities.} Two quantities carry the rest of the
+paper:
+\begin{equation}\label{eq:derived}
+  \bar H := \tfrac1T\sum_{t=1}^T H_t,\qquad
+  \tauH := \bar H^+\cdot \tfrac1T\sum_{t=1}^T H_t\tau_t,\qquad
+  \deff := \rank\!\Bigl(\sum_{t=1}^T P_{V_t}\Bigr),
+\end{equation}
+with $(\cdot)^+$ the Moore--Penrose pseudoinverse. The \emph{$H_t$-weighted
+centroid} $\tauH$ is the unique element of $\range(\bar H) = V_1 + \cdots +
+V_T$ with $\bar H \tauH = T^{-1}\sum_t H_t \tau_t$, reducing to the arithmetic
+mean when $H_t = I_d$. The \emph{effective dimension} $\deff \leq \min(Tr, d)$
+counts the independent directions a merge must reconstruct.
+
+$\bar H$ is the object this paper is about. \S\ref{sec:regimes} shows that
+whether the $T$ adapters of a cohort shared one initialisation determines the
+conditioning of $\bar H$, across four orders of magnitude, and
+\S\ref{sec:methods} shows which merging methods that conditioning reaches.
+
+\paragraph{A note on $H_t = P_{V_t}$.} Every $\kappa(\bar H)$ we report adopts
+this specialisation, so it is an index of subspace overlap under a stated
+curvature model and would take a different value under a Fisher-weighted
+$H_t$. This is why we lead on principal cosines, which are properties of the
+row spaces alone and hold under any curvature model
+(\S\ref{subsec:conditioning}).
