@@ -64,9 +64,11 @@ fi
 #   a. The concurrent submission. The title is broken in two places rather than
 #      matched whole, because it is line-wrapped in the bib entry and a single
 #      pattern would have to span the newline. Breaking either half is enough
-#      to make it unsearchable. Both cases of the topic phrase are listed:
-#      --replace-text is literal and case-sensitive, and the lowercase form is
-#      the one that actually leaked.
+#      to make it unsearchable. The topic phrase is a REGEX rule, not a
+#      literal one: --replace-text is case-sensitive by default, and three
+#      different casings of it existed in history. Two builds leaked on a
+#      casing a literal rule missed, so the rule now matches all of them
+#      rather than growing one line per variant discovered.
 #   b. Infrastructure, but only where it costs nothing. The internal IP and the
 #      shared student account go: the account belongs to a third party who is
 #      not an author and never consented to appear here, and the IP is RFC1918
@@ -85,11 +87,9 @@ fi
 # file. That is why every term in the step-4 scan must be one of these LHSs.
 cat > "$WORK/rules.txt" <<'RULES'
 REDACTED-FORUM-ID==>REDACTED-FORUM-ID
+regex:(?i)REDACTED==>REDACTED
 REDACTED==>REDACTED
-REDACTED==>REDACTED
-REDACTED==>REDACTED
-a concurrent anonymous submission==>a concurrent anonymous submission
-a concurrent anonymous submission==>a concurrent anonymous submission
+regex:(?i)(tmlr |openreview )?a concurrent anonymous submission==>a concurrent anonymous submission
 concurrentanon==>concurrentanon
 CLUSTER-HOST==>CLUSTER-HOST
 STUDENT-ACCOUNT==>STUDENT-ACCOUNT
