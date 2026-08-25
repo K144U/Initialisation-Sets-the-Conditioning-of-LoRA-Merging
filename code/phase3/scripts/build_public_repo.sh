@@ -27,8 +27,10 @@
 #      discusses that submission's shared authorship repeatedly, and
 #      whack-a-mole on a file whose subject is the thing you are hiding is how
 #      leaks survive.
-#   4. Internal infrastructure: cluster host, login accounts, and a shared
-#      student account belonging to someone who is not an author.
+#   4. The internal cluster IP, and a shared student account belonging to
+#      someone who is not an author. Note (b) below for what is deliberately
+#      left alone: the bare hostname stays, because scrubbing it would rewrite
+#      the PBS job ids in the result files.
 #
 # Filtering is DETERMINISTIC. Re-running this after adding commits gives the
 # already-published commits the same hashes, so the next push is a
@@ -65,11 +67,18 @@ fi
 #      to make it unsearchable. Both cases of the topic phrase are listed:
 #      --replace-text is literal and case-sensitive, and the lowercase form is
 #      the one that actually leaked.
-#   b. Infrastructure. The cluster host, the login accounts and the shared
-#      student account are nobody's business and are not anonymity concerns at
-#      all: the student account belongs to a third party who is not an author
-#      and never consented to appear here. The IP is RFC1918 so it is not
-#      remotely reachable, but it names the institution's internal estate.
+#   b. Infrastructure, but only where it costs nothing. The internal IP and the
+#      shared student account go: the account belongs to a third party who is
+#      not an author and never consented to appear here, and the IP is RFC1918
+#      so it is useless to a reader and needless exposure otherwise. Both occur
+#      only in prose and scripts, never in data.
+#
+#      The bare hostname jiit-master is deliberately NOT scrubbed. It is
+#      embedded in every PBS job id in roughly 200 result files
+#      ("pbs_jobid": "42592.jiit-master"), so a rule for it would rewrite the
+#      experimental record itself, and it discloses nothing: the institution is
+#      already on the paper's title page. Corrupting provenance data to hide a
+#      hostname the reader can infer from the author list is a bad trade.
 #
 # Note the self-reference: this script lives in the repository it filters, so
 # the literal strings below get rewritten inside the published copy of this
@@ -83,7 +92,6 @@ a concurrent anonymous submission==>a concurrent anonymous submission
 a concurrent anonymous submission==>a concurrent anonymous submission
 concurrentanon==>concurrentanon
 CLUSTER-HOST==>CLUSTER-HOST
-jiit-master.cm.cluster==>CLUSTER-HOST
 STUDENT-ACCOUNT==>STUDENT-ACCOUNT
 RULES
 
@@ -153,7 +161,7 @@ echo "[4/5] verify no concurrent-submission or infrastructure leak survives"
 # build was a lowercase "REDACTED" against a capitalised rule, so an
 # uncovered case variant must fail the build rather than pass it.
 PAT='REDACTED-FORUM-ID|REDACTED|REDACTED|concurrentanon'
-PAT="$PAT"'|a concurrent anonymous submission|CLUSTER-HOST|jiit-master|STUDENT-ACCOUNT'
+PAT="$PAT"'|a concurrent anonymous submission|172[.]16[.]176[.]120|STUDENT-ACCOUNT'
 leak=0
 while read -r o; do
   [ "$(git cat-file -t "$o" 2>/dev/null)" = "blob" ] || continue
