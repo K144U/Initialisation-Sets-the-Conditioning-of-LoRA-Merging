@@ -100,7 +100,7 @@ rm -rf "$OUT"
 git clone --mirror -q "$REPO" "$OUT"
 cd "$OUT"
 
-echo "[2/5] drop private paths and build artifacts, scrub 9930"
+echo "[2/5] drop private paths and build artifacts, scrub the other submission"
 "${FR[@]}" \
   --invert-paths \
   --path "SentEmail/" --path "final review/" \
@@ -154,9 +154,12 @@ echo "[4/5] verify no concurrent-submission or infrastructure leak survives"
 # repository it scans, so every term below must be one the rules above rewrite,
 # or the scan reports a leak against its own source.
 #
-# The bare number 9930 is still NOT checked: it occurs legitimately as a float
-# in dozens of result JSONs, and a rule for it would corrupt data. The check is
-# bounded to the phrase "a concurrent anonymous submission" instead, which no float can produce.
+# The other submission's bare number is still NOT checked: it occurs by
+# coincidence as a float in dozens of result JSONs, and a rule for it would
+# corrupt data. The check is bounded to the phrase form instead, which no
+# float can produce. The number is not written anywhere in this file either:
+# a comment explaining what we scrub, next to the number itself, hands a
+# reader the lookup key that the scrubbing exists to withhold.
 # Matching is case-insensitive on purpose: the leak that got through the first
 # build was a lowercase "REDACTED" against a capitalised rule, so an
 # uncovered case variant must fail the build rather than pass it.
