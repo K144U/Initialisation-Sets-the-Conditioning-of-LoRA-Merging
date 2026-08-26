@@ -102,3 +102,14 @@ tmlr_submission/overleaf/out/
 # Build artifact: regenerate with `python JAIR/sync_from_paper.py`. Committing
 # it is how a 19 MB bundle got into history twice and tripled the repo size.
 JAIR/overleaf_jair.zip
+
+# TeX Live build outputs (JAIR/build_local.sh)
+JAIR/overleaf/main.pdf
+JAIR/overleaf/main.aux
+JAIR/overleaf/main.bbl
+JAIR/overleaf/main.bcf
+JAIR/overleaf/main.blg
+JAIR/overleaf/main.log
+JAIR/overleaf/main.out
+JAIR/overleaf/main.run.xml
+JAIR/overleaf/main.synctex.gz
