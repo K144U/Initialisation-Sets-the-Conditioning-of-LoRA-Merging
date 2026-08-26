@@ -4,6 +4,12 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+% acmart (the JAIR build) loads newtxmath, which already defines \Bbbk, so
+% amssymb's \DeclareMathSymbol for it fails with "already defined" and the
+% symbol is dropped. \let-ing it to \relax first makes it definable again:
+% \@ifdefinable treats \relax as undefined, so on the builds where newtxmath
+% is absent this line is a no-op rather than a second definition.
+\let\Bbbk\relax
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{enumitem}
 \usepackage{graphicx}
