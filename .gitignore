@@ -113,3 +113,6 @@ JAIR/overleaf/main.log
 JAIR/overleaf/main.out
 JAIR/overleaf/main.run.xml
 JAIR/overleaf/main.synctex.gz
+JAIR/overleaf/comment.cut
+JAIR/overleaf/*.fls
+JAIR/overleaf/*.fdb_latexmk
