@@ -25,6 +25,17 @@ Three things about JAIR that differ from every previous target:
   bibliography. `acmthm=false` is mandatory in the class options or acmart's
   own per-section theorem numbering silently renumbers every Lemma and
   Theorem the prose refers to by absolute number.
+- **It is slow enough to hit Overleaf's timeout.** acmart loads `microtype`
+  bare, so pdfTeX does font expansion over libertine, biolinum and inconsolata
+  in several weights each. `jair.tex` turns expansion off
+  (`\microtypesetup{expansion=false}`) and keeps protrusion. Symptom when it
+  is too slow: **no PDF, no error, and `output.log` stops mid-word with no
+  trailing newline**, because the process was killed rather than failing.
+  Check `.aux` for late labels to tell a killed run from a broken document.
+- **`\let\Bbbk\relax` before `amssymb` in `preamble.tex` is load-bearing.**
+  acmart loads newtxmath, which defines `\Bbbk` first, and amssymb then errors
+  with "already defined". Do not remove it; on the non-acmart roots it is a
+  no-op.
 - **The reproducibility checklist is mandatory.** JAIR desk-rejects
   submissions that lack a completed one. It is `sections/app_checklist.tex`
   and it is the final appendix. Two answers are `partially` and one block is
