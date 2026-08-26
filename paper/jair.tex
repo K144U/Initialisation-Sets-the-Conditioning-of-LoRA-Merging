@@ -33,6 +33,19 @@
 % For a camera-ready both come off and the class is used bare.
 \documentclass[manuscript, screen, review, acmthm=false]{jair}
 
+% COMPILE TIME. acmart loads microtype bare (acmart.cls:282), which on pdfTeX
+% switches on both protrusion and font EXPANSION. Expansion builds a family of
+% stretched instances for every font shape in use, and this paper uses a lot of
+% them (libertine roman, biolinum sans, inconsolata tt, each in several
+% weights). It is the single most expensive thing in the run and it is why
+% Overleaf's timeout kills the second pass.
+%
+% Protrusion is kept: it is nearly free and does most of the visible work.
+% Expansion only changes justification slightly, so nothing in the paper's
+% content or layout depends on it. Turn it back on for the camera-ready, where
+% there is no timeout to fight.
+\microtypesetup{expansion=false}
+
 \setcopyright{cc}
 \acmDOI{10.1613/jair.1.xxxxx}
 
