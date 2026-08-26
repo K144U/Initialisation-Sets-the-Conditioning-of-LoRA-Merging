@@ -95,6 +95,37 @@ CLUSTER-HOST==>CLUSTER-HOST
 STUDENT-ACCOUNT==>STUDENT-ACCOUNT
 RULES
 
+# One author, spelled four ways. History carries the GitHub noreply address,
+# the real address, one typo of it, and the cluster account: per CLAUDE.md that
+# account has no git identity of its own, so commits made there fell back to
+# the login name, which is why four 2026-05-20 paper commits look like someone
+# else made them. They are all the same person, and the cluster form also
+# carries the hostname inside the email.
+cat > "$WORK/mailmap.txt" <<'MAILMAP'
+K144U <pathaksankalp04@gmail.com> <95154157+K144U@users.noreply.github.com>
+K144U <pathaksankalp04@gmail.com> <pathaksankalp@gmail.com>
+K144U <pathaksankalp04@gmail.com> <sanjay.g@jiit-master.cm.cluster>
+MAILMAP
+
+# Assistant trailers. GitHub parses Co-Authored-By and lists the address in it
+# as a repository CONTRIBUTOR, which is the whole reason an @claude account
+# showed up on the contributor list next to the author. Strip the trailer and
+# the session URL, which is a live link into a private transcript.
+#
+# Only those two exact line forms. Prose mentioning CLAUDE.md must survive:
+# that is a real tracked file here, and roughly ten commit subjects describe
+# editing it. A blanket rule on the word would rewrite the project's own
+# history of its own documentation.
+#
+# The message rules are a SUPERSET of the text rules, not a replacement: the
+# scrubbing above has to apply to commit messages too, and passing
+# --replace-message a file that omitted them would silently un-scrub them.
+cp "$WORK/rules.txt" "$WORK/msgrules.txt"
+cat >> "$WORK/msgrules.txt" <<'MSGRULES'
+regex:(?m)^Co-Authored-By: Claude.*\n?==>
+regex:(?m)^Claude-Session: .*\n?==>
+MSGRULES
+
 echo "[1/5] mirror clone"
 rm -rf "$OUT"
 git clone --mirror -q "$REPO" "$OUT"
@@ -119,7 +150,8 @@ echo "[2/5] drop private paths and build artifacts, scrub the other submission"
   --path "JAIR/COVER_LETTER.md" \
   --path "HANDOFF_2026-08-16.md" \
   --replace-text "$WORK/rules.txt" \
-  --replace-message "$WORK/rules.txt" \
+  --replace-message "$WORK/msgrules.txt" \
+  --mailmap "$WORK/mailmap.txt" \
   --force >/dev/null
 
 echo "[3/5] verify the private paths are gone from every commit"
@@ -177,6 +209,25 @@ git log --all --format='%B' | grep -qaiE "$PAT" && {
     echo "  LEAK in a commit message" >&2; leak=1; }
 [ "$leak" -eq 0 ] || { echo "ABORT: not pushed" >&2; exit 3; }
 echo "  clean"
+
+echo "[4b/5] verify one identity and no assistant trailers"
+# GitHub builds the contributor list from BOTH the author field and the
+# Co-Authored-By trailers, so either one alone is enough to put a face on the
+# repository that should not be there. Check both, and check every commit
+# rather than the tip: `git log -1` reports the most recent identity and says
+# nothing about the other 228.
+ids="$(git log --all --format='%an <%ae>%n%cn <%ce>' | sort -u)"
+if [ "$(printf '%s\n' "$ids" | grep -c .)" -ne 1 ]; then
+  echo "  LEAK: more than one identity in history:" >&2
+  printf '    %s\n' $(printf '%s\n' "$ids") >&2
+  echo "ABORT: not pushed" >&2; exit 3
+fi
+echo "  identity: $ids (all $ncommits commits, author and committer)"
+if git log --all --format='%B' | grep -qaiE '^(Co-Authored-By|Claude-Session):'; then
+  echo "  LEAK: an assistant trailer survives in a commit message" >&2
+  echo "ABORT: not pushed" >&2; exit 3
+fi
+echo "  no assistant trailers"
 
 echo "[5/5] result"
 echo "  commits:  $(git rev-list --count --all)"
