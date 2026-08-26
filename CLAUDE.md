@@ -96,7 +96,12 @@ limitation instead.
 - **GPU pin set is `0,1,2,3,4,6`.** 5 and 7 are outside our allocation. Gate
   every cell on 25 GB free; an eval cell holds 18-21 GiB.
 - **Git identity must be forced** (the account has none):
-  `git -c user.name=K144U -c user.email=95154157+K144U@users.noreply.github.com commit ...`
+  `git -c user.name=K144U -c user.email=pathaksankalp04@gmail.com commit ...`
+  This is the address the public repository publishes under. The old
+  `95154157+K144U@users.noreply.github.com` still appears throughout local
+  history; the public filter's mailmap folds it, a typo variant and the
+  cluster account's fallback identity into the address above, so a stray one
+  is corrected on the way out rather than shipped.
 - **A VPN drop looks like an auth failure.** Publickey rejection with ping
   still working means the VPN, not the account.
 - **Long CPU analyses buffer stdout under `nohup`.** Use `python -u`, or you

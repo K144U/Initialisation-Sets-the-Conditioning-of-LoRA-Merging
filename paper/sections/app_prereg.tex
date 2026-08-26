@@ -48,38 +48,38 @@ exactly when the ordering claimed here holds, and fails on the reverse.}
 \toprule
 test & rules & analyzer or implementation & result \\
 \midrule
-Replication, step 0 (\S\ref{subsec:q1}) & \texttt{329d94a} &
-  --- & \texttt{5857238} \\
-Replication, $n=3$ (\S\ref{subsec:q1}) & \texttt{5792ff2} &
-  --- & \texttt{d89e53a} \\
-DARE with TIES (\S\ref{subsec:dare}) & \texttt{78f5399} &
-  \texttt{ccf39f4}, \texttt{660ab63} & \texttt{7b08053} \\
-Conditioning and the ridge (\S\ref{subsec:ridge}) & \texttt{3943a78} &
-  \texttt{282c095}, \texttt{6b0a367} & \texttt{f877a85} \\
-Rate exponent (\S\ref{subsec:w3}) & \texttt{3943a78} &
-  \texttt{9718f96} (corrected) & \texttt{2e266a8} \\
+Replication, step 0 (\S\ref{subsec:q1}) & \texttt{947f0ea} &
+  --- & \texttt{1dcadd4} \\
+Replication, $n=3$ (\S\ref{subsec:q1}) & \texttt{9b3f57e} &
+  --- & \texttt{4328446} \\
+DARE with TIES (\S\ref{subsec:dare}) & \texttt{5b58059} &
+  \texttt{b9b1678}, \texttt{10bd1e4} & \texttt{f33cb02} \\
+Conditioning and the ridge (\S\ref{subsec:ridge}) & \texttt{dc0a1f1} &
+  \texttt{ac4499f}, \texttt{25d4d47} & \texttt{efa1d2d} \\
+Rate exponent (\S\ref{subsec:w3}) & \texttt{dc0a1f1} &
+  \texttt{99fd95f} (corrected) & \texttt{c0a1cb3} \\
 \addlinespace
-Solver replication (\S\ref{subsec:regmean}) & \texttt{44875ee} &
-  \texttt{a7802f8}, \texttt{5a47b15} & \texttt{73a476d} \\
-Untruncated and gate (\S\ref{subsec:untruncated}) & \texttt{44875ee} &
-  \texttt{2a3ad03} & \texttt{43c8c00} \\
-Repaired KnOTS (\S\ref{sec:discussion}) & \texttt{44875ee} &
-  \texttt{3c840ca} & \texttt{368d7ff} \\
-Merge matrix at $T=3$ (\S\ref{subsec:q1}) & \texttt{44875ee} &
-  \texttt{67e0b89} & \texttt{19c32ff} \\
+Solver replication (\S\ref{subsec:regmean}) & \texttt{876fcb6} &
+  \texttt{2adbb79}, \texttt{1733865} & \texttt{57a8f89} \\
+Untruncated and gate (\S\ref{subsec:untruncated}) & \texttt{876fcb6} &
+  \texttt{e4043b4} & \texttt{63bdf0c} \\
+Repaired KnOTS (\S\ref{sec:discussion}) & \texttt{876fcb6} &
+  \texttt{45493e4} & \texttt{9f32ed0} \\
+Merge matrix at $T=3$ (\S\ref{subsec:q1}) & \texttt{876fcb6} &
+  \texttt{4c95967} & \texttt{908a486} \\
 \addlinespace
-Margin-aware control (\S\ref{subsec:q1}) & \texttt{44875ee} &
-  \texttt{ce9099a} & \texttt{36efe56} \\
-Shared arm at $n=3$ (\S\ref{subsec:shared-arm}) & \texttt{1f52ab1} &
-  \texttt{dafe53a} & \texttt{36efe56} \\
-Public-cohort prevalence (\S\ref{subsec:prevalence}) & \texttt{07740ff} &
-  \texttt{fddec17} & \texttt{36efe56} \\
-Downstream accuracy (\S\ref{subsec:downstream-cond}) & \texttt{7bfc8dd} &
-  \texttt{b5e81ed} & \texttt{36efe56} \\
-Heuristics null in accuracy (\S\ref{subsec:ridge}) & \texttt{3bbbbdb} &
-  \texttt{7125fb3} & \texttt{5215020} \\
-Drift across training (App.~\ref{subsec:drift-result}) & \texttt{8d3e468} &
-  \texttt{09ccced} & \texttt{e48af8d} \\
+Margin-aware control (\S\ref{subsec:q1}) & \texttt{876fcb6} &
+  \texttt{d070a1a} & \texttt{0a4afaf} \\
+Shared arm at $n=3$ (\S\ref{subsec:shared-arm}) & \texttt{3b9db2f} &
+  \texttt{7c25aa1} & \texttt{0a4afaf} \\
+Public-cohort prevalence (\S\ref{subsec:prevalence}) & \texttt{335a4f6} &
+  \texttt{0b6eb40} & \texttt{0a4afaf} \\
+Downstream accuracy (\S\ref{subsec:downstream-cond}) & \texttt{a56b31e} &
+  \texttt{321a808} & \texttt{0a4afaf} \\
+Heuristics null in accuracy (\S\ref{subsec:ridge}) & \texttt{91d4a4b} &
+  \texttt{4b5a56c} & \texttt{9b77f19} \\
+Drift across training (App.~\ref{subsec:drift-result}) & \texttt{8544b36} &
+  \texttt{0c8770b} & \texttt{5e01813} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -88,15 +88,15 @@ Three rows deserve a comment, and the first is the one a sceptical reader
 should check first.
 
 The replication appears as two rows because its amendment does \emph{not}
-precede the step-0 result: \texttt{5792ff2} was committed after
-\texttt{5857238} was read. That is the blindness limitation the amendment
+precede the step-0 result: \texttt{9b3f57e} was committed after
+\texttt{1dcadd4} was read. That is the blindness limitation the amendment
 states about itself, made checkable rather than asserted, and it is why the
 amendment is paired with the $n=3$ verdict it actually governs. Running the
-ancestry check on \texttt{5792ff2} against \texttt{5857238} fails, and should.
+ancestry check on \texttt{9b3f57e} against \texttt{1dcadd4} fails, and should.
 
 The DARE-TIES analyzer appears twice because the first version printed, under a
 mixed verdict, the consequence text belonging to a different verdict;
-\texttt{660ab63} is that repair, and it predates the verdict commit. The
+\texttt{10bd1e4} is that repair, and it predates the verdict commit. The
 rate-exponent row names a \emph{corrected} analyzer, and that correction was
 made after the first analysis had been read, for the reason given in
 \S\ref{subsec:rate-prereg} below.
@@ -244,27 +244,27 @@ whichever branch the rule lands in.
 
 \paragraph{The rules, one paragraph each.}
 \begin{itemize}\itemsep2pt
-\item \textbf{\texttt{prereg\_a1\_matrix}} (\texttt{329d94a}) fixes the
+\item \textbf{\texttt{prereg\_a1\_matrix}} (\texttt{947f0ea}) fixes the
 replication: does the encoder's win over the champion baseline survive the
 move to independently initialised cohorts, and do method rankings change
 between cohorts? It states its own statistical ceiling up front, that one
 cohort per arm cannot support a strong verdict regardless of what the rules
 return. Outcome: the win does not survive (\S\ref{subsec:q1}).
 
-\item \textbf{\texttt{prereg\_a1\_matrix\_amendment}} (\texttt{5792ff2})
+\item \textbf{\texttt{prereg\_a1\_matrix\_amendment}} (\texttt{9b3f57e})
 extends it to $n = 3$ cohorts and fixes the aggregation. It declares its
 own blindness status plainly: \texttt{indep1} had been read when the rule
 was written, so the rule was chosen to be the obvious one rather than
 selected from a menu. It also retires the parent's $0.013$ nat provisional
 band.
 
-\item \textbf{\texttt{prereg\_dare\_ties}} (\texttt{78f5399}) asks whether
+\item \textbf{\texttt{prereg\_dare\_ties}} (\texttt{5b58059}) asks whether
 our DARE-with-task-arithmetic result extends to DARE with TIES, primary at
 density $0.2$ only, with the density sweep explicitly secondary so that no
 density can be chosen after the fact. Outcome: it does not extend
 (\S\ref{subsec:dare}).
 
-\item \textbf{\texttt{prereg\_conditioning}} (\texttt{3943a78}) governs the
+\item \textbf{\texttt{prereg\_conditioning}} (\texttt{dc0a1f1}) governs the
 ridge sweep and the rate exponent: whether the optimal ridge tracks the
 conditioning, and whether the flat rate curve is a truncation artifact. It
 fixes the exponent band at $[-2.4, -1.6]$ on at least three of four bases.
@@ -272,20 +272,20 @@ Outcomes: the ridge \emph{gain} tracks conditioning while $\lambda^\star$
 does not (\S\ref{subsec:ridge}), and the exponent is unresolved
 (Appendix~\ref{app:rate}).
 
-\item \textbf{\texttt{prereg\_tmlr}} (\texttt{44875ee}) is the revision
+\item \textbf{\texttt{prereg\_tmlr}} (\texttt{876fcb6}) is the revision
 campaign: the go/no-go is whether cohort conditioning affects a solver we
 did not build, with the two cohorts required to match byte-for-byte on
 tasks, evaluation seed, sequence length and VRAM gate. It also governs the
 KnOTS repair and the $T = 3$ arm. Outcome: both predictions hold on four of
 four bases (\S\ref{subsec:regmean}).
 
-\item \textbf{\texttt{prereg\_tmlr\_amendment}} (\texttt{a7802f8}) sets
+\item \textbf{\texttt{prereg\_tmlr\_amendment}} (\texttt{2adbb79}) sets
 RegMean's minimally regularised reference to $\lambda = 10^{-6}$ rather
 than $0$, because RegMean solves in the full input dimension against a Gram
 of rank at most $Tr$, so $\lambda = 0$ is singular rather than
 ill-conditioned. It changes a grid point, not a threshold or a rule.
 
-\item \textbf{\texttt{prereg\_shared\_arm}} (\texttt{1f52ab1}) answers a
+\item \textbf{\texttt{prereg\_shared\_arm}} (\texttt{3b9db2f}) answers a
 limitation the draft raised against itself: the ridge sweep's shared arm
 was $n = 1$, so its gate was one-sided. This registers the shared arm at
 $n = 3$ with a genuinely two-sided gate, and flags in advance that the
@@ -293,13 +293,13 @@ published cohort sitting more than $2$ sd from its arm's mean would
 require reporting. Outcome: both predictions $4/4$, and the published
 cohort sits $0.23$ to $0.75$ sd out (\S\ref{subsec:shared-arm}).
 
-\item \textbf{\texttt{prereg\_prevalence}} (\texttt{07740ff}) fixes the
+\item \textbf{\texttt{prereg\_prevalence}} (\texttt{335a4f6}) fixes the
 sampling frame for the public-cohort audit before any download, in three
 parts: the library condition (A), published benchmarks' released cohorts
 (B), and the broad sample (C). Outcome: A and C reported
 (\S\ref{subsec:prevalence}), B not run.
 
-\item \textbf{\texttt{prereg\_downstream}} (\texttt{7bfc8dd}) asks whether
+\item \textbf{\texttt{prereg\_downstream}} (\texttt{a56b31e}) asks whether
 the conditioning collapse is visible in accuracy rather than only in NLL,
 on GSM8K and HumanEval, with a binomial-SE gate. It fixes in advance what
 we would write in each branch, including that a null would move the metric
@@ -307,7 +307,7 @@ limitation into \S\ref{sec:intro} and delete the practice recommendations.
 Outcome: the ridge recovers the shared arm on four of four bases on both
 benchmarks (\S\ref{subsec:downstream-cond}).
 
-\item \textbf{\texttt{prereg\_downstream\_amendment}} (\texttt{2c18c8e})
+\item \textbf{\texttt{prereg\_downstream\_amendment}} (\texttt{5216230})
 corrects our own specification error: it registered $n = 500$ evaluation
 items, but HumanEval has $164$. The gate adapts to the actual $n$, which
 widens it to roughly $11$ points on HumanEval against $6$ on GSM8K, so the
@@ -315,7 +315,7 @@ two benchmarks are not equally powered and a null on HumanEval is not read
 as equivalent to a null on GSM8K. It makes our own predictions harder to
 satisfy, and was written before any cell ran.
 
-\item \textbf{\texttt{prereg\_drift}} (\texttt{8d3e468}) discharges E3,
+\item \textbf{\texttt{prereg\_drift}} (\texttt{8544b36}) discharges E3,
 which asked how far $A$ travels from its initialisation across training and
 which we had reported as unevaluable because the original cohorts kept no
 initial weights and no intermediate checkpoints. It trains a fresh cohort with
@@ -327,7 +327,7 @@ subspaces still collapsed, the mechanism of \S\ref{subsec:mechanism} would be
 falsified and the abstract would have to say so. Outcome: all three hold
 (Appendix~\ref{subsec:drift-result}).
 
-\item \textbf{\texttt{prereg\_heuristics\_downstream}} (\texttt{3bbbbdb})
+\item \textbf{\texttt{prereg\_heuristics\_downstream}} (\texttt{91d4a4b})
 answers an asymmetry we found in our own reporting: the null of
 \S\ref{subsec:ridge} is measured only in worst-task NLL excess, the unit
 \S\ref{sec:discussion} disclaims, while the positive result beside it has
@@ -358,18 +358,18 @@ which is checkable with \texttt{git log -{}-follow} on the path.}
 \toprule
 document & introduced in & governs \\
 \midrule
-\texttt{prereg\_a1\_matrix} & \texttt{329d94a} & replication, step 0 \\
-\texttt{prereg\_a1\_matrix\_amendment} & \texttt{5792ff2} & replication, $n=3$ \\
-\texttt{prereg\_dare\_ties} & \texttt{78f5399} & DARE with TIES \\
-\texttt{prereg\_conditioning} & \texttt{3943a78} & ridge sweep, rate exponent \\
-\texttt{prereg\_tmlr} & \texttt{44875ee} & solver replication, gate, KnOTS, $T=3$ \\
-\texttt{prereg\_tmlr\_amendment} & \texttt{a7802f8} & RegMean's minimal $\lambda$ \\
-\texttt{prereg\_shared\_arm} & \texttt{1f52ab1} & the shared arm at $n=3$ \\
-\texttt{prereg\_prevalence} & \texttt{07740ff} & public-cohort prevalence \\
-\texttt{prereg\_downstream} & \texttt{7bfc8dd} & downstream accuracy \\
-\texttt{prereg\_downstream\_amendment} & \texttt{2c18c8e} & HumanEval's 164 items \\
-\texttt{prereg\_heuristics\_downstream} & \texttt{3bbbbdb} & the heuristics null in accuracy \\
-\texttt{prereg\_drift} & \texttt{8d3e468} & how far $A$ travels (E3) \\
+\texttt{prereg\_a1\_matrix} & \texttt{947f0ea} & replication, step 0 \\
+\texttt{prereg\_a1\_matrix\_amendment} & \texttt{9b3f57e} & replication, $n=3$ \\
+\texttt{prereg\_dare\_ties} & \texttt{5b58059} & DARE with TIES \\
+\texttt{prereg\_conditioning} & \texttt{dc0a1f1} & ridge sweep, rate exponent \\
+\texttt{prereg\_tmlr} & \texttt{876fcb6} & solver replication, gate, KnOTS, $T=3$ \\
+\texttt{prereg\_tmlr\_amendment} & \texttt{2adbb79} & RegMean's minimal $\lambda$ \\
+\texttt{prereg\_shared\_arm} & \texttt{3b9db2f} & the shared arm at $n=3$ \\
+\texttt{prereg\_prevalence} & \texttt{335a4f6} & public-cohort prevalence \\
+\texttt{prereg\_downstream} & \texttt{a56b31e} & downstream accuracy \\
+\texttt{prereg\_downstream\_amendment} & \texttt{5216230} & HumanEval's 164 items \\
+\texttt{prereg\_heuristics\_downstream} & \texttt{91d4a4b} & the heuristics null in accuracy \\
+\texttt{prereg\_drift} & \texttt{8544b36} & how far $A$ travels (E3) \\
 \bottomrule
 \end{tabular}
 \end{table}
