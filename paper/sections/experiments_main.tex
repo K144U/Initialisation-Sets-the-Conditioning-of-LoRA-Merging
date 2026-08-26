@@ -208,8 +208,8 @@ converts this into a threshold: predicted ambiguity window
 $R^\star \in [0.025, 0.075]$, with inversion above it and TIES winning
 outright below it. Yi ($R = 0.077$, above) inverts; Llama
 ($R = 0.028$, inside) is ambiguous. We then \textbf{pre-registered} an
-out-of-sample test (commit \texttt{3582799} in the supplementary audit
-trail, timestamped before the Mistral sweep ran): Mistral-7B, probe
+out-of-sample test (commit \texttt{564125e} in the public repository,
+timestamped before the Mistral sweep ran): Mistral-7B, probe
 range $R = 0.0326$, inside the window, predicted ambiguous at $T = 7$
 under operationalized criteria fixed in advance (``clearly worst'' $=$
 last and $> \mathrm{TA} + 0.04$; ``clearly best'' $=$ first by

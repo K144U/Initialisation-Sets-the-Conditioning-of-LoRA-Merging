@@ -150,6 +150,16 @@ If yes, please complete the list below.
 
 \subsection*{Explanations on any of the answers above (optional):}
 
+\emph{Computational experiments, items 1 and 4: which clause we satisfy.} We
+provide no online appendix. Both items are met by their second clause: the
+source code and the raw per-cell result files are already public, at
+\url{\repourl}, rather than deposited with this paper. That is deliberate.
+What Appendix~\ref{app:prereg} asks a reader to check is the \emph{order} in
+which things were committed, and only a repository with its commit graph
+intact supports that: the reader runs \texttt{git merge-base} and gets an
+answer. A static archive would turn the same claim back into something taken
+on trust, which is the one thing this paper is trying not to ask for.
+
 \emph{Data sets, items 1--3 and 6.} This work introduces no new data set. All
 four training tasks and both downstream benchmarks are public and cited.
 

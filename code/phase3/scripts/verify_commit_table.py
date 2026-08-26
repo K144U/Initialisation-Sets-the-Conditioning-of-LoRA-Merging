@@ -55,6 +55,32 @@ def main() -> int:
             bad += 1
     print(f"  {len(cited) - bad}/{len(cited)} resolve")
 
+    # The tables are not the only place the paper cites a commit. Body prose
+    # cites them too, as evidence that a registration preceded the sweep it
+    # governs, which is exactly as load-bearing as a table row. Those went
+    # unchecked until a rebuild left \texttt{3582799} resolving to nothing in
+    # two sections while all 39 table hashes were clean.
+    #
+    # app_prereg.tex is skipped deliberately, for the reason above: it quotes
+    # superseded hashes precisely to show they no longer resolve, and the
+    # registrations reproduced there carry stale internal references that are
+    # the evidence they were never edited after the fact.
+    print("\n=== hashes cited in prose, outside the tables ===")
+    prose_bad = 0
+    prose_seen = 0
+    for path in sorted(PAPER.parent.glob("*.tex")):
+        if path.name == PAPER.name:
+            continue
+        for h in sorted(set(HASH.findall(path.read_text(encoding="utf-8")))):
+            prose_seen += 1
+            rc, _ = sh(clone, "rev-parse", "--verify", "--quiet",
+                       h + "^{commit}")
+            if rc != 0:
+                print(f"  FAIL {h} in {path.name} does not resolve")
+                prose_bad += 1
+    bad += prose_bad
+    print(f"  {prose_seen - prose_bad}/{prose_seen} resolve")
+
     print("\n=== ancestry, rules -> result, as the caption instructs ===")
     rows = ROW.findall(table_text)
     for label, rules, _mid, result in rows:
