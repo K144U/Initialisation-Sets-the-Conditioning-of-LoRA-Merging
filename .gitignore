@@ -116,3 +116,12 @@ JAIR/overleaf/main.synctex.gz
 JAIR/overleaf/comment.cut
 JAIR/overleaf/*.fls
 JAIR/overleaf/*.fdb_latexmk
+
+# Generated submission package: regenerate with `python JAIR/make_submission.py`.
+# The PDF and zip are build outputs and would bloat the history; cover_letter.txt
+# is derived from COVER_LETTER.md, which is itself kept out of the public mirror.
+# SUBMIT.md is deliberately NOT ignored: it is the record of what was entered
+# in the wizard.
+JAIR/submission/*.pdf
+JAIR/submission/*.zip
+JAIR/submission/cover_letter.txt
