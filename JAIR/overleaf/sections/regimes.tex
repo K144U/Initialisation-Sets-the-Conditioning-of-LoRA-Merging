@@ -259,21 +259,49 @@ cohort sits on the conditioning axis of Table~\ref{tab:conditioning}, which
 \S\ref{subsec:ridge} shows determines whether an unregularised solve-based
 merge will work at all.
 
-The whole of it is five lines. Given $T$ adapters, for each of a sample of
+The whole of it is five lines, stated in full as
+Algorithm~\ref{alg:audit}. Given $T$ adapters, for each of a sample of
 layers, orthonormalise the rows of each adapter's $A$ factor and measure how
 aligned the resulting subspaces are.
 
+\begin{algorithm}[t]
+\caption{The pre-merge conditioning audit. It reads only the $A$ factors of
+the adapter files: no $B$ factors, no base weights, no forward passes and no
+evaluation data, which is what makes it runnable before committing to a
+merge.}
+\label{alg:audit}
+\begin{algorithmic}[1]
+\Require Adapters $\{(A_t, B_t)\}_{t=1}^{T}$ trained on a common base; layer
+  sample $\mathcal{L}$; thresholds $c_{\mathrm{hi}} = 0.9$,
+  $c_{\mathrm{lo}} = 0.5$, registered in advance
+  (\S\ref{subsec:prereg-docs}) and used unchanged
+\Ensure Median principal-angle cosine $\bar c$, and a regime label
+\State $C \gets \emptyset$
+\For{each layer $\ell \in \mathcal{L}$}
+  \For{$t = 1$ \textbf{to} $T$}
+    \State $V_t \gets \mathrm{orth}\bigl(A_t^{(\ell)\top}\bigr)$
+      \Comment{orthonormal basis of task $t$'s row space, $r$ columns}
+  \EndFor
+  \For{each pair $i < j$}
+    \State $C \gets C \cup \operatorname{svals}\bigl(V_i^{\top} V_j\bigr)$
+      \Comment{cosines of the principal angles}
+  \EndFor
+\EndFor
+\State $\bar c \gets \operatorname{median}(C)$
+  \Comment{median over pairs and over layers}
+\If{$\bar c > c_{\mathrm{hi}}$}
+  \State \Return $(\bar c,\ \textsc{collapsed})$
+\ElsIf{$\bar c < c_{\mathrm{lo}}$}
+  \State \Return $(\bar c,\ \textsc{separated})$
+\Else
+  \State \Return $(\bar c,\ \textsc{indeterminate})$
+\EndIf
+\end{algorithmic}
+\end{algorithm}
+
 \begin{center}
 \fbox{\begin{minipage}{0.94\linewidth}
-\textbf{The audit.} For each sampled layer $\ell$ and each task $t$:
-\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=3pt]
-  \item $V_t \gets \mathrm{orth}\bigl(A_t^{(\ell)\top}\bigr)$, an orthonormal
-        basis for that task's row space.
-  \item For each pair $i \neq j$, take the singular values of
-        $V_i^{\top} V_j$; these are the cosines of the principal angles.
-  \item Report $\bar c$, the median over pairs and over layers.
-\end{enumerate}
-\textbf{How to read it:}
+\textbf{How to read what Algorithm~\ref{alg:audit} returns:}
 \begin{itemize}[leftmargin=*,itemsep=1pt,topsep=3pt]
   \item $\bar c > 0.9$ --- \textbf{collapsed}. Do not run an unregularised
         solve-based merge. Add a ridge, starting at $\lambda \approx 0.01$,

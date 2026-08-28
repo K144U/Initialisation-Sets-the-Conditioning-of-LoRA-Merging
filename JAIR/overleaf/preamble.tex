@@ -12,6 +12,11 @@
 \let\Bbbk\relax
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{enumitem}
+% algorithmicx, for the pre-merge audit pseudo-code (Algorithm~\ref{alg:audit}).
+% acmart is happy with algorithm + algpseudocode; do NOT also load algorithm2e,
+% which defines the same environment name and errors out.
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{multirow}
