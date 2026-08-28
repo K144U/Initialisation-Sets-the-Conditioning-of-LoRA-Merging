@@ -5,8 +5,8 @@ compute they govern was dispatched, and in the DARE-TIES case before the
 method being tested had been implemented at all.
 
 \paragraph{Why the ordering is the evidence.} A pre-registration that can
-be edited after the fact is worth nothing. The claim we are making is not
-that we intended to be honest, but that the repository history makes
+be edited after the fact is worth nothing. The claim the authors are making is not
+that they intended to be honest, but that the repository history makes
 dishonesty detectable: each rules commit is an ancestor of every result
 commit it governs, and the rules files are not modified after their
 initial commit. A reader who does not trust the narrative can verify the
@@ -20,10 +20,10 @@ ancestor of the result commit on its row.
 \paragraph{Two hash spaces, and only one of them resolves.} The
 pre-registration documents reproduced in \S\ref{subsec:prereg-docs} cite
 commits too, recording by hash that a document was committed before the
-generator it governs. Those are the hashes our working repository had when
+generator it governs. Those are the hashes the authors' working repository had when
 each document was written, and they will \emph{not} resolve in the published
 repository: filtering rewrites every commit, so the hash a document was
-written with no longer names anything. We have left them as written rather
+written with no longer names anything. The authors have left them as written rather
 than editing the documents, because editing a pre-registration after the fact
 is the one thing these documents exist to make detectable, and a reader can
 see they are unedited precisely because their internal references are stale.
@@ -38,7 +38,7 @@ message.
 \centering
 \small
 \caption{Commit trail for every pre-registered test in this paper. The hashes
-are those in the public repository, which differ from our working
+are those in the public repository, which differ from the authors' working
 repository's because the published history is filtered; the ordering is
 unaffected, since filtering does not change topology. Verify a row
 with \texttt{git merge-base -{}-is-ancestor <rules> <result>}, which exits zero
@@ -108,7 +108,7 @@ amendment fixing how the three cohorts are combined was committed before
 \texttt{indep2} and \texttt{indep3} were read, and states its own
 blindness limitation in its first paragraph: \texttt{indep1} had already
 been read when the aggregation rule was chosen, so one of three inputs
-was visible. We flag this rather than claim full blindness.
+was visible. The authors flag this rather than claim full blindness.
 
 The operative rules, summarised here and reproduced in full in the
 public repository:
@@ -171,7 +171,7 @@ primary density and is therefore one of the twelve cells deciding the
 primary verdict, so blindness for that test is eleven of twelve rather
 than twelve of twelve. The smoke inspection checked configuration
 equality between the arms and that the mask was not a no-op; it did not
-examine the direction of the effect. Second, our analysis script
+examine the direction of the effect. Second, the authors' analysis script
 initially printed, under a mixed verdict, the consequence text belonging
 to the hurts and neutral verdicts, which asserted that the negative
 result generalises. The pre-registration says of a mixed verdict only
@@ -186,7 +186,7 @@ $b \in \{2,3,4,8\}$, and the requirement that the band hold on at least
 three of four base models were fixed before the sweep ran.
 
 A second document was committed later, when an external review argued that
-the flat curve we were then reporting could be an artifact of the
+the flat curve the authors were then reporting could be an artifact of the
 post-merge rank truncation. It fixed three branches in advance: the
 falsification is \emph{void} if the slope enters the band on at least
 three of four bases, it \emph{stands} if $|{\rm slope}| < 0.5$ on at least
@@ -203,7 +203,7 @@ was that the sweep had been truncated, and checking the configurations
 showed it had not been: the sweep already ran at the untruncated
 realisation, so there was nothing to repeat. The anomaly clause was the
 part that mattered, and following it led to the mismatched asymptote and
-the refit of \S\ref{subsec:w3}. We applied the three branches to the
+the refit of \S\ref{subsec:w3}. The authors applied the three branches to the
 refitted slopes as written, obtaining one base in band and none flat,
 hence \textsc{unresolved}.
 
@@ -212,7 +212,7 @@ is unchanged and predates the numbers it judges. But the rule was
 registered against a different intervention from the one that ended up
 producing those numbers, so what carried over is the standard of evidence
 rather than a full pre-specification of the analysis, and the correction
-itself was made after the first analysis had been read. We think a
+itself was made after the first analysis had been read. The authors think a
 forbidden value obliges investigation rather than permitting it, which is
 why the clause was written in advance, and the commit ordering shows both
 the clause and what followed it.
@@ -232,7 +232,7 @@ Each is the file as committed and none was modified after its commit, which
 is checkable with \texttt{git log -{}-follow} on the path. One character is
 altered across the twelve: the first document records the wall-clock time at
 which a set of cells completed, with a timezone abbreviation that would
-narrow our geography under double-blind review, and it appears as
+narrow the authors' geography under double-blind review, and it appears as
 \texttt{[tz]}. That is the only alteration.
 
 Two conventions are shared by every document and are not repeated in the
@@ -259,7 +259,7 @@ selected from a menu. It also retires the parent's $0.013$ nat provisional
 band.
 
 \item \textbf{\texttt{prereg\_dare\_ties}} (\texttt{5b58059}) asks whether
-our DARE-with-task-arithmetic result extends to DARE with TIES, primary at
+the authors' DARE-with-task-arithmetic result extends to DARE with TIES, primary at
 density $0.2$ only, with the density sweep explicitly secondary so that no
 density can be chosen after the fact. Outcome: it does not extend
 (\S\ref{subsec:dare}).
@@ -273,7 +273,7 @@ does not (\S\ref{subsec:ridge}), and the exponent is unresolved
 (Appendix~\ref{app:rate}).
 
 \item \textbf{\texttt{prereg\_tmlr}} (\texttt{876fcb6}) is the revision
-campaign: the go/no-go is whether cohort conditioning affects a solver we
+campaign: the go/no-go is whether cohort conditioning affects a solver the authors
 did not build, with the two cohorts required to match byte-for-byte on
 tasks, evaluation seed, sequence length and VRAM gate. It also governs the
 KnOTS repair and the $T = 3$ arm. Outcome: both predictions hold on four of
@@ -302,38 +302,38 @@ parts: the library condition (A), published benchmarks' released cohorts
 \item \textbf{\texttt{prereg\_downstream}} (\texttt{a56b31e}) asks whether
 the conditioning collapse is visible in accuracy rather than only in NLL,
 on GSM8K and HumanEval, with a binomial-SE gate. It fixes in advance what
-we would write in each branch, including that a null would move the metric
+the authors would write in each branch, including that a null would move the metric
 limitation into \S\ref{sec:intro} and delete the practice recommendations.
 Outcome: the ridge recovers the shared arm on four of four bases on both
 benchmarks (\S\ref{subsec:downstream-cond}).
 
 \item \textbf{\texttt{prereg\_downstream\_amendment}} (\texttt{5216230})
-corrects our own specification error: it registered $n = 500$ evaluation
+corrects the authors' own specification error: it registered $n = 500$ evaluation
 items, but HumanEval has $164$. The gate adapts to the actual $n$, which
 widens it to roughly $11$ points on HumanEval against $6$ on GSM8K, so the
 two benchmarks are not equally powered and a null on HumanEval is not read
-as equivalent to a null on GSM8K. It makes our own predictions harder to
+as equivalent to a null on GSM8K. It makes the authors' own predictions harder to
 satisfy, and was written before any cell ran.
 
 \item \textbf{\texttt{prereg\_drift}} (\texttt{8544b36}) discharges E3,
 which asked how far $A$ travels from its initialisation across training and
-which we had reported as unevaluable because the original cohorts kept no
+which the authors had reported as unevaluable because the original cohorts kept no
 initial weights and no intermediate checkpoints. It trains a fresh cohort with
 both, on one base model in both initialisation arms, and fixes three
 predictions: that $A$ ends within half its own norm of where it started, that
 the trace is monotone, and that the cohort reproduces the collapse at all.
-Branch~3 is the one that would have cost us: if $A$ travelled far and the
+Branch~3 is the one that would have cost the authors: if $A$ travelled far and the
 subspaces still collapsed, the mechanism of \S\ref{subsec:mechanism} would be
 falsified and the abstract would have to say so. Outcome: all three hold
 (Appendix~\ref{subsec:drift-result}).
 
 \item \textbf{\texttt{prereg\_heuristics\_downstream}} (\texttt{91d4a4b})
-answers an asymmetry we found in our own reporting: the null of
+answers an asymmetry the authors found in their own reporting: the null of
 \S\ref{subsec:ridge} is measured only in worst-task NLL excess, the unit
 \S\ref{sec:discussion} disclaims, while the positive result beside it has
 two units. It registers the same five heuristics on the same two cohorts,
 scored on GSM8K and HumanEval, $80$ cells. Two features are worth naming
-because both cut against us. The gate is \emph{binomial} rather than the
+because both cut against the authors. The gate is \emph{binomial} rather than the
 $2\times\mathrm{SE}$-over-cohorts gate used elsewhere, since this design has
 one cohort per arm, which makes it a weaker instrument with a minimum
 detectable effect of about $9$ accuracy points on GSM8K and $16$ on

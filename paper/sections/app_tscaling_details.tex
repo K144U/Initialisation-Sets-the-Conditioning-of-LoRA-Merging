@@ -3,11 +3,11 @@ This appendix collects the $T$-scaling details behind
 the TIES sign-election probe, and the three Yi-specific artifacts the
 cross-model sweep resolves.
 
-\paragraph{Setup.} For each base we trained three additional rank-$16$
+\paragraph{Setup.} For each base the authors trained three additional rank-$16$
 adapters (CodeAlpaca, Dolly, XSum) and merged them with the four
 $T = 4$-matrix adapters. Six methods span the matrix: TA, TIES, DARE,
 KnOTS, TVQ$_2$, and rd-encoder ridge at the base-optimal $\lambda$. For
-each $T$ we draw one fixed nested chain plus three random subsets at
+each $T$ the authors draw one fixed nested chain plus three random subsets at
 $T \in \{2, 4\}$ and the all-$7$-tasks subset at $T = 7$; each cell
 evaluates worst-task NLL excess at $n_{\text{eval}} = 1000$. Total:
 $162$ merge cells ($54$ per base, identical subset composition across
@@ -77,7 +77,7 @@ Mistral & All      & 7 & $0.244$ & $0.152$ & $0.244$ & $0.244$ & $0.177$ & $\mat
 \end{table}
 
 \paragraph{The TIES sign-election probe.} To test the conjecture that
-sign-election consensus degrades faster on Yi than Llama, we ran a
+sign-election consensus degrades faster on Yi than Llama, the authors ran a
 per-coordinate sign-vote audit on both $T = 7$ cohorts: trim each
 adapter's $\Delta$ at density $0.2$ (the TIES default), stack the
 trimmed deltas, and tally per-coordinate votes plus per-task win-share

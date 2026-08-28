@@ -168,13 +168,13 @@ which is the orthogonal-subspace identity to within $1.4\%$ in the worst of
 the eight cells here and $0.2\%$ in the median one. Table~\ref{tab:conditioning}
 quotes $1.1\%$ because it shows only the four $T=4$ cells.
 
-\subsection{What we measure about \texorpdfstring{$A$}{A}, and what we do
+\subsection{What the authors measure about \texorpdfstring{$A$}{A}, and what they do
 not}
 \label{subsec:drift}
 
 Two different quantities can be written $\|\Delta A\|/\|A\|$ and only one of
 them is measured in this paper. The distinction matters because the
-mechanism of \S\ref{subsec:mechanism} is stated in terms of the one we do
+mechanism of \S\ref{subsec:mechanism} is stated in terms of the one the authors do
 \emph{not} measure.
 
 \textbf{Measured: the distance between two adapters of a cohort,}
@@ -193,7 +193,7 @@ an order of magnitude below the independent value.
 adapter travelled from its own initialisation,} $\|A - A_0\|_F/\|A_0\|_F$. The
 cohorts the rest of this paper uses cannot answer this, because they retained
 neither the initial weights nor any intermediate checkpoint. Registration E3
-asked for it across training and we reported it as unevaluable. It is
+asked for it across training and the authors reported it as unevaluable. It is
 evaluable on a cohort trained with the checkpoints, which is what
 \S\ref{subsec:drift-result} reports.
 
@@ -204,14 +204,14 @@ above; the description was not. The distinction decides what the number can
 support: a small distance \emph{from initialisation} would say training barely
 moved $A$, which is the mechanism of \S\ref{subsec:mechanism}, whereas a small
 distance \emph{between adapters} says only that they ended near each other,
-which is the phenomenon. We have the second.
+which is the phenomenon. The authors have the second.
 
 \subsection{How far \texorpdfstring{$A$}{A} actually travels}
 \label{subsec:drift-result}
 
 Registration E3 required $\|A - A_0\|_F/\|A_0\|_F$ at $25$, $50$, $75$ and
 $100\%$ of training, and scoped every geometry claim to ``at this training
-budget'' if it could not be evaluated. We report it here on a cohort trained
+budget'' if it could not be evaluated. The authors report it here on a cohort trained
 for the purpose: one base model, both initialisation arms, four tasks each,
 with $A_0$ written before the first optimiser step and checkpoints at exactly
 those four fractions (steps $118$, $236$, $354$ and $470$).
@@ -252,12 +252,12 @@ surviving a displacement that is identical in both conditions. That is the
 mechanism of \S\ref{subsec:mechanism} measured rather than argued, and it is a
 sharper statement than the drift number alone.
 
-Two details we report rather than smooth. The final checkpoint and the saved
+Two details the authors report rather than smooth. The final checkpoint and the saved
 adapter are the same weights, so the $100\%$ column appears twice in the raw
-trace and we print it once. And the translation task drifts furthest in both
+trace and the authors print it once. And the translation task drifts furthest in both
 arms, $0.178$ and $0.183$ against roughly $0.13$ for the others, which is
 consistent with it being the adapter that never learned its task
-(\S\ref{subsec:scope}) but which we did not predict and do not build on.
+(\S\ref{subsec:scope}) but which the authors did not predict and do not build on.
 
 What the argument rests on instead is the consequence rather than the
 intermediate. That $B$ starts at zero and therefore suppresses $A$'s early
@@ -265,7 +265,8 @@ gradient is a property of the parameterisation, not a measurement. That the
 row spaces of a shared-initialisation cohort are nearly identical is
 measured directly, at median principal cosine $0.995$ against $0.047$, and
 it is that measurement every downstream claim uses. The drift figure would
-have been a useful corroboration of why; it is not load-bearing for what.
+have been a useful corroboration of why; it does not carry the claim about
+what.
 
 \subsection{Did the adapters learn their tasks?}
 \label{app:adapter-quality}

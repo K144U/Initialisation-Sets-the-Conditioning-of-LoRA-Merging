@@ -24,13 +24,13 @@ a cohort started from one such matrix or from $T$ independent ones is rarely
 reported: a single global training seed silently decides it.
 
 {\bf Objectives:}
-We set out to turn that unreported detail into a pre-merge diagnostic: a check
+The authors set out to turn that unreported detail into a pre-merge diagnostic: a check
 that is run on the adapter files before any merge is attempted, that says
 whether a cohort has collapsed into a shared subspace, and that predicts what
 this implies for the merging method about to be applied to it.
 
 {\bf Methods:}
-We measure the subspace geometry of adapter cohorts across four base models
+The authors measure the subspace geometry of adapter cohorts across four base models
 under both conditions, audit 45 publicly released cohorts under a sampling
 frame fixed before any download, and test the consequences for five merging
 methods in loss and in downstream accuracy. Every test was pre-registered
@@ -42,8 +42,8 @@ Sharing the initialisation leaves the tasks in nearly the same subspace,
 moving the median principal cosine across four base models from 0.05 to 0.99,
 and 17 of the 45 public cohorts are in that state. The consequences split by
 method. Merges that average or sparsify task vectors are unaffected: fifteen
-of twenty base-by-method cells show no effect on our loss metric, and none of
-forty show one on GSM8K or HumanEval. Merges that solve a linear system, ours
+of twenty base-by-method cells show no effect on the authors' loss metric, and none of
+forty show one on GSM8K or HumanEval. Merges that solve a linear system, the authors'
 and RegMean, run 2 to 65 times worse on a collapsed cohort, and on Mistral the
 merged model scores zero on GSM8K and on HumanEval; one Tikhonov term recovers
 both. Regularising such a solve is standard practice, but RegMean's shipped
@@ -58,6 +58,6 @@ rather than a post-hoc explanation: it is available at the moment the decision
 is actually taken, it is independent of which merging method follows, and on a
 collapsed cohort it is the difference between a working merge and a model that
 scores zero. The shipped default does not know which regime it is in, and the
-diagnostic is what tells you. Several of our own earlier claims did not survive
-the pre-registered tests, and we report those outcomes alongside the ones that
+diagnostic is what tells you. Several of the authors' own earlier claims did not survive
+the pre-registered tests, and those outcomes are reported alongside the ones that
 did.

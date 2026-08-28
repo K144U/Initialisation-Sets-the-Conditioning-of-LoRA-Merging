@@ -1,11 +1,11 @@
-\paragraph{What we think survives.} That whether a cohort's adapters shared
+\paragraph{What the authors think survives.} That whether a cohort's adapters shared
 one initialisation of $A$ determines the conditioning of $\bar H$, by four
 orders of magnitude, measured across four base models and four cohorts, with
 an amplification returning the orthogonal-subspace value $T$ to within $1.4\%$
-at two values of $T$. That the regime is common in adapters we did not train:
+at two values of $T$. That the regime is common in adapters the authors did not train:
 $17$ of $45$ public cohorts, under a frame fixed before any download. That the
 collapse is invisible to merging heuristics and decisive for solve-based
-merges, pre-registered, holding on a second solver we did not design,
+merges, pre-registered, holding on a second solver the authors did not design,
 surviving the removal of rank truncation with the effect larger rather than
 smaller, and measured in two units, worst-task loss and downstream accuracy,
 which agree. That the mechanism is visible in the merged weights: the
@@ -13,13 +13,13 @@ heuristics stay within a factor of two of the mean task delta with essentially
 none of their energy in the ill-conditioned directions, while the
 unregularised solvers reach $35$ to $57$ times with three quarters of theirs
 there. And that one CPU minute on the adapter files tells a practitioner which
-case they are in, which is the part of this we expect anyone to use.
+case they are in, which is the part of this the authors expect anyone to use.
 
 Two smaller things survive on the theory side: that the bound's floor term is
 \emph{vacuous} for LoRA cohorts in general position, and the exact instance
 form $B^2 - \tauH^\top\bar H\tauH$ that should be evaluated in its place. The
 bound and its construction are mathematics and do not depend on any empirical
-outcome here, but \S\ref{sec:setup} is our account of how little that buys.
+outcome here, but \S\ref{sec:setup} is the authors' account of how little that buys.
 
 \paragraph{What does not, collected in one place.} These are scattered through
 the paper at the point each is established, which is where a reader checking a
@@ -27,15 +27,15 @@ number needs them. Collected here so that a reader who wants the list does not
 have to assemble it.
 
 \begin{enumerate}[itemsep=2pt]
-\item \textbf{Our own encoder's advantage.} Three controls each removed a
+\item \textbf{The authors' own encoder's advantage.} Three controls each removed a
   piece of it: independent initialisation, matching the rank and inference
   path to the baselines, and dropping the adapter that never trained. After
   all three it beats the best baseline on no base model and loses on one. The
-  middle control moved a verdict in our favour and the other two against us
+  middle control moved a verdict in the authors' favour and the other two against them
   (\S\ref{subsec:q1}).
 \item \textbf{That published merging benchmarks are confounded by
-  initialisation geometry.} Withdrawn by a control we wrote ourselves. A later
-  margin-aware control would reinstate it, and we decline to use it that way
+  initialisation geometry.} Withdrawn by a control the authors wrote themselves. A later
+  margin-aware control would reinstate it, and the authors decline to use it that way
   because it was registered after its data had been seen
   (\S\ref{subsec:withdrawn}).
 \item \textbf{That the finite-rate exponent is falsified.} Its two supporting
@@ -47,27 +47,27 @@ have to assemble it.
   of substituting a soft participation ratio into a formula derived for a
   rank. The floor is zero in both regimes (\S\ref{subsec:floor-zero}).
 \item \textbf{That subspace-alignment methods have no overlap to exploit.}
-  Formal independence is not the absence of overlap, and our KnOTS
+  Formal independence is not the absence of overlap, and the authors' KnOTS
   implementation reduced to task arithmetic under its default inner
   combination, so it never tested the question
   (\S\ref{sec:related_work}).
 \item \textbf{Worst-task NLL excess as a proxy for deployed capability.} It
-  does not predict downstream accuracy across methods on either benchmark we
+  does not predict downstream accuracy across methods on either benchmark the authors
   can test, and inverts on one. The scope of that failure is narrower than it
-  looks, and \S\ref{sec:discussion}'s second limitation is where we argue so.
+  looks, and \S\ref{sec:discussion}'s second limitation is where the authors argue so.
 \end{enumerate}
 
-We have left each of these at full strength rather than retreating to the
+The authors have left each of these at full strength rather than retreating to the
 subset that flatters the method, because the conditioning result is only worth
-anything if a reader can believe we would have reported it the other way.
+anything if a reader can believe they would have reported it the other way.
 
 \paragraph{Limitations.}
 \begin{enumerate}
 \item \textbf{The metric's resolution is about $0.001$ nats, and several of
-  our differences are near it.} A zero-mean perturbation changing the merged
+  the authors' differences are near it.} A zero-mean perturbation changing the merged
   delta by $37$ to $57\%$ in Frobenius norm costs roughly that much. Any
   comparison in this paper at the $0.005$ threshold should be read with that
-  in mind; it is why we decline to call two of the four bases in
+  in mind; it is why the authors decline to call two of the four bases in
   Table~\ref{tab:q1} losses. The conditioning results are not affected: the
   shared-versus-independent difference at $\lambda = 0$, which is the quantity
   \S\ref{subsec:ridge} turns on, runs from $0.13$ to $9.63$ nats on the
@@ -87,11 +87,11 @@ anything if a reader can believe we would have reported it the other way.
   one: \emph{higher} NLL excess goes with a \emph{higher} pass rate. It
   survives dropping the one arm with a rank confound ($\rho = +0.48$).
 
-  There is a reading of this that is not damning, and we give it without
+  There is a reading of this that is not damning, and the authors give it without
   leaning on it: worst-task excess is a maximum over four tasks, so it
   penalises exactly those merges that sacrifice one task to preserve
   another, and a merge that protects the code adapter at the expense of
-  translation will look bad by our metric and good on a code benchmark.
+  translation will look bad by their metric and good on a code benchmark.
   That is a coherent story, and it is also an argument that the metric
   answers a different question from the one a practitioner asks about a
   single deployed capability.
@@ -107,7 +107,7 @@ anything if a reader can believe we would have reported it the other way.
   unregularised merge scoring zero on both and recovering to $0.462$ and
   $0.244$ with one ridge term. The null half: \S\ref{subsec:ridge} finds no
   effect in any of forty accuracy cells, matching what the loss metric says
-  about the same methods. We name the second explicitly because a null carried
+  about the same methods. The authors name the second explicitly because a null carried
   only in a disputed unit is worth much less than an effect carried in it, and
   reporting the flattering half twice and the null once would have been the
   more comfortable choice.
@@ -122,31 +122,31 @@ anything if a reader can believe we would have reported it the other way.
   possible sits $0.0000029$ nats above its asymptote, some $350$ times
   below the metric's own resolution, and two of the second's three points
   are also below it. Ten of twenty-four measured values fall below their
-  own asymptote, which the model forbids. We withdraw the reading that the
+  own asymptote, which the model forbids. The authors withdraw the reading that the
   exponent holds on any base (\S\ref{subsec:w3}); the sweep lacks the
   dynamic range to measure it, since only $b \in \{1,2\}$ clears the noise
   floor and $b=1$ is excluded as clipping-dominated. A finer low-rate grid
-  would settle it; we deliberately have not chosen one after seeing which
+  would settle it; the authors deliberately have not chosen one after seeing which
   would produce a fit. \emph{No claim in this paper depends on the rate
   term.}
-\item \textbf{Our KnOTS baseline was a no-op, and the repair works.} With
+\item \textbf{The authors' KnOTS baseline was a no-op, and the repair works.} With
   the default inner combination it reduces algebraically to task arithmetic
   and matched it to four decimals; \S\ref{subsec:ridge} measures it at
   amplification $0.99$ with tail fraction $0.000$, identical to task
-  arithmetic in both columns. We report that as an erratum about our own
+  arithmetic in both columns. The authors report that as an erratum about their own
   configuration and claim nothing about published KnOTS. Re-run with a TIES
   inner combination it becomes a genuinely different method, and a good one:
   it beats task arithmetic on all four bases in both cohorts, by $0.020$ to
   $0.080$ nats, and at $T = 3$ on three of four, Llama's margin falling
   inside the tie threshold. So a subspace-alignment method \emph{is}
-  represented in our comparison after all. It does not reach the champion
+  represented in the authors' comparison after all. It does not reach the champion
   baseline on any base at either $T$, ranking third or fourth of six
   throughout, so no verdict in Table~\ref{tab:q1} moves.
 \item \textbf{One adapter in four never learned its task}, on every base and
-  in both arms, so our cohorts are $T=4$ nominal and $3$ effective
+  in both arms, so the authors' cohorts are $T=4$ nominal and $3$ effective
   (\S\ref{subsec:scope}). Every geometric quantity is reported at both $T$
   and the contrast is unchanged. The merge results are now reported at both
-  $T$ as well, and there one verdict does move: our encoder's win on Llama
+  $T$ as well, and there one verdict does move: the authors' encoder's win on Llama
   becomes a tie once the untrained adapter is removed (\S\ref{subsec:q1}),
   so its remaining advantage is one of the things this defect was
   supporting. No claim about merging $T$ well-trained tasks is supported by
@@ -163,10 +163,10 @@ anything if a reader can believe we would have reported it the other way.
   optimistic and no number here is a held-out number. Whether that affects
   the \emph{comparisons} is no longer a matter of belief: re-scoring every
   cell on the disjoint subset leaves the method ordering unchanged in $19$
-  of $20$ rows, and the one change swaps two variants of our own encoder
+  of $20$ rows, and the one change swaps two variants of the authors' own encoder
   (Reproducibility Statement).
 \item \textbf{Theorem~\ref{thm:general}'s rate term is conditional.} It holds
-  under Assumption~\ref{asm:epr}, which we state rather than prove: that the
+  under Assumption~\ref{asm:epr}, which the authors state rather than prove: that the
   entropy-power-to-variance ratio of $\eta$ is bounded below uniformly in
   $(T, r, d)$ and in the spectra. Appendix~\ref{app:proofs} isolates the single
   step that uses it. The floor term carries no such condition.
@@ -175,26 +175,26 @@ anything if a reader can believe we would have reported it the other way.
   regime where $Tr$ approaches $d$, and where $\deff = Tr$ must fail, is
   untouched. No rank sweep and no $T$ sweep on real adapters.
 \item \textbf{One pre-registered control has a known specification defect}
-  (\S\ref{subsec:withdrawn}), which we did not act on, because acting on it
+  (\S\ref{subsec:withdrawn}), which the authors did not act on, because acting on it
   after seeing which way it fell is what pre-registration exists to prevent.
 \end{enumerate}
 
 \paragraph{Implications for practice.} The recommendation is conditional,
 and it is about worst-task NLL excess, which limitation~2 says does not
-predict downstream accuracy. We state both halves rather than the
+predict downstream accuracy. The authors state both halves rather than the
 convenient one.
 
 If you merge with a method that solves a linear system, audit your cohort's
 conditioning and regularise. Unregularised, the same merge is $65$ times
 worse on an ill-conditioned cohort at rank $16$ and $117$ times without
-truncation, on two solvers, one of which we did not build, and one ridge
-term removes the difference. This is the recommendation we are most
+truncation, on two solvers, one of which the authors did not build, and one ridge
+term removes the difference. This is the recommendation the authors are most
 confident in, because it is the one with a measured mechanism
 (Table~\ref{tab:mechanism}) behind it.
 
-If you merge with task arithmetic, TIES, DARE or a similar heuristic, we
+If you merge with task arithmetic, TIES, DARE or a similar heuristic, the authors
 find no effect of cohort conditioning larger than about $0.01$ nats, which
-is what our design can detect. The exception is subspace alignment, which
+is what their design can detect. The exception is subspace alignment, which
 gains $0.010$ to $0.013$ nats from independent initialisation on three of
 four bases, small but consistent.
 
@@ -202,17 +202,17 @@ For anyone benchmarking merging methods: report $\kappa(\bar H)$ and the
 principal cosines alongside the results, since they cost a CPU minute and
 change how a solve-based result should be read; report more than one
 initialisation draw, because single-draw rankings are not reproducible; and
-do not use worst-task NLL excess as a proxy for deployed capability, on our
-evidence, since on one of the two benchmarks we tested it ranks methods in
+do not use worst-task NLL excess as a proxy for deployed capability, on the authors'
+evidence, since on one of the two benchmarks they tested it ranks methods in
 the wrong order.
 
 \paragraph{Future work.} The benchmark-confounding claim would be settled by
 Part B of the prevalence registration, auditing the cohorts published
-merging benchmarks actually release; our margin-aware control is not a
+merging benchmarks actually release; the authors' margin-aware control is not a
 substitute, for the reason \S\ref{subsec:withdrawn} gives. A
 finer low-rate grid would settle the exponent. Checking whether the reference
-KnOTS implementation shares the degeneracy ours did would establish whether
-that finding is about the field or only about our code. And the regime where
+KnOTS implementation shares the degeneracy the authors' did would establish whether
+that finding is about the field or only about their code. And the regime where
 $Tr$ approaches $d$, where the floor must stop being vacuous, is where this
 bound would start to have operational content; reaching it needs either many
 more tasks or much higher rank.

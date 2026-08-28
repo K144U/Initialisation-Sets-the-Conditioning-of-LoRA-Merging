@@ -2,11 +2,11 @@ All runs use the hard distribution $P^\star$ of \S\ref{sec:setup} with
 task-dependent spectra $(D_t)_{t=1}^T$. Code, random seeds, and raw
 outputs are released with the paper.
 
-\paragraph{Lower-bound slope.} We sample ensembles across
+\paragraph{Lower-bound slope.} The authors sample ensembles across
 $T\in\{2,3,4,8\}$, $r\in\{4,8,16\}$, $d\in\{128,512,2048\}$, with both
 isotropic spectra ($D_t = I_r$) and four heavy-anisotropy families
 (geometric, linear, two-scale, and mixed; spectra spread across
-$[2^{-1}, 2^1]$). For each configuration we measure the excess
+$[2^{-1}, 2^1]$). For each configuration the authors measure the excess
 $\E_{P^\star}[\|\bar H^{1/2}w^\star - \eta\|^2]$ of the Gaussian-QR +
 uniform scalar quantisation algorithm of Appendix~\ref{app:rd-achv} as a function
 of $R = b\deff$ bits, and fit a linear regression of
@@ -17,7 +17,7 @@ prediction $-2R/\deff$ of Theorem~\ref{thm:general}. The floor term
 $B^2(1 - \E[\deff]/(Tr))$ is reproduced to four to five digits of
 precision in the common-$D_0$ and task-dependent-$D_t$ regimes.
 
-\paragraph{Achievability constant and its $T$-dependence.} We measure
+\paragraph{Achievability constant and its $T$-dependence.} The authors measure
 the ratio of empirical upper bound to the Stiefel lower bound at
 $c_{\mathrm{TQ}} = 1$,
 \begin{equation*}
@@ -41,7 +41,7 @@ $\max_t \leq T\,\mathrm{avg}$ step, not intrinsic to the
 rate-distortion function; the matching $\log T$ achievability constant
 is stated as a conjecture.
 
-\paragraph{Shared-$V$ regime.} For the floor-positive regime we
+\paragraph{Shared-$V$ regime.} For the floor-positive regime the authors
 implement the null-space-aware bit allocation of \S\ref{subsec:sharedv}
 with per-coordinate fractional bits and a locked clip
 $c = 11.5\sigma_{\mathrm{pc}}$ (tuned once, applied across all
@@ -59,7 +59,7 @@ split continues to track the theoretical prediction across mixed
 anisotropies.
 
 \paragraph{Random-codebook comparison.} As a sanity check on the
-tightness of the linear construction in the shared-$V$ regime, we ran
+tightness of the linear construction in the shared-$V$ regime, the authors ran
 a valid rate-$R$ random-codebook encoder ($2^R$ iid Gaussian
 codewords, encoder picks the one minimizing $\max_t D_t$,
 $R \leq 18$). At $T = 3$, $r = 3$, the random-codebook slope is

@@ -14,7 +14,7 @@ $A_t^\top A_t$ as the Gram surrogate) and
 per-task $\alpha \propto \|\Delta_t\|_F$). Each runs a seed-$1$ cell on
 each base at $T = 4$ with the same merge cohort. RegMean is competitive
 on the easier bases but collapses on Llama ($0.243$, worse than TA)
-through the same sliver-eigenvalue pathology that breaks our own
+through the same sliver-eigenvalue pathology that breaks the authors' own
 unregularized encoder ($0.340$, \S\ref{subsec:exp-rd-encoder});
 AdaMerging trails throughout; Fisher and DELLA land in the second tier,
 never inverting the R1/R3 ordering. All four are gradient-free
@@ -24,7 +24,7 @@ rate-distortion centroid with the ridge regularization, the clean
 control (sweeping RegMean's own ridge $\lambda$ on matched seeds)
 is run in Appendix~\ref{app:robustness}; with RegMean tuned, rd-encoder
 ridge still wins on Llama, Mistral, and Qwen but \emph{loses} on
-Yi-1.5-9B-Chat ($0.037$ vs.\ $0.033$), so we do not claim a
+Yi-1.5-9B-Chat ($0.037$ vs.\ $0.033$), so the authors do not claim a
 four-base sweep against tuned RegMean.
 
 \subsection{Quadratic bridge: does rd-ridge approach the
@@ -36,7 +36,7 @@ is near-quadratic and the worst-task-optimal merge under the diagonal
 Fisher proxy collapses to the Fisher-magnitude average. This predicts:
 shrinking all adapter norms by a common factor $\alpha$, the ratio
 $R(\alpha) = \Phi^{\mathrm{ridge}}(\alpha)/\Phi^{\mathrm{Fisher}}(\alpha)$
-should approach $1$. We scale every adapter's LoRA \verb|scaling| by
+should approach $1$. The authors scale every adapter's LoRA \verb|scaling| by
 $\alpha$ before merging and run both methods on the $T = 4$ cohort on
 two bases spanning the saturation regime.
 
@@ -73,7 +73,7 @@ small-perturbation regime.
 
 \paragraph{Llama-3.1: the bridge has a measurable sweet spot.} The
 four-point scan is inconclusive at $\alpha = 0.1$ (excess
-$\sim 10^{-4}$, floating-point dominated), so we re-ran with five
+$\sim 10^{-4}$, floating-point dominated), so the authors re-ran with five
 additional $\alpha$ values (Table~\ref{tab:e11b-llama-finer}). Below
 $\alpha = 0.125$ rd-encoder \emph{over}-saturates the base-model floor
 (negative excess; the local-quadratic approximation has broken down on
@@ -105,7 +105,7 @@ $1.000$ & $\phantom{-}0.085$ & $\phantom{-}0.148$ & $\phantom{-}0.58$ \\
 \end{tabular}
 \end{table}
 
-\paragraph{What we cautiously claim.} Both bases provide a positive
+\paragraph{What the authors cautiously claim.} Both bases provide a positive
 instance of a quadratic-bridge prediction the lower-bound theorem makes
 implicitly: where adapter perturbations are large enough to escape the
 ridge-floor and small enough that the local-quadratic model holds, the

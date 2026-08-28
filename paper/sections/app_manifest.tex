@@ -56,32 +56,32 @@ for every method, so no method gains capacity over another.
 TIES~\citep{yadav2023ties}, DARE~\citep{yu2024dare}, DARE composed with
 TIES, task-vector quantisation~\citep{kim2025tvq},
 KnOTS~\citep{stoica2025knots}, data-free RegMean~\citep{jin2023regmean}, and
-our rate-distortion encoder with and without the Tikhonov ridge.
+the authors' rate-distortion encoder with and without the Tikhonov ridge.
 
 \textbf{KnOTS appears in two forms and the distinction matters.} Under its
-default inner combination our implementation reduces algebraically to task
-arithmetic ($VV^\top = I$ cancels), so it was not measuring what we intended;
+default inner combination the authors' implementation reduces algebraically to task
+arithmetic ($VV^\top = I$ cancels), so it was not measuring what they intended;
 that version is excluded from any claim about subspace alignment
 (\S\ref{sec:discussion}). The repaired version, with a TIES inner
 combination, is the one carried in the regime null of \S\ref{subsec:ridge},
 in the $80$-cell accuracy replication of the same null, and in the five
 methods \S\ref{sec:intro} names. Where this paper says ``a repaired KnOTS''
-it means the second. We make no claim about the reference implementation of
-published KnOTS, which we did not run.
+it means the second. The authors make no claim about the reference implementation of
+published KnOTS, which they did not run.
 
 RegMean~\citep{jin2023regmean} is run here in its data-free
 adapter-only form on both cohorts, on the same grid and under a registered
 rule (\S\ref{subsec:regmean}), and its published $\alpha$-shrinkage default
 is measured separately (\S\ref{subsec:regmean-default}). That is what
 licenses talking about the closed-form least-squares family rather than about
-our encoder alone, and it is the second solver Contribution~3 rests on.
+the authors' encoder alone, and it is the second solver Contribution~3 rests on.
 
 Data-free AdaMerging~\citep{adamerging2024} is \emph{not} carried over. It was
-run on the shared-initialisation cohort only, and \S\ref{subsec:q1} is our
+run on the shared-initialisation cohort only, and \S\ref{subsec:q1} is the authors'
 reason for not transferring conclusions from that cohort. LoRM and RegMean++
 are not run either, for the reasons in \S\ref{sec:related_work}: neither has a
-data-free adapter-only form we could implement without inventing the part that
-makes it that method. So the family claim rests on \textbf{two} members, our
+data-free adapter-only form the authors could implement without inventing the part that
+makes it that method. So the family claim rests on \textbf{two} members, the authors'
 encoder and RegMean, and not on five.
 
 \paragraph{Geometry audit cost.} The audit of \S\ref{subsec:audit} reads

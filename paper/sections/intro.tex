@@ -12,7 +12,7 @@ These methods are evaluated almost entirely by benchmark averages, and the
 resulting picture is unstable: the same method can be best on one cohort of
 adapters and worst on another, with no way to tell in advance which
 situation one is in. This paper is about one property of a cohort that
-explains a good deal of that instability, and what we contribute is a
+explains a good deal of that instability, and what the authors contribute is a
 \emph{pre-merge diagnostic} for it: the property is measurable from the
 adapter weight files alone, before any merge is attempted and in about a
 minute of CPU time, and it predicts which family of merging methods will
@@ -35,14 +35,14 @@ in a training curve or a benchmark average.
 \paragraph{Measuring it is cheap.} The principal cosines are computed from
 the adapter weight files alone: no forward passes, no evaluation data, no
 merging, and about one minute of CPU time for a cohort of four rank-16
-adapters (\S\ref{subsec:audit}). This is the part of the paper we expect
+adapters (\S\ref{subsec:audit}). This is the part of the paper the authors expect
 someone to use directly, and the rest of the paper is an argument that it
 is worth running.
 
-\paragraph{The effect splits cleanly by method.} We pre-registered the test
+\paragraph{The effect splits cleanly by method.} The authors pre-registered the test
 and report both halves (\S\ref{sec:methods}). Across twenty
 base-by-method cells spanning five methods, task arithmetic, TIES, DARE,
-TVQ and a repaired KnOTS, fifteen show no detectable effect at our $0.01$
+TVQ and a repaired KnOTS, fifteen show no detectable effect at the authors' $0.01$
 nat resolution, five favour independent initialisation and none favours
 shared. Scored instead on GSM8K and HumanEval, a pre-registered replication
 of the same comparison finds no effect in any of forty cells. The fifteen
@@ -56,12 +56,12 @@ Methods that solve the linear system behave differently. They reach $35$ to
 $57$ times the mean task delta with three quarters of their energy exactly
 in the ill-conditioned directions, and run unregularised they are $2.1$ to
 $65$ times worse on a shared-initialisation cohort, $25$ to $117$ times
-with rank truncation removed. A single Tikhonov term repairs it. We show
-this for our own encoder and for RegMean, so it is a property of the
-family rather than of our construction.
+with rank truncation removed. A single Tikhonov term repairs it. The authors show
+this for their own encoder and for RegMean, so it is a property of the
+family rather than of their construction.
 
 \textbf{The obvious objection is that regularising a least-squares solve is
-standard practice, so we checked what the standard practice actually does.}
+standard practice, so the authors checked what the standard practice actually does.}
 RegMean ships a regulariser of its own, an $\alpha$-shrinkage of the
 off-diagonal Gram entries with a default of $\alpha = 0.9$. On a collapsed
 cohort it is equivalent to a ridge of about $5\times10^{-4}$, roughly $20$
@@ -74,8 +74,8 @@ which regime it is in, and the audit is what tells you}
 (\S\ref{subsec:regmean-default}).
 
 \paragraph{The regime is common in released adapters.} Every cohort
-discussed so far is one we trained ourselves, in both conditions,
-deliberately. So we ran the same measurement over public LoRA cohorts under
+discussed so far is one the authors trained themselves, in both conditions,
+deliberately. So the authors ran the same measurement over public LoRA cohorts under
 a sampling frame registered before any adapter was downloaded: walk the
 HuggingFace adapter index by downloads descending, group by publisher and
 base model, take the first $50$ cohorts meeting criteria that are all
@@ -84,7 +84,7 @@ the $45$ scorable cohorts, $37.8\%$, are in the collapsed regime}
 (\S\ref{subsec:prevalence}). The distribution is bimodal rather than a
 continuum: one cohort of $45$ lies between the two populations.
 
-\paragraph{It reaches accuracy, not just our metric.} A large difference
+\paragraph{It reaches accuracy, not just the authors' metric.} A large difference
 measured in a loss nobody deploys would still be open to the objection that
 the loss is the wrong unit. On the same merges, scored on GSM8K and
 HumanEval with the repaired scorers, the ridge recovers the shared arm past
@@ -107,42 +107,42 @@ Figure~\ref{fig:two-regimes}). A method that solves for that interpolator
 inherits the conditioning; a method that averages does not. That is the
 whole of the split reported above.
 
-We report the principal cosines rather than $\kappa(\bar H)$ throughout,
+The authors report the principal cosines rather than $\kappa(\bar H)$ throughout,
 because the cosines are properties of the row spaces alone and hold under
 any curvature model, whereas $\kappa(\bar H)$ depends on the specialisation
-$H_t = P_{V_t}$ we adopt (\S\ref{subsec:conditioning}).
+$H_t = P_{V_t}$ adopted here (\S\ref{subsec:conditioning}).
 
-\paragraph{Where this came from.} We arrived at the conditioning question
+\paragraph{Where this came from.} The authors arrived at the conditioning question
 through a rate-distortion analysis of merging, which is in the paper because
-it is the reason we looked at $\bar H$ at all and for no stronger reason than
+it is the reason for looking at $\bar H$ at all and for no stronger reason than
 that. \S\ref{sec:setup} says what it did and did not do, and
 Appendix~\ref{app:rd} carries the formal development. In short: its floor
-term is exactly zero on every cohort we measured, its rate term rests on an
-assumption we state but do not prove and on an imported constant, and it
+term is exactly zero on every cohort the authors measured, its rate term rests on an
+assumption stated but not proved and on an imported constant, and it
 derives none of the four results above. Everything in \S\ref{sec:regimes} and
 \S\ref{sec:methods} stands or falls on its own measurements.
 
 \paragraph{What did not survive.} Several pre-registered tests went against
-us, and the results below are what is left after them. Our own encoder's
-advantage does not survive the move from shared-initialisation cohorts to
-properly initialised ones. A control we designed ourselves withdrew our
+the authors, and the results below are what is left after them. The authors' own
+encoder loses its advantage in the move from shared-initialisation cohorts to
+properly initialised ones. A control the authors designed themselves withdrew their
 earlier headline claim that published merging benchmarks are confounded by
 initialisation geometry, and it stays withdrawn: a later margin-aware
 control would reinstate it, but that control was written after its data had
-been seen and we do not use it that way (\S\ref{subsec:withdrawn}). The rate exponent the bound predicts is unresolved:
-our sweep lacks the dynamic range to measure it (\S\ref{subsec:w3}). One of our four adapters never learned its
-task, so our cohorts are $T=4$ nominal and $3$ effective, and we report
+been seen and the authors do not use it that way (\S\ref{subsec:withdrawn}). The rate exponent the bound predicts is unresolved:
+the authors' sweep lacks the dynamic range to measure it (\S\ref{subsec:w3}). One of the authors' four adapters never learned its
+task, so the cohorts are $T=4$ nominal and $3$ effective, and the authors report
 every geometric quantity at both. Appendix~\ref{app:prereg} summarises all
 twelve pre-registrations and gives the commit ordering that makes them
 checkable;
 the documents themselves are in the public repository.
 
 \paragraph{An earlier version of this work is public.} It is posted on Zenodo
-under our own names, titled \emph{A Rate-Distortion Function for Model
+under the authors' own names, titled \emph{A Rate-Distortion Function for Model
 Merging} \citep{pathak2026rd}, and it predates the pre-registered replication
-reported here. We cite it rather than leave it to be found, because it still
+reported here. The authors cite it rather than leave it to be found, because it still
 presents as headline results two things this paper does not claim: that the
-rate-distortion bound is the contribution, and that our encoder attains the
+rate-distortion bound is the contribution, and that their encoder attains the
 lowest worst-task loss on all four bases at default hyperparameters. Both are
 superseded by the tests in \S\ref{sec:methods}. Where the two documents
 disagree, this one is current.
@@ -154,31 +154,31 @@ disagree, this one is current.
   whether an unregularised solve-based merge will fail on it
   (\S\ref{subsec:audit}).
 \item \textbf{A pre-registered prevalence estimate} for that regime in
-  adapters we did not train: under a sampling frame fixed before any
+  adapters the authors did not train: under a sampling frame fixed before any
   download, $37.8\%$ of $45$ public LoRA cohorts are collapsed, and the
   distribution is bimodal rather than continuous
   (\S\ref{subsec:prevalence}).
 \item \textbf{A pre-registered demonstration that the collapse is invisible
   to standard merging heuristics and decisive for solve-based ones}, for
-  our encoder and for RegMean, at $n = 3$ cohorts in \emph{both} regimes,
+  the authors' encoder and for RegMean, at $n = 3$ cohorts in \emph{both} regimes,
   with the mechanism measured: the heuristics never place more than a
   rounding error of their norm in the ill-conditioned directions and the
   unregularised solvers place three quarters of it there
   (\S\ref{subsec:ridge}, \S\ref{subsec:shared-arm}). The invisible half
   is measured twice, in worst-task NLL excess and in downstream accuracy,
-  because the metric the first uses is one we ourselves criticise: zero of
+  because the metric the first uses is one the authors themselves criticise: zero of
   forty accuracy cells show an effect, at a resolution of about six points
   on GSM8K and eleven on HumanEval.
 \item \textbf{A pre-registered demonstration that this reaches downstream
-  accuracy}, so it is not an artifact of the loss we measure it in: on
+  accuracy}, so it is not an artifact of the loss the authors measure it in: on
   Mistral the unregularised shared-cohort merge scores zero on GSM8K and on
   HumanEval, with no scorer discards, and one ridge term recovers it
   (\S\ref{subsec:downstream-cond}).
 \end{enumerate}
 
 The rate-distortion bound (Theorems~\ref{thm:general} and~\ref{thm:achv})
-is provenance rather than a contribution, for the reasons above. We also
+is provenance rather than a contribution, for the reasons above. The authors also
 report a negative result for DARE composed with task arithmetic and the
 pre-registered test showing it does not extend to DARE with TIES
-(\S\ref{subsec:dare}), which bounds an earlier claim of ours rather than
+(\S\ref{subsec:dare}), which bounds an earlier claim of theirs rather than
 adding a new one.

@@ -7,7 +7,7 @@ with
   \range(H_t),\quad \tau_t^\top H_t \tau_t \leq B^2.
 \end{equation}
 Per-task loss is the quadratic $f_t(w) := \tfrac12 (w - \tau_t)^\top
-H_t (w - \tau_t)$. We write $\boldsymbol\tau := (\tau_t)_{t=1}^T$,
+H_t (w - \tau_t)$. The authors write $\boldsymbol\tau := (\tau_t)_{t=1}^T$,
 $\boldsymbol H := (H_t)_{t=1}^T$, and call tuples satisfying
 \eqref{eq:admissibility} \emph{admissible}. The specialisation
 $H_t = P_{V_t}$ recovers the weight-disentangled LoRA setting
@@ -23,7 +23,7 @@ incurs per-task distortion $D_t(w^\star) := (w^\star - \tau_t)^\top H_t
   \;:=\; \max_{t\in[T]} D_t(w^\star),
 \end{equation}
 because a merged model that collapses on a single task is not deployable.
-Empirically we report the same quantity as worst-task NLL excess: the largest,
+Empirically the authors report the same quantity as worst-task NLL excess: the largest,
 over tasks, of the merged model's negative log-likelihood on a task minus that
 of the task's own adapter.
 
@@ -45,9 +45,9 @@ whether the $T$ adapters of a cohort shared one initialisation determines the
 conditioning of $\bar H$, across four orders of magnitude, and
 \S\ref{sec:methods} shows which merging methods that conditioning reaches.
 
-\paragraph{A note on $H_t = P_{V_t}$.} Every $\kappa(\bar H)$ we report adopts
+\paragraph{A note on $H_t = P_{V_t}$.} Every $\kappa(\bar H)$ the authors report adopts
 this specialisation, so it is an index of subspace overlap under a stated
 curvature model and would take a different value under a Fisher-weighted
-$H_t$. This is why we lead on principal cosines, which are properties of the
+$H_t$. This is why the authors lead on principal cosines, which are properties of the
 row spaces alone and hold under any curvature model
 (\S\ref{subsec:conditioning}).

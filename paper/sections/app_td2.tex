@@ -36,7 +36,7 @@ The TIES update at coordinate $i$ is
   S_i = \{t : k_{t,i} = 1, b_{t,i} = \hat{s}_i\}.
   \label{eq:ties-update}
 \end{equation}
-We linearize around the symmetric case $q_t \equiv 1/T$: let
+The authors linearize around the symmetric case $q_t \equiv 1/T$: let
 $q_t = 1/T + \epsilon_t$ with $\sum_t \epsilon_t = 0$.
 
 \paragraph{Effective merge weight of the dominant task.} Conditioned
@@ -93,7 +93,7 @@ Appendix~\ref{app:e5}), $R^\star \approx \beta_{\mathrm{lo}}/T$ with
 $\beta_{\mathrm{lo}} \in [0.1, 0.3]$, giving
 $R^\star \in [0.025, 0.075]$ at $T = 4$; with $c_{\mathrm{bias}}
 \approx c_{\mathrm{sign}}$ (strong spectral alignment),
-$R^\star \approx 2/\sqrt{T} \approx 1$, vacuous. We therefore predict
+$R^\star \approx 2/\sqrt{T} \approx 1$, vacuous. The authors therefore predict
 $R^\star \in [0.025, 0.075]$.
 
 \subsection{Comparison to the cross-model data points}
@@ -111,15 +111,15 @@ Predicted inversion; observed: TIES becomes the worst method
 the window. Predicted ambiguous; observed: second of six ($0.152$),
 $0.092$ nats below TA. Matches.
 \end{itemize}
-We are careful \emph{not} to call this a validated bracket: the
+The authors are careful \emph{not} to call this a validated bracket: the
 \emph{below}-window prediction (TIES wins outright for $R < 0.025$) is
-untested, since no cohort we measured has $R < 0.028$. What the three
+untested, since no cohort they measured has $R < 0.028$. What the three
 points confirm is the upper threshold and the in-window ambiguous
 interior.
 
 \paragraph{Falsification protocol and third-base confirmation.} The
 model predicts that any additional base with $R \in [0.025, 0.075]$
-should produce ambiguous TIES behavior. We pre-registered exactly this
+should produce ambiguous TIES behavior. The authors pre-registered exactly this
 test before the corresponding sweep ran (commit \texttt{564125e} in
 the public repository), with operationalized criteria
 fixed in advance: ``clearly worst'' $=$ TIES last and mean
@@ -134,13 +134,13 @@ a higher-order term in the perturbation model.
 
 The cross-model evidence ties the inversion to the win-share range $R$
 but cannot isolate $R$ as the \emph{cause}: real bases differ in many
-ways at once. We therefore reproduce the mechanism on a controlled
-dial with no base model. We synthesize $T = 7$ task vectors on a
+ways at once. The authors therefore reproduce the mechanism on a controlled
+dial with no base model. The authors synthesize $T = 7$ task vectors on a
 sparse $k = 48$-coordinate support of $\R^{256}$ sharing a
 high-consensus sign pattern (mirroring the $\sim 70\%$ unanimous-vote
 structure measured on real cohorts), and turn a single knob $\rho$:
 the fraction of coordinates on which one minority task flips its sign
-against the consensus. We merge with the \emph{same} TIES code path
+against the consensus. The authors merge with the \emph{same} TIES code path
 used throughout and with TA, measuring worst-task quadratic excess and
 the win-share range $R$ over $40$ seeds.
 

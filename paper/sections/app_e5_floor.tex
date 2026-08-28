@@ -2,13 +2,13 @@
 LoRA fine-tunes}
 \label{subsec:exp-e5-null}
 
-On the sixteen adapters of \S\ref{subsec:exp-lora} we measured
+On the sixteen adapters of \S\ref{subsec:exp-lora} the authors measured
 $\deff = Tr$ in every attention projection of every base model, so the
 predicted floor $B^2(1 - \deff/(Tr))$ is identically zero. A natural
 concern: is this an unlucky choice of task corpora or hyperparameters?
-We tested two operational routes to break the saturation.
+The authors tested two operational routes to break the saturation.
 
-\paragraph{Arm 1: data-mixture overlap.} On Qwen-2.5-7B we trained $4$
+\paragraph{Arm 1: data-mixture overlap.} On Qwen-2.5-7B the authors trained $4$
 task adapters under three data-mixture levels: at mixing parameter
 $\alpha \in \{0, 0.5, 0.9\}$ the training data for the target task is a
 fraction $\alpha$ from a fixed shared pool (uniformly sampled across
@@ -23,7 +23,7 @@ set by the per-task answer-distribution loss, not the inputs' raw
 geometry, so shared training inputs do not induce shared LoRA
 subspaces.
 
-\paragraph{Arm 2: geometric forcing at $r = 64$.} On the same base we
+\paragraph{Arm 2: geometric forcing at $r = 64$.} On the same base the authors
 trained the four adapters at rank $r = 64$ ($Tr = 256$). Hard
 $\deff/(Tr)$: mean $0.997$, min $0.867$, $0/112$ layers below the
 pre-specified $0.8$ threshold. The floor formula still evaluates to
@@ -60,10 +60,10 @@ Forcing, $r = 64$        & $0.997$ & $0.867$ & $0.253$ & $0/112$ \\
 \paragraph{Interpretation.} The lower bound continues to apply (it
 is an information-theoretic floor that always holds) but its
 non-vacuous regime sits outside the practical LoRA setting in any
-natural way we could probe. This is a \emph{positive} finding for the
+natural way the authors could probe. This is a \emph{positive} finding for the
 achievability program: the algorithmic regime, where worst-task excess
 is dominated by construction-side suboptimality rather than the
-irreducible floor, is the regime all real LoRA fine-tunes live in. We
+irreducible floor, is the regime all real LoRA fine-tunes live in. The authors
 do not rule out a deliberately engineered floor-positive regime (shared
 adapter modules, hard-coded subspace constraints, extreme high-rank
 LoRA); constructing one is future work.
@@ -71,12 +71,12 @@ LoRA); constructing one is future work.
 \subsection{Recipe: estimating the floor on trained adapters}
 \label{subsec:floor-recipe}
 
-The recipe below is what we used above and what practitioners can
+The recipe below is what the authors used above and what practitioners can
 re-run on their own checkpoints; it needs only the adapter artifacts,
 not the base model.
 
 \paragraph{Step 1: per-task, per-layer projector.} The effective
-dimension is fundamentally a per-layer quantity. For each attention
+dimension is a per-layer quantity. For each attention
 projection in each layer $\ell$, form the adapter's column matrix
 $M_t^\ell \in \R^{d_{\mathrm{in}} \times r_t}$ and its rank-$r_t$
 orthonormal projector $V_t^\ell = \mathrm{qr}(M_t^\ell).Q$. (A single
@@ -99,7 +99,7 @@ tasks.
 \paragraph{Step 4: floor and algorithmic gap.}
 $\Phi^\star_{\mathrm{lower}} = B^2(1 - \deff/(Tr))$, evaluated per
 layer (the Lemma~\ref{lem:floor-general} form). If
-$\deff^\ell = Tr$ everywhere (the regime all our measurements occupy),
+$\deff^\ell = Tr$ everywhere (the regime all the authors' measurements occupy),
 the floor is identically zero and any measured worst-task excess is
 the \emph{entire} algorithmic gap. If $\deff < Tr$, the floor bounds
 the smallest excess any encoder at any rate can achieve, and only

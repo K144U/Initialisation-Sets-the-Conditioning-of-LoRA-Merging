@@ -18,16 +18,16 @@ floor-positive regime, the null-space construction tracks its predicted
 exponent $-2r/(r+|A|-1)$ and a random-codebook encoder is strictly
 steeper, confirming the open gap of Remark~\ref{rem:sharedv-gap}.
 
-\paragraph{Real-LLM setup.} We calibrate the bound against real LoRA
+\paragraph{Real-LLM setup.} The authors calibrate the bound against real LoRA
 fine-tunes on four instruction-tuned bases spanning distinct
 pretraining recipes and attention designs: Llama-3.1-8B-Instruct (MHA),
 Qwen-2.5-7B-Instruct (GQA), Mistral-7B-Instruct-v0.3 (MHA), and
-Yi-1.5-9B-Chat (MHA). For each we train $T=4$ adapters (rank $r = 16$
+Yi-1.5-9B-Chat (MHA). For each the authors train $T=4$ adapters (rank $r = 16$
 on the $\{q,k,v,o\}$ projections; AdamW, lr $5\times10^{-5}$, $7500$
 examples $\times$ $2$ epochs) on GSM8K (math), Alpaca-cleaned
 (instruction following), Magicoder-OSS-Instruct (code), and WMT19
 en$\to$de (translation); $16$ adapters total, retrained at three
-independent seeds. For a merged delta $w$ we measure per-task
+independent seeds. For a merged delta $w$ the authors measure per-task
 \emph{excess} NLL over the task's own adapter,
 $\Delta L_t(w) = L_t(\theta_0 + w) - L_t(\theta_0 + \tau_t)$ on
 $n = 1000$ held-out examples (nats per response token), and worst-task
@@ -75,7 +75,7 @@ $\approx$TA floor; the dip covaries with TIES per-task but is
 
 \paragraph{Seed robustness.} Retraining the matrix at three
 independent seeds and running $10{,}000$-resample paired bootstraps on
-the five method-pair gaps behind our recommendations leaves \emph{all
+the five method-pair gaps behind the authors' recommendations leaves \emph{all
 $20$ gaps Confident} (largest CI half-width $\pm 0.0044$ nats;
 Appendix~\ref{app:multiseed}). The $\deff = Tr$ finding is empirical
 (trained subspaces are optimized, not random) but holds in
@@ -85,7 +85,7 @@ $100\%$ of layers across four independently pretrained models.
 salvages it}
 \label{subsec:exp-rd-encoder}
 
-We instantiate the encoder of Theorem~\ref{thm:achv} with the projector
+The authors instantiate the encoder of Theorem~\ref{thm:achv} with the projector
 surrogate $H_t = P_{V_t}$ (top-$r$ right-singular projector of each
 task's delta), evaluated at the $b \to \infty$ rate on Llama-3.1-8B at
 $T = 4$. \textbf{The exact centroid fails:} worst-task excess $0.340$
@@ -157,25 +157,25 @@ seed-consistent comparison with nine baselines, including its closest
 structural relative, data-free RegMean~\citep{jin2023regmean}, and
 data-free AdaMerging~\citep{adamerging2024}: lowest worst-task excess
 on every base at default hyperparameters. Because a swept $\lambda$
-against untuned baselines would be an unfair win, we also sweep each
+against untuned baselines would be an unfair win, the authors also sweep each
 close competitor's key hyperparameter (TIES/DARE density over five
 values, RegMean's own ridge $\lambda$ over six decades;
 Appendix~\ref{app:robustness}): rd-encoder ridge remains best on
 Llama, Mistral, and Qwen against every tuned competitor, but on
 saturated Yi-Chat a tuned RegMean edges it ($0.033$ vs.\ $0.037$,
-consistent across three matched seeds) and a tuned TIES ties it. We
+consistent across three matched seeds) and a tuned TIES ties it. The authors
 therefore claim the strongest data-free merge \emph{robustly on the
 non-saturated bases} and competitive-but-not-dominant on saturated
-Yi, the base where we independently flag NLL excess as an unreliable
+Yi, the base where they independently flag NLL excess as an unreliable
 proxy (R2). Part of the default-hyperparameter
 Llama gap over RegMean ($0.243$) is the same sliver pathology that
-breaks our own $\lambda = 0$ construction ($0.340$): RegMean has no
+breaks the authors' own $\lambda = 0$ construction ($0.340$): RegMean has no
 ridge term, which is precisely why the tuned-RegMean control matters.
 
 \subsection{$T$-scaling and the TIES-inversion audit}
 \label{subsec:exp-T-scaling}
 
-To test whether the ordering survives beyond $T = 4$, we sweep
+To test whether the ordering survives beyond $T = 4$, the authors sweep
 $T \in \{2, 4, 7\}$ on three bases (Yi-1.5-9B-Chat,
 Llama-3.1-8B-Instruct, and pre-registered Mistral-7B-v0.3) over the
 seven-task pool ($162$ merge cells, six methods, identical subset
@@ -207,7 +207,7 @@ model of the TIES update (Appendix~\ref{app:sign-election-threshold})
 converts this into a threshold: predicted ambiguity window
 $R^\star \in [0.025, 0.075]$, with inversion above it and TIES winning
 outright below it. Yi ($R = 0.077$, above) inverts; Llama
-($R = 0.028$, inside) is ambiguous. We then \textbf{pre-registered} an
+($R = 0.028$, inside) is ambiguous. The authors then \textbf{pre-registered} an
 out-of-sample test (commit \texttt{564125e} in the public repository,
 timestamped before the Mistral sweep ran): Mistral-7B, probe
 range $R = 0.0326$, inside the window, predicted ambiguous at $T = 7$
@@ -220,15 +220,15 @@ $R$ and the TIES$-$TA gap in lockstep (Pearson $0.998$;
 Appendix~\ref{app:sign-election-threshold}). \emph{Caveats, stated
 plainly:} the window's constants were fit to the two in-sample points,
 ``ambiguous'' is the prior-likely outcome for most methods, and the
-below-window prediction is untested (no cohort we measured has
-$R < 0.028$). We present the threshold as a calibrated heuristic with
+below-window prediction is untested (no cohort the authors measured has
+$R < 0.028$). The authors present the threshold as a calibrated heuristic with
 one out-of-sample consistency check, not a validated law.
 
 \subsection{Do NLL conclusions hold on task accuracy?}
 \label{subsec:exp-downstream-gsm8k}
 
 NLL excess is fast and seed-stable but not what a practitioner
-deploys against, so we re-merge the $T = 4$ matrix and evaluate GSM8K
+deploys against, so the authors re-merge the $T = 4$ matrix and evaluate GSM8K
 exact-match ($n = 500$, greedy CoT) and HumanEval pass@1 ($n = 164$,
 sandboxed) on matched seed-$1/2/3$ adapters ($3$-seed means;
 Table~\ref{tab:downstream}); rd-encoder ridge runs at the $\lambda$
@@ -318,5 +318,5 @@ L3-GSM8K cell shows single-metric verification can mislead.
 \textbf{R5: Estimate the floor before assuming you are
 algorithm-bound.} The recipe of Appendix~\ref{app:e5} computes
 $\Phi^\star_{\mathrm{lower}} = B^2(1 - \deff/(Tr))$ from adapter
-artifacts in $\lesssim 1$ CPU-minute per task; every cohort we
+artifacts in $\lesssim 1$ CPU-minute per task; every cohort the authors
 measured is floor-zero.

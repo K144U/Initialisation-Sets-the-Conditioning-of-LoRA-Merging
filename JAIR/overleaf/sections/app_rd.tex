@@ -11,7 +11,7 @@ $E : (\R^d)^T \to \{1,\ldots,2^R\}$ and decoder
 $D : \{1,\ldots,2^R\} \to \R^d$, both of which may depend on
 $\boldsymbol H$ as shared side information: in deployment $\boldsymbol H$ is
 determined by the LoRA factors both ends already hold, so only the $R$ bits
-describing $\boldsymbol\tau$ are charged to the rate. Our lower bound holds
+describing $\boldsymbol\tau$ are charged to the rate. The authors' lower bound holds
 even when $\boldsymbol H$ is revealed for free to both ends. The
 \emph{rank-$r$ rate-distortion function} is
 \begin{equation}\label{eq:rd-def}
@@ -62,7 +62,7 @@ on the curvature data $\boldsymbol H$. Lemmas~\ref{lem:id}
 and~\ref{lem:floor-general} are proved in full in
 Appendix~\ref{app:proofs}. Theorem~\ref{thm:general}'s floor term is proved
 there unconditionally; its rate term rests on Assumption~\ref{asm:epr} below,
-which we state explicitly rather than leave in an appendix.
+which the authors state explicitly rather than leave in an appendix.
 
 \begin{lemma}[$H_t$-weighted max $\geq$ avg identity]\label{lem:id}
 For every admissible $(\boldsymbol\tau, \boldsymbol H)$ and every
@@ -98,14 +98,14 @@ $(D_t)_{t=1}^T$ (possibly distinct across tasks),
 The key probabilistic input is the second-moment identity
 $\E[H_t\tau_t\tau_t^\top H_t\mid U_t] = (B^2/r) H_t$, which holds for
 any $D_t$ by the $D_t^{-1/2}$ stretch in $P^\star$. Three limits
-illuminate the formula: at $r = d$ (full rank) the floor is
+clarify the formula: at $r = d$ (full rank) the floor is
 $B^2(1 - 1/T)$, the classical averaged-vector-quantisation spread; at
 $T = 1$ it is zero, recovering single-source quantisation; and when
 all subspaces coincide ($V_t = V$, $\deff = r$) it is again
 $B^2(1 - 1/T)$. In the generic LoRA regime ($V_t$ Stiefel-random,
 $Tr \leq d$), $\deff = Tr$ almost surely and the floor vanishes.
 
-The rate term needs one ingredient we do not prove, and we state it as an
+The rate term needs one ingredient the authors do not prove, and they state it as an
 assumption rather than carry it as a caveat, so that what is conditional is
 visible where the result is used.
 
@@ -117,11 +117,11 @@ $c_{\mathrm{TQ}}$ times its conditional variance.
 \end{assumption}
 
 For each fixed instance the ratio is finite, because $\eta$ has a density and
-its scale is pinned by $\tau_t^\top H_t \tau_t = B^2$. What we do not establish
+its scale is pinned by $\tau_t^\top H_t \tau_t = B^2$. What the authors do not establish
 is that the bound is uniform, and Appendix~\ref{app:proofs} isolates the exact
-step where it is used. We import the constant from
+step where it is used. The authors import the constant from
 TurboQuant~\citep{zandieh2025turboquant}, which supplies one in the
-rotation-invariant case; transferring it to our conditional setting is part of
+rotation-invariant case; transferring it to their conditional setting is part of
 what Assumption~\ref{asm:epr} asserts.
 
 \begin{theorem}[Rank-$r$ RD lower bound, general $H_t$]\label{thm:general}
@@ -173,7 +173,7 @@ lower bound requires. The step is worth spelling out because the natural
 misreading fails: the exponential factor \emph{alone}, $x \mapsto
 2^{-2R/x}$, has second derivative $(a/x^{3})(a/x - 2)e^{-a/x}$ and is
 convex only for $x < R\ln 2$, so it would not license the substitution at
-the dimensions we work at. It is the linear prefactor, which comes from
+the dimensions the authors work at. It is the linear prefactor, which comes from
 $\E[\|\eta\|^2] = B^2\E[\deff]/(Tr)$, that makes the product convex
 throughout. The point is moot in the Stiefel regime, where $\deff = Tr$
 almost surely and the expectation is over a constant.
@@ -204,7 +204,7 @@ H^{1/2}\tauH$ in the $Q$-basis. (2)~Apply the shared rotation
 $\tilde\eta := O\eta_Q$. (3)~Uniform-scalar-quantise each coordinate on
 $[-c\sigma_{\mathrm{pc}}, c\sigma_{\mathrm{pc}}]$ with $b$ bits, where
 $\sigma_{\mathrm{pc}} := B/\sqrt{Tr}$ and $c$ is a clipping constant
-(we use $c = 5$); total rate $R = b\deff$. \emph{Decoder:} invert each
+(the authors use $c = 5$); total rate $R = b\deff$. \emph{Decoder:} invert each
 step and emit $w^\star := \bar H^{+1/2}\eta_q$ on $\range(\bar H)$. The
 centroid $\tauH$ is the sufficient statistic in the floor-zero regime,
 the $\bar H^{1/2}$ scaling whitens it, and the random rotation spreads
@@ -253,7 +253,7 @@ read as ``$\Theta$ up to a $\log T$ factor.''
 \end{remark}
 
 \paragraph{The shared-$V$ / floor-positive regime.}\label{subsec:sharedv}
-The regime below is a property of the model, not of any cohort we
+The regime below is a property of the model, not of any cohort the authors
 measured: \S\ref{subsec:floor-zero} finds $\deff = Tr$ on every real
 cohort, in both initialisation conditions, so none of them occupies it.
 It is reachable when the $V_t$ genuinely coincide, which for LoRA would

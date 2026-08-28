@@ -3,7 +3,7 @@ pre-registration documents and the analysis scripts are released with the
 paper. \S\ref{subsec:prereg-docs} summarises all twelve pre-registrations, and
 the public repository carries them in full and unedited. Each was committed to version control
 before the compute it governs was dispatched; the commit ordering is
-recoverable from the repository history and is the audit trail we ask the
+recoverable from the repository history and is the audit trail the authors ask the
 reader to check rather than take on trust.
 
 \paragraph{Data splits.} Training and evaluation splits are \emph{not}
@@ -19,15 +19,15 @@ unaffected. Absolute loss and accuracy numbers in this paper are therefore
 optimistic and should not be read as held-out performance.
 
 Whether that overlap affects comparisons \emph{between} methods is
-testable rather than a matter of belief, and we tested it.
+testable rather than a matter of belief, and the authors tested it.
 Every cell stores per-example loss in evaluation order, so the
 contaminated positions can be dropped and the whole matrix re-aggregated
 without retraining anything. On the disjoint subset the method ordering is
 unchanged in $19$ of the $20$ base-by-cohort rows; the single exception
-swaps two variants of our own encoder with each other and moves no
+swaps two variants of the authors' own encoder with each other and moves no
 baseline; and the worst task is the same in all $144$ cells. Per-cell
 worst-task excess shifts by a mean of $0.0000$ nats, between $-0.0021$ and
-$+0.0009$. The claim that the overlap does not affect our comparisons is
+$+0.0009$. The claim that the overlap does not affect the authors' comparisons is
 therefore a result rather than an assurance, and it is worth being precise
 about what it covers: comparisons, not levels. Absolute numbers remain
 optimistic.
@@ -40,7 +40,7 @@ GSM8K extractor required the answer at end-of-string. Discard rates ran
 from $61\%$ to $81\%$ on some method and base combinations and near zero
 on others, which makes cross-method comparison meaningless. Both scorers
 have been fixed, all affected cells were re-scored, and the discard rate
-is now zero. The re-scored numbers are what appear here. We do not draw
+is now zero. The re-scored numbers are what appear here. The authors do not draw
 any correlation conclusion from them, for the power reasons given in
 \S\ref{sec:discussion}.
 
@@ -50,13 +50,13 @@ per-cell result files are public at \url{\repourl}. It is a repository
 rather than a snapshot: clone it and the commit graph is intact, so the
 ordering claimed in Table~\ref{tab:commits} can be checked with
 \texttt{git merge-base} rather than taken on trust. That ordering is the
-part of our procedure we are asking the reader to verify, and the hashes in
+part of the authors' procedure they are asking the reader to verify, and the hashes in
 that table are this repository's.
 
-The published history is filtered, and we say so because the filtering
+The published history is filtered, and the authors say so because the filtering
 rewrote every commit hash. Three things are absent from it, none of them
 cited anywhere in this paper and none bearing on any result: private
-correspondence and external review notes, which were never ours alone to
+correspondence and external review notes, which were never the authors' alone to
 publish; large build artifacts, which only bloat the history; and text
 identifying a manuscript that is still under anonymous review elsewhere.
 Filtering changes hashes but not the commit graph, and the graph is what

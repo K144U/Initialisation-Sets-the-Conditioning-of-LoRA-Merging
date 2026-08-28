@@ -1,10 +1,10 @@
 This appendix supplies the proofs that \S\ref{sec:lower_bound} defers. An
 earlier pointer sent the reader to supplementary material; no such material
-existed, and we correct that here.
+existed, and the authors correct that here.
 
-We are explicit about what is fully proved and what is not.
+The authors are explicit about what is fully proved and what is not.
 Lemma~\ref{lem:id} and Lemma~\ref{lem:floor-general} are proved completely
-below. Theorem~\ref{thm:general} is proved modulo one constant, and we isolate
+below. Theorem~\ref{thm:general} is proved modulo one constant, and the authors isolate
 exactly which step carries it rather than absorbing it silently.
 
 \subsection{Proof of Lemma~\ref{lem:id}}
@@ -45,14 +45,14 @@ $\tau_t^\top H_t \tau_t = B^2$ under $P^\star$,
   \;=\; B^2 - \tauH^\top \bar H \tauH .
 \end{equation}
 This form is worth stating because it is computable for any given cohort from
-the adapters alone, with no appeal to $P^\star$. We use it in
-\S\ref{sec:regimes}, and we note that it is the quantity a practitioner should
+the adapters alone, with no appeal to $P^\star$. The authors use it in
+\S\ref{sec:regimes}, and they note that it is the quantity a practitioner should
 evaluate; the prior-averaged expression of Lemma~\ref{lem:floor-general} is a
 statement about $P^\star$, not about the cohort in front of them.
 
 \subsection{Proof of Lemma~\ref{lem:floor-general}}
 
-We first record the second-moment identity that makes the result independent
+The authors first record the second-moment identity that makes the result independent
 of the spectra $D_t$.
 
 \begin{claim}\label{clm:second-moment}
@@ -117,13 +117,13 @@ $\boldsymbol H$ and substituting into \eqref{eq:floor-exact},
 position.} The floor vanishes precisely when $\deff = Tr$, that is when the
 $V_t$ are in direct sum. Under Stiefel-random sampling with $Tr \leq d$ this
 holds almost surely, which is the regime the theorem's second display
-assumes. It also holds for every real cohort we measured, including the
+assumes. It also holds for every real cohort the authors measured, including the
 shared-initialisation ones whose subspaces are numerically near-collinear
 (\S\ref{sec:regimes}). Near-collinear is not collinear: the $V_t$ remain
 independent, $\deff = Tr$ exactly, and by \eqref{eq:floor-exact} the exact
 floor is zero. What degrades in that regime is not the floor but the
 conditioning of $\bar H$, and hence the norm of the interpolator achieving it.
-We regard this as the main practical lesson of the lower bound and we develop
+The authors regard this as the main practical lesson of the lower bound and they develop
 it in \S\ref{sec:regimes}.
 
 \subsection{Proof of Theorem~\ref{thm:general}, and what it rests on}
@@ -148,8 +148,8 @@ Condition on $\boldsymbol H$. Given $\boldsymbol H$ the only remaining
 randomness is the directions $u_t$, and a conditional Shannon converse
 therefore applies to every rate-$R$ code, \emph{including codebooks chosen
 with knowledge of $\boldsymbol H$}. This is the step that makes the bound valid
-against the $\boldsymbol H$-aware decoder of Appendix~\ref{app:rd-achv}: we do not
-average over rotations, we condition. The standard converse for a
+against the $\boldsymbol H$-aware decoder of Appendix~\ref{app:rd-achv}: the authors do not
+average over rotations, they condition. The standard converse for a
 $\deff$-dimensional source under squared error gives
 \begin{equation*}
   \E\bigl[\|\hat\eta - \eta\|^2 \bigm| \boldsymbol H\bigr]
@@ -166,21 +166,21 @@ constant fraction of its variance turns the display above into
 \begin{equation*}
   c_{\mathrm{TQ}}\cdot \frac{B^2\,\E[\deff]}{Tr}\cdot 2^{-2R/\E[\deff]},
 \end{equation*}
-which is \eqref{eq:thm-lb}. The step we do not prove here is that the
+which is \eqref{eq:thm-lb}. The step the authors do not prove here is that the
 entropy-power-to-variance ratio of $\eta$ is bounded below by an absolute
 constant, uniformly in $(T, r, d)$ and in the spectra $D_t$. It is finite for
 each fixed instance because $\eta$ has a density, and the scale is pinned by
-$\tau_t^\top H_t\tau_t = B^2$; what we do not establish is uniformity. We
+$\tau_t^\top H_t\tau_t = B^2$; what the authors do not establish is uniformity. The authors
 therefore quote $c_{\mathrm{TQ}}$ from TurboQuant
 \citep{zandieh2025turboquant}, Theorem~3, which supplies exactly such a
-constant for the rotation-invariant case, and we flag that transferring it to
-our conditional setting is an assumption rather than a consequence of the
+constant for the rotation-invariant case, and they flag that transferring it to
+their conditional setting is an assumption rather than a consequence of the
 argument above.
 
-\paragraph{Honest scope.} With that caveat, Theorem~\ref{thm:general} should
+\paragraph{Scope of the theorem.} With that caveat, Theorem~\ref{thm:general} should
 be read as: the floor term is exact and unconditional (it is
 Lemma~\ref{lem:floor-general}), and the rate term has the stated
-\emph{form} $2^{-2R/\deff}$ with a constant we import rather than derive. Our
+\emph{form} $2^{-2R/\deff}$ with a constant the authors import rather than derive. The authors'
 empirical work bears on the rate term only through
-\S\ref{subsec:w3}, where the exponent is not resolved at the rates we could
+\S\ref{subsec:w3}, where the exponent is not resolved at the rates they could
 sweep. Nothing in \S\ref{sec:regimes} depends on the constant.

@@ -1,7 +1,7 @@
 The previous section leaves every cohort in the floor-zero regime, so all
 observed worst-task excess is in principle recoverable, and separates the
 cohorts on conditioning instead. Both halves of that invite a test. The
-first invites an encoder that recovers the slack, and we built one: a
+first invites an encoder that recovers the slack, and the authors built one: a
 rate-distortion encoder using incoherent orthogonal mixing and scalar
 quantisation, regularised with a single Tikhonov ridge term
 (Appendix~\ref{app:rd-achv}, implementation in Appendix~\ref{app:manifest}).
@@ -10,7 +10,7 @@ baseline, which is what made the test below necessary. The second invites the qu
 whether a four-order-of-magnitude difference in conditioning is visible to
 anything a practitioner does.
 
-This section reports what happened when we tested that result properly.
+This section reports what happened when the authors tested that result properly.
 Every decision rule quoted below was committed to version control before
 the corresponding compute ran. Appendix~\ref{app:prereg} summarises the
 rules and gives the commit ordering that makes them checkable.
@@ -64,14 +64,14 @@ the inference path turns Mistral's loss into a tie, and dropping the
 untrained adapter turns Llama's win into a tie, leaving \textbf{no wins on
 any base}. Both pre-specified robustness lines agree with the primary arm.
 Re-selecting the champion inside each cohort, the variant deliberately
-biased against our method, returns the same one/one/two; applying the
+biased against the authors' method, returns the same one/one/two; applying the
 original single-cohort rule three times succeeds on \texttt{indep1} and
 fails on \texttt{indep2} and \texttt{indep3}, so the earlier optimistic
 reading was the best of three draws. Two further details: the rank-$64$ realisation disagrees at $T=3$, keeping Llama at
 $+0.0081$, and Mistral's champion changes from TIES to TVQ.
 
 The registered $T = 4$ arm stays primary. The direction is consistent
-across all three columns, and the reading we take is that the encoder's
+across all three columns, and the reading the authors take is that the encoder's
 advantage was substantially a property of the degenerate cohort it was
 developed on. On that cohort $\bar H$ is ill-conditioned by four
 orders of magnitude (\S\ref{subsec:conditioning}), which is exactly what
@@ -87,10 +87,10 @@ method.
 
 \S\ref{subsec:conditioning} found a four-order-of-magnitude difference in
 $\kappa(\bar H)$ between the two initialisation regimes. A difference that
-size which nothing observable depends on would be a curiosity, so we tested
+size which nothing observable depends on would be a curiosity, so the authors tested
 it, pre-registering the prediction before running the cells.
 
-\paragraph{First, the null, and what it can actually detect.} We compare
+\paragraph{First, the null, and what it can actually detect.} The authors compare
 every method on matched cohorts, same method, same base, shared against
 independent initialisation, with three cohorts per arm so the
 pre-registered gate can be applied: a cell counts as an effect only if the
@@ -117,17 +117,17 @@ mean, show nothing anywhere. That ordering is the one the mechanism below
 predicts: a method that explicitly operates on the subspace geometry is
 the heuristic most exposed to a change in that geometry, and it gains from
 the cohort whose subspaces are not near-collinear. The effect is small,
-consistent in direction, and we do not build anything on it.
+consistent in direction, and the authors do not build anything on it.
 
-\paragraph{The same null in a unit we do not disclaim.} Everything above is
+\paragraph{The same null in a unit the authors do not disclaim.} Everything above is
 worst-task NLL excess, and \S\ref{sec:discussion} reports that this metric does
 not track downstream accuracy across methods and on one benchmark ranks them
 backwards. That objection lands harder on a null than on an effect: the
-differences here are hundredths of a nat, which is the range in which we have
+differences here are hundredths of a nat, which is the range in which the authors have
 told the reader not to trust the metric. Meanwhile the positive result beside
 it, the solver collapse, has two units. Reporting one half in a disputed unit
-and the other half in two is an asymmetry we would rather remove than defend,
-so we pre-registered the null in accuracy as well and ran it.
+and the other half in two is an asymmetry the authors would rather remove than defend,
+so they pre-registered the null in accuracy as well and ran it.
 
 \begin{table}[t]
 \centering
@@ -183,7 +183,7 @@ benchmarks unusable; both arms were re-run here rather than reusing the
 existing shared-arm cells, precisely so that no comparison straddles a scorer
 change.
 
-The strength of that null is bounded by the design and we state the bound as
+The strength of that null is bounded by the design and the authors state the bound as
 registered: with one cohort per arm the gate is binomial, so this is
 \textbf{no effect detectable at about $6$ accuracy points on GSM8K and $11$ on
 HumanEval}, not no effect. A real effect of three or four points would sit
@@ -196,14 +196,14 @@ by the registered rule.
 Llama at HumanEval gives $d = -0.104$ against a gate of $0.107$: $97\%$ of the
 way, and negative, meaning the \emph{shared} cohort scored higher. Had it
 cleared it would have been the one outcome the registration named as most
-informative against us. It did not clear and we do not treat it as an effect,
+informative against the authors. It did not clear and the authors do not treat it as an effect,
 but a reader recomputing this table will see it and should see it here first.
 
 \emph{The signs lean.} Of the $38$ non-zero cells, $26$ favour the shared arm
 and $12$ the independent one, which an exact sign test puts at $p = 0.034$,
-with the lean present on both benchmarks. \textbf{We did not register a sign
-test}, so this is an observation and not a verdict, and we neither claim an
-effect from it nor let it modify the registered outcome. We report it because
+with the lean present on both benchmarks. \textbf{The authors did not register a sign
+test}, so this is an observation and not a verdict, and they neither claim an
+effect from it nor let it modify the registered outcome. The authors report it because
 it points the opposite way from the NLL null, whose five clearing cells all
 favoured independent initialisation. Taken at face value the two units
 disagree about a direction while agreeing that nothing is large. The honest
@@ -216,7 +216,7 @@ new experiment and it needs its own registration.
 $15$ cells is that those methods never go near the ill-conditioned
 direction. That is a measurement rather than an assertion, and it needs no
 forward passes: every merge here is weight
-arithmetic on the adapter factors. For each merged solution we report its
+arithmetic on the adapter factors. For each merged solution the authors report its
 norm relative to the mean task delta, and the share of its energy lying in
 the bottom quartile of $\bar H$'s eigen-directions, in the projected
 coordinates of \S\ref{subsec:conditioning}.
@@ -245,8 +245,8 @@ TIES                       & 1.98--2.04 & 0.000 & 2.04--2.22 & 0.21 \\
 TVQ ($b{=}2$)              & 1.95--2.16 & 0.000 & 1.68--1.95 & 0.20 \\
 \addlinespace
 RegMean, minimal ridge     & 35.4--51.4 & 0.73--0.79 & 3.41--3.67 & 0.29 \\
-our encoder, $\lambda = 0$ & 36.7--56.7 & 0.78--0.80 & 3.42--3.67 & 0.29 \\
-our encoder, $\lambda^\star$ & 2.20--2.56 & 0.000 & 2.84--3.05 & 0.28 \\
+the authors' encoder, $\lambda = 0$ & 36.7--56.7 & 0.78--0.80 & 3.42--3.67 & 0.29 \\
+their encoder, $\lambda^\star$ & 2.20--2.56 & 0.000 & 2.84--3.05 & 0.28 \\
 \addlinespace
 exact interpolator $\tauH$ & 43.4--64.1 & 0.62--0.66 & 3.96--4.00 & 0.28 \\
 \bottomrule
@@ -259,13 +259,13 @@ fraction that rounds to zero at three decimals, while both unregularised
 solvers sit at $35$ to $57$ times with roughly three quarters of their
 energy in the bottom quartile of the spectrum. They are the only methods
 that go there, which is why they are the only methods the conditioning
-reaches. One incidental check falls out: RegMean at minimal ridge and our
+reaches. One incidental check falls out: RegMean at minimal ridge and the authors'
 encoder at $\lambda = 0$ agree to two decimals on the independent arm
 across all four bases, so two differently derived solvers land on the same
 solution once the problem is well posed.
 
-\paragraph{So we sweep the ridge, on two solvers.} To expose the
-conditioning one needs a method that actually solves the system. Ours
+\paragraph{So the authors sweep the ridge, on two solvers.} To expose the
+conditioning one needs a method that actually solves the system. The authors'
 does, and it carries a Tikhonov ridge, so sweeping $\lambda$ over seven
 values, $0$, $0.01$, $0.03$, $0.05$, $0.13$, $0.30$ and $1.00$, on both
 cohorts with rank pinned to $16$ in every cell isolates the effect.
@@ -297,12 +297,12 @@ collapses outright to $9.78$ nats against $0.15$. The ridge gain is larger
 on the shared arm on all four bases, which was the pre-registered
 prediction and held.
 
-The other half of the prediction failed. We also predicted that $\lambda^\star$ itself would be at least ten times
+The other half of the prediction failed. The authors also predicted that $\lambda^\star$ itself would be at least ten times
 larger on the shared arm. It is not: $\lambda^\star$ is \emph{identical}
 across arms on Mistral, Qwen and Yi ($0.13$, $0.13$, $0.30$), separating
 only on Llama. How much regularisation is needed does not track
 conditioning in any simple way; how much it buys does. By the
-pre-registered rules this makes the test \textsc{partial}, and we claim
+pre-registered rules this makes the test \textsc{partial}, and the authors claim
 only the half that held.
 
 \subsection{Both arms at three cohorts}
@@ -311,10 +311,10 @@ only the half that held.
 Table~\ref{tab:ridge} rests on one shared cohort against three independent
 ones, so its noise gate borrowed its standard error entirely from the
 independent side. A shared-versus-independent contrast measured that way is
-three draws against one, and a reader is right to discount it. We registered
+three draws against one, and a reader is right to discount it. The authors registered
 the completion in advance and ran the sweep on two further shared cohorts, so
 both arms are $n = 3$ and the gate carries a term from each. This is a
-replication of a result we had already published, so it could only cost us
+replication of a result the authors had already published, so it could only cost them
 something; the registration says so and fixes the consequence text for the
 outcome where it fails.
 
@@ -330,34 +330,34 @@ independent.
 One quantity is worth reporting because it could have embarrassed the earlier
 table and does not. The published single-cohort value, \texttt{seed1}, sits
 $0.23$, $0.53$, $0.75$ and $0.66$ standard deviations from its own arm's
-three-cohort mean. We registered that a distance above $2$ on two or more
-bases would oblige us to say the published value was unrepresentative of its
+three-cohort mean. The authors registered that a distance above $2$ on two or more
+bases would oblige them to say the published value was unrepresentative of its
 own arm. It is representative, and Table~\ref{tab:ridge}'s numbers stand as
 single-cohort estimates of quantities the three-cohort means confirm.
 
-\subsection{The same test on a solver we did not build}
+\subsection{The same test on a solver the authors did not build}
 \label{subsec:regmean}
 
-Everything above concerns one solver, and we built it. A referee is
-entitled to ask whether the effect is a property of the family or of our
+Everything above concerns one solver, and the authors built it. A referee is
+entitled to ask whether the effect is a property of the family or of the authors'
 implementation, and the question is sharp enough to be worth answering
 with a pre-registered experiment rather than an argument.
 
 RegMean~\citep{jin2023regmean}, in the data-free adapter-only form, is a
-solver we did not design. We swept it on the same grid and the same two
+solver the authors did not design. The authors swept it on the same grid and the same two
 cohorts, registering two predictions in advance: that the ridge gain would
 be larger on the shared arm, and that the minimally regularised excess
 would be worse there by at least a factor of two, each on at least three of
 four bases.
 
-One thing to be exact about, since our practical recommendation reduces to
+One thing to be exact about, since the authors' practical recommendation reduces to
 regularising a solve-based merge and RegMean ships a regulariser of its
 own. Its published regulariser is \emph{not} the Tikhonov ridge swept
 below: RegMean scales the non-diagonal entries of each Gram by a scalar
 $\alpha$, default $0.9$, which is a data-set diagonal shrinkage rather than
 a free parameter. An earlier version of this section described the swept
 ridge as part of RegMean's published formulation. That was wrong: the
-$\lambda I$ is ours, and the comparison below is between our regulariser
+$\lambda I$ is the authors', and the comparison below is between their regulariser
 and theirs. \S\ref{subsec:regmean-default} reports what the published
 default does on these cohorts.
 
@@ -368,7 +368,7 @@ default does on these cohorts.
 $\lambda = 10^{-6}$ rather than $0$: RegMean solves in the full input
 dimension against a Gram of rank at most $Tr = 64$ against $d = 4096$, so
 $\lambda = 0$ is singular rather than ill-conditioned and returns
-null-space noise without raising an error. Our encoder solves inside
+null-space noise without raising an error. The authors' encoder solves inside
 $\range(\bar H)$, so its $\lambda = 0$ is defined. The two columns are
 therefore not the same object and each method is compared only against
 itself across arms.}
@@ -393,13 +393,13 @@ Yi-1.5-9B    & shared      & 0.5700 & 0.01 & 0.5477 & \multirow{2}{*}{$4.7\times
 \end{table}
 
 Both predictions hold on four of four bases. The effect is not a property
-of our encoder.
+of the authors' encoder.
 
 Three details in Table~\ref{tab:regmean} are worth reporting rather than
 smoothing. $\lambda^\star$ is $0.01$ on seven of the eight arms, so on
 RegMean too the amount of regularisation needed does not track the
 conditioning even though the amount it buys does; that is the same split
-our own sweep found, now reproduced on a method we did not write. Llama's
+the authors' own sweep found, now reproduced on a method they did not write. Llama's
 independent arm selects the minimal $\lambda$ and gains exactly zero,
 which is the cleanest statement of the claim available: on a
 well-conditioned cohort there is nothing to repair. And from
@@ -409,7 +409,7 @@ heavy regularisation washes the difference out entirely.
 \subsection{Does RegMean's published default already fix this?}
 \label{subsec:regmean-default}
 
-Our practical recommendation reduces to regularising a solve-based merge, and
+The authors' practical recommendation reduces to regularising a solve-based merge, and
 RegMean ships a regulariser. If its default were already strong enough on a
 collapsed cohort, the recommendation would shrink to the much smaller claim
 that the audit tells you when the default matters. The question is worth
@@ -443,9 +443,9 @@ On a well-conditioned cohort the dose is ample. On a collapsed one it is
 $20$ times short, and nothing in the method notices.
 
 Two limits on what this shows, both worth stating. It is a statement about
-conditioning, computed from the adapter factors, not a merge we evaluated: we
+conditioning, computed from the adapter factors, not a merge the authors evaluated: they
 did not run a $\lambda$-free $\alpha$-shrunk RegMean through the NLL harness,
-so we do not report a task-loss number for it. And $\alpha$ is a documented
+so they do not report a task-loss number for it. And $\alpha$ is a documented
 knob with the default merely being $0.9$, so a practitioner who lowers it is
 doing exactly what \S\ref{subsec:ridge} recommends. The claim here is only
 that the shipped default does not do it for them.
@@ -453,9 +453,9 @@ that the shipped default does not do it for them.
 \subsection{The same test without rank truncation}
 \label{subsec:untruncated}
 
-\S\ref{subsec:conditioning} notes that our pipeline truncates every merge
+\S\ref{subsec:conditioning} notes that the authors' pipeline truncates every merge
 back to rank $r$, so the sweep above tests conditioning through a
-rank-constrained solver while the interpolator whose norm we report has
+rank-constrained solver while the interpolator whose norm they report has
 rank up to $Tr$. Repeating the sweep with truncation disabled removes that
 mismatch, and the truncated sweep is then the comparison arm rather than
 being re-run.
@@ -467,7 +467,7 @@ being re-run.
 excess in nats at $\lambda = 0$, and the shared-to-independent ratio with and
 without truncation. The truncated column is the sweep of
 Table~\ref{tab:ridge}, reproduced here as the comparison arm rather than
-re-run. \textbf{Two entries here invite a second look and we have taken it.}
+re-run. \textbf{Two entries here invite a second look and the authors have taken it.}
 Mistral's shared value, $11.6283$, sits exactly $1.0000$ above RegMean's
 $10.6283$ in Table~\ref{tab:regmean} at four decimals; the underlying numbers
 are $11.628281$ and $10.628309$, so the gap is $0.999973$ and the agreement is
@@ -496,54 +496,54 @@ without truncation, by factors of $25$ to $117$ against $2.1$ to $65$.
 Truncation was not manufacturing the result; it was hiding part of it,
 which is what one should expect when all but the leading $16$ directions
 of a rank-$64$ interpolator are discarded and the ill-conditioned subspace
-goes with them. The numbers we report as primary are therefore the
+goes with them. The numbers the authors report as primary are therefore the
 conservative ones.
 
 \paragraph{What this licenses, and what it does not.} It licenses a
 conditional recommendation: if you merge with a method that solves a
 linear system, check your cohort's conditioning and regularise, because
 unregularised it can fail by a factor of $65$ at rank $16$ and $117$
-without truncation, on two solvers, one of which we did not build. It does
+without truncation, on two solvers, one of which the authors did not build. It does
 \emph{not} license the general advice to initialise independently. On the
 methods most practitioners actually use the null above stands, with the
 single qualification that the subspace-alignment method gains a little
-from independent initialisation on three of four bases, and we do not
+from independent initialisation on three of four bases, and the authors do not
 dress that up as anything more.
 
-\subsection{A claim we withdraw}
+\subsection{A claim the authors withdraw}
 \label{subsec:withdrawn}
 
 The result in \S\ref{subsec:q1} raises an obvious and much more
 interesting possibility: if method rankings shift when initialisation
-changes, then published merging benchmarks, which as far as we can tell
+changes, then published merging benchmarks, which as far as the authors can tell
 mostly use shared-seed cohorts, might be measuring initialisation
-geometry rather than method quality. We described this on first sight as
-the strongest result available to us.
+geometry rather than method quality. The authors described this on first sight as
+the strongest result available to them.
 
-We pre-registered a control to test it, and the control did not support
+The authors pre-registered a control to test it, and the control did not support
 the claim. The control asks whether the method ranking is stable
 \emph{within} the independent regime, across the three cohorts that
 differ only in initialisation draw. If rankings are unstable within a
 single regime, then ranking changes across regimes cannot be attributed
 to the regime. Two of four base models had a non-unanimous top-1 method
-across the three cohorts, above the threshold fixed in advance, so by our
+across the three cohorts, above the threshold fixed in advance, so by the authors'
 own rule the attribution fails and \textbf{the claim that published
 merging benchmarks are confounded by shared-initialisation geometry is
 withdrawn}.
 
-We record one caveat, and we deliberately did not let it reverse the
+The authors record one caveat, and they deliberately did not let it reverse the
 verdict. The control as written counts a top-1 change as instability
 regardless of margin, and both flips involve methods separated by far less
 than the tie threshold: on Qwen the top two are $0.0140$ and $0.0141$, a
 coin flip. A margin-aware version of the control would very likely give a
-different answer. But that version was not what we pre-registered, and
+different answer. But that version was not what the authors pre-registered, and
 rewriting a decision rule after seeing which way it fell is exactly the
-practice the pre-registration exists to prevent. We stated the defect and
+practice the pre-registration exists to prevent. The authors stated the defect and
 left the verdict, and registered a \emph{second} control rather than
 editing the first.
 
 \paragraph{A second control, reported but not used to reinstate anything.}
-We registered a margin-aware version of the rule afterwards, in the same
+The authors registered a margin-aware version of the rule afterwards, in the same
 document that governs \S\ref{subsec:regmean}: a base counts as unstable
 only if its top-1 method changes \emph{and} the margin between the top two
 exceeds the tie threshold in at least one cohort where the change occurs.
@@ -554,28 +554,28 @@ $0.0003$ and $0.0011$ nats and Qwen's $0.0001$, $0.0006$ and $0.0003$,
 against $0.005$.
 
 Read literally, that rule would reinstate the benchmark-confounding claim
-as provisional. \textbf{We decline to reinstate it}, and the reason is
-worth stating plainly because it cuts against us. This control was
+as provisional. \textbf{The authors decline to reinstate it}, and the reason is
+worth stating plainly because it cuts against them. This control was
 registered after its data had been seen. The registration says so about
-itself, and we could bound it in various ways, but no amount of disclosure
-changes the fact that we would be resurrecting a claim we had already
-withdrawn using a rule written once we knew how the first one fell. That
+itself, and the authors could bound it in various ways, but no amount of disclosure
+changes the fact that they would be resurrecting a claim they had already
+withdrawn using a rule written once they knew how the first one fell. That
 is the single thing pre-registration exists to prevent, and a paper making
 this much of the practice should not spend its credibility on a claim it
 does not need. The prevalence audit already carries the load of showing
-this matters outside our own repository.
+this matters outside the authors' own repository.
 
 The margin-aware numbers stay in the paper as a measurement, because they
 say something true and useful: the ranking flips that triggered the
 withdrawal are all inside noise. That is a statement about the fragility of
 single-draw rankings, not about published benchmarks.
 
-So the claim we make is this, and no more: method rankings on this metric
+So the claim the authors make is this, and no more: method rankings on this metric
 move between cohorts that differ only in initialisation draw, the movement
 is within noise once margin is accounted for, and the collapsed regime that
 would make such rankings hard to interpret is common in released adapters.
-The benchmark-confounding claim stays withdrawn. We have not measured a
-published merging benchmark, and we do not claim one is wrong.
+The benchmark-confounding claim stays withdrawn. The authors have not measured a
+published merging benchmark, and they do not claim one is wrong.
 
 What survives independently of all of it is weaker and still worth saying:
 single-seed method rankings on this metric are not reproducible, so merging
@@ -597,7 +597,7 @@ arm ($0.13$ to $9.63$ from the single-cohort Table~\ref{tab:ridge}, which is
 the same quantity measured with one draw), one to three orders of magnitude above
 both the metric's resolution and the differences the correlation was computed
 over. An effect that size either shows up in accuracy or the metric is
-measuring something other than model quality. We registered the test without
+measuring something other than model quality. The authors registered the test without
 knowing which, and fixed in advance that a null would move this limitation into
 \S\ref{sec:intro} and delete the practice recommendations rather than defend
 them.
@@ -651,7 +651,7 @@ $0.462$ and $0.244$. That is what four orders of magnitude of conditioning buys
 in a unit a practitioner cares about.
 
 \paragraph{What this does not license.} It does not show that worst-task NLL
-excess predicts accuracy in general, and we do not claim it. The correlation
+excess predicts accuracy in general, and the authors do not claim it. The correlation
 that fails in \S\ref{sec:discussion} is across merge \emph{methods} at fixed
 cohort, and nothing here tests that. What it shows is that the specific effect
 this paper is about is not an artifact of the metric, which is the objection it
@@ -661,7 +661,7 @@ was registered to answer.
 \label{subsec:w3}
 
 Theorem~\ref{thm:general} predicts distortion decaying as $2^{-2R/\deff}$,
-and we registered that as a slope in $[-2.4, -1.6]$ on at least three of
+and the authors registered that as a slope in $[-2.4, -1.6]$ on at least three of
 four bases. \textbf{The sweep cannot resolve it, and two earlier readings
 of it are withdrawn.} A previously reported falsification rested on
 asymptotes computed at a different ridge value, and the refitted sweep
@@ -683,41 +683,41 @@ at three or four bits regardless of any exponent.
 
 DARE~\citep{yu2024dare} drops a random fraction of task-vector entries
 and rescales the survivors by $1/(1-p)$. Composed with task arithmetic it
-does essentially nothing in our setting: across a density sweep from
+does essentially nothing in the authors' setting: across a density sweep from
 $0.05$ to $0.5$ on four base models, it beats plain task arithmetic in
 three of twenty cells and all three are within $0.0005$ nats, a fifth of
-our tie threshold.
+their tie threshold.
 
 Unlike most negative results this one has a mechanism that predicts its
 own shape. The rescaling makes the masked task vector an unbiased
 estimator of the unmasked one, $\E[D_{\mathrm{DARE}}] = D_{\mathrm{TA}}$.
-We state the consequence carefully, because the obvious version of the
+The authors state the consequence carefully, because the obvious version of the
 argument is not available here: negative log-likelihood of an LLM is
 \emph{not} convex in the weights, so Jensen's inequality does not apply
-globally and we do not claim
+globally and they do not claim
 $\E[L(D_{\mathrm{DARE}})] \geq L(D_{\mathrm{TA}})$ as a theorem. What
 does hold is the local statement. Expanding $L$ to second order about
 $D_{\mathrm{TA}}$, the first-order term vanishes by unbiasedness and the
 penalty is $\tfrac12\tr(H\Sigma) + o(\|\Sigma\|)$ with
 $\Sigma \propto (1-p)/p$ and $H$ the local Hessian. Where $H \succeq 0$,
 which is the generic situation near a trained solution, this is
-non-negative and grows as density falls. That is what we observe,
-on three of four base models. We verified our implementation against the
+non-negative and grows as density falls. That is what the authors observe,
+on three of four base models. The authors verified their implementation against the
 reference one and confirmed the operator reproduces the analytic signature
 $\sqrt{(1-p)/p}$ to three decimals, so this is a property of the method
-and not of our code.
+and not of their code.
 
-\paragraph{The negative result does not generalise, and we tested that.}
+\paragraph{The negative result does not generalise, and the authors tested that.}
 The Jensen argument applies only to the task-arithmetic composition, since
-TIES is biased and the mask changes which coordinates survive trimming. We
+TIES is biased and the mask changes which coordinates survive trimming. The authors
 pre-registered the DARE-TIES composition test before implementing it. The
-outcome is genuinely mixed: DARE composed with TIES \emph{helps}
+outcome is mixed: DARE composed with TIES \emph{helps}
 decisively on Llama ($+0.0462$ nats, against a gate of $0.0036$) and hurts
 decisively on the other three. By the rule fixed in advance this is a
 mixed verdict and neither direction is claimed.
 
 So the correct scope for the negative result is DARE composed with task
-arithmetic, not DARE. We flag that Llama is now the odd model out in two
+arithmetic, not DARE. The authors flag that Llama is now the odd model out in two
 separate pre-registered tests, here and in Table~\ref{tab:q1}, without
 proposing a mechanism for it; a base-level moderator that neither
 pre-registration anticipated deserves a designed experiment rather than

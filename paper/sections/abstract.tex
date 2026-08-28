@@ -1,6 +1,6 @@
 Merging several LoRA adapters into one model sometimes costs almost
 nothing and sometimes destroys a task, with no cheap way to tell which in
-advance. We show that one detail of how the adapters were trained largely
+advance. The authors show that one detail of how the adapters were trained largely
 decides it, and that the detail can be read off the adapter files in about
 a minute of CPU time, without running the model. LoRA starts each adapter
 from a random matrix, and whether the $T$ adapters of a cohort started from
@@ -10,13 +10,13 @@ nearly the same subspace, moving the median principal cosine across four
 base models from $0.05$ to $0.99$. Under a sampling frame fixed before any
 download, $17$ of $45$ public cohorts are in that state. The consequences
 split by method. Merges that average or sparsify task vectors are
-unaffected: fifteen of twenty base-by-method cells show no effect on our
+unaffected: fifteen of twenty base-by-method cells show no effect on the authors'
 loss metric, and none of forty show one on GSM8K or HumanEval. Merges that
-solve a linear system, ours and RegMean, run $2$ to $65$ times worse on a
+solve a linear system, the authors' and RegMean, run $2$ to $65$ times worse on a
 collapsed cohort, and on Mistral the merged model scores zero on GSM8K and
 on HumanEval; one Tikhonov term recovers both. Regularising such a solve is
 standard practice, but RegMean's shipped default is about $20$ times too
 small on a collapsed cohort and applies the same dose either way: the
 default does not know which regime it is in, and the audit is what tells
-you. All of these tests were pre-registered, and several of our own earlier
+you. All of these tests were pre-registered, and several of the authors' own earlier
 claims did not survive them.
