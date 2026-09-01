@@ -112,6 +112,13 @@ MAILMAP
 # showed up on the contributor list next to the author. Strip the trailer and
 # the session URL, which is a live link into a private transcript.
 #
+# The hook at .githooks/commit-msg stops both lines being written in the
+# first place. It is tracked, but cloning does not install it: .git/hooks
+# sits outside the working tree, so a fresh clone needs
+# `git config core.hooksPath .githooks` once. These rules stay regardless.
+# They are what covers the 159 commits that predate the hook, and a clone
+# where nobody ran the installer line.
+#
 # Only those two exact line forms. Prose mentioning CLAUDE.md must survive:
 # that is a real tracked file here, and roughly ten commit subjects describe
 # editing it. A blanket rule on the word would rewrite the project's own

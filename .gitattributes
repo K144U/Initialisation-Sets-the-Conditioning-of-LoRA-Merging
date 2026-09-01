@@ -1,0 +1,6 @@
+# Git hooks are run by sh. core.autocrlf is true in this repository, so a
+# checkout would otherwise give this directory CRLF endings, and a CRLF
+# shebang is a syntax error on any Unix clone: "bad interpreter: /bin/sh^M".
+# Scoped to the hooks directory on purpose. The cluster shell scripts under
+# code/ have their own history with these settings and are left alone.
+.githooks/** text eol=lf

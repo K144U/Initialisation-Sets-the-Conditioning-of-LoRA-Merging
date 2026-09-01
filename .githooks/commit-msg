@@ -1,0 +1,69 @@
+#!/bin/sh
+# Strip assistant trailers before the commit object is written.
+#
+# INSTALL, once per clone, from the repository root:
+#
+#     git config core.hooksPath .githooks
+#
+# Note what that line does: it makes git ignore .git/hooks ENTIRELY and look
+# here instead. There are no other hooks in this repository, so nothing is
+# lost, but any hook added later has to live in this directory to run at all.
+# The alternative, copying this file into .git/hooks, was rejected: a copy
+# drifts from the tracked original silently, and the whole point of tracking
+# it is that a fresh clone gets the current version.
+#
+# WHY THIS EXISTS
+#
+# GitHub parses Co-Authored-By and credits the address in it as a repository
+# CONTRIBUTOR. That is how an @claude account came to sit next to the author
+# on the public repo, with no commit actually authored by it.
+# code/phase3/scripts/build_public_repo.sh already strips both line forms on
+# the way out and refuses to print the push command if one survives, so the
+# published history is clean either way. This hook stops them being produced
+# in the first place, which is what protects a push that does NOT go through
+# that script.
+#
+# WHAT IT REMOVES
+#
+#   Co-Authored-By: Claude ...      any model name, any address, either casing
+#   Claude-Session: ...             a live link into a private transcript
+#
+# A Co-Authored-By naming a person is left alone, and prose mentioning
+# CLAUDE.md survives untouched: it is a tracked file here and about ten commit
+# subjects describe editing it. A blanket rule on the word would rewrite the
+# project's own record of its own documentation.
+#
+# It is not retroactive. Commits that already carry a trailer keep it, and
+# build_public_repo.sh remains the thing that keeps those out of the public
+# history.
+#
+# NEVER ABORTS
+#
+# A commit-msg hook that exits non-zero kills the commit, and nothing here is
+# worth losing a commit over, so every path ends exit 0. There is deliberately
+# no `set -e`: under it, a failing test in an && list exits the shell and
+# takes the commit with it. The one commit this can still stop is a message
+# that was nothing but a trailer, which git rejects as empty, and that is the
+# right outcome.
+
+msg="$1"
+[ -f "$msg" ] || exit 0
+
+pat='^([Cc]o-[Aa]uthored-[Bb]y:[[:space:]]*Claude|Claude-Session:[[:space:]])'
+
+n=$(grep -cE "$pat" "$msg" 2>/dev/null || true)
+[ -n "$n" ] || n=0
+if [ "$n" -eq 0 ]; then
+  exit 0
+fi
+
+sed -i -E "/$pat/d" "$msg" || exit 0
+
+# Removing a trailing trailer block leaves blank lines at the end. Git's own
+# cleanup collapses interior blanks but this keeps the tail tidy.
+while [ -s "$msg" ] && [ -z "$(tail -n 1 "$msg")" ]; do
+  sed -i '$d' "$msg"
+done
+
+echo "commit-msg: dropped $n assistant trailer line(s)" >&2
+exit 0
