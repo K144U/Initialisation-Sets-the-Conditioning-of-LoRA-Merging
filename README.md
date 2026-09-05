@@ -1,16 +1,63 @@
 # Initialisation Sets the Conditioning of LoRA Merging
 
-Code, pre-registrations, and per-cell experimental results for the paper of the
-same name, by **Sankalp Pathak**, **Sanjay Garg** and **Piyush Kumar Singh**
-(Department of Computer Science and Engineering, Jaypee University of
-Engineering and Technology, Guna). The manuscript is under review at the
-*Journal of Artificial Intelligence Research*.
+Code, pre-registrations, per-cell experimental results and the manuscript for
+the paper of the same name, by **Sankalp Pathak**, **Sanjay Garg** and **Piyush
+Kumar Singh** (Department of Computer Science and Engineering, Jaypee
+University of Engineering and Technology, Guna). The manuscript is under review
+at the *Journal of Artificial Intelligence Research*.
+
+**Read the paper:**
+[`JAIR/submission/Pathak_Garg_Singh_Initialisation_LoRA_Merging.pdf`](JAIR/submission/Pathak_Garg_Singh_Initialisation_LoRA_Merging.pdf),
+49 pages, the exact file under review.
 
 This repository exists to be **checked**, not just read. Every empirical claim
 in the paper is governed by a pre-registration that was committed to version
 control before the compute it governs was dispatched. The commit graph here is
 intact, so that ordering can be verified with `git merge-base` rather than
-taken on trust. See [Checking the audit trail](#checking-the-audit-trail).
+taken on trust.
+
+## Contents
+
+- [One minute: check the trail yourself](#one-minute-check-the-trail-yourself)
+- [What the paper claims](#what-the-paper-claims)
+- [What did not survive](#what-did-not-survive)
+- [Checking the audit trail in full](#checking-the-audit-trail-in-full)
+- [What is not in this repository](#what-is-not-in-this-repository)
+- [Repository layout](#repository-layout)
+- [Reproducing](#reproducing)
+- [Compute footprint](#compute-footprint)
+- [Citation](#citation)
+- [License](#license)
+
+## One minute: check the trail yourself
+
+The claim is that the rules were fixed before the results were in. Clone this
+repository and test one row of it:
+
+```
+git clone https://github.com/K144U/Initialisation-Sets-the-Conditioning-of-LoRA-Merging.git
+cd Initialisation-Sets-the-Conditioning-of-LoRA-Merging
+
+# 947f0ea fixed the rules for the replication; 1dcadd4 carries its result.
+git merge-base --is-ancestor 947f0ea 1dcadd4 ; echo "exit $?"   # 0: rules came first
+git merge-base --is-ancestor 1dcadd4 947f0ea ; echo "exit $?"   # 1: and not the reverse
+```
+
+The first exits `0`, the second does not. That asymmetry is the whole claim,
+and it holds for every row of the commit-ordering table in the paper's
+pre-registration appendix, with one exception the paper itself flags:
+
+```
+# The paper states this pair is out of order. It is, and here is the proof.
+git merge-base --is-ancestor 9b3f57e 1dcadd4 ; echo "exit $?"   # 1: fails, as reported
+```
+
+There is a script that does all of this at once, over every row and every hash
+the paper cites:
+
+```
+python code/phase3/scripts/verify_commit_table.py .
+```
 
 ## What the paper claims
 
@@ -85,13 +132,13 @@ they are in the paper.
   tested rather than asserted: on the disjoint subset the method ordering is
   unchanged in 19 of 20 rows and the worst task is the same in all 144 cells.
 
-## Checking the audit trail
+## Checking the audit trail in full
 
 The twelve pre-registrations are in `notes/prereg_*.md`, unedited. Their stale
 internal cross-references are deliberate: they are the evidence that nothing
-was rewritten after the fact. The paper's appendix "Pre-Registration Documents
-and Commit Ordering" lists, per row, the commit that fixed the rules and the
-commit carrying the result they govern. For each row:
+was rewritten after the fact. The paper's appendix on pre-registration
+documents and commit ordering lists, per row, the commit that fixed the rules
+and the commit carrying the result they govern. For each row:
 
 ```
 git merge-base --is-ancestor <rules-commit> <result-commit>
@@ -104,36 +151,66 @@ appears as two rows because its amendment (`9b3f57e`) does not precede the
 step-0 result (`1dcadd4`). The ancestry check on that pair fails, and should.
 Reporting it is cheaper than the alternative.
 
-The published history is **filtered**, which rewrote every commit hash, so
-those hashes are this repository's rather than our working repository's. Three
-things are absent, none cited anywhere in the paper and none bearing on any
-result: private correspondence and external review notes, which were never ours
-alone to publish; large build artifacts; and text identifying a manuscript
-still under anonymous review elsewhere. Filtering changes hashes but not the
-commit graph, and the graph is what the verification depends on.
+## What is not in this repository
+
+The published history is **filtered** from a working repository, which rewrote
+every commit hash, so the hashes here are this repository's rather than the
+working one's. Filtering changes hashes but not the commit graph, and the graph
+is what the verification above depends on. Four things are treated differently
+from the rest, and none is cited anywhere in the paper or bears on any result.
+
+Removed from **every** commit:
+
+- Private correspondence and external review notes, which were never ours alone
+  to publish.
+- Large build artifacts, which would bloat the history without adding to it.
+- Text identifying a manuscript still under anonymous review elsewhere.
+
+Removed in the **final commit only**, and so still present if you check out an
+earlier one:
+
+- The project's working apparatus: session handoffs, the running log and
+  decision journal, planning documents, prompt templates, the superseded TMLR
+  submission package, and early theorem drafts. None of it is secret and none
+  of it is cited; it simply is not what a reader of the paper came for. It was
+  dropped at the tip rather than scrubbed from history on purpose, because
+  scrubbing would have changed every commit hash and broken the thirty-nine the
+  paper pins by hash. Leaving the history intact matters more here than a tidy
+  file listing.
+
+Not redistributed at all:
+
+- The base model weights and the trained adapters. The bases are public
+  checkpoints, and the adapter training configurations, including every seed,
+  are here.
 
 ## Repository layout
 
 ```
+JAIR/
+  submission/            the manuscript PDF under review, and SUBMIT.md
+  overleaf/              DERIVED from paper/ by sync_from_paper.py;
+                         do not edit it by hand
+  build_local.sh         builds the PDF without Overleaf
 paper/                   LaTeX source. Several build roots share one body:
                            jair.tex   JAIR submission, named authors
                            tmlr.tex   anonymous
                            arxiv.tex, iclr2027.tex
   sections/              section fragments
+  figures/               the figures the roots build with
   references.bib
-JAIR/                    JAIR build. overleaf/ is DERIVED from paper/ by
-                         sync_from_paper.py; do not edit it by hand
+notes/prereg_*.md        the twelve pre-registration documents
 code/phase3/
   merging/               merge implementations: task_arithmetic, ties, dare,
                          dare_ties, della, knots, tvq, regmean, adamerging,
                          fisher_avg, magnitude_prune, rd_encoder
   eval/                  evaluation drivers, NLL excess and downstream accuracy
   training/              LoRA training pipeline
-  scripts/               generators, analyzers, figure makers, PBS launchers
+  scripts/               generators, analyzers, figure makers, PBS launchers,
+                         and verify_commit_table.py
   configs/               per-cell YAML configs and orchestrator manifests
-notes/prereg_*.md        the twelve pre-registration documents
+code/synthetic/          the synthetic overlap sweep
 results/phase3/          per-cell JSON outputs and summary JSONs
-paper/figures/           the figures the four roots build with
 ```
 
 ## Reproducing
@@ -177,6 +254,18 @@ through the orchestrator, one worker per pinned GPU. Analyzers are
 `code/phase3/scripts/analyze_*.py`, and each refuses to report until every cell
 it needs exists. That is a pre-registration constraint, not a convenience.
 
+### Rebuilding the paper
+
+Needs a TeX Live installation with `pdflatex` and `biber`. The JAIR root is
+`paper/jair.tex`; `JAIR/overleaf/` is a generated copy of it, and building the
+copy rather than the source is deliberate, so that a missing file fails here
+the same way it would on upload.
+
+```
+python JAIR/sync_from_paper.py     # regenerate JAIR/overleaf/ from paper/
+bash JAIR/build_local.sh           # 49 pages, 0 errors
+```
+
 ## Compute footprint
 
 All merging and evaluation ran on a single node with A100-80GB GPUs, one
@@ -186,10 +275,6 @@ order of **400 GPU-hours**, of which the experiments reported in the paper are
 a subset. That total includes superseded runs: these results were not obtained
 on the first attempt, and several of the corrections above required re-running
 cells that had already been analysed.
-
-The base model weights and the trained adapters are **not** redistributed. The
-bases are public checkpoints, and the adapter training configurations,
-including every seed, are here.
 
 ## Citation
 
