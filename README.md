@@ -133,7 +133,7 @@ code/phase3/
   configs/               per-cell YAML configs and orchestrator manifests
 notes/prereg_*.md        the twelve pre-registration documents
 results/phase3/          per-cell JSON outputs and summary JSONs
-paper_artifacts/figures/ generated figures
+paper/figures/           the figures the four roots build with
 ```
 
 ## Reproducing

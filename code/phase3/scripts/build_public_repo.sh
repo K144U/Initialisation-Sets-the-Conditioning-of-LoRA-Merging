@@ -236,6 +236,103 @@ if git log --all --format='%B' | grep -qaiE '^(Co-Authored-By|Claude-Session):';
 fi
 echo "  no assistant trailers"
 
+echo "[4c/5] reduce the published tree to what the submission rests on"
+# The working repository carries a lot that a JAIR reviewer has no reason to
+# read: handoffs between sessions, the running log and decision journal, the
+# planning documents, the superseded TMLR package, early theorem drafts, and
+# CLAUDE.md. None of it is secret, and none of it belongs on the front page of
+# a repository whose one job is to let a reviewer check the audit trail.
+#
+# It is removed in a single commit ON TOP of the filtered history, and NOT by
+# adding paths to the --invert-paths list above. That distinction is the whole
+# design:
+#
+#   --invert-paths rewrites every commit that ever touched those paths, which
+#   changes their hashes, and the paper's appendix pins 39 of them. Dropping
+#   the files at the tip leaves all 245 commits, and therefore all 39 hashes
+#   and every `git merge-base --is-ancestor` check, exactly as published.
+#
+# So the files stay reachable to anyone who checks out an old commit. That is
+# the accepted cost, and it is the right one: this repository's value is that
+# its history is intact and checkable, and silently rewriting it to tidy the
+# file listing would trade the thing being published for the way it looks.
+#
+# The tree is rebuilt with `git mktree` rather than by staging deletions.
+# This repository is a bare mirror, and `git ls-files` and friends refuse to
+# run without a work tree; mktree is plumbing that reads a listing on stdin
+# and writes a tree object, so it does not need one. It also makes the rule
+# a KEEP list rather than a drop list, which is the safer direction: a new
+# working file appearing at the root is then excluded by default. The failure
+# mode of a keep list is something needed going missing, which is loud. The
+# failure mode of a drop list is something private being published, which is
+# silent.
+KEEP_ROOT="paper JAIR code results .githooks README.md LICENSE CITATION.cff"
+KEEP_ROOT="$KEEP_ROOT requirements.txt .gitignore .gitattributes"
+
+# Only main is published. paper-consolidation is identical to it and
+# phase3-bootstrap is one of its ancestors, so no commit becomes unreachable
+# by dropping them; what goes away is two stale pointers that make the branch
+# menu look like there is a choice to make.
+for b in $(git for-each-ref --format='%(refname:short)' refs/heads/); do
+  [ "$b" = "main" ] || git update-ref -d "refs/heads/$b"
+done
+git symbolic-ref HEAD refs/heads/main
+
+before="$(git ls-tree -r --name-only main | grep -c .)"
+
+# notes/ is the one directory kept in part rather than whole: the twelve
+# pre-registrations are the audit trail itself, and the working notes around
+# them are not. So its subtree is rebuilt first, and the root tree below
+# points at the rebuilt one.
+notes_tree="$(git ls-tree main:notes | awk -F'\t' '$2 ~ /^prereg_/' | git mktree)"
+
+new_tree="$(git ls-tree main | awk -F'\t' -v nt="$notes_tree" -v keep="$KEEP_ROOT" '
+  BEGIN { n = split(keep, k, " "); for (i = 1; i <= n; i++) want[k[i]] = 1 }
+  {
+    name = $2
+    if (name == "notes") { split($1, f, " "); print f[1] " " f[2] " " nt "\t" name; next }
+    if (name in want) print $0
+  }' | git mktree)"
+
+if [ "$new_tree" = "$(git rev-parse main^{tree})" ]; then
+  echo "  nothing to drop; tree already reduced"
+else
+  # Fixed dates, so re-running this script produces a bit-identical commit and
+  # the next push stays a fast-forward instead of a rewrite. The date is the
+  # one this step was introduced; it is not pretending to be anything else.
+  export GIT_AUTHOR_NAME="K144U" GIT_AUTHOR_EMAIL="pathaksankalp04@gmail.com"
+  export GIT_COMMITTER_NAME="K144U" GIT_COMMITTER_EMAIL="pathaksankalp04@gmail.com"
+  export GIT_AUTHOR_DATE="2026-09-05T12:00:00+05:30"
+  export GIT_COMMITTER_DATE="2026-09-05T12:00:00+05:30"
+  commit="$(git commit-tree "$new_tree" -p main -F - <<'CMSG'
+Keep only what the JAIR submission rests on
+
+This repository exists so that a reviewer can check one claim: that every
+pre-registration was committed before the compute it governs. Everything
+needed for that check stays. What goes is the working apparatus that grew
+around it and was never meant to be read from outside the project: the
+session handoffs, the running log and decision journal, the planning
+documents, the prompt templates, CLAUDE.md, the superseded TMLR submission
+package, the early theorem drafts, and a figure directory that paper/figures/
+already duplicates.
+
+What remains is paper/, JAIR/, code/, results/, the twelve pre-registrations
+in notes/, and the files that describe and license them.
+
+The history underneath is untouched, and that is deliberate. Removing these
+files from every commit would have changed every commit hash, and the paper's
+appendix pins thirty-nine of them by hash. They all still resolve, and so do
+the ancestry checks the paper tells a reviewer to run. The cost is that
+someone who checks out an old commit still finds these files there. That is
+the correct trade for a repository whose entire value is that its history has
+not been rewritten to look better.
+CMSG
+)"
+  git update-ref refs/heads/main "$commit"
+  after="$(git ls-tree -r --name-only main | grep -c .)"
+  echo "  dropped $((before - after)) files, kept $after"
+fi
+
 echo "[5/5] result"
 echo "  commits:  $(git rev-list --count --all)"
 echo "  identity: $(git log -1 --format='%an <%ae>')"
