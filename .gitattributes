@@ -4,3 +4,8 @@
 # Scoped to the hooks directory on purpose. The cluster shell scripts under
 # code/ have their own history with these settings and are left alone.
 .githooks/** text eol=lf
+
+# core.autocrlf is true here, and a mangled PDF is not obvious until someone
+# downloads it. Git detects binary content on its own, but the manuscript PDF
+# is now tracked and published, so say it rather than rely on detection.
+*.pdf binary
