@@ -29,6 +29,17 @@ LABEL = {"llama31_8b": "Llama-3.1-8B", "mistral_7b": "Mistral-7B",
 COLOR = {"llama31_8b": "#1b6ca8", "mistral_7b": "#c8552a",
          "qwen25_7b": "#2e7d51", "yi15_9b": "#7d4b9e"}
 
+# JAIR asks that every figure be understandable on a monochrome device, and
+# hue is the first thing a greyscale render throws away: these four colours
+# convert to nearly the same grey, which left the legend with four identical
+# swatches. Marker shape and dash pattern survive the conversion, so the
+# series are separated by those and the colour is now decoration rather than
+# information.
+MARKER = {"llama31_8b": "o", "mistral_7b": "s",
+          "qwen25_7b": "^", "yi15_9b": "D"}
+DASH = {"llama31_8b": (4, 1.6), "mistral_7b": (1.4, 1.4),
+        "qwen25_7b": (6, 1.6, 1.4, 1.6), "yi15_9b": (3, 1.4, 1.4, 1.4)}
+
 shared = json.loads((RES / "subspace_geometry_seed1.json").read_text())
 indep = {c: json.loads((RES / f"subspace_geometry_{c}.json").read_text())
          for c in ("indep1", "indep2", "indep3")}
@@ -45,13 +56,17 @@ eps_val = [float(e) for e in eps_keys]
 flat = [indep[c][b]["hard_d_eff"][e]
         for c in indep for b in BASES for e in eps_keys]
 assert set(flat) == {64.0}, sorted(set(flat))
-axL.plot(eps_val, [64] * len(eps_val), lw=4.0, color="#1b6ca8", alpha=0.85,
+# Drawn in black rather than in llama's blue, which it used to share: in
+# greyscale the reference line and one of the four falling curves came out as
+# the same ink. Thick and solid against thin and dashed reads in both.
+axL.plot(eps_val, [64] * len(eps_val), lw=4.0, color="#111111", alpha=0.85,
          solid_capstyle="round", zorder=3,
          label="independent init (4 bases $\\times$ 3 cohorts, all identical)")
 
 for b in BASES:
     axL.plot(eps_val, [shared[b]["hard_d_eff"][e] for e in eps_keys],
-             marker="o", ms=4, lw=1.6, color=COLOR[b], ls="--", zorder=4,
+             marker=MARKER[b], ms=4.5, lw=1.6, color=COLOR[b],
+             ls=(0, DASH[b]), mfc="white", mew=1.1, zorder=4,
              label=f"shared init, {LABEL[b]}")
 
 axL.set_xscale("log")
@@ -77,8 +92,10 @@ ind = [cond[KI][b]["cond_Hbar"] for b in BASES]
 
 w = 0.36
 axR.bar([i - w / 2 for i in x], sh, w, color="#b03a2e",
+        edgecolor="black", linewidth=0.8, hatch="////",
         label="shared init (one $A$ per cohort)")
 axR.bar([i + w / 2 for i in x], ind, w, color="#1b6ca8",
+        edgecolor="black", linewidth=0.8, hatch="..",
         label="independent init")
 for i, (a, b) in enumerate(zip(sh, ind)):
     axR.text(i - w / 2, a * 1.35, f"{a/1e4:.1f}e4", ha="center", fontsize=7.5)
