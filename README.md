@@ -192,10 +192,9 @@ JAIR/
   overleaf/              DERIVED from paper/ by sync_from_paper.py;
                          do not edit it by hand
   build_local.sh         builds the PDF without Overleaf
-paper/                   LaTeX source. Several build roots share one body:
-                           jair.tex   JAIR submission, named authors
-                           tmlr.tex   anonymous
-                           arxiv.tex, iclr2027.tex
+paper/                   LaTeX source
+  jair.tex               the JAIR build root
+  main.tex               the shared body it inputs
   sections/              section fragments
   figures/               the figures the roots build with
   references.bib

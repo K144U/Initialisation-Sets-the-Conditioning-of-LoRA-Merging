@@ -280,17 +280,38 @@ git symbolic-ref HEAD refs/heads/main
 
 before="$(git ls-tree -r --name-only main | grep -c .)"
 
-# notes/ is the one directory kept in part rather than whole: the twelve
-# pre-registrations are the audit trail itself, and the working notes around
-# them are not. So its subtree is rebuilt first, and the root tree below
-# points at the rebuilt one.
+# Two directories are kept in part rather than whole, so their subtrees are
+# rebuilt first and the root tree below points at the rebuilt ones.
+#
+# notes/: the twelve pre-registrations are the audit trail itself. The working
+# notes around them are not.
 notes_tree="$(git ls-tree main:notes | awk -F'\t' '$2 ~ /^prereg_/' | git mktree)"
 
-new_tree="$(git ls-tree main | awk -F'\t' -v nt="$notes_tree" -v keep="$KEEP_ROOT" '
+# paper/: one body feeds four build roots, and only the JAIR one is under
+# review. Publishing ready-to-build TMLR, arXiv and ICLR roots next to it,
+# with their style files, invites a reviewer to wonder where else this is
+# sitting. The shared body, sections, figures and the JAIR root all stay, so
+# the paper still builds; what goes is the three other roots, the four style
+# and bibliography files that exist only for them, build.sh, which builds only
+# the arXiv and ICLR targets, and paper/README.md, which is largely about
+# producing the anonymous variants.
+#
+# This is tidying, not concealment, and it should not be mistaken for the
+# latter: the manuscript's own appendix cites pre-registrations named
+# prereg_tmlr and prereg_tmlr_amendment, so the earlier venue is named in the
+# PDF under review no matter what this directory contains. What is removed is
+# only the machinery for building elsewhere.
+DROP_PAPER="^(tmlr|arxiv|iclr2027)[.]tex$|^(tmlr|iclr2026_conference)[.](sty|bst)$"
+DROP_PAPER="$DROP_PAPER|^fancyhdr[.]sty$|^build[.]sh$|^README[.]md$"
+paper_tree="$(git ls-tree main:paper \
+  | awk -F'\t' -v drop="$DROP_PAPER" '$2 !~ drop' | git mktree)"
+
+new_tree="$(git ls-tree main | awk -F'\t' -v nt="$notes_tree" -v pt="$paper_tree" -v keep="$KEEP_ROOT" '
   BEGIN { n = split(keep, k, " "); for (i = 1; i <= n; i++) want[k[i]] = 1 }
   {
     name = $2
     if (name == "notes") { split($1, f, " "); print f[1] " " f[2] " " nt "\t" name; next }
+    if (name == "paper") { split($1, f, " "); print f[1] " " f[2] " " pt "\t" name; next }
     if (name in want) print $0
   }' | git mktree)"
 
