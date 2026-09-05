@@ -9,9 +9,9 @@ Everything in this folder is generated. Rebuild it with:
 
 | File | Where it goes |
 |---|---|
-| `Pathak_Garg_Initialisation_LoRA_Merging.pdf` | the manuscript, 49 pages. This is the file under review. |
+| `Pathak_Garg_Singh_Initialisation_LoRA_Merging.pdf` | the manuscript, 49 pages. This is the file under review. |
 | `cover_letter.txt` | paste into the cover-letter or comments field. Plain text on purpose: wizard fields do not render markdown. |
-| `Pathak_Garg_Initialisation_LoRA_Merging_latex_source.zip` | LaTeX sources. Not needed at submission. Keep it for the camera-ready. |
+| `Pathak_Garg_Singh_Initialisation_LoRA_Merging_latex_source.zip` | LaTeX sources. Not needed at submission. Keep it for the camera-ready. |
 
 ## Wizard fields
 
@@ -19,8 +19,9 @@ Everything in this folder is generated. Rebuild it with:
 - **Authors, in order:**
   1. Sankalp Pathak, ORCID 0009-0006-5666-8271, pathaksankalp04@gmail.com, **corresponding author**
   2. Sanjay Garg, ORCID 0000-0002-2279-9373, gargsv@gmail.com
-- **Affiliation, both:** Department of Computer Science and Engineering, Jaypee
-  University of Engineering and Technology, Guna
+  3. Piyush Kumar Singh, ORCID 0009-0000-8033-3777, Piyushsingh5629@gmail.com
+- **Affiliation, all three:** Department of Computer Science and Engineering,
+  Jaypee University of Engineering and Technology, Guna
 - **Abstract:** structured, on page 1 of the PDF under Background / Objectives /
   Methods / Results / Conclusions. Copy it from there if the wizard wants it
   separately.
@@ -31,7 +32,7 @@ Everything in this folder is generated. Rebuild it with:
 ## Declarations
 
 - The work is **not** under review at any other journal or forum.
-- **Both authors approve** submission.
+- **All three authors approve** submission.
 - One disclosure, already in the cover letter: an earlier and superseded
   version is public on Zenodo, doi 10.5281/zenodo.21238820. It is cited in the
   introduction, which also says which two of its claims this paper does not

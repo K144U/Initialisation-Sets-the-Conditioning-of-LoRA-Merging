@@ -29,7 +29,15 @@ PDF = JAIR / "overleaf" / "main.pdf"
 ZIP = JAIR / "overleaf_jair.zip"
 LETTER = JAIR / "COVER_LETTER.md"
 
-STEM = "Pathak_Garg_Initialisation_LoRA_Merging"
+STEM = "Pathak_Garg_Singh_Initialisation_LoRA_Merging"
+
+# The author block is the one part of this package that cannot be checked by
+# looking at the PDF, because a missing email looks exactly like an author who
+# chose not to give one. paper/jair.tex carries this marker while any author
+# field is still outstanding, and packaging refuses to run until it is gone.
+# build_local.sh is deliberately NOT gated: previewing an incomplete block is
+# fine, uploading one is not.
+TODO_MARKER = "TODO-AUTHOR3"
 
 
 def fail(msg: str) -> None:
@@ -50,6 +58,13 @@ def main() -> int:
         fail("no source zip. Run: python JAIR/sync_from_paper.py")
     if PDF.stat().st_mtime < newest_source_mtime():
         fail("the PDF is older than a source file. Rebuild before packaging.")
+
+    root = (ROOT / "paper" / "jair.tex").read_text(encoding="utf-8")
+    if TODO_MARKER in root:
+        fail("paper/jair.tex still carries " + TODO_MARKER + ": an author is "
+             "missing an email or ORCID. Fill both in, delete the marker "
+             "comment, re-run sync_from_paper.py and build_local.sh, then "
+             "package.")
 
     # A killed pdflatex leaves a stale PDF behind, so check the log agrees
     # this run finished. See CLAUDE.md on the Overleaf timeout signature.
@@ -113,8 +128,9 @@ Everything in this folder is generated. Rebuild it with:
 - **Authors, in order:**
   1. Sankalp Pathak, ORCID 0009-0006-5666-8271, pathaksankalp04@gmail.com, **corresponding author**
   2. Sanjay Garg, ORCID 0000-0002-2279-9373, gargsv@gmail.com
-- **Affiliation, both:** Department of Computer Science and Engineering, Jaypee
-  University of Engineering and Technology, Guna
+  3. Piyush Kumar Singh, ORCID 0009-0000-8033-3777, Piyushsingh5629@gmail.com
+- **Affiliation, all three:** Department of Computer Science and Engineering,
+  Jaypee University of Engineering and Technology, Guna
 - **Abstract:** structured, on page 1 of the PDF under Background / Objectives /
   Methods / Results / Conclusions. Copy it from there if the wizard wants it
   separately.
@@ -125,7 +141,7 @@ Everything in this folder is generated. Rebuild it with:
 ## Declarations
 
 - The work is **not** under review at any other journal or forum.
-- **Both authors approve** submission.
+- **All three authors approve** submission.
 - One disclosure, already in the cover letter: an earlier and superseded
   version is public on Zenodo, doi 10.5281/zenodo.21238820. It is cited in the
   introduction, which also says which two of its claims this paper does not

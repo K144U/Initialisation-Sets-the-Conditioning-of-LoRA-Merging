@@ -125,3 +125,12 @@ JAIR/overleaf/*.fdb_latexmk
 JAIR/submission/*.pdf
 JAIR/submission/*.zip
 JAIR/submission/cover_letter.txt
+
+# One exception, 2026-09-05. The manuscript PDF itself is tracked, so that a
+# reader of the public repository can read the paper the commit trail belongs
+# to without installing TeX Live to build it. It is 835 KB and is committed
+# once per submitted version rather than once per build, which is what the
+# paragraph above is actually guarding against. The zip stays ignored because
+# the LaTeX sources it contains are already tracked under paper/ and JAIR/
+# overleaf/, and cover_letter.txt stays ignored because it is correspondence.
+!JAIR/submission/Pathak_Garg_Singh_Initialisation_LoRA_Merging.pdf
