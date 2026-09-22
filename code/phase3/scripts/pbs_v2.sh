@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -N rdm_v2
 #PBS -q gpu
-#PBS -l select=1:ncpus=8:mem=120gb
+#PBS -l select=1:ncpus=3:ngpus=1:mem=60gb
 #PBS -l walltime=24:00:00
 #PBS -j oe
 #PBS -V
@@ -13,11 +13,12 @@
 # makes the orchestrator refuse any GPU on which a sanjay.g process is
 # running, so these cells never share a card with that account's jobs.
 #
-#   qsub -v MANIFEST=code/phase3/configs/<x>_manifest.json,ORCH_STATE=<x>.json \
+#   qsub -v MANIFEST=code/phase3/configs/<x>_manifest.json,ORCH_STATE=<x>.json,ORCH_SHARD=0/5 \
 #        -o ~/projects/rdmerge_v2/logs/pbs/ code/phase3/scripts/pbs_v2.sh
 #
-# Do not pass a comma-separated GPUS through -v (PBS splits on commas); put the
-# set in GPUS_FILE instead.
+# Queue limits as of 2026-09-23: mem <= 64gb per job, 5 running jobs and 16
+# cpus per user, GPUs allocated by PBS (ngpus). Five shards of one manifest,
+# ORCH_SHARD=0/5 .. 4/5, use the whole allowance with no cell run twice.
 
 set -uo pipefail
 export PROJECT_ROOT=$HOME/projects/rdmerge_v2
@@ -39,10 +40,17 @@ export TOKENIZERS_PARALLELISM=false
 export PYTHONPATH=$PROJECT_ROOT/code/phase3:${PYTHONPATH:-}
 export PROTECT_USERS=sanjay.g
 
-if [ -n "${GPUS_FILE:-}" ] && [ -f "$GPUS_FILE" ]; then
+# The queue allocates GPUs itself now (ngpus=1 per job) and exports the
+# allocation in CUDA_VISIBLE_DEVICES; use exactly that and nothing else.
+if [ -n "${CUDA_VISIBLE_DEVICES:-}" ]; then
+  GPUS="$CUDA_VISIBLE_DEVICES"
+elif [ -n "${GPUS_FILE:-}" ] && [ -f "$GPUS_FILE" ]; then
   GPUS=$(cat "$GPUS_FILE")
+else
+  echo "[v2] ABORT: PBS gave no CUDA_VISIBLE_DEVICES and no GPUS_FILE"; exit 2
 fi
-export GPUS="${GPUS:-0,1,2,3,4,6}"
+export GPUS
+nvidia-smi --query-gpu=index,uuid,memory.used,memory.total --format=csv -i "$GPUS" || true
 export ORCH_STATE="${ORCH_STATE:-orchestrator_state_v2.json}"
 export ORCH_SENTINEL="${ORCH_SENTINEL:-_QUEUE_COMPLETE_V2}"
 

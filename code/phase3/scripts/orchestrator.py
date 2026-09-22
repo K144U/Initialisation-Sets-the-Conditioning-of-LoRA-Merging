@@ -204,7 +204,16 @@ def main():
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
     cells = json.loads(Path(args.manifest).read_text())
-    gpus = [int(g) for g in os.environ.get("GPUS", "0,1,2,3,5").split(",")]
+    # ORCH_SHARD="i/N": this job takes cells whose index is i mod N, so N jobs
+    # can split one manifest without two of them ever running the same cell.
+    shard = os.environ.get("ORCH_SHARD")
+    if shard:
+        i, n = (int(x) for x in shard.split("/"))
+        cells = [c for k, c in enumerate(cells) if k % n == i]
+        print(f"[orch] shard {i}/{n}: {len(cells)} cells", flush=True)
+    # GPU tokens are passed through as strings: under PBS ngpus allocation
+    # CUDA_VISIBLE_DEVICES may hold a UUID rather than an index.
+    gpus = [g.strip() for g in os.environ.get("GPUS", "0,1,2,3,5").split(",") if g.strip()]
     print(f"[orch] GPUs: {gpus}; manifest: {args.manifest} "
           f"({len(cells)} cells)", flush=True)
     Orchestrator(cells, gpus, args.dry_run).run()
