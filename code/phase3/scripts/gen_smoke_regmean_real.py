@@ -36,7 +36,7 @@ def main():
     specs = []
     for s in t["adapter_specs"]:
         s = dict(s)
-        s["dir"] = f"{S}/artifacts/lora/llama32_3b/e5_arm3/{DIRS[s['name']]}"
+        s["dir"] = f"{S}/artifacts/lora/llama32_3b/e5_arm3/{DIRS[s['name']]}/v1"
         s["task_cfg"] = dict(s["task_cfg"], n_eval=20)
         assert Path(s["dir"], "adapter_model.safetensors").exists(), s["dir"]
         specs.append(s)
