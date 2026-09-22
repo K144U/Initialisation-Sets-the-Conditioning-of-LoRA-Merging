@@ -13,7 +13,10 @@ import sys
 def assert_env(min_free_gb: float = 70.0) -> dict[str, str]:
     errors: list[str] = []
 
-    expected_hf = "/home/sanjay.g/projects/rdmerge/cache/hf_home"
+    # The cache belongs to whichever tree the job runs in: the sanjay.g tree,
+    # or a work tree on another account that reads that tree read-only.
+    root = os.environ.get("PROJECT_ROOT", "/home/sanjay.g/projects/rdmerge")
+    expected_hf = f"{root}/cache/hf_home"
     hf_home = os.environ.get("HF_HOME", "")
     if not hf_home.startswith(expected_hf):
         errors.append(f"HF_HOME={hf_home!r}; expected to start with {expected_hf!r}")
