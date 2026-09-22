@@ -40,17 +40,21 @@ export TOKENIZERS_PARALLELISM=false
 export PYTHONPATH=$PROJECT_ROOT/code/phase3:${PYTHONPATH:-}
 export PROTECT_USERS=sanjay.g
 
-# The queue allocates GPUs itself now (ngpus=1 per job) and exports the
-# allocation in CUDA_VISIBLE_DEVICES; use exactly that and nothing else.
+# ngpus=1 is accounting only on this queue (checked 2026-09-23 with a probe
+# job: CUDA_VISIBLE_DEVICES empty, all 8 devices visible, exec_vnode names no
+# GPU). So the job picks its own card: one worker (ORCH_DYNAMIC=1) choosing,
+# per cell, the allowed GPU with the most free memory that carries no
+# PROTECT_USERS process. It never holds more than the one GPU it was billed.
+# 5 and 7 are outside this project's allocation.
 if [ -n "${CUDA_VISIBLE_DEVICES:-}" ]; then
   GPUS="$CUDA_VISIBLE_DEVICES"
-elif [ -n "${GPUS_FILE:-}" ] && [ -f "$GPUS_FILE" ]; then
-  GPUS=$(cat "$GPUS_FILE")
 else
-  echo "[v2] ABORT: PBS gave no CUDA_VISIBLE_DEVICES and no GPUS_FILE"; exit 2
+  GPUS="${GPUS_ALLOWED:-0 1 2 3 4 6}"
+  GPUS="${GPUS// /,}"
+  export ORCH_DYNAMIC=1
 fi
 export GPUS
-nvidia-smi --query-gpu=index,uuid,memory.used,memory.total --format=csv -i "$GPUS" || true
+nvidia-smi --query-gpu=index,memory.used,memory.total --format=csv || true
 export ORCH_STATE="${ORCH_STATE:-orchestrator_state_v2.json}"
 export ORCH_SENTINEL="${ORCH_SENTINEL:-_QUEUE_COMPLETE_V2}"
 

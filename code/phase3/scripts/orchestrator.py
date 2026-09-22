@@ -105,7 +105,16 @@ class Orchestrator:
         STATE.parent.mkdir(parents=True, exist_ok=True)
         STATE.write_text(json.dumps(state, indent=1))
 
-    def worker(self, gpu: int):
+    def pick_gpu(self, need: float):
+        """Dynamic mode: the allowed GPU with the most free memory, or None."""
+        best, best_free = None, -1.0
+        for g in self.candidates:
+            f = free_gb(g)
+            if f >= need and f > best_free:
+                best, best_free = g, f
+        return best
+
+    def worker(self, gpu):
         while True:
             try:
                 cell = self.q.get(timeout=30)
@@ -119,7 +128,12 @@ class Orchestrator:
             need = float(cell.get("min_free_gb", 30))
             ok = False
             for _ in range(VRAM_POLL_TRIES):
-                if free_gb(gpu) >= need:
+                if self.dynamic:
+                    gpu = self.pick_gpu(need)
+                    if gpu is not None:
+                        ok = True
+                        break
+                elif free_gb(gpu) >= need:
                     ok = True
                     break
                 time.sleep(60)
@@ -181,8 +195,14 @@ class Orchestrator:
                 time.sleep(BACKOFF_S)
 
     def run(self):
+        # ORCH_DYNAMIC=1: one worker, which picks a GPU from self.gpus per cell.
+        # For queues where ngpus is accounting only and no device is bound:
+        # the job then occupies exactly one GPU at a time, as it was billed.
+        self.dynamic = os.environ.get("ORCH_DYNAMIC") == "1"
+        self.candidates = list(self.gpus)
+        slots = [None] if self.dynamic else self.gpus
         threads = [threading.Thread(target=self.worker, args=(g,), daemon=True)
-                   for g in self.gpus]
+                   for g in slots]
         for t in threads:
             t.start()
         for t in threads:
