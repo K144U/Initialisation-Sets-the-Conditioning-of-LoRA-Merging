@@ -55,6 +55,12 @@ def main():
                                       metric="gsm8k_em", metric_task_spec="gsm8k",
                                       metric_kwargs={"max_new_tokens": 128},
                                       n_eval_metric=8),
+        # notes/prereg_third_solver_2026-09-23.md binds its smoke to this cohort too
+        "smoke_tsv_nll": dict(common, loader="plain", method="tsv",
+                              method_kwargs={"alpha": 1.0}),
+        "smoke_mats_nll": dict(common, loader="plain", method="mats",
+                               method_kwargs={"kfac": True, "num_iterations": 100,
+                                              "n_gram_samples": 16, "gram_max_len": 512}),
         "smoke_rma_gsm8k_unsloth": dict(common, method="regmean_act",
                                         method_kwargs={"alpha": 0.9, "n_gram_samples": 16},
                                         metric="gsm8k_em", metric_task_spec="gsm8k",

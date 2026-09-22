@@ -322,16 +322,20 @@ def main() -> int:
                      load_task_split, max_len)
 
     print(f"[eval_cell] merging via {method} kwargs="
-          f"{ {k:v for k,v in method_kwargs.items() if k not in ('fisher_data', 'grams')} }",
+          f"{ {k:v for k,v in method_kwargs.items() if k not in ('fisher_data', 'grams', 'grams_out')} }",
           flush=True)
     t_merge = time.time()
     REGISTRY[method](view, adapter_names, weights, merged_name, **method_kwargs)
     print(f"  merge done in {time.time()-t_merge:.1f}s", flush=True)
     merge_diagnostics = None
     if method in NEEDS_GRAMS:
-        from merging.regmean_act import DIAGNOSTICS
+        if method == "mats":
+            from merging.mats_kfac import DIAGNOSTICS
+        else:
+            from merging.regmean_act import DIAGNOSTICS
         merge_diagnostics = dict(DIAGNOSTICS)
         method_kwargs.pop("grams", None)
+        method_kwargs.pop("grams_out", None)
 
     # 5. Eval merged model on each task
     print(f"[eval_cell] evaluating merged adapter", flush=True)

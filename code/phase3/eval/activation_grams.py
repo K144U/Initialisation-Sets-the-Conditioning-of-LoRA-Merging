@@ -86,19 +86,104 @@ def compute_activation_grams(model, peft_view, adapter_name: str, tokenizer,
     return {k: (v / n).cpu() for k, v in acc.items()}, tokens["n"]
 
 
+def compute_kfac_grams(model, peft_view, adapter_name: str, tokenizer,
+                       train_data: list[dict], max_len: int,
+                       n_samples: int) -> tuple[dict, dict, int]:
+    """MaTS's blockwise (KFAC) Fisher factors for one task.
+
+    Input-activation Grams (as RegMean) and output-gradient Grams, the latter
+    from the language-modelling loss of fine-tuned model t on its own training
+    data. Returns ({gram_key: G_in}, {layer: G_out}, tokens), all per token.
+    """
+    device = next(model.parameters()).device
+    model.set_adapter(adapter_name)
+    model.eval()
+    owners: dict[str, str] = {}
+    for name in peft_view.layer_names():
+        owners.setdefault(gram_key(name), name)
+    topo = peft_view.layer_topology
+    g_in = {k: torch.zeros(topo[n][1], topo[n][1], device=device) for k, n in owners.items()}
+    g_out = {n: torch.zeros(topo[n][0], topo[n][0], device=device) for n in peft_view.layer_names()}
+    tokens = {"n": 0}
+
+    def pre_hook(key):
+        def hook(module, inputs):
+            x = inputs[0].detach().reshape(-1, inputs[0].shape[-1]).float()
+            g_in[key].addmm_(x.T, x)
+        return hook
+
+    def bwd_hook(name):
+        def hook(module, grad_input, grad_output):
+            g = grad_output[0].detach().reshape(-1, grad_output[0].shape[-1]).float()
+            g_out[name].addmm_(g.T, g)
+        return hook
+
+    # Gradients must flow to the LoRA layers; only this adapter's factors are
+    # made trainable, and nothing is ever stepped.
+    trainable = []
+    for mod in peft_view._layers.values():
+        for p in (mod.lora_A[adapter_name].weight, mod.lora_B[adapter_name].weight):
+            if not p.requires_grad:
+                p.requires_grad_(True)
+                trainable.append(p)
+    handles = [peft_view._layers[n].register_forward_pre_hook(pre_hook(k))
+               for k, n in owners.items()]
+    handles += [m.register_full_backward_hook(bwd_hook(n))
+                for n, m in peft_view._layers.items()]
+    try:
+        for ex in train_data[:n_samples]:
+            msgs = [{"role": "user", "content": ex["prompt"]},
+                    {"role": "assistant", "content": ex["answer"]}]
+            text = tokenizer.apply_chat_template(msgs, tokenize=False,
+                                                 add_generation_prompt=False)
+            ids = tokenizer(text, return_tensors="pt", truncation=True, max_length=max_len,
+                            add_special_tokens=False).input_ids.to(device)
+            if ids.shape[1] < 2:
+                continue
+            tokens["n"] += ids.shape[1]
+            model.zero_grad(set_to_none=True)
+            out = model(input_ids=ids, labels=ids)
+            out.loss.backward()
+    finally:
+        for h in handles:
+            h.remove()
+        for p in trainable:
+            p.requires_grad_(False)
+            p.grad = None
+    dead = [k for k, v in list(g_in.items()) + list(g_out.items())
+            if float(v.diagonal().sum()) == 0.0]
+    if dead or tokens["n"] == 0:
+        raise RuntimeError(f"KFAC hooks recorded nothing for {len(dead)} factors "
+                           f"(e.g. {dead[:2]}); use loader: plain")
+    n = tokens["n"]
+    return ({k: (v / n).cpu() for k, v in g_in.items()},
+            {k: (v / n).cpu() for k, v in g_out.items()}, n)
+
+
 def attach_grams(method_kwargs: dict, cfg: dict, model, view, adapter_names,
                  tokenizer, load_task_split, max_len: int) -> None:
     """If the method needs real Grams, compute them and put them in kwargs.
 
-    n_gram_samples is consumed here and never forwarded to the merge.
+    n_gram_samples and gram_max_len are consumed here and never forwarded to
+    the merge. method_kwargs["kfac"] selects MaTS's KFAC factors instead of
+    RegMean's input Grams.
     """
     n = int(method_kwargs.pop("n_gram_samples", 256))
-    grams, counts = {}, {}
+    max_len = int(method_kwargs.pop("gram_max_len", max_len))
+    kfac = bool(method_kwargs.get("kfac", False))
+    grams, grams_out, counts = {}, {}, {}
     for spec, peft_name in zip(cfg["adapter_specs"], adapter_names):
         train_split, _ = load_task_split(spec["task_cfg"], seed=cfg.get("seed", 20260518))
-        grams[peft_name], counts[spec["name"]] = compute_activation_grams(
-            model, view, peft_name, tokenizer, train_split, max_len, n)
+        if kfac:
+            grams[peft_name], grams_out[peft_name], counts[spec["name"]] = \
+                compute_kfac_grams(model, view, peft_name, tokenizer,
+                                   train_split, max_len, n)
+        else:
+            grams[peft_name], counts[spec["name"]] = compute_activation_grams(
+                model, view, peft_name, tokenizer, train_split, max_len, n)
         print(f"  grams for {spec['name']:<14}: {counts[spec['name']]} tokens "
               f"from {min(n, len(train_split))} examples", flush=True)
     method_kwargs["grams"] = grams
+    if kfac:
+        method_kwargs["grams_out"] = grams_out
     method_kwargs["_gram_tokens"] = counts
