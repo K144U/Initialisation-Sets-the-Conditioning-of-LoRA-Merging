@@ -3,8 +3,9 @@
 
 notes/prereg_regmean_real_2026-09-23.md binds the smoke to a cohort that is
 not registered and to checking only that the code runs and the merged model
-generates. The cohort is Llama-3.2-3B e5_arm3 (rank 64). Sample sizes are
-tiny on purpose: these numbers answer "does it run", nothing else.
+generates. The cohort is the registration's named one, llama32_1b_smoke
+(Llama-3.2-1B, T = 2). Sample sizes are tiny on purpose: these numbers answer
+"does it run", nothing else.
 
 Four cells: NLL with regmean_act (plain loader), NLL with adapter-only
 alpha 0.9, and GSM8K with regmean_act under each loader, because Unsloth's
@@ -23,9 +24,9 @@ RES = ROOT / "results" / "phase3"
 CFG = ROOT / "code" / "phase3" / "configs" / "smoke_regmean_real"
 OUT = RES / "smoke_regmean_real"
 S = "/home/sanjay.g/projects/rdmerge"
-BASE = f"{S}/models/Llama-3.2-3B-Instruct"
-DIRS = {"gsm8k": "gsm8k__r64", "alpaca": "alpaca__r64",
-        "magicoder": "magicoder__r64", "translation": "translation__r64"}
+BASE = (f"{S}/cache/hf_home/hub/models--unsloth--Llama-3.2-1B-Instruct/snapshots/"
+        "5a8abab4a5d6f164389b1079fb721cfab8d7126c")
+SMOKE_TASKS = ("gsm8k", "alpaca")          # the only two adapters that cohort has
 
 
 def main():
@@ -35,8 +36,10 @@ def main():
                    .read_text())["meta"]["config"]
     specs = []
     for s in t["adapter_specs"]:
+        if s["name"] not in SMOKE_TASKS:
+            continue
         s = dict(s)
-        s["dir"] = f"{S}/artifacts/lora/llama32_3b/e5_arm3/{DIRS[s['name']]}/v1"
+        s["dir"] = f"{S}/artifacts/lora/llama32_1b_smoke/{s['name']}"
         s["task_cfg"] = dict(s["task_cfg"], n_eval=20)
         assert Path(s["dir"], "adapter_model.safetensors").exists(), s["dir"]
         specs.append(s)
