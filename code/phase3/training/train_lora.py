@@ -58,25 +58,50 @@ def train_one_lora(cfg: dict, project_root: Path) -> dict:
 
     seed_everything(cfg["seeds"]["global"])
 
-    print(f"[train:{task_name}] loading {base} via Unsloth", flush=True)
+    # lora.init selects a non-default initialisation (e.g. "pissa"). Unsloth
+    # has no path for these, so they go through plain transformers + PEFT.
+    # Every config without lora.init takes the Unsloth path exactly as before.
+    lora_init = cfg["lora"].get("init")
     t_load = time.time()
-    model, tokenizer = FastLanguageModel.from_pretrained(
-        model_name=base,
-        max_seq_length=cfg["train"]["max_seq_length"],
-        dtype=torch.bfloat16,
-        load_in_4bit=False,
-    )
-    print(f"[train:{task_name}] base loaded in {time.time()-t_load:.1f}s", flush=True)
+    if lora_init:
+        from peft import LoraConfig, get_peft_model
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+        print(f"[train:{task_name}] loading {base} via plain PEFT "
+              f"(init_lora_weights={lora_init!r})", flush=True)
+        tokenizer = AutoTokenizer.from_pretrained(base)
+        if tokenizer.pad_token is None:
+            tokenizer.pad_token = tokenizer.eos_token
+        model = AutoModelForCausalLM.from_pretrained(
+            base, torch_dtype=torch.bfloat16, device_map="cuda:0",
+            attn_implementation="sdpa")
+        model.gradient_checkpointing_enable()
+        model.enable_input_require_grads()
+        print(f"[train:{task_name}] base loaded in {time.time()-t_load:.1f}s", flush=True)
+        torch.manual_seed(cfg["seeds"]["train"])
+        model = get_peft_model(model, LoraConfig(
+            r=cfg["lora"]["r"], lora_alpha=cfg["lora"]["alpha"],
+            lora_dropout=cfg["lora"]["dropout"],
+            target_modules=cfg["lora"]["target_modules"],
+            init_lora_weights=lora_init, task_type="CAUSAL_LM"))
+    else:
+        print(f"[train:{task_name}] loading {base} via Unsloth", flush=True)
+        model, tokenizer = FastLanguageModel.from_pretrained(
+            model_name=base,
+            max_seq_length=cfg["train"]["max_seq_length"],
+            dtype=torch.bfloat16,
+            load_in_4bit=False,
+        )
+        print(f"[train:{task_name}] base loaded in {time.time()-t_load:.1f}s", flush=True)
 
-    model = FastLanguageModel.get_peft_model(
-        model,
-        r=cfg["lora"]["r"],
-        lora_alpha=cfg["lora"]["alpha"],
-        lora_dropout=cfg["lora"]["dropout"],
-        target_modules=cfg["lora"]["target_modules"],
-        use_gradient_checkpointing="unsloth",
-        random_state=cfg["seeds"]["train"],
-    )
+        model = FastLanguageModel.get_peft_model(
+            model,
+            r=cfg["lora"]["r"],
+            lora_alpha=cfg["lora"]["alpha"],
+            lora_dropout=cfg["lora"]["dropout"],
+            target_modules=cfg["lora"]["target_modules"],
+            use_gradient_checkpointing="unsloth",
+            random_state=cfg["seeds"]["train"],
+        )
 
     # Snapshot the LoRA A factors BEFORE any optimiser step, for the drift
     # measurement registered in notes/prereg_drift_2026-08-16.md. Off by
@@ -196,7 +221,8 @@ def train_one_lora(cfg: dict, project_root: Path) -> dict:
 
     # In-process NLL eval on this LoRA over its own held-out (sanity check).
     print(f"[train:{task_name}] running NLL eval on held-out (n={len(eval_data)})", flush=True)
-    FastLanguageModel.for_inference(model)
+    if not lora_init:
+        FastLanguageModel.for_inference(model)
     nll_tau = _compute_nll(model, tokenizer, eval_data, cfg["train"]["max_seq_length"])
     print(f"[train:{task_name}] NLL_tau on held-out = {nll_tau:.4f}", flush=True)
 

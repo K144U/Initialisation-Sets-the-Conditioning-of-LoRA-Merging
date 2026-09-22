@@ -28,9 +28,17 @@ _LANG_LABEL = {
 
 def _row_to_dict(row: dict, task_cfg: dict) -> dict:
     name = task_cfg["name"]
-    if name == "alpaca":
+    # `format` lets a new task reuse a formatter under its own name (e.g. a
+    # second translation pair); tasks without it are formatted by name, as
+    # before.
+    fmt = task_cfg.get("format", name)
+    if fmt == "alpaca":
         return {"prompt": _format_alpaca_prompt(row), "answer": row["output"]}
-    if name == "translation":
+    if fmt == "dolly":
+        ctx = (row.get("context") or "").strip()
+        prompt = f"{row['instruction']}\n\nContext: {ctx}" if ctx else row["instruction"]
+        return {"prompt": prompt, "answer": row["response"]}
+    if fmt == "translation":
         # WMT (wmt19, wmt14): row['translation'] is a dict {src_lang: ..., tgt_lang: ...}.
         # FLORES (legacy): row has 'sentence_<lang>' columns.
         src = task_cfg.get("src_lang", "en")
@@ -44,7 +52,7 @@ def _row_to_dict(row: dict, task_cfg: dict) -> dict:
             src_text = row[f"sentence_{src}"]
             tgt_text = row[f"sentence_{tgt}"]
         return {"prompt": _translation_prompt(src_text, src_label, tgt_label), "answer": tgt_text}
-    if name == "humaneval":
+    if fmt == "humaneval":
         # HumanEval rows have prompt + canonical_solution + test + entry_point.
         # The downstream metric needs all four; training (NLL on canonical
         # solution) needs prompt + answer = canonical_solution.
