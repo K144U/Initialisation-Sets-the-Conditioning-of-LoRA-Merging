@@ -76,6 +76,12 @@ def compute_activation_grams(model, peft_view, adapter_name: str, tokenizer,
     finally:
         for h in handles:
             h.remove()
+    # Fused inference kernels can bypass a module's forward, and then its hook
+    # never fires. A Gram that saw nothing must stop the cell, not merge.
+    dead = [k for k, v in acc.items() if float(v.diagonal().sum()) == 0.0]
+    if dead or tokens["n"] == 0:
+        raise RuntimeError(f"activation hooks recorded nothing for {len(dead)} of "
+                           f"{len(acc)} Grams (e.g. {dead[:2]}); use loader: plain")
     n = max(tokens["n"], 1)
     return {k: (v / n).cpu() for k, v in acc.items()}, tokens["n"]
 

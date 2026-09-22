@@ -40,7 +40,33 @@ BACKOFF_S = 600
 VRAM_POLL_TRIES = 3
 
 
+# Users whose jobs must never share a card with ours. A GPU running any of
+# their processes counts as having no free memory, whatever nvidia-smi says,
+# because their jobs may grow into memory that looks free now.
+PROTECT_USERS = {u for u in os.environ.get("PROTECT_USERS", "").split(",") if u}
+
+
+def protected_user_on(gpu: int) -> str | None:
+    if not PROTECT_USERS:
+        return None
+    try:
+        out = subprocess.run(
+            ["nvidia-smi", "--query-compute-apps=pid", "--format=csv,noheader",
+             "-i", str(gpu)], capture_output=True, text=True, timeout=30)
+        for pid in out.stdout.split():
+            who = subprocess.run(["ps", "-o", "user:32=", "-p", pid.strip()],
+                                 capture_output=True, text=True, timeout=10)
+            user = who.stdout.strip()
+            if user in PROTECT_USERS:
+                return user
+    except Exception:
+        return "unknown (query failed)"
+    return None
+
+
 def free_gb(gpu: int) -> float:
+    if protected_user_on(gpu):
+        return 0.0
     try:
         out = subprocess.run(
             ["nvidia-smi", "--query-gpu=memory.free", "--format=csv,noheader,nounits",
