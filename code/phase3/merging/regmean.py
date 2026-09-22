@@ -36,9 +36,15 @@ def merge_regmean(
     weights: list[float],
     merged_adapter_name: str,
     ridge_lambda: float = 1e-3,
+    alpha: float | None = None,
     **_kwargs,
 ) -> None:
-    """Adapter-only RegMean: Gram-weighted average of Δ_t at each layer."""
+    """Adapter-only RegMean: Gram-weighted average of Δ_t at each layer.
+
+    alpha, if given, applies RegMean's published regulariser to each per-task
+    Gram, G -> alpha G + (1 - alpha) diag(G), before summing. None keeps the
+    historical behaviour (no shrinkage), so committed configs reproduce.
+    """
     assert len(adapter_names) == len(weights), "adapter/weight length mismatch"
 
     new_factors: dict[str, FakeLoraLayer] = {}
@@ -88,6 +94,8 @@ def merge_regmean(
         for ti, (gram, d) in enumerate(zip(grams, deltas)):
             w = float(weights[ti])
             g = gram.to(torch.float32)
+            if alpha is not None:
+                g = alpha * g + (1.0 - alpha) * torch.diag(torch.diagonal(g))
             denom = denom + w * g
             numer = numer + w * d.to(torch.float32) @ g
         denom = denom + ridge_lambda * torch.eye(

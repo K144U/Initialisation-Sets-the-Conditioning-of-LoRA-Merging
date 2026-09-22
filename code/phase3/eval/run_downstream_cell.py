@@ -27,7 +27,8 @@ import yaml
 from unsloth import FastLanguageModel
 
 from merging.peft_model_view import PeftModelView
-from merging.registry import REGISTRY, DEFAULT_KWARGS
+from merging.registry import REGISTRY, DEFAULT_KWARGS, NEEDS_GRAMS
+from eval.activation_grams import attach_grams
 from training.data_loaders import load_task_split
 from utils.io_helpers import write_result
 from utils.pbs_env import assert_env
@@ -94,11 +95,21 @@ def main() -> int:
     n_tasks = len(adapter_names)
     weights = cfg.get("weights", [1.0 / n_tasks] * n_tasks)
     merged_name = "__merged__"
-    print(f"[downstream_cell] merging via {method} kwargs={method_kwargs}",
+    if method in NEEDS_GRAMS:
+        print(f"[downstream_cell] computing activation Grams per task", flush=True)
+        attach_grams(method_kwargs, cfg, model, view, adapter_names, tokenizer,
+                     load_task_split, cfg.get("max_seq_length", 1024))
+    print(f"[downstream_cell] merging via {method} kwargs="
+          f"{ {k: v for k, v in method_kwargs.items() if k != 'grams'} }",
           flush=True)
     t_merge = time.time()
     REGISTRY[method](view, adapter_names, weights, merged_name, **method_kwargs)
     print(f"  merge done in {time.time()-t_merge:.1f}s", flush=True)
+    merge_diagnostics = None
+    if method in NEEDS_GRAMS:
+        from merging.regmean_act import DIAGNOSTICS
+        merge_diagnostics = dict(DIAGNOSTICS)
+        method_kwargs.pop("grams", None)
     model.set_adapter(merged_name)
 
     # Locate the eval split for the metric's task. Two schemas supported:
@@ -141,6 +152,7 @@ def main() -> int:
         "metric_score": score,
         "n_eval_metric": len(ev),
         "per_example": per_example,
+        "merge_diagnostics": merge_diagnostics,
         "env": env_info,
     }
     write_result(results_path, payload, config=cfg)

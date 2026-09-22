@@ -23,7 +23,8 @@ import yaml
 from unsloth import FastLanguageModel
 
 from merging.peft_model_view import PeftModelView
-from merging.registry import REGISTRY, DEFAULT_KWARGS
+from merging.registry import REGISTRY, DEFAULT_KWARGS, NEEDS_GRAMS
+from eval.activation_grams import attach_grams
 from training.data_loaders import load_task_split
 from utils.io_helpers import write_result
 from utils.pbs_env import assert_env
@@ -315,12 +316,22 @@ def main() -> int:
                   f"({n_used} train samples)", flush=True)
         method_kwargs["fisher_data"] = fisher_data
 
+    if method in NEEDS_GRAMS:
+        print(f"[eval_cell] computing activation Grams per task", flush=True)
+        attach_grams(method_kwargs, cfg, model, view, adapter_names, tokenizer,
+                     load_task_split, max_len)
+
     print(f"[eval_cell] merging via {method} kwargs="
-          f"{ {k:v for k,v in method_kwargs.items() if k!='fisher_data'} }",
+          f"{ {k:v for k,v in method_kwargs.items() if k not in ('fisher_data', 'grams')} }",
           flush=True)
     t_merge = time.time()
     REGISTRY[method](view, adapter_names, weights, merged_name, **method_kwargs)
     print(f"  merge done in {time.time()-t_merge:.1f}s", flush=True)
+    merge_diagnostics = None
+    if method in NEEDS_GRAMS:
+        from merging.regmean_act import DIAGNOSTICS
+        merge_diagnostics = dict(DIAGNOSTICS)
+        method_kwargs.pop("grams", None)
 
     # 5. Eval merged model on each task
     print(f"[eval_cell] evaluating merged adapter", flush=True)
@@ -365,6 +376,7 @@ def main() -> int:
         "worst_task_excess": worst_excess,
         "avg_task_excess": avg_excess,
         "n_eval_per_task": {n: len(e) for n, e in eval_data.items()},
+        "merge_diagnostics": merge_diagnostics,
         "env": env_info,
     }
     write_result(results_path, payload, config=cfg)

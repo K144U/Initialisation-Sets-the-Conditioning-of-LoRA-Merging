@@ -24,6 +24,7 @@ from .knots import merge_knots
 from .magnitude_prune import merge_magnitude_prune
 from .rd_encoder import merge_rd_encoder
 from .regmean import merge_regmean
+from .regmean_act import merge_regmean_act
 from .task_arithmetic import merge_task_arithmetic
 from .ties import merge_ties
 from .tvq import merge_tvq
@@ -41,8 +42,13 @@ REGISTRY = {
     "fisher_avg": merge_fisher_avg,
     "della": merge_della,
     "regmean": merge_regmean,
+    "regmean_act": merge_regmean_act,
     "adamerging": merge_adamerging,
 }
+
+# Methods whose merge needs per-task input-activation Grams computed in the
+# eval cell (eval/activation_grams.py) before the merge is called.
+NEEDS_GRAMS = {"regmean_act"}
 
 
 # Sensible per-method defaults (Phase 3 v1)
@@ -67,5 +73,8 @@ DEFAULT_KWARGS = {
     "della": {"drop_p": 0.2, "density": 0.2,
               "majority_sign_method": "total", "seed": 20260624},
     "regmean": {"ridge_lambda": 1e-3},
+    # RegMean's published defaults: alpha = 0.9 off-diagonal shrinkage and no
+    # ridge; n_gram_samples is consumed by the eval cell, not the merge.
+    "regmean_act": {"alpha": 0.9, "ridge_lambda": 0.0, "n_gram_samples": 256},
     "adamerging": {},
 }
