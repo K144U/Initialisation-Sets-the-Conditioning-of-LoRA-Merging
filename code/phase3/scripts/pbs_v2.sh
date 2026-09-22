@@ -38,13 +38,18 @@ export TORCH_EXTENSIONS_DIR=$PROJECT_ROOT/cache/torch_extensions
 export UNSLOTH_COMPILE_LOCATION=$PROJECT_ROOT/cache/unsloth_compiled
 export TOKENIZERS_PARALLELISM=false
 export PYTHONPATH=$PROJECT_ROOT/code/phase3:${PYTHONPATH:-}
-export PROTECT_USERS=sanjay.g
+# 2026-09-23: sanjay.g jobs held 7 of 8 GPUs, so the user chose to share cards
+# behind a memory gate (need + ORCH_HEADROOM_GB free, one of our cells per
+# card). Set PROTECT_USERS=sanjay.g to go back to never sharing.
+export PROTECT_USERS="${PROTECT_USERS:-}"
+export ORCH_HEADROOM_GB="${ORCH_HEADROOM_GB:-10}"
 
 # ngpus=1 is accounting only on this queue (checked 2026-09-23 with a probe
 # job: CUDA_VISIBLE_DEVICES empty, all 8 devices visible, exec_vnode names no
 # GPU). So the job picks its own card: one worker (ORCH_DYNAMIC=1) choosing,
 # per cell, the allowed GPU with the most free memory that carries no
-# PROTECT_USERS process. It never holds more than the one GPU it was billed.
+# PROTECT_USERS process (if set) and no claim by another of our jobs. It never
+# holds more than the one GPU it was billed.
 # 5 and 7 are outside this project's allocation.
 if [ -n "${CUDA_VISIBLE_DEVICES:-}" ]; then
   GPUS="$CUDA_VISIBLE_DEVICES"

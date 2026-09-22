@@ -64,6 +64,49 @@ def protected_user_on(gpu: int) -> str | None:
     return None
 
 
+# Dynamic mode shares cards with other users' jobs. HEADROOM_GB is kept free
+# beyond a cell's own need so their jobs can still grow, and a claim file per
+# GPU keeps two of OUR jobs from ever landing on the same card.
+HEADROOM_GB = float(os.environ.get("ORCH_HEADROOM_GB", "10"))
+CLAIMS = ROOT / "logs" / "gpu_claims"
+CLAIM_STALE_S = 8 * 3600
+
+
+def _claim_path(gpu) -> Path:
+    return CLAIMS / f"gpu{gpu}"
+
+
+def claimed_by_other(gpu) -> bool:
+    p = _claim_path(gpu)
+    if not p.exists():
+        return False
+    try:
+        if time.time() - p.stat().st_mtime > CLAIM_STALE_S:
+            p.unlink()
+            return False
+    except OSError:
+        return True
+    return True
+
+
+def claim(gpu) -> bool:
+    CLAIMS.mkdir(parents=True, exist_ok=True)
+    try:
+        fd = os.open(_claim_path(gpu), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        return False
+    os.write(fd, f"{os.environ.get('PBS_JOBID', 'nojob')} {os.getpid()}\n".encode())
+    os.close(fd)
+    return True
+
+
+def release(gpu) -> None:
+    try:
+        _claim_path(gpu).unlink()
+    except OSError:
+        pass
+
+
 def free_gb(gpu: int) -> float:
     if protected_user_on(gpu):
         return 0.0
@@ -106,12 +149,17 @@ class Orchestrator:
         STATE.write_text(json.dumps(state, indent=1))
 
     def pick_gpu(self, need: float):
-        """Dynamic mode: the allowed GPU with the most free memory, or None."""
+        """Dynamic mode: the allowed, unclaimed GPU with the most free memory
+        above need + HEADROOM_GB, claimed atomically; or None."""
         best, best_free = None, -1.0
         for g in self.candidates:
+            if claimed_by_other(g):
+                continue
             f = free_gb(g)
-            if f >= need and f > best_free:
+            if f >= need + HEADROOM_GB and f > best_free:
                 best, best_free = g, f
+        if best is not None and not claim(best):
+            return None
         return best
 
     def worker(self, gpu):
@@ -163,6 +211,8 @@ class Orchestrator:
                         cell["cmd"], shell=True, cwd=ROOT, env=env,
                         stdout=lf, stderr=subprocess.STDOUT).returncode
             dt = (time.time() - t0) / 60
+            if self.dynamic:
+                release(gpu)
             gate_backoff = False
             with self.lock:
                 self.running.pop(name, None)
