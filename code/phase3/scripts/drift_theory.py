@@ -35,7 +35,9 @@ OUT = ROOT / "results" / "phase3" / "drift_theory.json"
 TASKS = ["gsm8k", "alpaca", "magicoder", "flores"]
 BASES = ["llama31_8b", "mistral_7b", "qwen25_7b", "yi15_9b"]
 DRIFT_BASE = "llama31_8b"
-CHECKPOINTS = [117, 234, 351, 468]          # 25/50/75/100%; 468 == final
+# 25/50/75/100% of training. Step numbers differ by task (gsm8k 117..468, the
+# others 118..470), so checkpoints are taken by position, not by step.
+CHECKPOINTS = [0, 1, 2, 3]
 DIAL = [0.05, 0.1, 0.2, 0.5, 1.0]
 R = 16
 N_LAYERS = 8
@@ -154,9 +156,15 @@ def main() -> int:
 
     # PT1, PT2, PT5: formula against exact, at each real checkpoint
     per_ckpt = {}
+    def ckpt_dirs(d: Path) -> list[Path]:
+        cks = sorted((d / "trainer_tmp").glob("checkpoint-*"),
+                     key=lambda p: int(p.name.split("-")[1]))
+        if len(cks) != 4:
+            raise SystemExit(f"{d}: {len(cks)} checkpoints, need 4")
+        return cks
+
     for c in CHECKPOINTS:
-        paths = [d / "trainer_tmp" / f"checkpoint-{c}" / "adapter_model.safetensors"
-                 for d in task_dirs]
+        paths = [ckpt_dirs(d)[c] / "adapter_model.safetensors" for d in task_dirs]
         rk, ra, ek, ea, eps = [], [], [], [], []
         for key, As, Bs, A0s in cohort_layers(paths, a0_paths):
             Ds = [B @ A for A, B in zip(As, Bs)]
