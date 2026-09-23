@@ -30,6 +30,9 @@ from ._adapter_utils import materialize_delta, svd_truncate_to_rank
 from .tests._fake_model import FakeLoraLayer, FakePeftModel
 
 
+RULE_LAMBDAS: dict = {}
+
+
 def merge_regmean(
     model: FakePeftModel,
     adapter_names: list[str],
@@ -37,6 +40,8 @@ def merge_regmean(
     merged_adapter_name: str,
     ridge_lambda: float = 1e-3,
     alpha: float | None = None,
+    ridge_mode: str = "fixed",
+    kappa_target: float = 100.0,
     **_kwargs,
 ) -> None:
     """Adapter-only RegMean: Gram-weighted average of Δ_t at each layer.
@@ -44,7 +49,14 @@ def merge_regmean(
     alpha, if given, applies RegMean's published regulariser to each per-task
     Gram, G -> alpha G + (1 - alpha) diag(G), before summing. None keeps the
     historical behaviour (no shrinkage), so committed configs reproduce.
+
+    ridge_mode="kappa_target" replaces the fixed ridge by, per layer, the
+    smallest isotropic ridge that caps the condition number of the summed
+    Gram on its range at kappa_target (notes/prereg_lambda_rule_2026-09-23.md):
+        lambda = max(0, (l_max - k * l_min_nonzero) / (k - 1)).
+    The lambda chosen per layer is recorded in RULE_LAMBDAS.
     """
+    RULE_LAMBDAS.clear()
     assert len(adapter_names) == len(weights), "adapter/weight length mismatch"
 
     new_factors: dict[str, FakeLoraLayer] = {}
@@ -98,7 +110,20 @@ def merge_regmean(
                 g = alpha * g + (1.0 - alpha) * torch.diag(torch.diagonal(g))
             denom = denom + w * g
             numer = numer + w * d.to(torch.float32) @ g
-        denom = denom + ridge_lambda * torch.eye(
+        if ridge_mode == "kappa_target":
+            ev = torch.linalg.eigvalsh(denom)
+            nz = ev[ev > 1e-10 * ev[-1]]
+            k = float(kappa_target)
+            lam = max(0.0, float((nz[-1] - k * nz[0]) / (k - 1)))
+            RULE_LAMBDAS[layer] = lam
+            # a floor keeps the full-dimensional solve nonsingular when the
+            # rule returns 0, i.e. when the range is already well conditioned
+            ridge = max(lam, 1e-6)
+        elif ridge_mode == "fixed":
+            ridge = ridge_lambda
+        else:
+            raise ValueError(f"unknown ridge_mode {ridge_mode!r}")
+        denom = denom + ridge * torch.eye(
             in_dim, dtype=torch.float32, device=device)
         # Solve denom @ delta^T = numer^T  =>  delta = numer @ denom^{-1}
         delta = torch.linalg.solve(denom, numer.transpose(-1, -2)).transpose(-1, -2)

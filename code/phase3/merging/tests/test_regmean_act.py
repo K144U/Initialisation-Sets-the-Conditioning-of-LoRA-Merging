@@ -65,3 +65,27 @@ def test_dataless_alpha_none_is_unchanged():
     merge_regmean(m2, names, [0.5, 0.5], "a", ridge_lambda=1e-3, alpha=None)
     for layer in m1.layer_topology:
         assert torch.equal(m1.get_delta("a", layer), m2.get_delta("a", layer))
+
+
+def test_kappa_target_rule_caps_the_condition_number():
+    from merging.regmean import RULE_LAMBDAS
+
+    class View(FakePeftModel):
+        def get_layer(self, adapter, layer):
+            return self.adapters[adapter][layer]
+
+    g = torch.Generator().manual_seed(5)
+    d, r = 12, 2
+    base = torch.randn(r, d, generator=g)
+    m = View(layer_topology={"L": (6, d, r)})
+    for t in range(3):   # near-collinear A's: an ill-conditioned Gram
+        A = base + 1e-3 * torch.randn(r, d, generator=g)
+        m.add_adapter(f"t{t}", {"L": FakeLoraLayer(A=A, B=torch.randn(6, r, generator=g))})
+    names = ["t0", "t1", "t2"]
+    merge_regmean(m, names, [1 / 3] * 3, "merged", ridge_mode="kappa_target", kappa_target=100)
+    lam = RULE_LAMBDAS["L"]
+    G = sum(m.get_layer(n, "L").A.T @ m.get_layer(n, "L").A for n in names) / 3
+    ev = torch.linalg.eigvalsh(G)
+    nz = ev[ev > 1e-10 * ev[-1]]
+    assert lam > 0
+    assert abs((nz[-1] + lam) / (nz[0] + lam) - 100) < 1e-2

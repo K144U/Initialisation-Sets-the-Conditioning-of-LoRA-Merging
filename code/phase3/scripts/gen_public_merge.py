@@ -123,7 +123,10 @@ def main() -> int:
                "methods": {"ta": ["task_arithmetic", {}],
                            "rm_1em6": ["regmean", {"ridge_lambda": 1e-6}],
                            "rm_a09": ["regmean", {"alpha": 0.9, "ridge_lambda": 0.0}],
-                           "rm_0p01": ["regmean", {"ridge_lambda": 0.01}]},
+                           "rm_0p01": ["regmean", {"ridge_lambda": 0.01}],
+                           # notes/prereg_lambda_rule_2026-09-23.md, V4
+                           "rm_rule": ["regmean", {"ridge_mode": "kappa_target",
+                                                   "kappa_target": 100.0}]},
                "min_free_gb": 30.0 if meta["params"] < 9e9 else 45.0,
                "output_path": str(OUT / f"{key}.json")}
         p = CFG / f"{key}.yaml"
