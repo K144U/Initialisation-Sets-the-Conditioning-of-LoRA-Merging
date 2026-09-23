@@ -44,3 +44,28 @@ GPU queues never sit idle while text work proceeds.
 ## Log
 
 - 2026-09-23: plan written. Verified item-5 inconsistencies (see below).
+- 2026-09-23, day 1, state at end of session:
+  - **Item 5 done** (5 fixes; the 9/16 MDE turned out to be an arithmetic error
+    in the registration itself, now disclosed in App. F.4).
+  - **Item 6 done, all 5 registered predictions hold** (PT1, PT2 ratio 1.000 at
+    4 checkpoints; PT3 dial slopes -2.00 / -1.01, review's 1/eps^2 form
+    excluded; PT4 1.000 on Llama+Mistral, Qwen/Yi pending in
+    logs/drift_theory.log; PT5 monotone). Drafts: paper/sections/drift_theory.tex,
+    app_drift_theory.tex (not yet in main.tex).
+  - **Execution error found and fixed**: adapter-only RegMean ran the
+    Delta^T Delta fallback in every published cell (PeftModelView had no
+    get_layer). Amendment 2b8fee5, fix 81fc3bf, Table 4 re-run queued (rdm_agram).
+  - **Library audit (item 7b)**: Unsloth (random_state=3407, seeded before
+    LoRA creation) and LLaMA-Factory (seed 42 before model load) give every
+    run the same A by default. notes/library_defaults_audit_2026-09-23.md.
+  - **Part B**: only KnOTS releases LoRA cohorts among 22 cited merging papers,
+    so Part B cannot be discharged by its rule; KnOTS audit re-running.
+  - Registrations committed: drift_theory, regmean_real (+amendment),
+    heuristics_tost, third_solver, new_cohorts, public_merge, lambda_rule.
+  - Running/queued on STUDENT-ACCOUNT (keeper resubmits; logs/keeper_jobs.json):
+    rdm_tost0/1 (160 DS), rdm_rmr0/1 (72 NLL + 144 DS), rdm_train0/1 (32
+    adapters), rdm_agram (56 NLL), rdm_third (72 NLL + 64 DS), rdm_pub (20
+    public cohorts). After training: run gen_new_cohorts_eval.py, queue its
+    manifest, then all analyzers.
+  - Throughput: ~5 lanes (one cell per GPU, shared with sanjay.g jobs at 100%
+    util); GSM8K cells ~56 min. Compute ETA ~3.5-4 days from 2026-09-23.
