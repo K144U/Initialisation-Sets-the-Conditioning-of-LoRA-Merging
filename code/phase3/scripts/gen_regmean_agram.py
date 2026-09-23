@@ -35,7 +35,10 @@ def main() -> int:
         raise SystemExit(f"expected 56 published cells, found {len(srcs)}")
     for p in srcs:
         cfg = json.loads(p.read_text())["meta"]["config"]
-        old_cache = Path(cfg["nll_tau_cache"])
+        # Older cells predate the nll_tau cache; give them the cohort's cache,
+        # which run_eval_cell only uses on an exact key match.
+        base, _, cohort = p.stem.split("__")
+        old_cache = Path(cfg.get("nll_tau_cache") or RES / "nll_tau_cache" / f"{base}__{cohort}.json")
         new_cache = CACHE / old_cache.name
         if old_cache.exists() and not new_cache.exists():
             shutil.copy(old_cache, new_cache)
