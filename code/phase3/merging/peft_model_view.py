@@ -98,6 +98,21 @@ class PeftModelView:
                     f.B.to(dtype=tgt_B.dtype, device=tgt_B.device))
             mod.scaling[name] = 1.0
 
+    def get_layer(self, adapter: str, layer: str) -> FakeLoraLayer:
+        """The adapter's own LoRA factors for one layer.
+
+        merging/regmean.py builds its Gram from A_t^T A_t when this hook exists
+        and silently falls back to Delta_t^T Delta_t when it does not. Until
+        2026-09-23 this class did not define it, so every adapter-only RegMean
+        cell before that date ran the fallback, while the paper described (and
+        scripts/merged_solution_norms.py measured) the A_t^T A_t form. See
+        notes/prereg_regmean_real_amendment_2026-09-23.md.
+        """
+        mod = self._layers[layer]
+        return FakeLoraLayer(A=mod.lora_A[adapter].weight.detach(),
+                             B=mod.lora_B[adapter].weight.detach(),
+                             scaling=float(mod.scaling[adapter]))
+
     def get_delta(self, adapter: str, layer: str) -> torch.Tensor:
         """Full (out_dim x in_dim) materialized delta on the same device as PEFT stores it."""
         mod = self._layers[layer]
