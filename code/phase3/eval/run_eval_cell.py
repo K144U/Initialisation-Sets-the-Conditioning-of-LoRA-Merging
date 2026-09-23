@@ -316,26 +316,38 @@ def main() -> int:
                   f"({n_used} train samples)", flush=True)
         method_kwargs["fisher_data"] = fisher_data
 
-    if method in NEEDS_GRAMS:
-        print(f"[eval_cell] computing activation Grams per task", flush=True)
-        attach_grams(method_kwargs, cfg, model, view, adapter_names, tokenizer,
-                     load_task_split, max_len)
-
-    print(f"[eval_cell] merging via {method} kwargs="
-          f"{ {k:v for k,v in method_kwargs.items() if k not in ('fisher_data', 'grams', 'grams_out')} }",
-          flush=True)
-    t_merge = time.time()
-    REGISTRY[method](view, adapter_names, weights, merged_name, **method_kwargs)
-    print(f"  merge done in {time.time()-t_merge:.1f}s", flush=True)
+    from eval import merge_cache
+    cache_key = (merge_cache.cache_key(cfg, method, method_kwargs, weights)
+                 if method in merge_cache.EXPENSIVE else None)
+    cached = merge_cache.load(view, merged_name, cache_key) if cache_key else None
     merge_diagnostics = None
-    if method in NEEDS_GRAMS:
-        if method == "mats":
-            from merging.mats_kfac import DIAGNOSTICS
-        else:
-            from merging.regmean_act import DIAGNOSTICS
-        merge_diagnostics = dict(DIAGNOSTICS)
-        method_kwargs.pop("grams", None)
-        method_kwargs.pop("grams_out", None)
+    if cached is not None:
+        merge_diagnostics = cached.get("diagnostics")
+        method_kwargs.pop("n_gram_samples", None)
+        method_kwargs.pop("gram_max_len", None)
+        print(f"[eval_cell] merge loaded from cache {cache_key}", flush=True)
+    else:
+        if method in NEEDS_GRAMS:
+            print(f"[eval_cell] computing activation Grams per task", flush=True)
+            attach_grams(method_kwargs, cfg, model, view, adapter_names, tokenizer,
+                         load_task_split, max_len)
+        print(f"[eval_cell] merging via {method} kwargs="
+              f"{ {k: v for k, v in method_kwargs.items() if k not in ('fisher_data', 'grams', 'grams_out')} }",
+              flush=True)
+        t_merge = time.time()
+        REGISTRY[method](view, adapter_names, weights, merged_name, **method_kwargs)
+        print(f"  merge done in {time.time()-t_merge:.1f}s", flush=True)
+        if method in NEEDS_GRAMS:
+            if method == "mats":
+                from merging.mats_kfac import DIAGNOSTICS
+            else:
+                from merging.regmean_act import DIAGNOSTICS
+            merge_diagnostics = dict(DIAGNOSTICS)
+            method_kwargs.pop("grams", None)
+            method_kwargs.pop("grams_out", None)
+        if cache_key:
+            merge_cache.save(view, merged_name, cache_key, merge_diagnostics)
+    method_kwargs["_merge_cache_key"] = cache_key
 
     # 5. Eval merged model on each task
     print(f"[eval_cell] evaluating merged adapter", flush=True)
