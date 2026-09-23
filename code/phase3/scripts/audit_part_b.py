@@ -80,8 +80,11 @@ def main() -> int:
                             "declared_base": cfg.get("base_model_name_or_path")})
         cohorts.append({"namespace": "hoffman-lab", "base_model": base,
                         "members": members})
+    # phase2's summary expects the phase-1 bookkeeping fields; here "examined"
+    # counts the adapter repos considered and "rejected" those that failed.
     (OUT / "cohorts.json").write_text(json.dumps(
         {"source": "Part B, KnOTS release", "cohorts": cohorts,
+         "examined": sum(len(v) for v in KNOTS.values()),
          "rejected": rejected}, indent=2))
     print(json.dumps({c["base_model"]: [(m["repo"].split("/")[1], m["rank"],
                                          m["declared_base"]) for m in c["members"]]
