@@ -6,8 +6,10 @@ averaging~\citep{matena2022fisher}, sparsification approaches
 DELLA~\citep{della2024}), rotation- and subspace-alignment families
 (KnOTS~\citep{stoica2025knots}, TSPA~\citep{tspa2025},
 DO-Merging~\citep{domerging2025}, Core~Space~\citep{panariello2025core},
-TARA~\citep{tara2025}, ARM~\citep{arm2026streaming}), and merge-time
-quantisation (TVQ~\citep{kim2025tvq},
+TARA~\citep{tara2025}, ARM~\citep{arm2026streaming}), whitening of the
+stacked task singular vectors (TSV-M~\citep{gargiulo2025tsv}), merging as a
+linear system solved by conjugate gradient (MaTS~\citep{tam2024mats}), and
+merge-time quantisation (TVQ~\citep{kim2025tvq},
 1-bit-Merging~\citep{bit1merging2025}). All are \emph{constructions}:
 each proposes an encoder and evaluates it empirically. What none of them
 supplies, and what this paper does supply, is a way to tell in advance
@@ -26,6 +28,30 @@ posits a thin-Gaussian-shell geometry; ATM~\citep{atm2024alternating}
 and its successor~\citep{gradients2025taskvectorsgradients} develop a
 second-order Taylor bound on task-arithmetic error. None of these frames
 merging as lossy source coding.
+
+\paragraph{The $A$ factor, shared by design or by initialisation.} The
+asymmetry between LoRA's two factors is established:
+\citet{zhu2024asymmetry} show that $A$ mostly extracts input features while
+$B$ produces the output, that training $B$ alone nearly matches training
+both, and that a random untrained $A$ performs almost as well.
+HydraLoRA~\citep{tian2024hydralora} shares one $A$ across several $B$ heads,
+and federated variants freeze $A$ (FFA-LoRA~\citep{sun2024ffalora}) or
+aggregate only $A$ across clients (FedSA-LoRA~\citep{guo2025fedsalora}), in
+both cases to make aggregation exact. Each of these makes a shared $A$ a
+deliberate design choice, and each therefore produces a collapsed cohort by
+construction in the sense of \S\ref{sec:regimes}. Several initialisations
+reach the same state without a shared seed. PiSSA~\citep{meng2024pissa} and
+OLoRA~\citep{buyukakyuz2024olora} compute $A$ from the base weight (its
+principal singular vectors, and a QR factor), and
+MiLoRA~\citep{wang2025milora} from its minor singular vectors, so every task
+fine-tuned from one base with the same target modules and rank starts from
+the same $A$ whatever the seed. Two neighbours do not: CorDA~\citep{yang2024corda}
+orients its decomposition by task data, so its initial $A$ differs across
+tasks, and LoRA-FA~\citep{zhang2023lorafa} freezes an $A$ drawn at random, so
+it is collapsed only when the seed is shared and independent otherwise. What
+this literature has not examined is what such cohorts do to a merge that
+inverts or whitens a matrix built from the adapters' own factors, which is
+the question here.
 
 \paragraph{Concurrent work using the same lens.} \citet{cao2026collapse},
 posted while this work was in progress and independently of it, study
@@ -104,8 +130,8 @@ covers the single-source setting; multi-description
 coding~\citep{elgamalcover1982md} treats \emph{average}, not maximum,
 distortion, which Lemma~\ref{lem:id} shows is strictly weaker. The
 direct ancestor of the authors' achievability construction is
-TurboQuant~\citep{zandieh2025turboquant}, whose Theorem~3
-Theorem~\ref{thm:achv} recovers at $T = 1$. Structured rotations as
+TurboQuant~\citep{zandieh2025turboquant}, whose Theorem~3 is the $T = 1$
+case of Theorem~\ref{thm:achv}. Structured rotations as
 quantisation pre-conditioners (QuIP~\citep{tseng2024quip},
 QuaRot~\citep{ashkboos2024quarot}, SpinQuant~\citep{liu2025spinquant},
 RoLoRA~\citep{xi2024rolora}) motivate the authors' randomised orthogonal mixers

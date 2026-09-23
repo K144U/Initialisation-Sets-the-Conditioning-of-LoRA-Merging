@@ -1,0 +1,118 @@
+% Review item 6. Registered in notes/prereg_drift_theory_2026-09-23.md
+% (ba51184) before any quantity below was computed; analyzer
+% code/phase3/scripts/drift_theory.py (f632b12, fix 2d38d5a).
+
+The measurements of \S\ref{subsec:conditioning} say that a shared
+initialisation raises $\kappa(\bar H)$ by four orders of magnitude and the
+norm of the exact interpolator by a factor of ten. This section derives both
+from one assumption, that each adapter's $A$ factor is a small displacement of
+a common start, and tests the derivation against the adapters. The result
+explains the size of the effect, predicts how it scales with training, and
+corrects a tempting shortcut.
+
+\paragraph{Set-up.} In a shared-initialisation cohort, $A_t = A_0 + E_t$. Let
+$W_0 \in \R^{d\times r}$ be an orthonormal basis of the row space of $A_0$ and
+$P_\perp = I - W_0 W_0^\top$. Whenever $W_0^\top A_t^\top$ is invertible, the
+row space $V_t$ of $A_t$ is exactly the graph of a \emph{tilt}
+\begin{equation}\label{eq:tilt}
+  X_t \;=\; P_\perp A_t^\top \bigl(W_0^\top A_t^\top\bigr)^{-1} \in \R^{d\times r},
+  \qquad V_t = \operatorname{col}(W_0 + X_t),
+\end{equation}
+and the principal angles between $V_t$ and the starting subspace satisfy
+$\tan\theta_i = \sigma_i(X_t)$. The tilt is of the order of the relative
+displacement, $\|X_t\| \lesssim \|E_t\|/\sigma_{\min}(A_0)$.
+
+\begin{proposition}[First-order conditioning of a shared cohort]
+\label{prop:drift}
+Let $Y = [X_1 - \bar X, \dots, X_T - \bar X] \in \R^{d\times Tr}$ collect the
+centred tilts, $\Sigma_X = \tfrac1T Y Y^\top$, and write
+$D_t = M_t (W_0 + X_t)^\top$ for the task updates in graph coordinates. To
+leading order in the tilt,
+\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
+\item $\bar H$ has $r$ eigenvalues $1 - O(\|X\|^2)$ and $(T-1)r$ eigenvalues
+  equal to the nonzero eigenvalues of $\Sigma_X$, so
+  $\kappa(\bar H) \approx 1/\lambda_{\min}^{+}(\Sigma_X)$;
+\item the exact interpolator is $\tauH \approx a\,W_0^\top + b$ with
+  $b = [M_1 - \bar M, \dots, M_T - \bar M]\, Y^{+}$ and $a = \bar M - b\bar X$;
+\item under a uniform rescaling of the displacements $E_t \mapsto sE_t$,
+  $\kappa(\bar H) \propto s^{-2}$ while
+  $\|\tauH\|/\|\bar\Delta\| \propto s^{-1}$.
+\end{enumerate}
+\end{proposition}
+
+The derivation (Appendix~\ref{app:drift-theory}) expands each projector to
+second order in $X_t$ and takes the Schur complement of $\bar H$ on
+$V_0^\perp$; the interpolation conditions $\tauH(W_0 + X_t) = M_t$ then
+separate into a component along $W_0$ and one along the centred tilts.
+
+\paragraph{Two consequences.} First, amplification is \emph{first} order in
+the inverse displacement, not second. A rough argument gives
+$\|\tauH\|/\|\bar\Delta\| \sim 1/\varepsilon^{2}$, which at the measured
+$\varepsilon \approx 0.13$ is $59$, uncomfortably close to the measured $43$
+to $64$. The proposition says that agreement is a coincidence: $\kappa$ is the
+quantity that goes as $\varepsilon^{-2}$. Second, $\kappa(\bar H)$ is set by
+the \emph{smallest} singular value of the displacement spread, not by its size.
+Training moves each $A$ by about $13\%$, which on its own would give
+$\kappa \sim 1/\varepsilon^2 \approx 60$; the measured $10^{4}$ to $10^{5}$
+means the displacements are far from isotropic, with some directions of the
+spread almost unexcited. This also suggests why the amount of regularisation
+needed did not track $\kappa$ in \S\ref{subsec:ridge}: $\kappa$ is fixed by
+the weakest direction, while what a ridge must suppress is the part of $b$
+carried by the bulk of the spread. That reading was formed after the
+$\lambda^\star$ values were known, so it is offered as a hypothesis; the
+ridge rule of \S\ref{subsec:lambda-rule} is its prospective test.
+
+\paragraph{Tests, registered before computation.} All five pre-registered
+predictions hold (Table~\ref{tab:drift-theory}).
+\emph{The formula}: on the drift cohort, whose $A_0$ was saved before the first
+optimiser step, the first-order predictions of $\kappa(\bar H)$ and of the
+amplification equal the exact values to three digits at $25$, $50$, $75$ and
+$100\%$ of training (ratio $1.000$ throughout), and the reference-free
+version, which needs no $A_0$ and takes the consensus subspace as $W_0$, does
+the same on all twelve shared cohorts of the four bases.
+\emph{The order}: scaling the measured displacements by
+$s \in \{0.05, 0.1, 0.2, 0.5, 1\}$ gives exact log-log slopes of $-2.00$ for
+$\kappa$ and $-1.01$ for the amplification, against the registered bands
+$[-2.2, -1.8]$ and $[-1.2, -0.8]$; the rival $\varepsilon^{-2}$ form for the
+amplification is excluded.
+\emph{Across training}: both quantities fall monotonically as the adapters
+drift, $\kappa$ from $2.7\times10^{4}$ to $1.1\times10^{4}$ and the
+amplification from $61$ to $44$, the last inside the range
+Table~\ref{tab:conditioning} reports for the final adapters of all four bases.
+
+\begin{table}[t]
+\centering
+\small
+\caption{The first-order theory against the exact quantities. Drift cohort
+(Llama-3.1-8B, $A_0$ saved), median over eight layers. Ratios are
+prediction / exact. The dial rescales the final displacements by $s$.}
+\label{tab:drift-theory}
+\begin{tabular}{lcccc}
+\toprule
+checkpoint & $\kappa(\bar H)$ & ratio & $\|\tauH\|/\|\bar\Delta\|$ & ratio \\
+\midrule
+$25\%$  & $2.67\times10^{4}$ & $1.000$ & $61.4$ & $1.000$ \\
+$50\%$  & $1.57\times10^{4}$ & $1.000$ & $51.3$ & $1.000$ \\
+$75\%$  & $1.17\times10^{4}$ & $1.000$ & $45.4$ & $1.000$ \\
+$100\%$ & $1.09\times10^{4}$ & $1.000$ & $44.3$ & $1.000$ \\
+\midrule
+dial $s$ & \multicolumn{2}{c}{$\kappa(\bar H)$} & \multicolumn{2}{c}{$\|\tauH\|/\|\bar\Delta\|$} \\
+\midrule
+$0.05$ & \multicolumn{2}{c}{$4.34\times10^{6}$} & \multicolumn{2}{c}{$904.9$} \\
+$0.1$  & \multicolumn{2}{c}{$1.09\times10^{6}$} & \multicolumn{2}{c}{$452.3$} \\
+$0.2$  & \multicolumn{2}{c}{$2.72\times10^{5}$} & \multicolumn{2}{c}{$225.9$} \\
+$0.5$  & \multicolumn{2}{c}{$4.35\times10^{4}$} & \multicolumn{2}{c}{$89.9$} \\
+$1$    & \multicolumn{2}{c}{$1.09\times10^{4}$} & \multicolumn{2}{c}{$44.3$} \\
+\midrule
+log-log slope & \multicolumn{2}{c}{$-2.00$} & \multicolumn{2}{c}{$-1.01$} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{What the proposition does not do.} It is a leading-order
+expansion checked numerically, not a bound with explicit constants, and it
+describes the shared regime only; in the independent regime the tilts are not
+small and the amplification is $T$ by a separate identity
+(\S\ref{subsec:conditioning}). It explains the conditioning the solvers see;
+whether a given solver is exposed to it is the separate question of
+\S\ref{sec:methods}.
