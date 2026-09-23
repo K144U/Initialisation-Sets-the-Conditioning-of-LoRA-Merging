@@ -50,11 +50,12 @@ export ORCH_HEADROOM_GB="${ORCH_HEADROOM_GB:-10}"
 # per cell, the allowed GPU with the most free memory that carries no
 # PROTECT_USERS process (if set) and no claim by another of our jobs. It never
 # holds more than the one GPU it was billed.
-# 5 and 7 are outside this project's allocation.
+# GPU 7 is outside this project's allocation; the user allowed GPU 5 on
+# 2026-09-23. ORCH_WORKERS may equal the job's billed ngpus (default 1).
 if [ -n "${CUDA_VISIBLE_DEVICES:-}" ]; then
   GPUS="$CUDA_VISIBLE_DEVICES"
 else
-  GPUS="${GPUS_ALLOWED:-0 1 2 3 4 6}"
+  GPUS="${GPUS_ALLOWED:-0 1 2 3 4 5 6}"
   GPUS="${GPUS// /,}"
   export ORCH_DYNAMIC=1
 fi

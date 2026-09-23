@@ -250,7 +250,10 @@ class Orchestrator:
         # the job then occupies exactly one GPU at a time, as it was billed.
         self.dynamic = os.environ.get("ORCH_DYNAMIC") == "1"
         self.candidates = list(self.gpus)
-        slots = [None] if self.dynamic else self.gpus
+        # ORCH_WORKERS: concurrent cells in dynamic mode; must not exceed the
+        # job's billed ngpus.
+        slots = ([None] * int(os.environ.get("ORCH_WORKERS", "1")) if self.dynamic
+                 else self.gpus)
         threads = [threading.Thread(target=self.worker, args=(g,), daemon=True)
                    for g in slots]
         for t in threads:

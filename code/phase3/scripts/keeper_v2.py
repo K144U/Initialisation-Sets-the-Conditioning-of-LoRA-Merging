@@ -57,7 +57,11 @@ def submit(spec: dict) -> None:
          f"ORCH_SENTINEL={spec['sentinel']}")
     if spec.get("shard"):
         v += f",ORCH_SHARD={spec['shard']}"
-    r = subprocess.run(["qsub", "-N", spec["name"], "-v", v, "-o",
+    extra = []
+    if spec.get("ngpus", 1) > 1:
+        v += f",ORCH_WORKERS={spec['ngpus']}"
+        extra = ["-l", f"select=1:ncpus=3:ngpus={spec['ngpus']}:mem=60gb"]
+    r = subprocess.run(["qsub", "-N", spec["name"], "-v", v, *extra, "-o",
                         str(ROOT / "logs" / "pbs" / f"{spec['name']}.out"),
                         "code/phase3/scripts/pbs_v2.sh"],
                        cwd=ROOT, capture_output=True, text=True)
