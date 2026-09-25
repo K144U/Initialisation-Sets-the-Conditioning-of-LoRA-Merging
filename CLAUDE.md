@@ -1,5 +1,25 @@
 # rdmerge — project-level CLAUDE.md
 
+> **UPDATE 2026-09-23 (supersedes the lines below where they conflict).**
+> JAIR desk-rejected the paper; the target is now **Information Fusion**
+> (Elsevier, single-anonymized). A 13-item strengthening campaign is running:
+> read `notes/campaign_2026-09-23_strengthen.md` first. User decisions that
+> override this file:
+> - **All new compute runs on `STUDENT-ACCOUNT`**, work tree
+>   `~/projects/rdmerge_v2`; the `sanjay.g` tree is read-only (the user's own
+>   experiments run there). Launch with `code/phase3/scripts/pbs_v2.sh`,
+>   deploy with `code/phase3/scripts/deploy_v2.sh` (strips CRLF; a CRLF
+>   shebang once killed four jobs), keep `keeper_v2.py` running.
+> - **GPU 5 is allowed** (7 is not). Cards are shared with other users behind a
+>   memory gate, one of our cells per GPU (claim files in `logs/gpu_claims`).
+>   Queue policy now: 5 running jobs per user, 64 GB per job, `ngpus` billed
+>   but no device bound.
+> - **The paper is in first person ("we")**, reversing the 2026-08-28 choice.
+> - Adapter-only RegMean in every cell before 2026-09-23 used the
+>   `Delta^T Delta` fallback, not the `A^T A` Gram the paper describes
+>   (`PeftModelView` lacked `get_layer`). Fixed; Table 4 re-run; see
+>   `notes/prereg_regmean_real_amendment_2026-09-23.md`.
+
 > **START HERE: `HANDOFF_2026-08-16.md`.** It has the current state, what is
 > running on the cluster, and the decisions that should not be quietly
 > reverted. This file holds only what stays true across sessions: cluster
