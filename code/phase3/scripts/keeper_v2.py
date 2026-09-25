@@ -111,6 +111,12 @@ def main() -> None:
                 left = remaining(s)
                 if left == 0 or s["name"][:10] in active:
                     continue
+                # "after": names that must be gone first. Used to re-shard a
+                # long batch when its unsharded job reaches walltime, so the
+                # new shards never run alongside the job they replace and no
+                # cell is ever run twice.
+                if any(a[:10] in active for a in s.get("after", [])):
+                    continue
                 if left < left_at_submit.get(s["name"], left + 1):
                     counts[s["name"]] = 0
                 if counts.get(s["name"], 0) >= MAX_RESUB:
