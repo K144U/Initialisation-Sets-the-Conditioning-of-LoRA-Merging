@@ -68,21 +68,56 @@ def submit(spec: dict) -> None:
     log(f"resubmit {spec['name']}: {r.stdout.strip()} {r.stderr.strip()}")
 
 
+def live_job_ids() -> set[str]:
+    out = subprocess.run(["qstat", "-u", os.environ.get("USER", "")],
+                         capture_output=True, text=True).stdout
+    return {line.split(".")[0] for line in out.splitlines() if line[:1].isdigit()}
+
+
+def clear_stale_claims() -> None:
+    """A job killed at walltime never releases its GPU claim, and a stale claim
+    blocks that card for every other job (2026-09-25: three dead jobs held
+    GPUs 1, 2 and 4 and two fresh jobs sat idle for hours). The login node can
+    see the queue, so drop any claim whose job is no longer queued or running."""
+    claims = ROOT / "logs" / "gpu_claims"
+    if not claims.exists():
+        return
+    live = live_job_ids()
+    if not live:            # qstat failed or returned nothing: do not guess
+        return
+    for f in claims.iterdir():
+        try:
+            job = f.read_text().split()[0].split(".")[0]
+        except (OSError, IndexError):
+            continue
+        if job not in live:
+            f.unlink(missing_ok=True)
+            log(f"cleared stale claim {f.name} held by dead job {job}")
+
+
 def main() -> None:
+    # attempts counts only resubmissions that made no progress since the last
+    # one: a walltime kill after useful work is normal and must not use up the
+    # cap, which exists to stop a deterministically failing shard looping.
     counts: dict[str, int] = {}
+    left_at_submit: dict[str, int] = {}
     log("keeper start")
     while True:
         try:
+            clear_stale_claims()
             specs = json.loads(SPECS.read_text())
             active = active_names()
             for s in specs:
                 left = remaining(s)
                 if left == 0 or s["name"][:10] in active:
                     continue
+                if left < left_at_submit.get(s["name"], left + 1):
+                    counts[s["name"]] = 0
                 if counts.get(s["name"], 0) >= MAX_RESUB:
                     continue
                 counts[s["name"]] = counts.get(s["name"], 0) + 1
-                log(f"{s['name']}: {left} cells left, not queued; attempt {counts[s['name']]}")
+                left_at_submit[s["name"]] = left
+                log(f"{s['name']}: {left} cells left, not queued; no-progress attempt {counts[s['name']]}")
                 submit(s)
         except Exception as e:  # never die on a transient qstat or JSON error
             log(f"error {type(e).__name__}: {e}")

@@ -32,7 +32,14 @@ def main() -> int:
         if not f.exists():
             missing.append(d["cohort"])
             continue
-        r = json.loads(f.read_text())["results"]
+        blob = json.loads(f.read_text())
+        if "runtime_error" in blob:
+            # passed selection criteria 1-5 but failed at run time: reported
+            # with its error, as the registration requires, and not scored
+            rows.append({"cohort": d["cohort"], "regime": d["regime"], "ta_worst": None,
+                         "F": {}, "errors": {"cell": blob["runtime_error"]}})
+            continue
+        r = blob["results"]
         ta = r.get("ta", {}).get("worst")
         ratio = {k: (v["worst"] / ta if "worst" in v and ta and ta > 0 else None)
                  for k, v in r.items() if k != "ta"}
@@ -41,8 +48,12 @@ def main() -> int:
     if missing:
         print(f"{len(missing)} of {len(sel)} cohorts missing; refusing to report")
         return 1
-    col = [x for x in rows if x["regime"] == "collapsed"]
-    sep = [x for x in rows if x["regime"] == "separated"]
+    # a cohort that never loaded is reported but cannot be scored, so it is left
+    # out of both groups; a merge that errored on a loaded cohort stays in the
+    # denominator and counts as not meeting the prediction
+    unloaded = [x for x in rows if "cell" in x["errors"]]
+    col = [x for x in rows if x["regime"] == "collapsed" and x not in unloaded]
+    sep = [x for x in rows if x["regime"] == "separated" and x not in unloaded]
 
     def frac(group, key, pred):
         ok = [x for x in group if x["F"].get(key) is not None]
@@ -61,14 +72,16 @@ def main() -> int:
         verdict["U4"], verdict["U4_p"] = p < 0.05, p
     else:
         verdict["U4"] = "not applicable (fewer than 5 cohorts in a group)"
-    rep = {"rules": ["notes/prereg_public_merge_2026-09-23.md",
+    rep = {"unloaded": [(x["cohort"], x["regime"], x["errors"]["cell"]) for x in unloaded],
+           "rules": ["notes/prereg_public_merge_2026-09-23.md",
                      "notes/prereg_lambda_rule_2026-09-23.md (V4)"],
            "counts": {"U1_collapsed": u1c, "U1_separated": u1s, "U2": u2, "U3": u3, "V4": v4},
            "verdict": verdict, "rows": rows}
     (OUT / "public_merge_summary.json").write_text(json.dumps(rep, indent=1, default=str))
     for x in rows:
         f = {k: (round(v, 2) if v is not None else None) for k, v in x["F"].items()}
-        print(f"{x['regime']:<10} {x['cohort'][:55]:<55} TA {x['ta_worst']:.4f}  F {f}  {x['errors'] or ''}")
+        ta = "  n/a " if x["ta_worst"] is None else f"{x['ta_worst']:.4f}"
+        print(f"{x['regime']:<10} {x['cohort'][:55]:<55} TA {ta}  F {f}  {x['errors'] or ''}")
     print(json.dumps(rep["counts"]), json.dumps(verdict, default=str))
     return 0
 
