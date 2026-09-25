@@ -69,3 +69,30 @@ GPU queues never sit idle while text work proceeds.
     manifest, then all analyzers.
   - Throughput: ~5 lanes (one cell per GPU, shared with sanjay.g jobs at 100%
     util); GSM8K cells ~56 min. Compute ETA ~3.5-4 days from 2026-09-23.
+- 2026-09-25, results so far (registered verdicts first, exploratory after):
+  - **Drift theory: branch 1**, PT1-PT5 all hold (PT4 12/12 cohorts).
+  - **Table 4 re-run with the described A^T A Gram**: both originally
+    registered predictions hold (ratios 4.1, 65.6, 5.8, 1.8; gain larger on
+    shared 4/4).
+  - **Real RegMean NLL half**: Q1 (immune to init) holds 4/4; Q1m FAILS
+    (amplification 2.2-6.5, but equal across arms: it comes from the
+    activation Grams, kappa up to 1e7); Q2 and Q3 hold 3/4 (Qwen misses the
+    gate through one outlier cohort). Downstream half pending.
+  - **Part B**: KnOTS Llama-3-8B NLI cohort COLLAPSED (0.968), ViT cohorts
+    separated. One paper only, so Part B not discharged.
+  - **Public-cohort merges: branch 3 (against us).** U1 fails on the
+    separated side (unregularised adapter-only RegMean F >= 2 on 5/6
+    collapsed AND 11/13 separated; Fisher p = 0.78); U2 fails (1/6); U3 holds
+    (5/6); V4 fails (2/6). hallisky cohort recorded as a run-time error
+    (vocab 128257 vs 128256), not repaired. The paper must not attribute
+    public-cohort solver failures to the regime.
+  - EXPLORATORY, not registered, reported as such: adapter-norm spread does
+    not explain the separated-side failures (r = -0.35). In absolute terms,
+    unregularised excess > 10 nats on 4/6 collapsed cohorts versus 1/13
+    separated (and there task arithmetic itself is 11.9), > 1 nat on 4/6 vs
+    4/13. The ratio-to-TA measure was a poor registered choice where TA's own
+    excess is ~0.002-0.004. The kappa-target rule rescues 3 of the 4
+    catastrophic collapsed cohorts (15.3 -> 0.009, 10.4 -> 0.058,
+    11.7 -> 1.1) but not Satya-Sri (17.6 -> 11.0).
+  - Infra: claims of walltime-killed jobs blocked GPUs 1/2/4 for hours; keeper
+    now clears claims of dead jobs and counts only no-progress resubmits.
