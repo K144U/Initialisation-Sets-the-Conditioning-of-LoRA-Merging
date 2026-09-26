@@ -96,3 +96,21 @@ GPU queues never sit idle while text work proceeds.
     11.7 -> 1.1) but not Satya-Sri (17.6 -> 11.0).
   - Infra: claims of walltime-killed jobs blocked GPUs 1/2/4 for hours; keeper
     now clears claims of dead jobs and counts only no-progress resubmits.
+- 2026-09-27, new-cohort verdicts (analyze_new_cohorts.py):
+  - **Part R: R1-R5 all hold.** Shared cos 0.990-0.999, independent
+    0.032-0.099 at every T and r. kappa grows with T (3.9e3, 1.1e4, 3.9e4 at
+    T = 2, 4, 8) and with r (5.6e3, 1.1e4, 4.1e4 at r = 8, 16, 64);
+    shared amplification 17.9, 45.3, 90.4 at T = 2, 4, 8. First-order formula
+    ratio 1.000 on every shared configuration. Independent amplification =
+    T (1.99, 4.00, 7.91). Unregularised RegMean shared/indep 33.5, 6.0, 2.5,
+    4.8, 65.0; task arithmetic |d| <= 0.008.
+  - **Part P: P1, P2 hold.** PiSSA with independent seeds: cos 0.999, trained
+    row spaces at 0.9996 of the base's top-r right singular vectors.
+    (Amplification 1.6 on raw PiSSA factors is not comparable: raw D = BA
+    includes the shared B0A0 principal part.)
+  - **Rule: branch 2 (against us).** V1 fails 0/6 (the kappa-target rule is
+    worse than the fixed lambda = 0.01 on every shared cohort), V2 holds 5/6
+    (better than alpha = 0.9), V3 fails 4/6 by the letter (the two misses are
+    the rule doing BETTER than lambda = 1e-6 by > 0.005). Paper keeps
+    "start at 0.01 and sweep"; the rule is reported as tested and not better.
+  - Part T pending 5 downstream cells.
