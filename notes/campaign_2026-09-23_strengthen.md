@@ -114,3 +114,16 @@ GPU queues never sit idle while text work proceeds.
     the rule doing BETTER than lambda = 1e-6 by > 0.005). Paper keeps
     "start at 0.01 and sweep"; the rule is reported as tested and not better.
   - Part T pending 5 downstream cells.
+- 2026-09-27, **Part T (translation fix): T1 FAILS, T2-T5 hold.** The
+  shuffled-stream translation adapter now improves on the base model's
+  translation NLL (Llama 11.7% / 12.0%, Mistral 5.6% / 6.4%; was -1.6% on
+  Llama) but is still not the best adapter on its own task (gsm8k on Llama,
+  magicoder on Mistral beat it), so by the registered first branch the
+  "T = 4 nominal, 3 effective" caveat stays as written. On the fixed cohorts
+  the replication holds anyway: cos 0.995/0.994 vs 0.047; RegMean 1e-6
+  shared/indep 6.0 and 64.6 with larger ridge gain on shared; heuristics
+  |d| < 0.02 on 10/10; encoder lambda* over lambda = 0 clears the accuracy gate
+  on both bases and both benchmarks (Mistral GSM8K 0.000 -> 0.468, HumanEval
+  0.000 -> 0.244, reproducing the headline zero on a cohort with a fixed
+  translation adapter). These are reported as a replication, not as removing
+  the caveat.
