@@ -64,19 +64,20 @@ numerically like independent draws, because that is what it is.
 
 \paragraph{What this does and does not establish.} It establishes that the
 regime is common in released adapters, at a rate we can state with a frame a
-reader can rerun. It does not establish that anyone has merged these particular
-cohorts, or that a published merging benchmark is affected, and we make neither
-claim. Two of the $45$ have members at differing LoRA rank, so their
+reader can rerun. It does not by itself establish a consequence, which
+\S\ref{subsec:public-merge} tests, or that published merging benchmarks are
+affected, which Part B addresses (\S\ref{subsec:part-b}). Two of the $45$ have
+members at differing LoRA rank, so their
 $\|A_i - A_j\|_F$ comparison is undefined and only their cosine is reported;
 both are separated. The audit's cost is unchanged from
 \S\ref{subsec:audit}: about one CPU minute per cohort, and the entire sweep of
 $45$ cohorts needed no GPU.
 
-\paragraph{Two of the three registered parts.} The
-pre-registration for this audit (\S\ref{subsec:prereg-docs}) has three parts.
-The prevalence figures above are Part C. Part A, the library condition, is
-reported below. \textbf{Part B has not been run}, so we do not treat the
-precondition as fully discharged.
+\paragraph{The three registered parts.} The pre-registration for this audit
+(\S\ref{subsec:prereg-docs}) has three parts. The prevalence figures above are
+Part C. Part A, the library condition, and Part B, the cohorts published
+merging work evaluates on, are reported below; Part B could not be discharged
+by its own rule, and \S\ref{subsec:part-b} says why.
 
 \paragraph{Part A: when does a library hand two adapters the same $A$?} The
 registration asks for the exact condition, from the source at a pinned
@@ -103,10 +104,95 @@ itself: those tensors are post-training, and training moves $A$, so bitwise
 identity is not the right instrument and Appendix~\ref{app:geometry} reports
 the residue instead.
 
+\paragraph{Which pipelines meet the condition by default.} The condition is a
+property of whatever runs before the adapter is created, so we read the
+fine-tuning stacks themselves, at pinned versions
+(\texttt{notes/library\_defaults\_audit\_2026-09-23.md}). This is a reading of
+source code, not a measurement, and it was not part of any registered
+prediction. Unsloth~\citep{unsloth2026} (2026.5.2) gives
+\texttt{get\_peft\_model} a default \texttt{random\_state} of $3407$ and calls
+\texttt{transformers\_set\_seed} with it before the LoRA layers are created
+(\texttt{unsloth/models/llama.py}, lines 2865 and 3195).
+LLaMA-Factory~\citep{zheng2024llamafactory} calls \texttt{transformers.set\_seed}
+with the training seed, which defaults to $42$, inside \texttt{get\_train\_args},
+before the model is loaded. At their defaults, then, both stacks give every run
+on one base, target set and rank the identical initial $A$: the collapsed
+regime by construction, for any user who fine-tunes several tasks without
+changing the seed. TRL's \texttt{SFTTrainer} (0.24.0) builds the PEFT model
+before its trainer sets a seed, so it depends on the calling script, and we
+found no seeding before adapter creation in axolotl. Without any seed at all
+the regime does not arise by accident: PyTorch's initial seed differs between
+fresh processes. Initialisation schemes can impose the regime regardless of
+seed. PiSSA and OLoRA compute $A$ from the base weight, and
+\S\ref{subsec:tr-sweep} confirms that a PiSSA cohort trained with four
+independent seeds is collapsed (median cosine $0.999$).
+
 The distinction between the parts matters for what may be claimed. Part C
 establishes prevalence in released adapters, which is what \S\ref{sec:intro}
-and the abstract assert and all they assert. Part B is what would license a
-statement about published merging \emph{benchmarks}, and we make none: the
-benchmark-confounding claim is withdrawn in \S\ref{subsec:withdrawn} and stays
-withdrawn.
+and the abstract assert. Part B is what would license a statement about
+published merging \emph{benchmarks}; the benchmark-confounding claim is
+withdrawn (Appendix~\ref{app:audit-trail}) and stays withdrawn.
+
+\subsection{The cohorts published merging work evaluates on}
+\label{subsec:part-b}
+
+Part B fixed its selection rule in advance: work through the merging papers
+cited in \S\ref{sec:related_work} in citation order, audit the adapter
+cohorts released by the first two that release LoRA cohorts meeting the Part C
+criteria, and, if fewer than two do, report how many were checked and that the
+precondition cannot be discharged, without substituting another corpus. Of the
+$22$ merging papers checked, one releases LoRA cohorts: KnOTS~\citep{stoica2025knots},
+whose Llama-3-8B cohort of six NLI adapters and two vision cohorts (ViT-B/32 and
+ViT-L/14, eight tasks each) are on HuggingFace. The rest release full
+fine-tunes, (IA)$^3$ adapters, or no weights, and one (Core
+Space~\citep{panariello2025core}) evaluates on the KnOTS release rather than
+releasing its own. Part B is therefore not discharged, and we say so rather
+than substitute a corpus.
+
+The KnOTS release is still informative. Its \textbf{language cohort is
+collapsed}, at median principal cosine $0.968$, while both vision cohorts are
+separated ($0.110$ and $0.095$). A released LoRA cohort that a later merging
+paper uses as its benchmark therefore sits in the regime this paper is about.
+One paper is not a population, and we draw no conclusion about published
+benchmarks in general.
+
+\subsection{Merging the public cohorts}
+\label{subsec:public-merge}
+
+Prevalence is not consequence, so we merged the public cohorts
+(\texttt{prereg\_public\_merge}, registered before any was merged). Selection
+was mechanical: every scored cohort whose declared base is a text-only causal
+language model of at most 15B parameters that the project's
+\texttt{transformers} loads without remote code, downloadable with our token,
+and whose members share rank and target modules. Twenty qualified, seven
+collapsed and thirteen separated; one collapsed cohort failed at run time
+because its adapters carry an extra vocabulary token that PEFT cannot load onto
+the declared base, and it is reported rather than repaired. Public adapters
+rarely ship their data, so the consequence measure is task-free: each adapter's
+own greedy completions on a fixed prompt set, scored under the merged model,
+with the worst adapter's excess negative log-likelihood as the cohort's
+behaviour excess. The registered statistic is its ratio $F$ to task
+arithmetic's.
+
+\textbf{The registered outcome goes against us.} Unregularised adapter-only
+RegMean at least doubles task arithmetic's behaviour excess on $5$ of the $6$
+scored collapsed cohorts, and also on $11$ of the $13$ separated ones; the
+difference between the regimes is not significant (Fisher's exact test,
+$p = 0.78$). By the registered branch, the solver fails on public cohorts for
+reasons that are not specific to the collapse, and we do not attribute those
+failures to the regime. The fixed ridge of $0.01$ brings $F$ within $1.5$ on
+only $1$ of $6$ collapsed cohorts, and RegMean's shipped $\alpha = 0.9$ fails on
+$5$ of $6$.
+
+One further reading was not registered and is labelled as such. The ratio
+$F$ is unstable where task arithmetic's own excess is tiny, as it is on many
+separated cohorts ($0.002$ to $0.004$ nats), so a large $F$ can be a small
+absolute loss. In absolute terms the unregularised solver loses more than
+$10$ nats of behaviour on $4$ of the $6$ collapsed cohorts and on $1$ of the
+$13$ separated ones, and in that one case task arithmetic itself loses $11.9$.
+Adapter-norm heterogeneity does not explain the separated-side ratios
+(correlation $-0.35$). We report the pattern because it is visible in the
+released per-cohort table, and we do not let it revise the verdict: choosing a
+ratio as the registered statistic was our error, and the verdict stands as
+registered.
 

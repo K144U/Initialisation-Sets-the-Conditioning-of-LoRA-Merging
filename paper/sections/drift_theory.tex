@@ -109,6 +109,61 @@ log-log slope & \multicolumn{2}{c}{$-2.00$} & \multicolumn{2}{c}{$-1.01$} \\
 \end{tabular}
 \end{table}
 
+\subsection{Task count, rank and initialisation scheme}
+\label{subsec:tr-sweep}
+
+The proposition says the collapse is set by initialisation and its severity
+by the spread of the displacements, so it should hold at any task count and
+rank, with the conditioning worsening as more tilts crowd the same starting
+subspace. We tested that on Llama-3.1-8B (registration
+\texttt{prereg\_new\_cohorts}, Part R), training new adapters for four further
+tasks (Dolly, XSum, CodeAlpaca, and English-to-French translation) and for
+ranks $8$ and $64$, in both initialisation arms. All five registered
+predictions hold (Table~\ref{tab:tr-sweep}). The regime is set by
+initialisation at every size: shared cohorts sit at median cosine $0.990$ to
+$0.999$ and independent ones at $0.032$ to $0.099$. The conditioning grows with
+the task count, $\kappa(\bar H) = 3.9\times10^{3}$, $1.1\times10^{4}$ and
+$3.9\times10^{4}$ at $T = 2, 4, 8$, and with the rank, $5.6\times10^{3}$,
+$1.1\times10^{4}$ and $4.1\times10^{4}$ at $r = 8, 16, 64$. The first-order
+formula matches the exact values on every shared configuration (ratio
+$1.000$), and on the independent arm the amplification is the orthogonal value
+$T$ ($1.99$, $4.00$, $7.91$). The solver consequence travels with it:
+unregularised adapter-only RegMean is $2.5$ to $65$ times worse on the shared
+arm at every configuration, while task arithmetic moves by at most $0.008$
+nats.
+
+\begin{table}[t]
+\centering
+\small
+\caption{The collapse across task count and rank (Llama-3.1-8B). Median cosine,
+$\kappa(\bar H)$ and amplification are exact; the ratio is the first-order
+prediction over the exact $\kappa$. The last column is unregularised
+adapter-only RegMean, shared over independent worst-task excess.}
+\label{tab:tr-sweep}
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{2}{c}{median cosine} & \multicolumn{2}{c}{shared arm} &
+ formula & RegMean \\
+configuration & shared & indep. & $\kappa(\bar H)$ & amplification & ratio & shared/indep. \\
+\midrule
+$T=2$, $r=16$  & 0.996 & 0.045 & $3.9\times10^{3}$ & 17.9 & 1.000 & 33.5 \\
+$T=4$, $r=16$  & 0.995 & 0.047 & $1.1\times10^{4}$ & 45.3 & 0.999 & 6.0 \\
+$T=8$, $r=16$  & 0.996 & 0.047 & $3.9\times10^{4}$ & 90.4 & 1.001 & 2.5 \\
+$T=4$, $r=8$   & 0.990 & 0.032 & $5.6\times10^{3}$ & 30.2 & 1.000 & 4.8 \\
+$T=4$, $r=64$  & 0.999 & 0.099 & $4.1\times10^{4}$ & 84.7 & 0.999 & 65.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{An initialisation that collapses whatever the seed.} PiSSA sets $A$
+from the principal singular vectors of the base weight, so the proposition
+predicts a collapsed cohort even with independent seeds. Four PiSSA adapters
+trained with the independent arm's seeds (Part P) are collapsed at median
+cosine $0.999$, and their trained row spaces stay at principal cosine $0.9996$
+of the base weight's top-$r$ right singular vectors: training displaces them
+too little to leave the shared starting subspace. Both registered predictions
+hold. A shared seed is therefore one route into the regime, not the only one.
+
 \paragraph{What the proposition does not do.} It is a leading-order
 expansion checked numerically, not a bound with explicit constants, and it
 describes the shared regime only; in the independent regime the tilts are not

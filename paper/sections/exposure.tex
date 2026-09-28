@@ -254,76 +254,134 @@ bases would oblige us to say the published value was unrepresentative of its
 own arm. It is representative, and Table~\ref{tab:ridge}'s numbers stand as
 single-cohort estimates of quantities the three-cohort means confirm.
 
-\subsection{The same test on a solver we did not build}
+\subsection{A second adapter-built solver: RegMean without data}
 \label{subsec:regmean}
 
-Everything above concerns one solver, and we built it. A referee is
-entitled to ask whether the effect is a property of the family or of our
-implementation, and the question is sharp enough to be worth answering
-with a pre-registered experiment rather than an argument.
+Everything above concerns one solver, and we built it. The first question a
+referee asks is whether the effect belongs to the family or to our
+implementation. RegMean~\citep{jin2023regmean} solves a least-squares system in
+per-task input-activation Grams; its \emph{data-free, adapter-only} form, which
+replaces each activation Gram by $A_t^\top A_t$, is a second solver whose
+matrix is built from the adapters' own factors. We say plainly that this form
+is a variant we constructed, not the published method, and it is exactly the
+kind of solver the mechanism says is exposed; \S\ref{subsec:data-solvers}
+tests the published method with real activation Grams, and two further
+methods we did not build.
 
-RegMean~\citep{jin2023regmean}, in the data-free adapter-only form, is a
-solver we did not design. We swept it on the same grid and the same two
-cohorts, registering two predictions in advance: that the ridge gain would
-be larger on the shared arm, and that the minimally regularised excess
-would be worse there by at least a factor of two, each on at least three of
-four bases.
+We swept it on the same grid and cohorts, registering two predictions: the
+ridge gain larger on the shared arm, and the minimally regularised excess worse
+there by at least a factor of two, each on at least three of four bases. The
+numbers below use the Gram the method is defined with; an earlier version of
+this table was computed with a fallback Gram by mistake, and
+Appendix~\ref{subsec:gram-error} gives the account and both sets of numbers.
 
-One thing to be exact about, since our practical recommendation reduces to
-regularising a solve-based merge and RegMean ships a regulariser of its
-own. Its published regulariser is \emph{not} the Tikhonov ridge swept
-below: RegMean scales the non-diagonal entries of each Gram by a scalar
-$\alpha$, default $0.9$, which is a data-set diagonal shrinkage rather than
-a free parameter. An earlier version of this section described the swept
-ridge as part of RegMean's published formulation. That was wrong: the
-$\lambda I$ is ours, and the comparison below is between our regulariser
-and RegMean's. \S\ref{subsec:regmean-default} reports what the published
-default does on these cohorts.
+RegMean ships a regulariser of its own, and it is \emph{not} the Tikhonov
+ridge swept here: it scales the non-diagonal entries of each Gram by
+$\alpha$, default $0.9$. The $\lambda I$ in this table is ours, and
+\S\ref{subsec:regmean-default} evaluates RegMean's own default end to end.
 
 \begin{table}[t]
 \centering
 \small
-\caption{RegMean on both cohorts. Its minimally regularised reference is
-$\lambda = 10^{-6}$ rather than $0$: RegMean solves in the full input
-dimension against a Gram of rank at most $Tr = 64$ against $d = 4096$, so
-$\lambda = 0$ is singular rather than ill-conditioned and returns
-null-space noise without raising an error. Our encoder solves inside
-$\range(\bar H)$, so its $\lambda = 0$ is defined. The two columns are
-therefore not the same object and each method is compared only against
-itself across arms.}
+\caption{Adapter-only RegMean on both cohorts, with the described Gram
+$\sum_t A_t^\top A_t$. The minimally regularised reference is
+$\lambda = 10^{-6}$ rather than $0$: the Gram has rank at most $Tr = 64$ in
+$d = 4096$ dimensions, so $\lambda = 0$ is singular rather than
+ill-conditioned. Our encoder solves inside $\range(\bar H)$, so its
+$\lambda = 0$ is defined; each method is compared only against itself across
+arms.}
 \label{tab:regmean}
 \begin{tabular}{llcccc}
 \toprule
 base & cohort & $\lambda = 10^{-6}$ & $\lambda^\star$ & gain & ratio \\
 \midrule
-Llama-3.1-8B & shared      & 1.9789 & 0.01 & 1.7428 & \multirow{2}{*}{$27.9\times$} \\
-             & independent & 0.0708 & $10^{-6}$ & 0.0000 & \\
+Llama-3.1-8B & shared      & 0.2918 & 0.03 & 0.1781 & \multirow{2}{*}{$4.1\times$} \\
+             & independent & 0.0710 & $10^{-6}$ & 0.0000 & \\
 \addlinespace
-Mistral-7B   & shared      & 10.6283 & 0.01 & 10.5314 & \multirow{2}{*}{$70.9\times$} \\
-             & independent & 0.1499 & 0.01 & 0.0449 & \\
+Mistral-7B   & shared      & 10.1651 & 0.05 & 10.1155 & \multirow{2}{*}{$65.6\times$} \\
+             & independent & 0.1551 & 0.05 & 0.1006 & \\
 \addlinespace
-Qwen2.5-7B   & shared      & 0.2376 & 0.01 & 0.2255 & \multirow{2}{*}{$9.3\times$} \\
-             & independent & 0.0256 & 0.01 & 0.0133 & \\
+Qwen2.5-7B   & shared      & 0.1504 & 0.05 & 0.1391 & \multirow{2}{*}{$5.8\times$} \\
+             & independent & 0.0258 & 0.13 & 0.0117 & \\
 \addlinespace
-Yi-1.5-9B    & shared      & 0.5700 & 0.01 & 0.5477 & \multirow{2}{*}{$4.7\times$} \\
-             & independent & 0.1203 & 0.01 & 0.0913 & \\
+Yi-1.5-9B    & shared      & 0.2179 & 0.13 & 0.1947 & \multirow{2}{*}{$1.8\times$} \\
+             & independent & 0.1206 & 0.13 & 0.0879 & \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Both predictions hold on four of four bases. The effect is not a property
-of our encoder.
+Both predictions hold: the ridge gain is larger on the shared arm on four of
+four bases, and the unregularised excess is at least twice as large there on
+three of four (Yi reaches $1.8$). The effect is not a property of our encoder.
 
-Three details in Table~\ref{tab:regmean} are worth reporting rather than
-smoothing. $\lambda^\star$ is $0.01$ on seven of the eight arms, so on
-RegMean too the amount of regularisation needed does not track the
-conditioning even though the amount it buys does; that is the same split
-our own sweep found, now reproduced on a method we did not write. Llama's
-independent arm selects the minimal $\lambda$ and gains exactly zero,
-which is the cleanest statement of the claim available: on a
-well-conditioned cohort there is nothing to repair. And from
-$\lambda = 0.13$ upward the two arms agree to three decimals, because
-heavy regularisation washes the difference out entirely.
+Two details are worth reporting. The selected ridge is the same on both arms
+of Mistral and of Yi, so on this solver too the amount of regularisation
+needed does not track the conditioning even though the amount it buys does,
+the split our own sweep found. And Llama's independent arm selects the minimal
+$\lambda$ and gains exactly zero: on a well-conditioned cohort there is nothing
+to repair.
+
+\subsection{Solvers built from data, whitening, and a diagonal}
+\label{subsec:data-solvers}
+
+The mechanism makes a sharper prediction than ``solvers are exposed''. The
+collapse makes the matrix $\sum_t A_t^\top A_t$ ill-conditioned; a solver is
+exposed if it inverts a matrix built from the adapters' own factors, and should
+not be if its matrix comes from data or is diagonal, since a diagonal cannot see
+overlap between subspaces. We registered that prediction for four published
+methods, none of ours, before running any of them
+(\texttt{prereg\_regmean\_real}, \texttt{prereg\_third\_solver}): RegMean with
+real input-activation Grams at its published $\alpha = 0.9$; MaTS~\citep{tam2024mats}
+with its blockwise (KFAC) Fisher solved by 100 conjugate-gradient iterations,
+as in the official code; TSV-M~\citep{gargiulo2025tsv}, which whitens the
+stacked singular vectors of the task updates and was therefore predicted to be
+exposed; and diagonal Fisher merging~\citep{matena2022fisher}. Each ran on all
+three cohorts of both arms on all four bases.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Methods we did not build. Worst-task NLL excess, shared over
+independent (mean over three cohorts per arm), and whether the difference
+clears the registered gate $\max(0.005, 2\,\mathrm{SE})$. The prediction column
+is the mechanism's, registered before any cell ran.}
+\label{tab:data-solvers}
+\begin{tabular}{llcccc}
+\toprule
+method & predicted & Llama & Mistral & Qwen & Yi \\
+\midrule
+RegMean, activation Grams & immune & $1.03$ & $1.14$ & $0.99$ & $1.13$ \\
+MaTS (KFAC Fisher, CG)    & immune & $0.98$ & $0.94$ & $0.93$ & $0.99$ \\
+diagonal Fisher           & immune & $1.08^{\ast}$ & $1.02$ & $0.96$ & $0.98$ \\
+TSV-M (whitening)         & exposed & $1.08$ & $1.19^{\ast}$ & $0.81$ & $0.91^{\ast}$ \\
+\bottomrule
+\multicolumn{6}{l}{\footnotesize $^{\ast}$ clears the gate; for Yi the
+difference favours the shared arm.}
+\end{tabular}
+\end{table}
+
+The three immunity predictions hold (Table~\ref{tab:data-solvers}): RegMean
+with activation Grams shows no effect on any base, MaTS none, and the diagonal
+Fisher merge one small effect on Llama ($1.08$ times), below the registered
+bound. The exposure prediction for TSV-M fails: it shows an effect on Mistral
+only ($1.19$ times), the opposite sign on Yi, and nothing on Llama and Qwen, and
+in accuracy no cell clears the gate on either benchmark. By the registered
+branch, the whitening case was predicted and did not hold, and the exposure
+rule is stated for solvers alone.
+
+One registered detail also failed. We predicted that RegMean with activation
+Grams would keep the pre-truncation norm of its solution within three times the
+mean task delta; it reaches $2.2$ to $6.5$. The amplification is the same on
+both arms (for example $3.15$ shared against $3.44$ independent on Llama),
+because it comes from the activation Grams themselves, whose condition numbers
+reach $10^{4}$ to $10^{7}$ whatever the initialisation. The immunity to
+initialisation holds; the bound we put on the norm was wrong.
+
+\paragraph{The rule this licenses.} Across eleven methods, nine of them not ours,
+the collapse reaches exactly the merges that solve a linear system in a matrix
+built from the adapters' own factors: our encoder and adapter-only RegMean.
+It does not reach averaging or sparsifying heuristics (\S\ref{subsec:ridge}),
+solvers whose matrix comes from data, a diagonal solver, or whitening.
 
 \subsection{Does RegMean's published default already fix this?}
 \label{subsec:regmean-default}
@@ -344,9 +402,9 @@ it does make the system solvable. The question is whether it is enough.
 On the shared-initialisation cohorts it is not, by about an order of
 magnitude. Averaged over sampled layers, $\alpha = 0.9$ is equivalent to an
 isotropic ridge of $5.2\times10^{-4}$ to $6.1\times10^{-4}$ across the four
-bases, against the $\lambda^\star = 0.01$ the sweep selects on seven of eight
-arms: roughly $20$ times smaller. The conditioning it leaves behind reflects
-that. The $\alpha$-shrunk system has condition number $6.6\times10^{3}$ to
+bases, against the $\lambda^\star$ of $0.03$ to $0.13$ that the sweep selects on
+the shared arm (Table~\ref{tab:regmean}): $50$ to $250$ times smaller. The
+conditioning it leaves behind reflects that. The $\alpha$-shrunk system has condition number $6.6\times10^{3}$ to
 $9.1\times10^{3}$, while $\lambda = 0.01$ brings the same layers to about
 $1.5\times10^{2}$, a factor of $55$ apart. The default is on the wrong side of
 the gap this paper is about.
@@ -359,15 +417,22 @@ ridge it applies is identical to three significant figures
 $\alpha$-shrinkage is a fixed dose set by the data's scale and not by the
 cohort's conditioning, so it neither knows nor cares which regime it is in.
 On a well-conditioned cohort the dose is ample. On a collapsed one it is
-$20$ times short, and nothing in the method notices.
+far too small, and nothing in the method notices.
 
-Two limits on what this shows, both worth stating. It is a statement about
-conditioning, computed from the adapter factors, not a merge we evaluated: we
-did not run a $\lambda$-free $\alpha$-shrunk RegMean through the NLL harness,
-so we do not report a task-loss number for it. And $\alpha$ is a documented
-knob with the default merely being $0.9$, so a practitioner who lowers it is
-doing exactly what \S\ref{subsec:ridge} recommends. The claim here is only
-that the shipped default does not do it for them.
+\paragraph{End to end.} The conditioning argument was a computation, so we
+registered the merge itself (\texttt{prereg\_regmean\_real}): adapter-only
+RegMean with $\alpha = 0.9$ and no ridge, on all three cohorts of both arms, in
+NLL and in downstream accuracy. In NLL both registered predictions hold on three
+of four bases. The shipped default is worse on the shared arm by $18$, $68$ and
+$5.3$ times on Llama, Mistral and Yi, each past the gate; on Qwen it is $41$
+times worse on average but one of the three shared cohorts sits far from the
+other two ($2.54$ nats against $0.20$ and $0.22$), which widens the gate beyond
+the difference. The audit's starting ridge, $\lambda = 0.01$, improves on the
+default on the shared arm past the gate on the same three bases.
+
+$\alpha$ is a documented knob, and a practitioner who lowers it is doing what
+\S\ref{subsec:ridge} recommends. The claim is only that the shipped default does
+not do it for them, and that nothing in the method signals when it should.
 
 \subsection{The same test without rank truncation}
 \label{subsec:untruncated}
@@ -505,3 +570,52 @@ cohort, and nothing here tests that. What it shows is that the specific effect
 this paper is about is not an artifact of the metric, which is the objection it
 was registered to answer.
 
+
+\subsection{The same results with a working translation adapter}
+\label{subsec:translation-fix}
+
+Every cohort above contains a translation adapter that did not learn its task
+(\S\ref{subsec:scope}). We retrained it with the one-line loader fix, a
+shuffled stream, on Llama-3.1-8B and Mistral-7B in the shared and first
+independent cohorts, with each cohort's own seeds, and re-ran the core cells on
+the resulting cohorts (\texttt{prereg\_new\_cohorts}, Part T).
+
+The fix helps but does not pass its registered test. The retrained adapter now
+improves on the base model's translation loss (by $12\%$ on Llama, where the
+original was $1.6\%$ worse, and by $6\%$ on Mistral), but another adapter in the
+cohort is still better on translation, so by the registered criterion it has
+not learned its task and the caveat of \S\ref{subsec:scope} stands as written.
+
+On these cohorts every other registered prediction holds. The regimes are
+unchanged (median cosine $0.995$ and $0.994$ shared, $0.047$ independent);
+unregularised adapter-only RegMean is $6.0$ and $64.6$ times worse on the shared
+arm with the larger ridge gain there; the five heuristics move by less than
+$0.02$ nats in all ten cells; and in accuracy the encoder's $\lambda^\star$
+recovers the shared arm past the gate on both bases and both benchmarks. On
+Mistral the unregularised shared merge again scores $0.000$ on GSM8K and on
+HumanEval, and the ridge again recovers $0.468$ and $0.244$. The results of this
+section therefore do not depend on the adapter that failed to train, although
+the cohort is still not four well-trained adapters.
+
+\subsection{Setting the ridge}
+\label{subsec:lambda-rule}
+
+The practical advice is to regularise an adapter-built solve on a collapsed
+cohort. How much is the natural next question, and the first-order theory
+suggests a data-free answer: cap the condition number of the adapter Gram. We
+registered such a rule before evaluating it anywhere
+(\texttt{prereg\_lambda\_rule}): per layer, the smallest isotropic ridge that
+brings the condition number of $\sum_t A_t^\top A_t$ on its range down to
+$k = 100$, a round number fixed in advance, evaluated only on cohorts that no
+ridge had been selected on.
+
+The rule fails its main test. On all six collapsed cohorts of
+\S\ref{subsec:translation-fix} and \S\ref{subsec:tr-sweep} it is worse than the
+fixed $\lambda = 0.01$ (by $0.08$ to $4.2$ nats), although it beats RegMean's
+shipped default on five of six. On the separated cohorts it is within $0.005$
+nats of the unregularised solve on four of six; in the other two it is better by
+more than that, which the registered test also counts as a miss. By the
+registered branch, the recommendation stays as it was: on a collapsed cohort,
+start near $\lambda = 0.01$ for adapter-only RegMean and sweep, since the
+selected ridge varies by base (Table~\ref{tab:regmean}) and does not track the
+conditioning. A data-free rule that sets the ridge well remains open.

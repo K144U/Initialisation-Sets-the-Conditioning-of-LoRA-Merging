@@ -1,5 +1,57 @@
 % Restructured 2026-09-28: the withdrawn and negative results, moved verbatim
 % from method_tests.tex so the main text leads with the claims.
+
+This appendix collects what did not survive: claims we made and withdrew,
+predictions that failed, and execution errors we found in our own pipeline.
+Each is stated in one sentence where it is relevant in the main text; the full
+account is here, so that the main text can lead with what holds without
+hiding what does not. Every item was either governed by a pre-registration or
+found by us rather than by a reviewer.
+
+\subsection{Adapter-only RegMean ran a different Gram from the one described}
+\label{subsec:gram-error}
+
+Our adapter-only RegMean builds its per-task Gram from the LoRA factor $A_t$
+when the model object provides a hook for it, and otherwise falls back
+silently to $\Delta_t^\top\Delta_t$. The object every production evaluation
+passed in never defined that hook, so every adapter-only RegMean number in the
+previous version of this paper was computed with $\sum_t \Delta_t^\top\Delta_t$,
+while the text described $\sum_t A_t^\top A_t$ and two analyses (the
+solution-norm table and the analysis of RegMean's shipped regulariser) used the
+described form. We found this while writing the public-cohort experiment,
+registered an amendment before any affected new cell ran
+(\texttt{prereg\_regmean\_real\_amendment}), fixed the hook, and re-ran the
+published RegMean table with the described Gram under the rules it was
+originally registered with. Both registered predictions still hold
+(\S\ref{subsec:regmean}): the unregularised excess is worse on the shared arm
+by $4.1$, $65.6$, $5.8$ and $1.8$ times, and the ridge gain is larger there on
+all four bases. What changed is the selected ridge: with the described Gram,
+$\lambda^\star$ is $0.03$ to $0.13$ on the shared arm, and the earlier statement
+that $\lambda^\star = 0.01$ on seven of eight arms was a property of the
+fallback Gram. The two Grams are on different scales, so ridge values are not
+comparable between them. Every RegMean number in the main text is now from the
+described Gram.
+
+\subsection{Predictions of this revision that failed}
+\label{subsec:failed-2026-09}
+
+Four registered predictions of the revision campaign went against us, and
+each is reported in the main text in the branch it landed in.
+\begin{itemize}[leftmargin=*,itemsep=2pt,topsep=2pt]
+\item \emph{Whitening would be exposed.} TSV-M was predicted to be hurt by the
+  collapse; it is not (\S\ref{subsec:data-solvers}).
+\item \emph{The public failure would be specific to the regime.} Unregularised
+  adapter-only RegMean fails on most public cohorts in both regimes
+  (\S\ref{subsec:public-merge}).
+\item \emph{An audit-set ridge would match the fixed start.} The
+  condition-number rule is worse than $\lambda = 0.01$ on every collapsed cohort
+  it was tested on (\S\ref{subsec:lambda-rule}).
+\item \emph{Real RegMean's amplification would stay below $3$.} It reaches $2.2$
+  to $6.5$, equally on both arms, because its activation Grams are themselves
+  ill-conditioned (\S\ref{subsec:data-solvers}).
+\end{itemize}
+The retrained translation adapter also failed its registered quality test,
+so the caveat of \S\ref{subsec:scope} stands (\S\ref{subsec:translation-fix}).
 \subsection{The encoder's advantage does not survive}
 \label{subsec:q1}
 
