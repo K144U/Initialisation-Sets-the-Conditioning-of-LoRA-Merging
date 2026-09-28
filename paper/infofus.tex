@@ -1,0 +1,58 @@
+% Information Fusion (Elsevier) build root, 2026-09-28. Fifth venue root
+% alongside jair.tex, tmlr.tex, arxiv.tex and iclr2027.tex; the shared body is
+% main.tex, as for the others.
+%
+% Information Fusion is single-anonymized, so the author block is real.
+% elsarticle puts title, authors, abstract, highlights and keywords inside
+% \begin{frontmatter}; main.tex skips its own title block when
+% \FrontmatterAlreadySet is defined.
+%
+% The xcolor option must be passed before the class for the same reason as in
+% every other root: a later [table] request option-clashes silently and
+% \cellcolor goes undefined.
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[preprint,12pt,authoryear]{elsarticle}
+
+\journal{Information Fusion}
+
+\input{preamble}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Initialisation Sets the Conditioning of LoRA Merging}
+
+\author[jiet]{Sankalp Pathak\corref{cor1}}
+\ead{pathaksankalp04@gmail.com}
+\author[jiet]{Sanjay Garg}
+\ead{gargsv@gmail.com}
+\author[jiet]{Piyush Kumar Singh}
+\ead{Piyushsingh5629@gmail.com}
+\cortext[cor1]{Corresponding author.}
+\affiliation[jiet]{organization={Department of Computer Science and Engineering,
+    Jaypee University of Engineering and Technology},
+  city={Guna}, state={Madhya Pradesh}, country={India}}
+
+\begin{abstract}
+\input{sections/abstract_infofus}
+\end{abstract}
+
+\begin{highlights}
+\input{sections/highlights}
+\end{highlights}
+
+\begin{keyword}
+LoRA \sep model merging \sep parameter-efficient fine-tuning \sep
+initialisation \sep conditioning \sep pre-registration
+\end{keyword}
+
+\end{frontmatter}
+
+\def\FrontmatterAlreadySet{}
+
+\input{main}
+
+\bibliographystyle{elsarticle-harv}
+
+\end{document}

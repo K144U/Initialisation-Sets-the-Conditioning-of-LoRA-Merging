@@ -1,0 +1,387 @@
+[
+ {
+  "cohort": "McGill-NLP__meta-llama--Meta-Llama-3-8B-Instruct",
+  "regime": "collapsed",
+  "cos": 0.9227737188339233,
+  "selected": true,
+  "reason": "ok",
+  "params": 8030261248.0,
+  "rank": 16,
+  "arch": "LlamaForCausalLM"
+ },
+ {
+  "cohort": "charent__Qwen--Qwen3-0.6B",
+  "regime": "separated",
+  "cos": 0.05796830356121063,
+  "selected": true,
+  "reason": "ok",
+  "params": 751650164.0,
+  "rank": 8,
+  "arch": "Qwen3ForCausalLM"
+ },
+ {
+  "cohort": "McGill-NLP__mistralai--Mistral-7B-Instruct-v0.2",
+  "regime": "intermediate",
+  "cos": 0.8681206107139587,
+  "selected": false,
+  "reason": "ok",
+  "params": 7241732096.0,
+  "rank": 16,
+  "arch": "MistralForCausalLM"
+ },
+ {
+  "cohort": "nvidia__--workspace--hugging_face--hub--models--meta-llama--LlamaGuard-7b--snapshots--3e764390d6b39028ddea5b20603c89476107b41e--",
+  "regime": "collapsed",
+  "cos": 0.9999752640724182,
+  "selected": false,
+  "reason": "1: base is a local path, not a hub model"
+ },
+ {
+  "cohort": "Jazhyc__Qwen--Qwen3.5-9B",
+  "regime": "collapsed",
+  "cos": 0.9981541633605957,
+  "selected": false,
+  "reason": "1: architecture 'Qwen3_5ForConditionalGeneration' is not a plain causal LM"
+ },
+ {
+  "cohort": "Journey9ni__checkpoints--LLaVA-Video-7B-Qwen2",
+  "regime": "collapsed",
+  "cos": 0.9984771609306335,
+  "selected": false,
+  "reason": "1: base is a local path, not a hub model"
+ },
+ {
+  "cohort": "predibase__mistralai--Mistral-7B-v0.1",
+  "regime": "separated",
+  "cos": 0.44047826528549194,
+  "selected": true,
+  "reason": "ok",
+  "params": 7241732096.0,
+  "rank": 8,
+  "arch": "MistralForCausalLM"
+ },
+ {
+  "cohort": "NAMAA-Space__unsloth--qwen2-vl-2b-instruct-unsloth-bnb-4bit",
+  "regime": "collapsed",
+  "cos": 0.9300586581230164,
+  "selected": false,
+  "reason": "1/5: vision, speech, encoder, embedding or 4-bit-only base"
+ },
+ {
+  "cohort": "hallisky__meta-llama--Meta-Llama-3-8B",
+  "regime": "collapsed",
+  "cos": 0.9976670145988464,
+  "selected": true,
+  "reason": "ok",
+  "params": 8030261248.0,
+  "rank": 16,
+  "arch": "LlamaForCausalLM"
+ },
+ {
+  "cohort": "EhtishamAhmed__unsloth--gemma-3-4b-it-unsloth-bnb-4bit",
+  "regime": "collapsed",
+  "cos": 0.9145098924636841,
+  "selected": false,
+  "reason": "1/5: vision, speech, encoder, embedding or 4-bit-only base"
+ },
+ {
+  "cohort": "LASR-Callum__Qwen--Qwen3.6-27B",
+  "regime": "separated",
+  "cos": 0.06386591494083405,
+  "selected": false,
+  "reason": "1: architecture 'Qwen3_5ForConditionalGeneration' is not a plain causal LM"
+ },
+ {
+  "cohort": "CAYTU__openai--whisper-large-v2",
+  "regime": "separated",
+  "cos": 0.19955651462078094,
+  "selected": false,
+  "reason": "1/5: vision, speech, encoder, embedding or 4-bit-only base"
+ },
+ {
+  "cohort": "lorahub__google--flan-t5-large",
+  "regime": "collapsed",
+  "cos": 0.9883605241775513,
+  "selected": false,
+  "reason": "1/5: vision, speech, encoder, embedding or 4-bit-only base"
+ },
+ {
+  "cohort": "kmerakeb__Qwen--Qwen2.5-1.5B-Instruct",
+  "regime": "separated",
+  "cos": 0.08648348599672318,
+  "selected": false,
+  "reason": "4: members differ in rank [16, 32] or target modules"
+ },
+ {
+  "cohort": "adamkarvonen__Qwen--Qwen3-8B",
+  "regime": "collapsed",
+  "cos": 0.9957063794136047,
+  "selected": false,
+  "reason": "4: members differ in rank [32, 64] or target modules"
+ },
+ {
+  "cohort": "mudasir13cs__Qwen--Qwen2.5-VL-3B-Instruct",
+  "regime": "collapsed",
+  "cos": 0.9999999403953552,
+  "selected": false,
+  "reason": "1/5: vision, speech, encoder, embedding or 4-bit-only base"
+ },
+ {
+  "cohort": "chandra1976__google--vit-base-patch16-224-in21k",
+  "regime": "separated",
+  "cos": 0.13335712254047394,
+  "selected": false,
+  "reason": "1/5: vision, speech, encoder, embedding or 4-bit-only base"
+ },
+ {
+  "cohort": "Nanthasit__Qwen--Qwen2.5-1.5B-Instruct",
+  "regime": "separated",
+  "cos": 0.07656558603048325,
+  "selected": false,
+  "reason": "4: members differ in rank [16] or target modules"
+ },
+ {
+  "cohort": "nazarkozak__openai--whisper-small",
+  "regime": "separated",
+  "cos": 0.16990402340888977,
+  "selected": false,
+  "reason": "1/5: vision, speech, encoder, embedding or 4-bit-only base"
+ },
+ {
+  "cohort": "jahyungu__allenai--OLMo-2-1124-7B-Instruct",
+  "regime": "separated",
+  "cos": 0.04915051534771919,
+  "selected": true,
+  "reason": "ok",
+  "params": 7298617344.0,
+  "rank": 16,
+  "arch": "Olmo2ForCausalLM"
+ },
+ {
+  "cohort": "agentic-moral-alignment__unsloth--Qwen3.5-9B",
+  "regime": "collapsed",
+  "cos": 0.9999945759773254,
+  "selected": false,
+  "reason": "1: architecture 'Qwen3_5ForConditionalGeneration' is not a plain causal LM"
+ },
+ {
+  "cohort": "ceselder__Qwen--Qwen3-8B",
+  "regime": "separated",
+  "cos": 0.10139330476522446,
+  "selected": true,
+  "reason": "ok",
+  "params": 8190735360.0,
+  "rank": 64,
+  "arch": "Qwen3ForCausalLM"
+ },
+ {
+  "cohort": "aminLo__google--flan-t5-base",
+  "regime": "separated",
+  "cos": 0.16322989761829376,
+  "selected": false,
+  "reason": "1/5: vision, speech, encoder, embedding or 4-bit-only base"
+ },
+ {
+  "cohort": "Jongbin-kr__Qwen--Qwen2.5-Math-1.5B",
+  "regime": "separated",
+  "cos": 0.07443969696760178,
+  "selected": true,
+  "reason": "ok",
+  "params": 1543733572.0,
+  "rank": 16,
+  "arch": "Qwen2ForCausalLM"
+ },
+ {
+  "cohort": "kulits__Qwen--Qwen3-0.6B",
+  "regime": "separated",
+  "cos": 0.20379064977169037,
+  "selected": true,
+  "reason": "ok",
+  "params": 751650164.0,
+  "rank": 32,
+  "arch": "Qwen3ForCausalLM"
+ },
+ {
+  "cohort": "Tevatron__Tevatron--Qwen2.5-Omni-7B-Thinker",
+  "regime": "collapsed",
+  "cos": 0.9996979832649231,
+  "selected": false,
+  "reason": "1/5: vision, speech, encoder, embedding or 4-bit-only base"
+ },
+ {
+  "cohort": "llm-semantic-router__jhu-clsp--mmBERT-base",
+  "regime": "separated",
+  "cos": 0.15824808180332184,
+  "selected": false,
+  "reason": "1/5: vision, speech, encoder, embedding or 4-bit-only base"
+ },
+ {
+  "cohort": "bharati2324__Qwen--Qwen2.5-1.5B-Instruct",
+  "regime": "separated",
+  "cos": 0.07579129934310913,
+  "selected": true,
+  "reason": "ok",
+  "params": 1543733572.0,
+  "rank": 16,
+  "arch": "Qwen2ForCausalLM"
+ },
+ {
+  "cohort": "jahyungu__tiiuae--Falcon3-7B-Instruct",
+  "regime": "separated",
+  "cos": 0.054863084107637405,
+  "selected": true,
+  "reason": "ok",
+  "params": 7455556608.0,
+  "rank": 16,
+  "arch": "LlamaForCausalLM"
+ },
+ {
+  "cohort": "namanadep__Qwen--Qwen2.5-7B-Instruct",
+  "regime": "separated",
+  "cos": 0.05581725761294365,
+  "selected": true,
+  "reason": "ok",
+  "params": 7615616512.0,
+  "rank": 16,
+  "arch": "Qwen2ForCausalLM"
+ },
+ {
+  "cohort": "Shawnno__Qwen--Qwen2.5-3B-Instruct",
+  "regime": "separated",
+  "cos": 0.0644381120800972,
+  "selected": true,
+  "reason": "ok",
+  "params": 3085938688.0,
+  "rank": 16,
+  "arch": "Qwen2ForCausalLM"
+ },
+ {
+  "cohort": "ceselder__unsloth--Qwen3-8B",
+  "regime": "collapsed",
+  "cos": 0.9999556541442871,
+  "selected": true,
+  "reason": "ok",
+  "params": 8190735360.0,
+  "rank": 128,
+  "arch": "Qwen3ForCausalLM"
+ },
+ {
+  "cohort": "moofeez__Qwen--Qwen3-Coder-30B-A3B-Instruct",
+  "regime": "separated",
+  "cos": 0.06732164323329926,
+  "selected": false,
+  "reason": "2: 30.5B parameters"
+ },
+ {
+  "cohort": "ameer4wisam__google--gemma-4-12B-it",
+  "regime": "separated",
+  "cos": 0.049670856446027756,
+  "selected": false,
+  "reason": "1: architecture 'Gemma4UnifiedForConditionalGeneration' is not a plain causal LM"
+ },
+ {
+  "cohort": "vaghawan__unsloth--llama-3.3-70b-instruct-unsloth-bnb-4bit",
+  "regime": "collapsed",
+  "cos": 0.9482662081718445,
+  "selected": false,
+  "reason": "1/5: vision, speech, encoder, embedding or 4-bit-only base"
+ },
+ {
+  "cohort": "daryaZare__meta-llama--Llama-3.2-3B-Instruct",
+  "regime": "separated",
+  "cos": 0.052895158529281616,
+  "selected": true,
+  "reason": "ok",
+  "params": 3212749824.0,
+  "rank": 16,
+  "arch": "LlamaForCausalLM"
+ },
+ {
+  "cohort": "daryaZare__allenai--OLMo-2-0425-1B-Instruct",
+  "regime": "separated",
+  "cos": 0.06461488455533981,
+  "selected": true,
+  "reason": "ok",
+  "params": 1484927112.0,
+  "rank": 16,
+  "arch": "Olmo2ForCausalLM"
+ },
+ {
+  "cohort": "prashanth058__Qwen--Qwen2-VL-2B-Instruct",
+  "regime": "separated",
+  "cos": 0.10419296473264694,
+  "selected": false,
+  "reason": "1/5: vision, speech, encoder, embedding or 4-bit-only base"
+ },
+ {
+  "cohort": "TieuDaoChanNhan__Qwen--Qwen3-8B",
+  "regime": "separated",
+  "cos": 0.09972324222326279,
+  "selected": false,
+  "reason": "4: adapter TieuDaoChanNhan/qwen3-8b-stateless-knapsack-lora-seed1337 config unreadable"
+ },
+ {
+  "cohort": "berencarkci__Qwen--Qwen2.5-3B-Instruct",
+  "regime": "collapsed",
+  "cos": 0.9674764275550842,
+  "selected": true,
+  "reason": "ok",
+  "params": 3085938688.0,
+  "rank": 16,
+  "arch": "Qwen2ForCausalLM"
+ },
+ {
+  "cohort": "ewinregirgojr__openbmb--MiniCPM5-1B",
+  "regime": "collapsed",
+  "cos": 0.935361921787262,
+  "selected": true,
+  "reason": "ok",
+  "params": 1080632832.0,
+  "rank": 32,
+  "arch": "LlamaForCausalLM"
+ },
+ {
+  "cohort": "DataAttributionEval__EleutherAI--pythia-1b",
+  "regime": "collapsed",
+  "cos": 0.9811979532241821,
+  "selected": true,
+  "reason": "ok",
+  "params": 1045350764.0,
+  "rank": 8,
+  "arch": "GPTNeoXForCausalLM"
+ },
+ {
+  "cohort": "cds-jb__Qwen--Qwen3-14B",
+  "regime": "separated",
+  "cos": 0.06081784516572952,
+  "selected": true,
+  "reason": "ok",
+  "params": 14768307200.0,
+  "rank": 32,
+  "arch": "Qwen3ForCausalLM"
+ },
+ {
+  "cohort": "tivanai2020__openai--whisper-large-v3-turbo",
+  "regime": "separated",
+  "cos": 0.18173547089099884,
+  "selected": false,
+  "reason": "1/5: vision, speech, encoder, embedding or 4-bit-only base"
+ },
+ {
+  "cohort": "Misalignment-Empirics__unsloth--Qwen3-8B",
+  "regime": "separated",
+  "cos": 0.068815216422081,
+  "selected": false,
+  "reason": "4: adapter Misalignment-Empirics/theo_em-optim-repro_Qwen3-8B_bad-medical_adam_2ep_seed2 config unreadable"
+ },
+ {
+  "cohort": "Satya-Sri__ai9stars--G9v3-3B",
+  "regime": "collapsed",
+  "cos": 0.9985716342926025,
+  "selected": true,
+  "reason": "ok",
+  "params": 2988656640.0,
+  "rank": 16,
+  "arch": "LlamaForCausalLM"
+ }
+]

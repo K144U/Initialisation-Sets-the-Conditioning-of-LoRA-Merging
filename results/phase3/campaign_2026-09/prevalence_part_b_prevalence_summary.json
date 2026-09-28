@@ -1,0 +1,68 @@
+{
+  "verdict": "INCONCLUSIVE ON SAMPLE SIZE",
+  "n_scored": 3,
+  "n_collapsed": 1,
+  "collapsed_fraction": 0.3333333333333333,
+  "byte_identical": [],
+  "thresholds": {
+    "collapsed": 0.9,
+    "intermediate": 0.5,
+    "p1_fraction": 0.2
+  },
+  "examined": 22,
+  "rejected": {},
+  "cohorts": [
+    {
+      "namespace": "hoffman-lab",
+      "base_model": "meta-llama/Meta-Llama-3-8B",
+      "n_adapters": 6,
+      "repos": [
+        "hoffman-lab/KnOTS-Llama3_8B_lora_R16_mnli",
+        "hoffman-lab/KnOTS-Llama3_8B_lora_R16_snli",
+        "hoffman-lab/KnOTS-Llama3_8B_lora_R16_sick",
+        "hoffman-lab/KnOTS-Llama3_8B_lora_R16_qnli",
+        "hoffman-lab/KnOTS-Llama3_8B_lora_R16_rte",
+        "hoffman-lab/KnOTS-Llama3_8B_lora_R16_scitail"
+      ],
+      "median_principal_cosine": 0.968298614025116,
+      "rel_A_diff": 0.5733132992250224,
+      "status": "COLLAPSED"
+    },
+    {
+      "namespace": "hoffman-lab",
+      "base_model": "ViT-B-32",
+      "n_adapters": 8,
+      "repos": [
+        "hoffman-lab/KnOTS-ViT-B-32_lora_R16_stanford_cars",
+        "hoffman-lab/KnOTS-ViT-B-32_lora_R16_dtd",
+        "hoffman-lab/KnOTS-ViT-B-32_lora_R16_eurosat",
+        "hoffman-lab/KnOTS-ViT-B-32_lora_R16_gtsrb",
+        "hoffman-lab/KnOTS-ViT-B-32_lora_R16_mnist",
+        "hoffman-lab/KnOTS-ViT-B-32_lora_R16_resisc45",
+        "hoffman-lab/KnOTS-ViT-B-32_lora_R16_sun397",
+        "hoffman-lab/KnOTS-ViT-B-32_lora_R16_svhn"
+      ],
+      "median_principal_cosine": 0.10991383343935013,
+      "rel_A_diff": 1.4166925146821,
+      "status": "SEPARATED"
+    },
+    {
+      "namespace": "hoffman-lab",
+      "base_model": "ViT-L-14",
+      "n_adapters": 8,
+      "repos": [
+        "hoffman-lab/KnOTS-ViT-L-14_lora_R16_stanford_cars",
+        "hoffman-lab/KnOTS-ViT-L-14_lora_R16_dtd",
+        "hoffman-lab/KnOTS-ViT-L-14_lora_R16_eurosat",
+        "hoffman-lab/KnOTS-ViT-L-14_lora_R16_gtsrb",
+        "hoffman-lab/KnOTS-ViT-L-14_lora_R16_mnist",
+        "hoffman-lab/KnOTS-ViT-L-14_lora_R16_resisc45",
+        "hoffman-lab/KnOTS-ViT-L-14_lora_R16_sun397",
+        "hoffman-lab/KnOTS-ViT-L-14_lora_R16_svhn"
+      ],
+      "median_principal_cosine": 0.09504314512014389,
+      "rel_A_diff": 1.458177069689901,
+      "status": "SEPARATED"
+    }
+  ]
+}

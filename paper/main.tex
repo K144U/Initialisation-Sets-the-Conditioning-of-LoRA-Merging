@@ -32,13 +32,21 @@
 % (tmlr, arxiv, iclr2027) is article-based and wants them here. The flag is
 % set only by jair.tex; if it is ever undefined, this file behaves exactly as
 % it did before the flag existed.
-\ifdefined\TopmatterAlreadySet\else
+% RESTRUCTURED 2026-09-28 for the Information Fusion submission (review item
+% 12): claims lead, the audit trail follows in one appendix. The theory of the
+% collapse is its own section; the public-adapter evidence is its own section.
+%
+% Two roots set their front matter before inputting this file: jair.tex
+% (\TopmatterAlreadySet, acmart topmatter) and infofus.tex
+% (\FrontmatterAlreadySet, elsarticle frontmatter). Every other root is
+% article-based and wants the title block here.
+\ifdefined\TopmatterAlreadySet\else\ifdefined\FrontmatterAlreadySet\else
 \maketitle
 
 \begin{abstract}
 \input{sections/abstract}
 \end{abstract}
-\fi
+\fi\fi
 
 \section{Introduction}\label{sec:intro}
 \input{sections/intro}
@@ -53,14 +61,25 @@
 \section{Two Regimes: What Initialisation Controls}\label{sec:regimes}
 \input{sections/regimes}
 
-\section{Pre-Registered Tests of What This Predicts}\label{sec:methods}
-\input{sections/method_tests}
+\section{A First-Order Theory of the Collapse}\label{sec:drift-theory}
+\input{sections/drift_theory}
+
+\section{Which Merges the Collapse Reaches}\label{sec:methods}\label{sec:exposure}
+\input{sections/exposure}
+
+\section{The Collapsed Regime in Public Adapters}\label{sec:public}
+\input{sections/public_adapters}
 
 \section{Discussion and Limitations}\label{sec:discussion}\label{sec:future}
 \input{sections/discussion}
 
 \subsubsection*{Reproducibility Statement}
 \input{sections/reproducibility}
+
+% Elsevier end matter: declarations the journal requires.
+\ifdefined\FrontmatterAlreadySet
+\input{sections/declarations_elsevier}
+\fi
 
 % acmart's acks environment, so JAIR only. It has to sit before the
 % bibliography, which is where acmart expects it.
@@ -70,9 +89,8 @@
 \end{acks}
 \fi
 
-% JAIR is biblatex/biber (jair.cls loads acmart with natbib=false), so it needs
-% \printbibliography and has already done \addbibresource in the root. The
-% other three roots are natbib/BibTeX and need this line.
+% JAIR is biblatex/biber and needs \printbibliography; every other root,
+% infofus.tex included, is natbib/BibTeX.
 \ifdefined\TopmatterAlreadySet
 \printbibliography
 \else
@@ -86,23 +104,23 @@
 \section{Proofs}\label{app:proofs}
 \input{sections/app_proofs}
 
+\section{Derivation of the First-Order Theory}\label{app:drift-theory}
+\input{sections/app_drift_theory}
+
 \section{Synthetic Validation Details}\label{app:synthetic}
 \input{sections/app_synthetic}
 
 \section{Subspace Geometry for All Three Independent Cohorts}\label{app:geometry}
 \input{sections/app_geometry}
 
+\section{Audit Trail: What Did Not Survive}\label{app:audit-trail}
+\input{sections/app_audit_trail}
+
 \section{The Rate-Exponent Sweep}\label{app:rate}
 \input{sections/app_rate_exponent}
 
 \section{Pre-Registration Documents and Commit Ordering}\label{app:prereg}
 \input{sections/app_prereg}
-
-% app_td2 (sign-election threshold) is also held back: the derivation is
-% sound and TIES matters more in this version than the last, but its
-% empirical anchor was the T-scaling sweep on the degenerate cohort, which
-% is not in this paper. Reinstate once that anchor is re-measured on
-% independently initialised cohorts.
 
 \section{Experiment Manifest}\label{app:manifest}
 \input{sections/app_manifest}

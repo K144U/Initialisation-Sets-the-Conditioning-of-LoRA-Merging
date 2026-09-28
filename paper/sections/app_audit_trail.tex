@@ -1,0 +1,206 @@
+% Restructured 2026-09-28: the withdrawn and negative results, moved verbatim
+% from method_tests.tex so the main text leads with the claims.
+\subsection{The encoder's advantage does not survive}
+\label{subsec:q1}
+
+\paragraph{Pre-registered question.} Does the encoder's win over the
+best baseline survive the move from the shared-initialisation cohort to
+independently initialised ones? The rule, fixed in advance: for each base
+model, compare the encoder against the champion baseline selected on the
+mean over the three independent cohorts, with a tie threshold of $0.005$
+nats and a one-directional noise gate at $2\times\mathrm{SE}$ that may
+only downgrade a win or loss to a tie, never promote.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Pre-registered replication on independently initialised cohorts,
+and the two controls applied to it. Entries are the paired difference $d$
+in worst-task NLL excess (nats), mean over three cohorts; positive favours
+the encoder. \emph{As published} is the registered primary arm.
+\emph{Matched} corrects an inference-path mismatch: at $\deff$ realisation
+the merged adapter has rank $64$ against the baselines' $16$, and the fused
+fast path does not take mixed-rank adapters, so the encoder alone ran
+vanilla \textsc{transformers}; the two paths differ by up to $0.0105$ nats
+on identical inputs. The rank-$16$ realisation is matched on both counts
+and needs no new measurement. $T = 3$ additionally drops the adapter that
+never learned its task (\S\ref{subsec:scope}). Levels are not comparable
+across $T$, so only the verdict transfers. The noise gate
+($2\times\mathrm{SE}$, one-directional) downgraded nothing; SE on $d$ runs
+$0.0002$ to $0.0012$.}
+\label{tab:q1}
+\begin{tabular}{lcccl}
+\toprule
+base & as published & matched & matched, $T=3$ & verdict \\
+\midrule
+Llama-3.1-8B & $+0.0335$ & $+0.0257$ & $+0.0033$ & wins $\to$ \textbf{ties} \\
+Mistral-7B   & $-0.0055$ & $-0.0022$ & $-0.0012$ & loses $\to$ \textbf{ties} \\
+Qwen2.5-7B   & $-0.0002$ & $-0.0004$ & $+0.0009$ & ties throughout \\
+Yi-1.5-9B    & $-0.0150$ & $-0.0154$ & $-0.0053$ & loses throughout \\
+\midrule
+\multicolumn{4}{l}{\emph{count}} & 1/1/2 $\to$ 1/2/1 $\to$ \textbf{0/3/1} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Outcome: it does not survive.} The registered arm gives one win,
+one tie and two losses, and each control removes another piece: matching
+the inference path turns Mistral's loss into a tie, and dropping the
+untrained adapter turns Llama's win into a tie, leaving \textbf{no wins on
+any base}. Both pre-specified robustness lines agree with the primary arm.
+Re-selecting the champion inside each cohort, the variant deliberately
+biased against our method, returns the same one/one/two; applying the
+original single-cohort rule three times succeeds on \texttt{indep1} and
+fails on \texttt{indep2} and \texttt{indep3}, so the earlier optimistic
+reading was the best of three draws. Two further details: the rank-$64$ realisation disagrees at $T=3$, keeping Llama at
+$+0.0081$, and Mistral's champion changes from TIES to TVQ.
+
+The registered $T = 4$ arm stays primary. The direction is consistent
+across all three columns, and the reading we take is that the encoder's
+advantage was substantially a property of the degenerate cohort it was
+developed on. On that cohort $\bar H$ is ill-conditioned by four
+orders of magnitude (\S\ref{subsec:conditioning}), which is exactly what
+the ridge term was introduced to handle, so the method was tuned on the one
+regime where its distinguishing component has work to do.
+\S\ref{subsec:ridge} makes that concrete: the ridge gain is $0.19$ to
+$9.73$ nats on the shared cohort and $0.00$ to $0.10$ on the independent
+one. What does not survive is the claim that the encoder is the better
+method.
+
+\subsection{A claim we withdraw}
+\label{subsec:withdrawn}
+
+The result in \S\ref{subsec:q1} raises an obvious and much more
+interesting possibility: if method rankings shift when initialisation
+changes, then published merging benchmarks, which as far as we can tell
+mostly use shared-seed cohorts, might be measuring initialisation
+geometry rather than method quality. We described this on first sight as
+the strongest result available to us.
+
+We pre-registered a control to test it, and the control did not support
+the claim. The control asks whether the method ranking is stable
+\emph{within} the independent regime, across the three cohorts that
+differ only in initialisation draw. If rankings are unstable within a
+single regime, then ranking changes across regimes cannot be attributed
+to the regime. Two of four base models had a non-unanimous top-1 method
+across the three cohorts, above the threshold fixed in advance, so by our
+own rule the attribution fails and \textbf{the claim that published
+merging benchmarks are confounded by shared-initialisation geometry is
+withdrawn}.
+
+We record one caveat, and we deliberately did not let it reverse the
+verdict. The control as written counts a top-1 change as instability
+regardless of margin, and both flips involve methods separated by far less
+than the tie threshold: on Qwen the top two are $0.0140$ and $0.0141$, a
+coin flip. A margin-aware version of the control would very likely give a
+different answer. But that version was not what we pre-registered, and
+rewriting a decision rule after seeing which way it fell is exactly the
+practice the pre-registration exists to prevent. We stated the defect and
+left the verdict, and registered a \emph{second} control rather than
+editing the first.
+
+\paragraph{A second control, reported but not used to reinstate anything.}
+We registered a margin-aware version of the rule afterwards, in the same
+document that governs \S\ref{subsec:regmean}: a base counts as unstable
+only if its top-1 method changes \emph{and} the margin between the top two
+exceeds the tie threshold in at least one cohort where the change occurs.
+It needs no new cells. Run as written it returns \textbf{zero of four}
+bases unstable against two of four for the margin-blind rule, because both
+flips sit well inside the threshold: Mistral's margins are $0.0004$,
+$0.0003$ and $0.0011$ nats and Qwen's $0.0001$, $0.0006$ and $0.0003$,
+against $0.005$.
+
+Read literally, that rule would reinstate the benchmark-confounding claim
+as provisional. \textbf{We decline to reinstate it}, and the reason is
+worth stating plainly because it cuts against us. This control was
+registered after its data had been seen. The registration says so about
+itself, and we could bound it in various ways, but no amount of disclosure
+changes the fact that we would be resurrecting a claim we had already
+withdrawn using a rule written once we knew how the first one fell. That
+is the single thing pre-registration exists to prevent, and a paper making
+this much of the practice should not spend its credibility on a claim it
+does not need. The prevalence audit already carries the load of showing
+this matters outside our own repository.
+
+The margin-aware numbers stay in the paper as a measurement, because they
+say something true and useful: the ranking flips that triggered the
+withdrawal are all inside noise. That is a statement about the fragility of
+single-draw rankings, not about published benchmarks.
+
+So the claim we make is this, and no more: method rankings on this metric
+move between cohorts that differ only in initialisation draw, the movement
+is within noise once margin is accounted for, and the collapsed regime that
+would make such rankings hard to interpret is common in released adapters.
+The benchmark-confounding claim stays withdrawn. We have not measured a
+published merging benchmark, and we do not claim one is wrong.
+
+What survives independently of all of it is weaker and still worth saying:
+single-seed method rankings on this metric are not reproducible, so merging
+comparisons should report multiple initialisation draws.
+
+\subsection{The predicted rate exponent is unresolved}
+\label{subsec:w3}
+
+Theorem~\ref{thm:general} predicts distortion decaying as $2^{-2R/\deff}$,
+and we registered that as a slope in $[-2.4, -1.6]$ on at least three of
+four bases. \textbf{The sweep cannot resolve it, and two earlier readings
+of it are withdrawn.} A previously reported falsification rested on
+asymptotes computed at a different ridge value, and the refitted sweep
+turns out to have too little dynamic range to measure an exponent at all:
+only two of the six quantiser widths sit above the metric's own noise
+floor, one of which the registered rule excludes as clipping-dominated.
+By the rule as written the outcome is \textsc{unresolved}, and this
+removes the only positive evidence for the rate term anywhere in this
+paper. Appendix~\ref{app:rate} gives the sweep, both faults and the rule
+applied to the result.
+
+One operational regularity does survive at the precision available: with
+the ridge on, every base is within $0.005$ nats of its own asymptote from
+three bits upward, so a practitioner quantising a merged adapter can stop
+at three or four bits regardless of any exponent.
+
+\subsection{DARE: a negative result with a mechanism, and its limits}
+\label{subsec:dare}
+
+DARE~\citep{yu2024dare} drops a random fraction of task-vector entries
+and rescales the survivors by $1/(1-p)$. Composed with task arithmetic it
+does essentially nothing in our setting: across a density sweep from
+$0.05$ to $0.5$ on four base models, it beats plain task arithmetic in
+three of twenty cells and all three are within $0.0005$ nats, a fifth of
+their tie threshold.
+
+Unlike most negative results this one has a mechanism that predicts its
+own shape. The rescaling makes the masked task vector an unbiased
+estimator of the unmasked one, $\E[D_{\mathrm{DARE}}] = D_{\mathrm{TA}}$.
+We state the consequence carefully, because the obvious version of the
+argument is not available here: negative log-likelihood of an LLM is
+\emph{not} convex in the weights, so Jensen's inequality does not apply
+globally and we do not claim
+$\E[L(D_{\mathrm{DARE}})] \geq L(D_{\mathrm{TA}})$ as a theorem. What
+does hold is the local statement. Expanding $L$ to second order about
+$D_{\mathrm{TA}}$, the first-order term vanishes by unbiasedness and the
+penalty is $\tfrac12\tr(H\Sigma) + o(\|\Sigma\|)$ with
+$\Sigma \propto (1-p)/p$ and $H$ the local Hessian. Where $H \succeq 0$,
+which is the generic situation near a trained solution, this is
+non-negative and grows as density falls. That is what we observe,
+on three of four base models. We verified our implementation against the
+reference one and confirmed the operator reproduces the analytic signature
+$\sqrt{(1-p)/p}$ to three decimals, so this is a property of the method
+and not of our code.
+
+\paragraph{The negative result does not generalise, and we tested that.}
+The Jensen argument applies only to the task-arithmetic composition, since
+TIES is biased and the mask changes which coordinates survive trimming. We
+pre-registered the DARE-TIES composition test before implementing it. The
+outcome is mixed: DARE composed with TIES \emph{helps}
+decisively on Llama ($+0.0462$ nats, against a gate of $0.0036$) and hurts
+decisively on the other three. By the rule fixed in advance this is a
+mixed verdict and neither direction is claimed.
+
+So the correct scope for the negative result is DARE composed with task
+arithmetic, not DARE. We flag that Llama is now the odd model out in two
+separate pre-registered tests, here and in Table~\ref{tab:q1}, without
+proposing a mechanism for it; a base-level moderator that neither
+pre-registration anticipated deserves a designed experiment rather than
+another post-hoc reading.
+

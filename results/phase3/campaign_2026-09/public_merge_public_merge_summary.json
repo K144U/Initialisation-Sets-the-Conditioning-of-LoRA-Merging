@@ -1,0 +1,282 @@
+{
+ "unloaded": [
+  [
+   "hallisky__meta-llama--Meta-Llama-3-8B",
+   "collapsed",
+   "RuntimeError: Error(s) in loading state_dict for PeftModelForCausalLM: size mismatch for base_model.model.model.embed_tokens.weight: copying a param with shape torch.Size([128257, 4096]) from checkpoint, the shape in current model is torch.Size([128256, 4096]). size mismatch for base_model.model.lm_head.weight: copying a param with shape torch.Size([128257, 4096]) from checkpoint, the shape in cur"
+  ]
+ ],
+ "rules": [
+  "notes/prereg_public_merge_2026-09-23.md",
+  "notes/prereg_lambda_rule_2026-09-23.md (V4)"
+ ],
+ "counts": {
+  "U1_collapsed": [
+   5,
+   6
+  ],
+  "U1_separated": [
+   11,
+   13
+  ],
+  "U2": [
+   1,
+   6
+  ],
+  "U3": [
+   5,
+   6
+  ],
+  "V4": [
+   2,
+   6
+  ]
+ },
+ "verdict": {
+  "U1": false,
+  "U2": false,
+  "U3": true,
+  "V4": false,
+  "U4": false,
+  "U4_p": 0.7781217750257998
+ },
+ "rows": [
+  {
+   "cohort": "McGill-NLP__meta-llama--Meta-Llama-3-8B-Instruct",
+   "regime": "collapsed",
+   "ta_worst": 0.0,
+   "F": {
+    "rm_1em6": null,
+    "rm_a09": null,
+    "rm_0p01": null,
+    "rm_rule": null
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "charent__Qwen--Qwen3-0.6B",
+   "regime": "separated",
+   "ta_worst": 0.0035528026446512984,
+   "F": {
+    "rm_1em6": 47.23754704992203,
+    "rm_a09": 45.04926134907024,
+    "rm_0p01": 38.72208258219487,
+    "rm_rule": 45.109425039497985
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "predibase__mistralai--Mistral-7B-v0.1",
+   "regime": "separated",
+   "ta_worst": 11.85015061660683,
+   "F": {
+    "rm_1em6": 0.8845352768621313,
+    "rm_a09": 1.0004636441940111,
+    "rm_0p01": 1.0721804080301849,
+    "rm_rule": 1.0977044633045474
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "hallisky__meta-llama--Meta-Llama-3-8B",
+   "regime": "collapsed",
+   "ta_worst": null,
+   "F": {},
+   "errors": {
+    "cell": "RuntimeError: Error(s) in loading state_dict for PeftModelForCausalLM: size mismatch for base_model.model.model.embed_tokens.weight: copying a param with shape torch.Size([128257, 4096]) from checkpoint, the shape in current model is torch.Size([128256, 4096]). size mismatch for base_model.model.lm_head.weight: copying a param with shape torch.Size([128257, 4096]) from checkpoint, the shape in cur"
+   }
+  },
+  {
+   "cohort": "jahyungu__allenai--OLMo-2-1124-7B-Instruct",
+   "regime": "separated",
+   "ta_worst": 0.02980294464929567,
+   "F": {
+    "rm_1em6": 6.730707718431379,
+    "rm_a09": 5.937907864316355,
+    "rm_0p01": 5.767304191803732,
+    "rm_rule": 6.097415780700514
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "ceselder__Qwen--Qwen3-8B",
+   "regime": "separated",
+   "ta_worst": 0.1407117240441802,
+   "F": {
+    "rm_1em6": 4.382380353721568,
+    "rm_a09": 4.7996381517297655,
+    "rm_0p01": 4.470917652603161,
+    "rm_rule": 4.380725402405136
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "Jongbin-kr__Qwen--Qwen2.5-Math-1.5B",
+   "regime": "separated",
+   "ta_worst": 0.014346080497176394,
+   "F": {
+    "rm_1em6": 4.251526098578205,
+    "rm_a09": 4.196747145423715,
+    "rm_0p01": 3.6781575287689705,
+    "rm_rule": 4.151399985579948
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "kulits__Qwen--Qwen3-0.6B",
+   "regime": "separated",
+   "ta_worst": 0.8963607690586249,
+   "F": {
+    "rm_1em6": 7.957536930940427,
+    "rm_a09": 6.001434004723426,
+    "rm_0p01": 4.16533377902816,
+    "rm_rule": 3.8234964765648374
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "bharati2324__Qwen--Qwen2.5-1.5B-Instruct",
+   "regime": "separated",
+   "ta_worst": 0.021922090070112032,
+   "F": {
+    "rm_1em6": 178.23274120089977,
+    "rm_a09": 7.096936720356618,
+    "rm_0p01": 4.673391491202538,
+    "rm_rule": 4.9302441760671565
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "jahyungu__tiiuae--Falcon3-7B-Instruct",
+   "regime": "separated",
+   "ta_worst": 0.0015614586902771843,
+   "F": {
+    "rm_1em6": 21.927496882239957,
+    "rm_a09": 14.183575832928101,
+    "rm_0p01": 12.598231632814201,
+    "rm_rule": 13.775551762324055
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "namanadep__Qwen--Qwen2.5-7B-Instruct",
+   "regime": "separated",
+   "ta_worst": 0.6823826365332586,
+   "F": {
+    "rm_1em6": 1.3010294668913547,
+    "rm_a09": 0.8070834163427806,
+    "rm_0p01": 0.7833728150533203,
+    "rm_rule": 0.7908958034962092
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "Shawnno__Qwen--Qwen2.5-3B-Instruct",
+   "regime": "separated",
+   "ta_worst": 0.1310210585259452,
+   "F": {
+    "rm_1em6": 2.9574820818354146,
+    "rm_a09": 3.669479936147175,
+    "rm_0p01": 2.8147099024654345,
+    "rm_rule": 2.8667363322276476
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "ceselder__unsloth--Qwen3-8B",
+   "regime": "collapsed",
+   "ta_worst": 0.014882557043711137,
+   "F": {
+    "rm_1em6": 1027.223440834767,
+    "rm_a09": 322.35170121881595,
+    "rm_0p01": 5.059239193799183,
+    "rm_rule": 0.5766542238507535
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "daryaZare__meta-llama--Llama-3.2-3B-Instruct",
+   "regime": "separated",
+   "ta_worst": 0.003571849034134128,
+   "F": {
+    "rm_1em6": 6.692469568206632,
+    "rm_a09": 103.60432443325026,
+    "rm_0p01": 5.857681433204227,
+    "rm_rule": 6.276038434344099
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "daryaZare__allenai--OLMo-2-0425-1B-Instruct",
+   "regime": "separated",
+   "ta_worst": 0.022026225016259948,
+   "F": {
+    "rm_1em6": 3.3234291240372205,
+    "rm_a09": 3.764525365009975,
+    "rm_0p01": 2.915893741780768,
+    "rm_rule": 3.156077489782652
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "berencarkci__Qwen--Qwen2.5-3B-Instruct",
+   "regime": "collapsed",
+   "ta_worst": 0.04553792805927248,
+   "F": {
+    "rm_1em6": 228.57755240345728,
+    "rm_a09": 255.10847531702768,
+    "rm_0p01": 0.9914297488700974,
+    "rm_rule": 1.2826180924132191
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "ewinregirgojr__openbmb--MiniCPM5-1B",
+   "regime": "collapsed",
+   "ta_worst": 0.3618137607144346,
+   "F": {
+    "rm_1em6": 32.36708863882378,
+    "rm_a09": 8.743408903550893,
+    "rm_0p01": 2.2590731760238465,
+    "rm_rule": 3.044259954879979
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "DataAttributionEval__EleutherAI--pythia-1b",
+   "regime": "collapsed",
+   "ta_worst": 0.022103253813711476,
+   "F": {
+    "rm_1em6": 4.015990609971929,
+    "rm_a09": 8.248002904218545,
+    "rm_0p01": 5.987814213975409,
+    "rm_rule": 6.0672561872985735
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "cds-jb__Qwen--Qwen3-14B",
+   "regime": "separated",
+   "ta_worst": 0.3197220465978203,
+   "F": {
+    "rm_1em6": 13.177961240161808,
+    "rm_a09": 13.743641096919589,
+    "rm_0p01": 10.44372437765299,
+    "rm_rule": 13.034281916084113
+   },
+   "errors": {}
+  },
+  {
+   "cohort": "Satya-Sri__ai9stars--G9v3-3B",
+   "regime": "collapsed",
+   "ta_worst": 0.316729845349385,
+   "F": {
+    "rm_1em6": 55.4104186059775,
+    "rm_a09": 46.94706363928371,
+    "rm_0p01": 26.697632051046465,
+    "rm_rule": 34.879508855131306
+   },
+   "errors": {}
+  }
+ ]
+}

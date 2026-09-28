@@ -1,0 +1,25 @@
+% Information Fusion abstract (single paragraph). Five-step story per review
+% item 13; every number is one reported in the body. DRAFT until the last two
+% registered verdicts (heuristics equivalence; RegMean downstream) are in.
+Fusing several low-rank adapters (LoRA) trained on one base model into a
+single model sometimes costs almost nothing and sometimes destroys a task,
+with no way to tell in advance. We identify a property of the adapter set
+that decides this for an important class of fusion methods. When the adapters
+share one random initialisation of the LoRA $A$ factor, which a single
+training seed arranges and which the default settings of Unsloth and
+LLaMA-Factory impose, their task subspaces collapse onto nearly the same
+directions: the median principal cosine is 0.99, against 0.05 for independent
+draws. A first-order theory, confirmed on real adapters to three significant
+figures, shows why this matters: the condition number of the fused problem
+grows as the inverse square of how far the adapters drift apart in training,
+and the exact interpolator as its inverse. Pre-registered tests on four base
+models and eleven fusion methods, nine of which we did not design, locate the
+damage: merges that solve a linear system built from the adapters' own
+factors fail, down to zero accuracy on GSM8K and HumanEval, while averaging,
+sparsifying, whitening, and solvers built from data are unaffected. One ridge
+term restores the affected merges. The collapsed regime can be read from the
+adapter files in about a CPU minute, and it occurs in 37.8\% of 45 public
+LoRA cohorts, including the language cohort released with a published merging
+method. Several of our predictions failed, among them that the failure would
+be specific to the collapsed regime on public adapters, and we report those
+alongside the ones that held.
