@@ -389,7 +389,34 @@ document & introduced in & governs \\
 
 Eight further documents govern the results added in this revision. Each was
 committed before the generator it governs, and each generator before any of its
-cells; the commit table for them is part of the public repository's history.
+cells, in a single commit never modified afterwards;
+Table~\ref{tab:commits-2026} gives the trail in the public repository's hash
+space, checkable the same way as Table~\ref{tab:commits}.
+
+\begin{table}[htb]
+\centering
+\small
+\caption{Commit trail for the registrations of the 2026 revision, in the
+public repository's hash space. ``Result'' is the commit that adds the
+analyzer's summary. Verify a row with
+\texttt{git merge-base -{}-is-ancestor <rules> <result>}.}
+\label{tab:commits-2026}
+\begin{tabular}{llll}
+\toprule
+document & rules & generator or implementation & result \\
+\midrule
+\texttt{prereg\_drift\_theory} & \texttt{b0c01a5} & \texttt{222e30b} & \texttt{58d987d} \\
+\texttt{prereg\_regmean\_real} & \texttt{a50ab11} & \texttt{b93b76f} & \texttt{400f499} \\
+\quad amendment & \texttt{bf971af} & \texttt{bddcad9}, \texttt{383e8e3} & \texttt{58d987d} \\
+\texttt{prereg\_heuristics\_tost} & \texttt{0265f64} & \texttt{bf80ff8} & \texttt{400f499} \\
+\texttt{prereg\_third\_solver} & \texttt{c4f2e28} & \texttt{64741e5} & \texttt{58d987d} \\
+\texttt{prereg\_new\_cohorts} & \texttt{67ec001} & \texttt{61ec804}, \texttt{dd952d5} & \texttt{58d987d} \\
+\texttt{prereg\_public\_merge} & \texttt{1be9d9d} & \texttt{383e8e3}, \texttt{6dcd988} & \texttt{58d987d} \\
+\texttt{prereg\_lambda\_rule} & \texttt{d733f81} & \texttt{6dcd988}, \texttt{dd952d5} & \texttt{58d987d} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 Their rules, one paragraph each, with the branch each landed in:
 \begin{itemize}\itemsep2pt
 \item \textbf{\texttt{prereg\_drift\_theory}} fixes five predictions of the
