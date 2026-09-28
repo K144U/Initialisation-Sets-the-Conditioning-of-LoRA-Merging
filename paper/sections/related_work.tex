@@ -100,29 +100,22 @@ paper's audit avoids, so the reconciliation is offered as an argument and not
 as a measurement. A reader
 interested in the limits of merging should read both.
 
-\paragraph{Closed-form merging lineage.} Our encoder sits in a line of
-closed-form merges that invert a per-task curvature surrogate.
-RegMean~\citep{jin2023regmean} solves a least-squares system in the
-per-task input-activation Grams (data-dependent, forward passes
-required); LoRM~\citep{lorm2024} carries the closed form over to LoRA
-modules in federated continual learning, and
-RegMean++~\citep{regmeanpp2025} adds cross-layer dependencies to
-RegMean's objective so that merged earlier layers are accounted for
-when merging deeper ones. Ours differs in two ways: it is
-\emph{data-free}, since the projector comes from the adapter factors
-alone, and it is derived from a worst-task rate-distortion lower bound
-rather than from an empirical fit. What it shares with that line is more
-important here than what separates it. All of these methods solve a linear
-system in a curvature surrogate, and all carry a ridge term whose role
-\S\ref{subsec:ridge} is about. We test RegMean directly on both cohorts
-(\S\ref{subsec:regmean}) and find the same conditioning effect there, which
-is what licenses talking about the family rather than about the encoder
-introduced here.
-LoRM and RegMean++ are not run: RegMean++'s distinguishing mechanism is a
-cross-layer dependency in the activation Gram and LoRM's setting is
-federated continual learning, so neither has a data-free adapter-only form
-we could implement without inventing the part that makes it that method.
-The family claim therefore rests on two members of it, not five.
+\paragraph{Closed-form and solve-based merging.} Our encoder sits in a line
+of merges that solve a linear system in a per-task curvature surrogate.
+RegMean~\citep{jin2023regmean} solves least squares in per-task
+input-activation Grams, LoRM~\citep{lorm2024} carries the closed form to LoRA
+modules in federated continual learning, RegMean++~\citep{regmeanpp2025} adds
+cross-layer dependencies, and MaTS~\citep{tam2024mats} frames merging as a
+linear system in a Fisher surrogate solved by conjugate gradient. What
+separates these methods matters more here than what unites them: where the
+matrix they invert comes from. RegMean, RegMean++ and MaTS build it from data;
+our encoder and the data-free, adapter-only form of RegMean build it from the
+adapters' own factors. \S\ref{subsec:data-solvers} shows that this is the
+distinction the initialisation collapse respects: it breaks the second kind and
+leaves the first untouched, on RegMean and MaTS run with their published
+settings. LoRM and RegMean++ are not run, since neither has a data-free form we
+could implement without inventing the part that makes it that method, and both
+build their matrices from data, which is the immune class.
 
 \paragraph{Rate-distortion and rotation-for-quantisation ancestry.}
 Classical rate-distortion theory~\citep{shannon1959rd,coverthomas}
