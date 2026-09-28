@@ -127,3 +127,14 @@ GPU queues never sit idle while text work proceeds.
   0.000 -> 0.244, reproducing the headline zero on a cohort with a fixed
   translation adapter). These are reported as a replication, not as removing
   the caveat.
+- 2026-09-28, **third solver: branch 2 (S1 fails).** TSV-M is not exposed:
+  effect past the gate on Mistral only (d +0.0115, ratio 1.19), Yi in the
+  opposite direction (-0.0054), Llama and Qwen none; no accuracy cell past the
+  gate (S4 fails). MaTS immune 4/4 (ratios 0.93-0.99; one accuracy cell,
+  Mistral GSM8K, favours SHARED by 0.074 past the binomial gate). Diagonal
+  Fisher immune 3/4 (Llama +0.0119, ratio 1.08). As registered, the exposure
+  rule narrows to methods that SOLVE against a matrix built from the adapters'
+  factors (the encoder; adapter-only RegMean incl. its shipped default); the
+  whitening case was predicted and did not hold.
+- Last 14 cells (7 heuristics, 7 real-RegMean downstream) doubled up with
+  reversed-order helper jobs rdm_htost / rdm_hrmr.
