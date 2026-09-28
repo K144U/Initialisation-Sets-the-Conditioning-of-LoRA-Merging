@@ -44,92 +44,67 @@ differences here are hundredths of a nat, which is the range in which we have
 told the reader not to trust the metric. Meanwhile the positive result beside
 it, the solver collapse, has two units. Reporting one half in a disputed unit
 and the other half in two is an asymmetry we would rather remove than defend,
-so we pre-registered the null in accuracy as well and ran it.
+so we pre-registered the null in accuracy as well: first at one cohort per
+arm, where no cell cleared a binomial gate of about $6$ points on GSM8K and
+$11$ on HumanEval (Appendix~\ref{subsec:heur-n1}), and then, because a null at
+that resolution is weak, as an equivalence test at three cohorts per arm
+(\texttt{prereg\_heuristics\_tost}).
 
 \begin{table}[t]
 \centering
 \small
-\caption{The heuristics null, measured in downstream accuracy rather than in
-NLL. Each entry is $d = \mathrm{acc}_{\mathrm{indep}} -
-\mathrm{acc}_{\mathrm{shared}}$ for one method on one base; a cell counts as an
-effect only if $|d|$ exceeds both $0.05$ and $2\,\mathrm{SE}_{\mathrm{binom}}$,
-both fixed in advance. No cell does. \textbf{This design has one cohort per
-arm}, so its gate is binomial and its minimum detectable effect is about
-$0.06$ on GSM8K and $0.11$ on HumanEval: a null here means no effect detectable
-at that size, not no effect.}
-\label{tab:heur-downstream}
-\begin{tabular}{llcccc}
+\caption{The heuristics in downstream accuracy at three cohorts per arm, as an
+equivalence test. $\bar d$ is the mean over the four bases of
+$\mathrm{acc}_{\mathrm{indep}} - \mathrm{acc}_{\mathrm{shared}}$, so a negative
+value favours the shared arm; the interval is the $90\%$ interval of the two
+one-sided tests, and ``margin'' is the smallest equivalence margin the method
+passes. The registered margins are $0.03$ on GSM8K and $0.05$ on HumanEval, and
+every method passes both. GSM8K exact match at $n = 500$, HumanEval pass@1 at
+$n = 164$; $240$ cells.}
+\label{tab:heur-tost}
+\begin{tabular}{lcccccc}
 \toprule
- & & \multicolumn{2}{c}{GSM8K} & \multicolumn{2}{c}{HumanEval} \\
-base & method & shared & $d$ & shared & $d$ \\
+ & \multicolumn{3}{c}{GSM8K} & \multicolumn{3}{c}{HumanEval} \\
+method & $\bar d$ & $90\%$ interval & margin & $\bar d$ & $90\%$ interval & margin \\
 \midrule
-Llama-3.1-8B & task arithmetic & 0.792 & $-0.016$ & 0.646 & $-0.006$ \\
- & TIES & 0.762 & $-0.016$ & 0.659 & $-0.104$ \\
- & DARE & 0.786 & $-0.010$ & 0.640 & $-0.006$ \\
- & TVQ$_2$ & 0.746 & $+0.002$ & 0.549 & $+0.030$ \\
- & KnOTS & 0.778 & $+0.000$ & 0.610 & $+0.012$ \\
-\addlinespace
-Mistral-7B & task arithmetic & 0.468 & $+0.002$ & 0.360 & $-0.006$ \\
- & TIES & 0.464 & $-0.010$ & 0.232 & $+0.018$ \\
- & DARE & 0.484 & $-0.006$ & 0.378 & $-0.018$ \\
- & TVQ$_2$ & 0.454 & $+0.024$ & 0.195 & $+0.067$ \\
- & KnOTS & 0.496 & $+0.010$ & 0.287 & $-0.018$ \\
-\addlinespace
-Qwen2.5-7B & task arithmetic & 0.514 & $-0.010$ & 0.744 & $-0.049$ \\
- & TIES & 0.622 & $+0.014$ & 0.738 & $-0.024$ \\
- & DARE & 0.518 & $-0.022$ & 0.732 & $-0.006$ \\
- & TVQ$_2$ & 0.616 & $+0.010$ & 0.768 & $-0.018$ \\
- & KnOTS & 0.602 & $-0.018$ & 0.683 & $+0.055$ \\
-\addlinespace
-Yi-1.5-9B & task arithmetic & 0.798 & $-0.008$ & 0.128 & $-0.024$ \\
- & TIES & 0.786 & $-0.008$ & 0.171 & $+0.000$ \\
- & DARE & 0.804 & $-0.010$ & 0.128 & $-0.012$ \\
- & TVQ$_2$ & 0.780 & $+0.002$ & 0.152 & $-0.030$ \\
- & KnOTS & 0.810 & $-0.016$ & 0.085 & $-0.012$ \\
+task arithmetic & $-0.003$ & $[-0.009, +0.003]$ & $0.009$ & $-0.019$ & $[-0.030, -0.008]$ & $0.030$ \\
+TIES & $-0.013$ & $[-0.020, -0.006]$ & $0.020$ & $-0.007$ & $[-0.021, +0.007]$ & $0.021$ \\
+DARE & $-0.007$ & $[-0.015, +0.000]$ & $0.015$ & $-0.016$ & $[-0.021, -0.010]$ & $0.021$ \\
+TVQ$_2$ & $+0.004$ & $[-0.004, +0.012]$ & $0.012$ & $+0.004$ & $[-0.013, +0.021]$ & $0.021$ \\
+repaired KnOTS & $-0.009$ & $[-0.015, -0.002]$ & $0.015$ & $-0.009$ & $[-0.022, +0.005]$ & $0.022$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Zero of the forty cells show a detectable effect}, so both registered
-predictions hold and by the registered rule the null carries over to accuracy
-(Table~\ref{tab:heur-downstream}). The median $|d|$ is $0.012$ and the largest
-is $0.104$. All $80$ cells produced a scorable generation for every item, with
-no empty outputs anywhere, which matters because the scorer defects of
-\S\ref{subsec:downstream-cond} were what made an earlier version of these
-benchmarks unusable; both arms were re-run here rather than reusing the
-existing shared-arm cells, precisely so that no comparison straddles a scorer
-change.
+\textbf{All five heuristics are equivalent across the two regimes} within the
+registered margins, $3$ accuracy points on GSM8K and $5$ on HumanEval, and each
+would pass at a margin of $0.9$ to $2.0$ points on GSM8K and $2.1$ to $3.0$ on
+HumanEval (Table~\ref{tab:heur-tost}). One of the forty base-by-method cells
+clears the per-cell gate: TIES on Llama at HumanEval, where the shared arm
+scores $6.5$ points higher. It is the cell that came within $97\%$ of the gate
+at one cohort per arm, in the same direction. Three of the four registered
+predictions therefore hold, and from here on the null is stated as equivalence
+rather than as the absence of a detected effect. It is a statement at these
+margins: an effect of one or two points fits inside them.
 
-The strength of that null is bounded by the design and we state the bound in
-the form the registration fixed (its own estimate of the resolution was too
-pessimistic by a factor of $\sqrt 2$; Appendix~\ref{subsec:prereg-docs}):
-with one cohort per arm the gate is binomial, so this is
-\textbf{no effect detectable at about $6$ accuracy points on GSM8K and $11$ on
-HumanEval}, not no effect. A real effect of three or four points would sit
-inside it undetected.
-
-Two things in the table are worth a reader's attention and neither is settled
-by the registered rule.
-
-\emph{One cell nearly cleared, in the direction that would have hurt.} TIES on
-Llama at HumanEval gives $d = -0.104$ against a gate of $0.107$: $97\%$ of the
-way, and negative, meaning the \emph{shared} cohort scored higher. Had it
-cleared it would have been the one outcome the registration named as most
-informative against us. It did not clear and we do not treat it as an effect,
-but a reader recomputing this table will see it and should see it here first.
-
-\emph{The signs lean.} Of the $38$ non-zero cells, $26$ favour the shared arm
-and $12$ the independent one, which an exact sign test puts at $p = 0.034$,
-with the lean present on both benchmarks. \textbf{We did not register a sign
-test}, so this is an observation and not a verdict, and we neither claim an
-effect from it nor let it modify the registered outcome. We report it because
-it points the opposite way from the NLL null, whose five clearing cells all
-favoured independent initialisation. Taken at face value the two units
-disagree about a direction while agreeing that nothing is large. The honest
-reading is that both are consistent with no real difference plus noise, and
-that a design able to resolve a few accuracy points, which means several
-cohorts per arm rather than one, is what would settle it. That is a genuinely
-new experiment and it needs its own registration.
+The fourth prediction failed, and it concerns direction. At one cohort per arm,
+$26$ of the $38$ non-zero differences had favoured the shared arm
+($p = 0.034$); we had not registered that test, so we did not report the lean
+as a finding. We registered the sign test for the three-cohort design and
+predicted that the lean would not survive. It survives: $29$ of the $38$
+non-zero per-base differences favour the shared arm, an exact sign test gives
+$p = 0.0017$, and eight of the ten method-by-benchmark means are negative, TVQ
+being the exception on both benchmarks. By the registered branch we report it
+in its measured direction: \textbf{on these cohorts the averaging and
+sparsifying heuristics score slightly higher when the adapters share their
+initialisation}, by at most $1.9$ points on average, well inside the
+equivalence margins. It runs opposite to the five NLL cells above, all of which
+favoured independent initialisation, so the two units disagree about a
+direction while agreeing that nothing is large. It is not the solver mechanism,
+since no heuristic enters the ill-conditioned directions on either arm
+(Table~\ref{tab:mechanism}), and we have no tested explanation for it. For
+practice it means that someone merging with a heuristic loses nothing by a
+shared initialisation, and may gain a point.
 
 \paragraph{Then the mechanism, measured.} The explanation for the other
 $15$ cells is that those methods never go near the ill-conditioned
@@ -361,7 +336,8 @@ difference favours the shared arm.}
 \end{table}
 
 The three immunity predictions hold (Table~\ref{tab:data-solvers}): RegMean
-with activation Grams shows no effect on any base, MaTS none, and the diagonal
+with activation Grams shows no effect on any base, in NLL or in accuracy
+(Table~\ref{tab:regmean-acc}), MaTS none, and the diagonal
 Fisher merge one small effect on Llama ($1.08$ times), below the registered
 bound. The exposure prediction for TSV-M fails: it shows an effect on Mistral
 only ($1.19$ times), the opposite sign on Yi, and nothing on Llama and Qwen, and
@@ -380,7 +356,8 @@ initialisation holds; the bound we put on the norm was wrong.
 \paragraph{The rule this licenses.} Across eleven methods, nine of them not ours,
 the collapse reaches exactly the merges that solve a linear system in a matrix
 built from the adapters' own factors: our encoder and adapter-only RegMean.
-It does not reach averaging or sparsifying heuristics (\S\ref{subsec:ridge}),
+It does not reach averaging or sparsifying heuristics, which are equivalent
+across regimes within a few accuracy points (\S\ref{subsec:ridge}),
 solvers whose matrix comes from data, a diagonal solver, or whitening.
 
 \subsection{Does RegMean's published default already fix this?}
@@ -429,6 +406,51 @@ times worse on average but one of the three shared cohorts sits far from the
 other two ($2.54$ nats against $0.20$ and $0.22$), which widens the gate beyond
 the difference. The audit's starting ridge, $\lambda = 0.01$, improves on the
 default on the shared arm past the gate on the same three bases.
+
+\begin{table}[t]
+\centering
+\small
+\caption{RegMean end to end in downstream accuracy, mean over three cohorts per
+arm. The first two column pairs are the adapter-only form (Gram
+$\sum_t A_t^\top A_t$) at the shipped $\alpha = 0.9$ and at the audit's starting
+ridge $\lambda = 0.01$; the last is the published method with activation Grams
+at $\alpha = 0.9$. GSM8K exact match at $n = 500$, HumanEval pass@1 at
+$n = 164$; $144$ cells.}
+\label{tab:regmean-acc}
+\begin{tabular}{llcccccc}
+\toprule
+ & & \multicolumn{2}{c}{adapter-only, $\alpha{=}0.9$}
+   & \multicolumn{2}{c}{adapter-only, $\lambda{=}0.01$}
+   & \multicolumn{2}{c}{activation Grams} \\
+base & benchmark & shared & indep. & shared & indep. & shared & indep. \\
+\midrule
+Llama-3.1-8B & GSM8K     & 0.168 & 0.705 & 0.477 & 0.730 & 0.784 & 0.792 \\
+             & HumanEval & 0.187 & 0.541 & 0.425 & 0.553 & 0.646 & 0.659 \\
+Mistral-7B   & GSM8K     & \textbf{0.000} & 0.285 & 0.029 & 0.323 & 0.532 & 0.519 \\
+             & HumanEval & \textbf{0.000} & 0.057 & 0.002 & 0.093 & 0.360 & 0.366 \\
+Qwen2.5-7B   & GSM8K     & 0.148 & 0.611 & 0.580 & 0.625 & 0.624 & 0.617 \\
+             & HumanEval & 0.510 & 0.683 & 0.589 & 0.685 & 0.726 & 0.728 \\
+Yi-1.5-9B    & GSM8K     & 0.093 & 0.724 & 0.628 & 0.726 & 0.773 & 0.775 \\
+             & HumanEval & 0.077 & 0.130 & 0.154 & 0.130 & 0.354 & 0.348 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+In accuracy the picture is sharper (Table~\ref{tab:regmean-acc}). On the shared
+arm the shipped default loses most of GSM8K on every base, scoring $0.09$ to
+$0.17$ where the same method reaches $0.61$ to $0.72$ on the independent arm,
+and on Mistral it scores \textbf{zero on both benchmarks in all three shared
+cohorts}. The starting ridge beats the default on the shared arm past the gate
+on three of four bases on GSM8K (by $31$, $43$ and $54$ points on Llama, Qwen
+and Yi) and on two on HumanEval (Llama and Qwen), so the registered accuracy
+prediction holds. Mistral is the exception and we name it: $\lambda = 0.01$
+does not rescue it ($0.029$ and $0.002$), and Table~\ref{tab:regmean} selects
+$\lambda^\star = 0.05$ for this solver on that base, so the starting ridge is
+where a sweep begins rather than an answer. The published method with
+activation Grams, the control, scores the same on both arms in all eight
+base-by-benchmark cells, within $1.3$ points everywhere, and is the strongest
+merge in the table on every base: a practitioner who has the data RegMean was
+designed for is unaffected by the collapse.
 
 $\alpha$ is a documented knob, and a practitioner who lowers it is doing what
 \S\ref{subsec:ridge} recommends. The claim is only that the shipped default does
@@ -489,10 +511,12 @@ linear system, check your cohort's conditioning and regularise, because
 unregularised it can fail by a factor of $65$ at rank $16$ and $117$
 without truncation, on two solvers, one of which we did not build. It does
 \emph{not} license the general advice to initialise independently. On the
-methods most practitioners actually use the null above stands, with the
-single qualification that the subspace-alignment method gains a little
-from independent initialisation on three of four bases, and we do not
-dress that up as anything more.
+methods most practitioners actually use the null above stands, in NLL and
+as equivalence in accuracy, with two small qualifications that point in
+opposite directions: in NLL the subspace-alignment method gains a little
+from independent initialisation on three of four bases, and in accuracy
+the heuristics as a group lean slightly toward the shared arm. We do not
+dress either up as anything more.
 
 \subsection{The collapse is visible in downstream accuracy}
 \label{subsec:downstream-cond}

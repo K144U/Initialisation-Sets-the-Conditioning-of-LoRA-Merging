@@ -47,9 +47,12 @@ published methods we did not build: RegMean with real activation Grams and MaTS
 (both build their matrix from data) and a diagonal Fisher merge are unaffected,
 as predicted, and TSV-M, which whitens the task updates and was predicted to be
 exposed, is not (\S\ref{subsec:data-solvers}). Averaging and sparsifying
-heuristics show no effect of the collapse in loss or in accuracy
-(\S\ref{subsec:ridge}). RegMean's own shipped regulariser is far too weak on a
-collapsed cohort and applies the same dose whatever the regime
+heuristics are equivalent across the two regimes within $3$ accuracy points on
+GSM8K and $5$ on HumanEval, with a small registered lean toward the shared
+cohorts (\S\ref{subsec:ridge}). RegMean's own shipped regulariser is far too
+weak on a collapsed cohort and applies the same dose whatever the regime: on
+the shared cohorts it keeps $0.09$ to $0.17$ GSM8K accuracy where the
+independent cohorts reach $0.61$ to $0.72$, and on Mistral it scores zero
 (\S\ref{subsec:regmean-default}).
 
 \paragraph{4. It can be read from the adapter files in a CPU minute.} The
@@ -70,9 +73,10 @@ public cohorts of both kinds (\S\ref{subsec:public-merge}).
 pre-registered before the compute it governs, with all outcome branches written
 in advance, and the registrations and the commit order that proves their
 timing are public (Appendix~\ref{app:prereg}). Several predictions failed,
-including four made in this revision: that whitening is exposed, that public
-failures are regime-specific, that a data-free rule sets the ridge well, and a
-bound on real RegMean's solution norm. They are reported in the branch they
+including five made in this revision: that whitening is exposed, that public
+failures are regime-specific, that a data-free rule sets the ridge well, a
+bound on real RegMean's solution norm, and that the heuristics' slight lean
+toward shared cohorts would vanish. They are reported in the branch they
 landed in, and Appendix~\ref{app:audit-trail} collects what did not survive,
 including a withdrawn claim about published benchmarks, our own encoder's lost
 advantage, and an execution error in our earlier RegMean numbers.

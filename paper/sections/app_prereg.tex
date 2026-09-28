@@ -405,11 +405,19 @@ three cohorts per arm, in NLL and accuracy, with the narrowing of the exposure
 claim written in advance as the branch if real RegMean proved immune. Its
 \textbf{amendment} records the fallback-Gram error, found and fixed before any
 affected cell ran, and adds the re-run of the published RegMean table
-(\S\ref{subsec:regmean}, Appendix~\ref{subsec:gram-error}).
+(\S\ref{subsec:regmean}, Appendix~\ref{subsec:gram-error}). Real RegMean is
+immune in NLL and in accuracy, the shipped adapter-only default fails on the
+shared arm and the starting ridge improves on it, in both units; the bound on
+real RegMean's solution norm fails (\S\ref{subsec:data-solvers},
+\S\ref{subsec:regmean-default}).
 \item \textbf{\texttt{prereg\_heuristics\_tost}} repeats the heuristics
 accuracy test at three cohorts per arm and states the null as an equivalence
 test, with margins of $3$ points on GSM8K and $5$ on HumanEval, and registers
-the sign test the earlier registration lacked (\S\ref{subsec:ridge}).
+the sign test the earlier registration lacked. Equivalence holds for all five
+methods on both benchmarks and one of forty cells clears the per-cell gate; the
+prediction that the lean would vanish fails ($29$ of $38$, $p = 0.0017$), and
+the lean is reported as a finding in its measured direction
+(\S\ref{subsec:ridge}).
 \item \textbf{\texttt{prereg\_third\_solver}} registers which of TSV-M, MaTS
 and diagonal Fisher the mechanism says are exposed. The two immunity predictions
 hold and the exposure prediction for TSV-M fails (\S\ref{subsec:data-solvers}).

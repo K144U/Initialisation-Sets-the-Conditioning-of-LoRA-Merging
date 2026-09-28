@@ -8,8 +8,10 @@ and it corrects the tempting reading that the interpolator grows as the inverse
 square of the drift (\S\ref{sec:drift-theory}). The collapse reaches exactly the
 merges that solve a linear system in a matrix built from the adapters' own
 factors, where one ridge term is the difference between a working merge and a
-model that scores zero, and it leaves averaging, sparsifying and whitening
-merges and solvers built from data untouched; that rule was registered before
+model that scores zero, and it leaves whitening merges and solvers built from
+data untouched, and averaging and sparsifying merges equivalent within a few
+accuracy points, with a slight registered lean in favour of shared cohorts;
+that rule was registered before
 it was tested and holds on four published methods we did not build
 (\S\ref{subsec:data-solvers}). And one CPU minute on the adapter files says
 which regime a cohort is in. The regime is common in released adapters
@@ -31,6 +33,9 @@ is relevant and given in full in Appendix~\ref{app:audit-trail}.
   regime}: adapter-only RegMean fails on most public cohorts in both regimes.
 \item \textbf{That an audit-set ridge rule matches the fixed start}: it does
   worse on every collapsed cohort tested.
+\item \textbf{That the heuristics' accuracy lean would vanish at three cohorts
+  per arm}: it survives ($29$ of $38$ cells favour the shared arm), inside
+  equivalence margins that hold.
 \item \textbf{That the retrained translation adapter learns its task}: it
   improves but is still beaten on translation by another adapter.
 \item \textbf{The previous RegMean numbers} were computed with a fallback Gram;
@@ -82,8 +87,9 @@ built from the adapters' factors, regularise and sweep the ridge: unregularised,
 such a merge is up to $65$ times worse at rank $16$ and $117$ times without
 truncation, and scores zero on both benchmarks on one base, while one ridge term
 recovers it. RegMean's shipped regulariser is too weak for this and does not
-know which regime it is in. If the merge averages or sparsifies, or builds its
-matrix from data, the collapse is not the thing to worry about. On public
+know which regime it is in; with the activation Grams RegMean was designed
+for, the problem does not arise. If the merge averages or sparsifies, or
+builds its matrix from data, the collapse is not the thing to worry about. On public
 cohorts, whatever their regime, data-free adapter-built solvers failed often
 enough that they should not be used without checking the result. And if you
 fine-tune several tasks with Unsloth or LLaMA-Factory at default settings, your

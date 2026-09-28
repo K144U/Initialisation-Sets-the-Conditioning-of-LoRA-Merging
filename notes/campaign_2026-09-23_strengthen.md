@@ -138,3 +138,22 @@ GPU queues never sit idle while text work proceeds.
   whitening case was predicted and did not hold.
 - Last 14 cells (7 heuristics, 7 real-RegMean downstream) doubled up with
   reversed-order helper jobs rdm_htost / rdm_hrmr.
+- 2026-09-28 08:39, **heuristics TOST: E1, E2, E3 hold; E4 FAILS (branches
+  1 and 4).** All five heuristics equivalent across regimes at M = 0.03 GSM8K
+  and M = 0.05 HumanEval (smallest passing margins 0.009-0.020 and
+  0.021-0.030). One per-base effect cell of 40: TIES/Llama/HumanEval, shared
+  higher by 0.065 (the n = 1 near-miss, same direction). Sign test: 29 of 38
+  non-zero differences favour SHARED, p = 0.0017. Paper: null restated as
+  equivalence (new tab:heur-tost), n = 1 table moved to Appendix
+  subsec:heur-n1, lean reported as a registered finding favouring shared.
+- 2026-09-28 08:39, **RegMean downstream: Q4, Q5 hold (branch 1).** Shipped
+  alpha 0.9 adapter-only RegMean on the shared arm: GSM8K 0.168/0.000/0.148/
+  0.093 (Llama/Mistral/Qwen/Yi) vs 0.705/0.285/0.611/0.724 independent;
+  Mistral scores 0.000 on both benchmarks in all three shared cohorts.
+  lambda 0.01 beats it past the gate on GSM8K 3/4 (Llama, Qwen, Yi) and
+  HumanEval 2/4 (Llama, Qwen); it does NOT rescue Mistral (0.029, 0.002;
+  Mistral's selected ridge is 0.05). Real RegMean (activation Grams) equal
+  across arms in 8/8 cells (max |d| 0.013) and the best merge on every base.
+  Paper: new tab:regmean-acc in subsec:regmean-default.
+- 2026-09-28, abstract_infofus trimmed to 248 words; infofus.pdf 90 pp,
+  0 errors, 0 undefined. All campaign compute is complete.
