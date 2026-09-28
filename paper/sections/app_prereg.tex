@@ -383,3 +383,45 @@ document & introduced in & governs \\
 \end{tabular}
 \end{table}
 
+
+\subsection{Registrations of the 2026 revision}
+\label{subsec:prereg-2026}
+
+Eight further documents govern the results added in this revision. Each was
+committed before the generator it governs, and each generator before any of its
+cells; the commit table for them is part of the public repository's history.
+Their rules, one paragraph each, with the branch each landed in:
+\begin{itemize}\itemsep2pt
+\item \textbf{\texttt{prereg\_drift\_theory}} fixes five predictions of the
+first-order theory: formula within $[0.75, 1.33]$ of the exact conditioning and
+amplification at each checkpoint and on all twelve shared cohorts; dial slopes
+in $[-2.2, -1.8]$ for $\kappa$ and $[-1.2, -0.8]$ for the amplification, the
+review's $\varepsilon^{-2}$ form for the latter named as the rival; and both
+quantities monotone across training. All five hold (\S\ref{sec:drift-theory}).
+\item \textbf{\texttt{prereg\_regmean\_real}} registers RegMean with real
+activation Grams at its published $\alpha = 0.9$, the adapter-only form at
+$\alpha = 0.9$ with no ridge, and the adapter-only form at $\lambda = 0.01$, on
+three cohorts per arm, in NLL and accuracy, with the narrowing of the exposure
+claim written in advance as the branch if real RegMean proved immune. Its
+\textbf{amendment} records the fallback-Gram error, found and fixed before any
+affected cell ran, and adds the re-run of the published RegMean table
+(\S\ref{subsec:regmean}, Appendix~\ref{subsec:gram-error}).
+\item \textbf{\texttt{prereg\_heuristics\_tost}} repeats the heuristics
+accuracy test at three cohorts per arm and states the null as an equivalence
+test, with margins of $3$ points on GSM8K and $5$ on HumanEval, and registers
+the sign test the earlier registration lacked (\S\ref{subsec:ridge}).
+\item \textbf{\texttt{prereg\_third\_solver}} registers which of TSV-M, MaTS
+and diagonal Fisher the mechanism says are exposed. The two immunity predictions
+hold and the exposure prediction for TSV-M fails (\S\ref{subsec:data-solvers}).
+\item \textbf{\texttt{prereg\_new\_cohorts}} covers the retrained translation
+adapter (Part T: the adapter fails its quality test, everything else
+replicates), the task-count and rank sweep (Part R: all five predictions
+hold), and the PiSSA cohort (Part P: both hold)
+(\S\ref{subsec:translation-fix}, \S\ref{subsec:tr-sweep}).
+\item \textbf{\texttt{prereg\_public\_merge}} fixes a mechanical selection of
+public cohorts and a task-free consequence measure. The regime-specific
+prediction fails on the separated side (\S\ref{subsec:public-merge}).
+\item \textbf{\texttt{prereg\_lambda\_rule}} registers a condition-number rule
+for the ridge, with $k = 100$ fixed in advance and evaluation only on unseen
+cohorts. It is worse than the fixed start (\S\ref{subsec:lambda-rule}).
+\end{itemize}
