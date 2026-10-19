@@ -79,7 +79,12 @@ def heads(device):
         for c in names:
             texts = [t(c) for t in get_templates(task)]
             with torch.no_grad():
-                e = model.get_text_features(**tok(texts, padding=True, return_tensors="pt").to(device))
+                # text_projection(pooled output): CLIP's text features, written
+                # out because get_text_features changed return type in
+                # transformers 5
+                pooled = model.text_model(**tok(texts, padding=True, return_tensors="pt")
+                                          .to(device)).pooler_output
+                e = model.text_projection(pooled)
             e = e / e.norm(dim=-1, keepdim=True)
             m = e.mean(0)
             rows.append(m / m.norm())

@@ -37,14 +37,30 @@ def pairs(sd):
 
 
 def canon(A, B, keep=None):
-    U, S, Vh = torch.linalg.svd((B.double() @ A.double()), full_matrices=False)
-    r = A.shape[0]
-    U, S, Vh = U[:, :r], S[:r], Vh[:r]
+    # SVD of B A through the factors: B = Qb Rb, A^T = Qa Ra, so
+    # B A = Qb (Rb Ra^T) Qa^T and only an r x r SVD is needed.
+    Qb, Rb = torch.linalg.qr(B.double())
+    Qa, Ra = torch.linalg.qr(A.double().T)
+    u, S, vh = torch.linalg.svd(Rb @ Ra.T)
+    U, Vh = Qb @ u, vh @ Qa.T
     if keep is not None:
         S = S.clone()
         S[keep:] = 0
     s = S.sqrt()
     return (s[:, None] * Vh).float(), (U * s[None, :]).float()
+
+
+def _fro2(A, B):
+    """||B A||_F^2 from the factors: tr((A A^T)(B^T B))."""
+    return float(torch.trace((A @ A.T) @ (B.T @ B)))
+
+
+def rel_change(A1, B1, A0, B0):
+    """||B1 A1 - B0 A0||_F / ||B0 A0||_F via [B1, -B0] [A1; A0] (small Grams)."""
+    A = torch.cat([A1.double(), A0.double()], 0)
+    B = torch.cat([B1.double(), -B0.double()], 1)
+    den = _fro2(A0.double(), B0.double())
+    return (max(_fro2(A, B), 0.0) / den) ** 0.5 if den > 0 else 0.0
 
 
 def perturb(sd, task, pert):
@@ -80,9 +96,7 @@ def main() -> int:
                         if f.is_file() and f.name != "adapter_model.safetensors":
                             shutil.copy(f, dst / f.name)
                     new = perturb(sd, task, pert)
-                    change = max(float((new[kb].double() @ new[ka].double()
-                                        - sd[kb].double() @ sd[ka].double()).norm()
-                                       / (sd[kb].double() @ sd[ka].double()).norm())
+                    change = max(rel_change(new[ka], new[kb], sd[ka], sd[kb])
                                  for ka, kb in pairs(sd))
                     save_file(new, str(dst / "adapter_model.safetensors"))
                     (dst / "perturbation.json").write_text(json.dumps(
