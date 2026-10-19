@@ -79,3 +79,9 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   Vision adapters ~5 min each.
 - Queued: Llama WUDI (42), Llama+Qwen stage 1 (heterogeneity, lambda
   selection, Qwen WUDI; 138), Llama+Qwen untruncated (56), LLaMA-Factory (4).
+- 2026-10-19 ~15:10, **vision training done**: 48 adapters, own-task test
+  accuracy matched across arms (Cars .73-.74, DTD .77-.79, EuroSAT .98-.99,
+  GTSRB .97-.98, MNIST .99, RESISC45 .94, SUN397 .72-.74, SVHN .96), in the
+  range published for LoRA ViT-B/32. Geometry (V1 input): shared cohorts
+  median cosine 0.959-0.960, independent 0.109-0.110. Evaluation queued
+  (11842).
