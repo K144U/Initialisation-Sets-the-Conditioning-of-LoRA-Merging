@@ -30,9 +30,10 @@ made real directories, and:
 - downloading the four bases into our HF cache, linked as `models/<Name>`,
   commit hashes in `models/RESTAGED_2026-10-19.json`;
 - cloning the conda env to `~/projects/rdmerge_v2/.conda/envs/rdmerge`.
-Gate before any registered cell: re-run four published NLL cells (task
-arithmetic, seed1, one per base) and match the published worst-task excess to
-0.002 nats.
+Gate before any registered cell: re-run four published NLL cells
+(adapter-only RegMean at lambda = 0.01, seed1, one per base, from
+eval_regmean_real) with a fresh nll_tau, and match the published worst-task
+excess and every nll_tau entry to 0.002 nats (check_restage.py).
 
 ## Log
 - 2026-10-19 ~12:30, **item 1 search result**: WUDI-Merging (Cheng et al.,
