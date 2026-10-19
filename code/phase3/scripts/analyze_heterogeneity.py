@@ -69,7 +69,7 @@ def geometry(base, plan):
 def public_spread():
     os.environ.setdefault("HF_HOME", str(ROOT / "cache" / "hf_home"))
     from huggingface_hub import hf_hub_download
-    rows = json.loads((RES / "public_merge_summary.json").read_text())["rows"]
+    rows = json.loads((RES / "public_merge" / "public_merge_summary.json").read_text())["rows"]
     out = []
     for r in rows:
         F = (r.get("F") or {}).get("rm_1em6")
