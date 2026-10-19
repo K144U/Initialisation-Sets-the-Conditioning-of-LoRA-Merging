@@ -63,3 +63,19 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
 - Launched: restage gate (11828), vision training x2 (11829-30), Unsloth
   library defaults (11831). The nll_tau_cache_v2 keys embed old paths;
   rekey_tau_cache.py rewrites only the paths, per base, after its gate passes.
+- 2026-10-19 ~14:50, **restage gates**: Llama passes (nll_tau identical to
+  5 decimals; worst excess 0.17755 vs published 0.17847), Qwen passes
+  (identical; 0.08295 vs 0.08306). Caches re-keyed. Mistral and Yi pending;
+  gate_and_launch.sh queues each base on a pass.
+- **Part L, Unsloth (2026.5.2) measured**: A at creation identical across two
+  separate runs on different tasks (median cosine 1.000), 0.9996 after 50
+  steps. L1, L2 hold for Unsloth. LLaMA-Factory 0.9.5 in an isolated venv;
+  first attempt failed on a torchaudio wheel built for torch 2.11, replaced
+  by the cu128 2.10.0 build; resubmitted.
+- Truncation energy (H1 premise, CPU) computed for all 120 merges; not read
+  until the H2 cells exist.
+- Training speed under contention: ~7 s/step (about 55 min per Llama
+  adapter), so the 60 regime runs take about a day on one two-worker job.
+  Vision adapters ~5 min each.
+- Queued: Llama WUDI (42), Llama+Qwen stage 1 (heterogeneity, lambda
+  selection, Qwen WUDI; 138), Llama+Qwen untruncated (56), LLaMA-Factory (4).
