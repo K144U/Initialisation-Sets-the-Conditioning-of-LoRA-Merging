@@ -31,8 +31,10 @@ module load anaconda3/anaconda cuda12.2/toolkit/12.2.2 cudnn/9.14
 # 2026-10-10; both are re-staged under $PROJECT_ROOT, and the env is cloned
 # there too. The sanjay.g env remains only as a fallback while the clone is
 # missing.
+# CLONE_OK is written by hand only after the clone passed an import test, so a
+# half-finished clone is never activated.
 ENV_DIR=$PROJECT_ROOT/.conda/envs/rdmerge
-[ -x "$ENV_DIR/bin/python" ] || ENV_DIR=/home/sanjay.g/projects/rdmerge/.conda/envs/rdmerge
+[ -f "$PROJECT_ROOT/.conda/CLONE_OK" ] || ENV_DIR=/home/sanjay.g/projects/rdmerge/.conda/envs/rdmerge
 source activate "$ENV_DIR"
 export PYTHONNOUSERSITE=1
 export HF_HOME=$PROJECT_ROOT/cache/hf_home
