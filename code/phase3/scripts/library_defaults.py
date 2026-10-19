@@ -71,16 +71,26 @@ def median_cos(sa, sb):
 
 def cmd_compare(_a):
     from safetensors.torch import load_file
-    res = {}
-    for stage in ("A_creation", "A_step50"):
-        a = load_file(str(OUT / "gsm8k_run1" / f"{stage}.safetensors"))
-        b = load_file(str(OUT / "alpaca_run1" / f"{stage}.safetensors"))
-        c = load_file(str(OUT / "gsm8k_run2" / f"{stage}.safetensors"))
-        res[stage] = {"gsm8k_vs_alpaca": median_cos(a, b), "gsm8k_run1_vs_run2": median_cos(a, c)}
-    res["meta"] = json.loads((OUT / "gsm8k_run1" / "meta.json").read_text())
+    out = {}
+    for lib in ("unsloth", "llamafactory"):
+        d = OUT.parent / lib
+        if not all((d / f"{t}_run{k}" / "meta.json").exists()
+                   for t in ("gsm8k", "alpaca") for k in (1, 2)):
+            print(f"{lib}: incomplete, skipped")
+            continue
+        res = {}
+        for stage in ("A_creation", "A_step50"):
+            a = load_file(str(d / "gsm8k_run1" / f"{stage}.safetensors"))
+            b = load_file(str(d / "alpaca_run1" / f"{stage}.safetensors"))
+            c = load_file(str(d / "gsm8k_run2" / f"{stage}.safetensors"))
+            e = load_file(str(d / "alpaca_run2" / f"{stage}.safetensors"))
+            res[stage] = {"gsm8k_vs_alpaca": median_cos(a, b), "gsm8k_run1_vs_run2": median_cos(a, c),
+                          "alpaca_run1_vs_run2": median_cos(b, e)}
+        res["meta"] = json.loads((d / "gsm8k_run1" / "meta.json").read_text())
+        out[lib] = res
     p = ROOT / "results" / "phase3" / "library_defaults.json"
-    p.write_text(json.dumps({"unsloth": res}, indent=1))
-    print(json.dumps(res, indent=1))
+    p.write_text(json.dumps(out, indent=1))
+    print(json.dumps({k: {s: v[s] for s in ("A_creation", "A_step50")} for k, v in out.items()}, indent=1))
 
 
 def main() -> int:

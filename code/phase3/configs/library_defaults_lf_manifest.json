@@ -1,0 +1,26 @@
+[
+ {
+  "name": "libdef_lf_gsm8k_run1",
+  "cmd": ".venv_lf/bin/python code/phase3/scripts/library_defaults_lf.py run --task gsm8k --run 1",
+  "done": "artifacts/library_defaults/llamafactory/gsm8k_run1/meta.json",
+  "min_free_gb": 12.0
+ },
+ {
+  "name": "libdef_lf_gsm8k_run2",
+  "cmd": ".venv_lf/bin/python code/phase3/scripts/library_defaults_lf.py run --task gsm8k --run 2",
+  "done": "artifacts/library_defaults/llamafactory/gsm8k_run2/meta.json",
+  "min_free_gb": 12.0
+ },
+ {
+  "name": "libdef_lf_alpaca_run1",
+  "cmd": ".venv_lf/bin/python code/phase3/scripts/library_defaults_lf.py run --task alpaca --run 1",
+  "done": "artifacts/library_defaults/llamafactory/alpaca_run1/meta.json",
+  "min_free_gb": 12.0
+ },
+ {
+  "name": "libdef_lf_alpaca_run2",
+  "cmd": ".venv_lf/bin/python code/phase3/scripts/library_defaults_lf.py run --task alpaca --run 2",
+  "done": "artifacts/library_defaults/llamafactory/alpaca_run2/meta.json",
+  "min_free_gb": 12.0
+ }
+]
