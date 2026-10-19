@@ -27,7 +27,7 @@ import yaml
 from unsloth import FastLanguageModel
 
 from merging.peft_model_view import PeftModelView
-from merging.registry import REGISTRY, DEFAULT_KWARGS, NEEDS_GRAMS
+from merging.registry import REGISTRY, DEFAULT_KWARGS, NEEDS_GRAMS, DIAG_MODULES
 from eval.activation_grams import attach_grams
 from training.data_loaders import load_task_split
 from utils.io_helpers import write_result
@@ -116,12 +116,11 @@ def main() -> int:
         t_merge = time.time()
         REGISTRY[method](view, adapter_names, weights, merged_name, **method_kwargs)
         print(f"  merge done in {time.time()-t_merge:.1f}s", flush=True)
+        if method in DIAG_MODULES:
+            import importlib
+            _diag = getattr(importlib.import_module(DIAG_MODULES[method]), 'DIAGNOSTICS', None)
+            merge_diagnostics = dict(_diag) if _diag else None
         if method in NEEDS_GRAMS:
-            if method == "mats":
-                from merging.mats_kfac import DIAGNOSTICS
-            else:
-                from merging.regmean_act import DIAGNOSTICS
-            merge_diagnostics = dict(DIAGNOSTICS)
             method_kwargs.pop("grams", None)
             method_kwargs.pop("grams_out", None)
         if cache_key:

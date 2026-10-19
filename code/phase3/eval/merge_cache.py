@@ -23,7 +23,7 @@ from safetensors.torch import load_file, save_file
 
 from merging.tests._fake_model import FakeLoraLayer
 
-EXPENSIVE = {"tsv", "mats", "regmean_act"}
+EXPENSIVE = {"tsv", "mats", "regmean_act", "wudi"}
 
 
 def cache_key(cfg: dict, method: str, kwargs: dict, weights) -> str:

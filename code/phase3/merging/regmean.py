@@ -31,6 +31,51 @@ from .tests._fake_model import FakeLoraLayer, FakePeftModel
 
 
 RULE_LAMBDAS: dict = {}
+DIAGNOSTICS: dict = {}
+
+# notes/prereg_lambda_selection_2026-10-19.md: grid and estimator fixed there.
+SELECT_GRID = torch.logspace(-8, 2, 200, dtype=torch.float64)
+
+
+def select_ridge(A_list, deltas, weights, mode):
+    """Data-free ridge for adapter-only RegMean, per layer.
+
+    Ridge regression with samples = the T r columns of X = [sqrt(w_t) A_t^T]
+    and targets Y = [sqrt(w_t) D_t A_t^T]; with X = U S V^T and y_i = Y v_i the
+    filter factors f_i = s_i^2 / (s_i^2 + lambda) give
+      ||R||^2 = sum (1 - f_i)^2 ||y_i||^2,   tr H = sum f_i,
+      ||W||^2 = sum ||y_i||^2 s_i^2 / (s_i^2 + lambda)^2.
+    gcv:    argmin n ||R||^2 / (n - tr H)^2
+    lcurve: max curvature of (log ||R||, log ||W||) in log lambda (Hansen),
+            second-order finite differences, two grid points trimmed per end.
+    """
+    X = torch.cat([float(w) ** 0.5 * A.double().T for A, w in zip(A_list, weights)], dim=1)
+    Y = torch.cat([float(w) ** 0.5 * (D.double() @ A.double().T)
+                   for A, D, w in zip(A_list, deltas, weights)], dim=1)
+    U, S, Vh = torch.linalg.svd(X, full_matrices=False)
+    yn2 = torch.sum((Y @ Vh.T) ** 2, dim=0)                    # ||y_i||^2
+    lam = SELECT_GRID.to(X.device)
+    s2 = (S ** 2).unsqueeze(0)
+    f = s2 / (s2 + lam.unsqueeze(1))                           # grid x n
+    r2 = torch.sum((1 - f) ** 2 * yn2, dim=1)
+    w2 = torch.sum(yn2 * s2 / (s2 + lam.unsqueeze(1)) ** 2, dim=1)
+    n = X.shape[1]
+    if mode == "gcv":
+        crit = n * r2 / (n - f.sum(dim=1)) ** 2
+        i = int(torch.argmin(crit))
+    elif mode == "lcurve":
+        t = torch.log(lam)
+        rho, eta = 0.5 * torch.log(r2.clamp_min(1e-300)), 0.5 * torch.log(w2.clamp_min(1e-300))
+        d1r, d1e = torch.gradient(rho, spacing=(t,))[0], torch.gradient(eta, spacing=(t,))[0]
+        d2r, d2e = torch.gradient(d1r, spacing=(t,))[0], torch.gradient(d1e, spacing=(t,))[0]
+        curv = 2 * (d1r * d2e - d2r * d1e) / (d1r ** 2 + d1e ** 2).clamp_min(1e-300) ** 1.5
+        curv[:2] = -float("inf")
+        curv[-2:] = -float("inf")
+        i = int(torch.argmax(curv))
+    else:
+        raise ValueError(mode)
+    return float(lam[i]), {"lambda": float(lam[i]), "grid_index": i,
+                           "smin": float(S[-1]), "smax": float(S[0])}
 
 
 def merge_regmean(
@@ -57,6 +102,7 @@ def merge_regmean(
     The lambda chosen per layer is recorded in RULE_LAMBDAS.
     """
     RULE_LAMBDAS.clear()
+    DIAGNOSTICS.clear()
     assert len(adapter_names) == len(weights), "adapter/weight length mismatch"
 
     new_factors: dict[str, FakeLoraLayer] = {}
@@ -119,6 +165,11 @@ def merge_regmean(
             # a floor keeps the full-dimensional solve nonsingular when the
             # rule returns 0, i.e. when the range is already well conditioned
             ridge = max(lam, 1e-6)
+        elif ridge_mode in ("gcv", "lcurve"):
+            A_list = [lo.A for lo in layer_objs]
+            ridge, info = select_ridge(A_list, deltas, weights, ridge_mode)
+            RULE_LAMBDAS[layer] = ridge
+            DIAGNOSTICS[layer] = info
         elif ridge_mode == "fixed":
             ridge = ridge_lambda
         else:

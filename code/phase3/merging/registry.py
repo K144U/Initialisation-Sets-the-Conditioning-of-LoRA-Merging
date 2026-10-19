@@ -30,6 +30,7 @@ from .tsv_merge import merge_tsv
 from .task_arithmetic import merge_task_arithmetic
 from .ties import merge_ties
 from .tvq import merge_tvq
+from .wudi import merge_wudi
 
 
 REGISTRY = {
@@ -48,7 +49,13 @@ REGISTRY = {
     "mats": merge_mats,
     "tsv": merge_tsv,
     "adamerging": merge_adamerging,
+    "wudi": merge_wudi,
 }
+
+# Methods whose module exposes a DIAGNOSTICS dict filled by the merge; the
+# eval cells record it in the result JSON and the merge cache.
+DIAG_MODULES = {"mats": "merging.mats_kfac", "regmean_act": "merging.regmean_act",
+                "wudi": "merging.wudi", "regmean": "merging.regmean"}
 
 # Methods whose merge needs per-task input-activation Grams computed in the
 # eval cell (eval/activation_grams.py) before the merge is called.
