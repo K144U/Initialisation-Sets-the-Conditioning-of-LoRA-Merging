@@ -67,7 +67,7 @@ class PeftModelView:
         return base.weight
 
     def add_adapter_rank(self, name: str, factors: Dict[str, FakeLoraLayer],
-                         rank: int) -> None:
+                         rank: int, dtype=None) -> None:
         """Inject a NEW adapter of arbitrary rank (e.g. d_eff=64 for the
         rd_encoder exact full-rank realization). Unlike add_adapter (which
         scaffolds via add_weighted_adapter and inherits rank r), this
@@ -85,6 +85,9 @@ class PeftModelView:
         self.pmodel.add_adapter(name, cfg)
         for layer_name, mod in self._layers.items():
             f = factors[layer_name]
+            if dtype is not None:
+                mod.lora_A[name].to(dtype)
+                mod.lora_B[name].to(dtype)
             tgt_A = mod.lora_A[name].weight     # (rank, in_dim)
             tgt_B = mod.lora_B[name].weight     # (out_dim, rank)
             with torch.no_grad():
@@ -125,6 +128,12 @@ class PeftModelView:
 
     def add_adapter(self, name: str, factors: Dict[str, FakeLoraLayer]) -> None:
         """Inject `factors` as a new adapter named `name` into the PEFT model."""
+        r_max = max(f.A.shape[0] for f in factors.values())
+        r_cfg = next(iter(self.pmodel.peft_config.values())).r
+        if r_max > r_cfg:
+            # untruncated merges (prereg_untruncated): one slot of the largest
+            # numerical rank, zero-padded per layer, stored in bf16
+            return self.add_adapter_rank(name, factors, r_max, dtype=torch.bfloat16)
         # Scaffold: ask PEFT to create the adapter slot via add_weighted_adapter
         # with arbitrary weights; we'll overwrite the A/B values afterwards.
         existing = list(self.pmodel.peft_config.keys())

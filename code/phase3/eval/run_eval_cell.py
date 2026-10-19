@@ -335,7 +335,14 @@ def main() -> int:
               f"{ {k: v for k, v in method_kwargs.items() if k not in ('fisher_data', 'grams', 'grams_out')} }",
               flush=True)
         t_merge = time.time()
-        REGISTRY[method](view, adapter_names, weights, merged_name, **method_kwargs)
+        from merging import _adapter_utils as _au
+        _au.REALIZE['untruncated'] = bool(method_kwargs.pop('untruncated', False))
+        try:
+            REGISTRY[method](view, adapter_names, weights, merged_name, **method_kwargs)
+        finally:
+            if _au.REALIZE['untruncated']:
+                method_kwargs['untruncated'] = True
+            _au.REALIZE['untruncated'] = False
         print(f"  merge done in {time.time()-t_merge:.1f}s", flush=True)
         if method in DIAG_MODULES:
             import importlib

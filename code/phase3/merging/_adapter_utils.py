@@ -31,6 +31,20 @@ def materialize_delta(
     return scaling * (B @ A)
 
 
+# notes/prereg_untruncated_2026-10-19.md: when set, every merge is realised at
+# its numerical rank (singular values above 1e-6 of the largest) instead of
+# being truncated to the adapter rank. Set by the eval cells from the
+# "untruncated" method kwarg; off by default so every existing cell reproduces.
+REALIZE = {"untruncated": False, "rel_tol": 1e-6}
+
+
+def _exact_factors(delta: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+    d = delta.to(torch.float32)
+    U, S, Vh = torch.linalg.svd(d, full_matrices=False)
+    k = max(1, int((S > REALIZE["rel_tol"] * S[0]).sum()))
+    return (Vh[:k].to(delta.dtype), (U[:, :k] * S[:k]).to(delta.dtype))
+
+
 def svd_truncate_to_rank(
     delta: torch.Tensor,
     rank: int,
@@ -45,6 +59,8 @@ def svd_truncate_to_rank(
     Stays on the same device as `delta`. Casts to float32 for SVD numerical
     stability (bf16 SVD is unreliable), then casts back to the original dtype.
     """
+    if REALIZE["untruncated"]:
+        return _exact_factors(delta)
     out_dim, in_dim = delta.shape
     target_rank = min(rank, out_dim, in_dim)
 
