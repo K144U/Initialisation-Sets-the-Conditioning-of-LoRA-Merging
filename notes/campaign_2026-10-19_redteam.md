@@ -92,3 +92,26 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   alpha 16, all linear modules, seed 42) give identical A at creation across
   tasks and runs (median cosine 1.000) and 0.9994 after 50 steps; Unsloth
   2026.5.2 gives 1.000 and 0.9996. L1 and L2 hold for both.
+- 2026-10-19 ~18:40, **vision evaluation done** (6 cells, 22-23 min each).
+  Not read until the analyzer runs.
+- 2026-10-19 ~20:05, **WUDI implementation fix, before any WUDI cell
+  finished.** The official loss is evaluated densely ((tau - D_t) D_t^T is
+  out x out); the first two Llama 3000-step cells ran 4.7 h without
+  completing one merge (about an exaflop per cell). merging/wudi.py now
+  evaluates the identical loss from the factors, tr(X_t^T X_t B'_t^T B'_t)
+  with X_t = tau A_t^T - B'_t A_t A_t^T: same function of tau, same gradient,
+  same init, optimiser, lr, steps and float32, so the registered procedure is
+  unchanged. test_factored_loss_matches_dense checks loss, gradient and a
+  50-step Adam trajectory against the dense form (all within 1e-5); all 41
+  merging tests pass locally and the WUDI tests pass in the cluster env.
+  D_t is now formed from the factors in float32 rather than as their bf16
+  product. Job 11836 killed; Llama WUDI resubmitted (11852). The Qwen,
+  Mistral and Yi WUDI cells had not started and pick up the fix.
+- **Stale GPU claim**: gpu0 stayed claimed by 11828 (qdel'd) for 4 h, which,
+  with WUDI holding two cards, left the untruncated and Mistral jobs idle
+  with zero cells started. Cleared by hand; orchestrator.py now drops a claim
+  whose writing process is gone (new jobs only; running ones keep the 8 h
+  rule). Every job now has an afterany successor (chain_c1019.py) so a 24 h
+  walltime kill resumes instead of ending its manifest.
+- Contention: all 8 GPUs at 95-100% utilisation (35 running jobs on the
+  node); NLL cells with a cold nll_tau take 70-95 min, warm ones ~15-40 min.

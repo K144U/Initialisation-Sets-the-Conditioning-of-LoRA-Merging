@@ -45,6 +45,31 @@ def test_published_steps_stay_near_the_sum_at_small_lr():
     assert float((tau - s).norm() / s.norm()) < 0.05
 
 
+def test_factored_loss_matches_dense():
+    # the factored evaluation must be the same function of tau, gradient and
+    # Adam trajectory included, as the official dense one
+    from merging.wudi import _wudi_loss_factored
+    torch.manual_seed(1)
+    _, layers = _cohort(tilt=0.5)
+    factors = [(lo.A, 0.7 * lo.B) for lo in layers]
+    deltas = [b @ a for a, b in factors]
+    vectors = torch.stack(deltas)
+    l2 = torch.square(torch.norm(vectors.reshape(4, -1), dim=-1))
+    A = torch.stack([a for a, _ in factors])
+    Bs = torch.stack([b for _, b in factors])
+    AAt, BtB = A @ A.transpose(1, 2), Bs.transpose(1, 2) @ Bs
+    tau = (vectors.sum(0) + 0.3 * torch.randn(20, 24)).requires_grad_()
+    ld = _wudi_loss(tau, vectors, l2)
+    gd, = torch.autograd.grad(ld, tau)
+    lf = _wudi_loss_factored(tau, A, Bs, AAt, BtB, l2)
+    gf, = torch.autograd.grad(lf, tau)
+    assert abs(float(ld - lf)) / float(ld) < 1e-5
+    assert float((gd - gf).norm() / gd.norm()) < 1e-5
+    td, _, _ = wudi_adam(deltas, iters=50, lr=1e-3)
+    tf, _, _ = wudi_adam(deltas, iters=50, lr=1e-3, factors=factors)
+    assert float((td - tf).norm() / td.norm()) < 1e-5
+
+
 def test_merge_records_diagnostics():
     _, layers = _cohort()
     m = FakePeftModel(layer_topology={"layers.0.q_proj": (20, 24, 3)})

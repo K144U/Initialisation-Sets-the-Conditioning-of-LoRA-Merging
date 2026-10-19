@@ -69,11 +69,27 @@ def protected_user_on(gpu: int) -> str | None:
 # GPU keeps two of OUR jobs from ever landing on the same card.
 HEADROOM_GB = float(os.environ.get("ORCH_HEADROOM_GB", "10"))
 CLAIMS = ROOT / "logs" / "gpu_claims"
-CLAIM_STALE_S = 8 * 3600
+# 2026-10-19: a claim is dropped as soon as the process that wrote it is gone
+# (a qdel'd or walltime-killed job left gpu0 claimed for hours). GPU indices
+# already assume one node, so the pid is checked on this one. The age limit is
+# only the fallback for an unreadable claim or a reused pid, and is longer
+# than any cell (a 4-epoch training cell runs ~10 h).
+CLAIM_STALE_S = 48 * 3600
 
 
 def _claim_path(gpu) -> Path:
     return CLAIMS / f"gpu{gpu}"
+
+
+def _claimer_alive(p: Path) -> bool:
+    try:
+        pid = int(p.read_text().split()[1])
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except (OSError, ValueError, IndexError):
+        return True        # unreadable, or a pid we may not signal: assume alive
+    return True
 
 
 def claimed_by_other(gpu) -> bool:
@@ -81,7 +97,7 @@ def claimed_by_other(gpu) -> bool:
     if not p.exists():
         return False
     try:
-        if time.time() - p.stat().st_mtime > CLAIM_STALE_S:
+        if not _claimer_alive(p) or time.time() - p.stat().st_mtime > CLAIM_STALE_S:
             p.unlink()
             return False
     except OSError:
