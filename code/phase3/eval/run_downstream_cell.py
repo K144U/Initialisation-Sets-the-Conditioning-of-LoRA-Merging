@@ -33,7 +33,7 @@ from training.data_loaders import load_task_split
 from utils.io_helpers import write_result
 from utils.pbs_env import assert_env
 
-from eval.downstream_metrics import METRIC_FNS
+from eval.downstream_metrics import METRIC_FNS, SELF_LOADING
 
 
 def main() -> int:
@@ -140,17 +140,22 @@ def main() -> int:
     #       behavior — eval comes from one of the merged tasks)
     #   (b) metric_task_cfg is a top-level override (B4 HumanEval, where the
     #       eval data is from a different dataset than any merged adapter)
-    if "metric_task_cfg" in cfg:
-        target_task_cfg = cfg["metric_task_cfg"]
+    if metric in SELF_LOADING:
+        ev = None
+        print(f"[downstream_cell] {metric}: metric loads its own data "
+              f"({ {k: v for k, v in metric_kwargs.items()} })", flush=True)
     else:
-        target_spec = next(s for s in cfg["adapter_specs"]
-                           if s["name"] == metric_task_name)
-        target_task_cfg = target_spec["task_cfg"]
-    _train, ev_full = load_task_split(target_task_cfg,
-                                       seed=cfg.get("seed", 20260518))
-    ev = ev_full[:n_eval_metric]
-    print(f"[downstream_cell] {metric} on {metric_task_name} "
-          f"n={len(ev)} (of {len(ev_full)} available)", flush=True)
+        if "metric_task_cfg" in cfg:
+            target_task_cfg = cfg["metric_task_cfg"]
+        else:
+            target_spec = next(s for s in cfg["adapter_specs"]
+                               if s["name"] == metric_task_name)
+            target_task_cfg = target_spec["task_cfg"]
+        _train, ev_full = load_task_split(target_task_cfg,
+                                           seed=cfg.get("seed", 20260518))
+        ev = ev_full[:n_eval_metric]
+        print(f"[downstream_cell] {metric} on {metric_task_name} "
+              f"n={len(ev)} (of {len(ev_full)} available)", flush=True)
 
     if metric not in METRIC_FNS:
         raise ValueError(f"unknown metric {metric!r}")
@@ -173,7 +178,7 @@ def main() -> int:
         "metric_kwargs": metric_kwargs,
         "metric_task": metric_task_name,
         "metric_score": score,
-        "n_eval_metric": len(ev),
+        "n_eval_metric": len(ev) if ev is not None else len(per_example),
         "per_example": per_example,
         "merge_diagnostics": merge_diagnostics,
         "env": env_info,

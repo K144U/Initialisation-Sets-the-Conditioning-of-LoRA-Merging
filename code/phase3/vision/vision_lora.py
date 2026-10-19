@@ -48,7 +48,8 @@ def seeds(cohort: str, task: str) -> tuple[int, int]:
 def load_split(task, split):
     from datasets import load_dataset
     repo, prefix = TASKS[task]
-    return load_dataset(repo, data_files={split: f"{prefix}/{split}-*.parquet"}, split=split)
+    return load_dataset(repo, data_files={split: f"{prefix}/{split}-*.parquet"}, split=split,
+                        verification_mode="no_checks")
 
 
 def test_subset(task):

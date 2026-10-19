@@ -321,11 +321,70 @@ def evaluate_comet22(model, tokenizer, eval_data: list[dict],
     raise NotImplementedError("COMET-22 not yet implemented")
 
 
-def evaluate_ifeval_strict(model, tokenizer, eval_data: list[dict],
-                            max_new_tokens: int = 512,
-                            ) -> tuple[float, list[dict]]:
-    """Stub: needs google-research IFEval verifier port, deferred."""
-    raise NotImplementedError("IFEval strict not yet implemented")
+def _fixed_subset(n_total: int, n: int, seed: int) -> list[int]:
+    import random
+    idx = list(range(n_total))
+    random.Random(seed).shuffle(idx)
+    return idx[:n]
+
+
+def evaluate_wmt_chrf(model, tokenizer, eval_data=None, n: int = 500, seed: int = 0,
+                      max_new_tokens: int = 256, progress_every: int = 50,
+                      ) -> tuple[float, list[dict]]:
+    """WMT19 en->de validation, first n pairs after a fixed shuffle, greedy,
+    the translation adapter's own training prompt; corpus chrF (sacrebleu
+    defaults), 0-100. notes/prereg_all_tasks_2026-10-19.md."""
+    import sacrebleu
+    from datasets import load_dataset
+    from training.data_loaders import _translation_prompt
+    ds = load_dataset("wmt/wmt19", "de-en", split="validation")
+    hyps, refs, per = [], [], []
+    model.eval()
+    for i, j in enumerate(_fixed_subset(len(ds), n, seed)):
+        row = ds[j]["translation"]
+        gen = greedy_generate(model, tokenizer,
+                              _translation_prompt(row["en"], "English", "German"), max_new_tokens)
+        hyp = " ".join(gen.split())
+        hyps.append(hyp)
+        refs.append(row["de"])
+        per.append({"index": j, "hyp": hyp, "ref": row["de"],
+                    "chrf": sacrebleu.sentence_chrf(hyp, [row["de"]]).score})
+        if (i + 1) % progress_every == 0:
+            print(f"  [wmt_chrf] {i+1}/{n}  running chrF="
+                  f"{sacrebleu.corpus_chrf(hyps, [refs]).score:.2f}", flush=True)
+    return sacrebleu.corpus_chrf(hyps, [refs]).score, per
+
+
+def evaluate_ifeval_strict(model, tokenizer, eval_data=None, n: int = 300, seed: int = 0,
+                           max_new_tokens: int = 512, progress_every: int = 50,
+                           ) -> tuple[float, list[dict]]:
+    """IFEval prompt-level strict accuracy with the official verifiers
+    (eval/ifeval, vendored), on a fixed random subset of n of the 541 prompts.
+    notes/prereg_all_tasks_2026-10-19.md."""
+    from datasets import load_dataset
+    from eval.ifeval import instructions_registry
+    ds = load_dataset("google/IFEval", split="train")
+    correct, per = 0, []
+    model.eval()
+    for i, j in enumerate(sorted(_fixed_subset(len(ds), n, seed))):
+        ex = ds[j]
+        resp = greedy_generate(model, tokenizer, ex["prompt"], max_new_tokens)
+        follows = []
+        for k, iid in enumerate(ex["instruction_id_list"]):
+            inst = instructions_registry.INSTRUCTION_DICT[iid](iid)
+            kw = {a: b for a, b in (ex["kwargs"][k] or {}).items() if b is not None}
+            inst.build_description(**kw)
+            args = inst.get_instruction_args()
+            if args and "prompt" in args:
+                inst.build_description(prompt=ex["prompt"])
+            follows.append(bool(resp.strip()) and bool(inst.check_following(resp)))
+        ok = all(follows)
+        correct += ok
+        per.append({"key": ex["key"], "score": int(ok), "per_instruction": follows,
+                    "gen_text": resp})
+        if (i + 1) % progress_every == 0:
+            print(f"  [ifeval] {i+1}/{n}  running strict={correct/(i+1):.3f}", flush=True)
+    return correct / max(1, len(per)), per
 
 
 # L3 special token IDs — used by B2 (chat-template H1 probe).
@@ -411,7 +470,11 @@ METRIC_FNS: dict[str, Callable] = {
     "humaneval_pass1": evaluate_humaneval_pass1,
     "comet22": evaluate_comet22,
     "ifeval_strict": evaluate_ifeval_strict,
+    "wmt_chrf": evaluate_wmt_chrf,
 }
+
+# Metrics that load and subsample their own data (eval_data is None).
+SELF_LOADING = {"ifeval_strict", "wmt_chrf"}
 
 
 # --- Unit tests for answer extraction and completion stripping ----------
