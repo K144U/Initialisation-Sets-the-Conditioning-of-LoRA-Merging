@@ -35,3 +35,30 @@ arithmetic, seed1, one per base) and match the published worst-task excess to
 0.002 nats.
 
 ## Log
+- 2026-10-19 ~12:30, **item 1 search result**: WUDI-Merging (Cheng et al.,
+  arXiv 2503.08099) is a published data-free method whose least-squares matrix
+  is built from the task updates (range = A row spaces for LoRA). Registered
+  closed form (Eq. 20) vs published Adam-300 vs Adam-3000. Toy check: long
+  Adam matches the closed form inside the update rows' span, and also leaves
+  mass OUTSIDE that span (Adam's per-coordinate step), invisible to WUDI's
+  loss; recorded per merge as off_range_frac.
+- **Correction (heterogeneity)**: the registration says the unperturbed
+  references exist; only indep1 RegMean(1e-6) did. Reference cells added (12
+  Part G, 8 Part M), recomputed on the re-staged models. No prediction made
+  easier.
+- **Amendment (training regimes, 0adf3ac)**, before computing: drift cohort
+  and its A_0 lost with the sanjay.g tree; calibration on four surviving Llama
+  shared cohorts with consensus W0. Calibration committed 9c6f73f before any
+  Part K adapter: C_k = 768.1, C_a = 11.28.
+- **Restage, more than expected**: ~110 entries of our results/phase3 were
+  symlinks into sanjay.g's results tree, also emptied 2026-10-10. 94 restored
+  from the local repo; 16 links still dangle (no copy anywhere checked:
+  eval_downstream_cond, eval_ridge_shared, nll_tau_cache, prevalence, w1/w3
+  sweeps, shared_arm and s3 summaries, a1_matrix summaries, lstar_from_e2).
+  The conda env was copied with cp -a (conda --clone --offline silently
+  skipped python); jobs use it only once .conda/CLONE_OK exists.
+- **Login node now kills a user's processes when the SSH call ends** (even
+  setsid/nohup). Long login-node work runs inside held local SSH sessions.
+- Launched: restage gate (11828), vision training x2 (11829-30), Unsloth
+  library defaults (11831). The nll_tau_cache_v2 keys embed old paths;
+  rekey_tau_cache.py rewrites only the paths, per base, after its gate passes.
