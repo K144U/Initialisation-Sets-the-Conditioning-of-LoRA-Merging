@@ -85,3 +85,10 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   range published for LoRA ViT-B/32. Geometry (V1 input): shared cohorts
   median cosine 0.959-0.960, independent 0.109-0.110. Evaluation queued
   (11842).
+- 2026-10-19 ~16:15, **all four restage gates pass** (restage_check_summary:
+  worst-excess |d| 0.00092 / 0.00012 / 0.00011 / 0.00105, nll_tau identical);
+  caches re-keyed; every base's stage-1 and untruncated cells queued.
+- **Part L measured for both libraries**: LLaMA-Factory 0.9.5 defaults (r 8,
+  alpha 16, all linear modules, seed 42) give identical A at creation across
+  tasks and runs (median cosine 1.000) and 0.9994 after 50 steps; Unsloth
+  2026.5.2 gives 1.000 and 0.9996. L1 and L2 hold for both.
