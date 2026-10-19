@@ -8,8 +8,8 @@
 
 # Generic campaign launcher for the student account (STUDENT-ACCOUNT).
 #
-# The sanjay.g tree is READ-ONLY from here: adapters and base models are read
-# from it, everything is written under ~/projects/rdmerge_v2. PROTECT_USERS
+# The sanjay.g tree is never written. Since 2026-10-19 adapters, base models
+# and the env all live under ~/projects/rdmerge_v2. PROTECT_USERS
 # makes the orchestrator refuse any GPU on which a sanjay.g process is
 # running, so these cells never share a card with that account's jobs.
 #
@@ -27,7 +27,13 @@ cd $PROJECT_ROOT
 mkdir -p logs/pbs logs/orch
 
 module load anaconda3/anaconda cuda12.2/toolkit/12.2.2 cudnn/9.14
-source activate /home/sanjay.g/projects/rdmerge/.conda/envs/rdmerge
+# 2026-10-19: the sanjay.g tree's adapters and models were emptied on
+# 2026-10-10; both are re-staged under $PROJECT_ROOT, and the env is cloned
+# there too. The sanjay.g env remains only as a fallback while the clone is
+# missing.
+ENV_DIR=$PROJECT_ROOT/.conda/envs/rdmerge
+[ -x "$ENV_DIR/bin/python" ] || ENV_DIR=/home/sanjay.g/projects/rdmerge/.conda/envs/rdmerge
+source activate "$ENV_DIR"
 export PYTHONNOUSERSITE=1
 export HF_HOME=$PROJECT_ROOT/cache/hf_home
 export TRANSFORMERS_CACHE=$HF_HOME/hub
