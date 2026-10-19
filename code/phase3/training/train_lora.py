@@ -62,8 +62,12 @@ def train_one_lora(cfg: dict, project_root: Path) -> dict:
     # has no path for these, so they go through plain transformers + PEFT.
     # Every config without lora.init takes the Unsloth path exactly as before.
     lora_init = cfg["lora"].get("init")
+    # notes/prereg_training_regimes_2026-10-19.md options. All default to the
+    # historical behaviour, so every existing config trains byte-identically.
+    use_dora = bool(cfg["lora"].get("use_dora", False))
+    init_seed = int(cfg["seeds"].get("init", cfg["seeds"]["train"]))
     t_load = time.time()
-    if lora_init:
+    if lora_init or use_dora:
         from peft import LoraConfig, get_peft_model
         from transformers import AutoModelForCausalLM, AutoTokenizer
         print(f"[train:{task_name}] loading {base} via plain PEFT "
@@ -77,12 +81,13 @@ def train_one_lora(cfg: dict, project_root: Path) -> dict:
         model.gradient_checkpointing_enable()
         model.enable_input_require_grads()
         print(f"[train:{task_name}] base loaded in {time.time()-t_load:.1f}s", flush=True)
-        torch.manual_seed(cfg["seeds"]["train"])
+        torch.manual_seed(init_seed)
         model = get_peft_model(model, LoraConfig(
             r=cfg["lora"]["r"], lora_alpha=cfg["lora"]["alpha"],
             lora_dropout=cfg["lora"]["dropout"],
             target_modules=cfg["lora"]["target_modules"],
-            init_lora_weights=lora_init, task_type="CAUSAL_LM"))
+            init_lora_weights=lora_init if lora_init else True,
+            use_dora=use_dora, task_type="CAUSAL_LM"))
     else:
         print(f"[train:{task_name}] loading {base} via Unsloth", flush=True)
         model, tokenizer = FastLanguageModel.from_pretrained(
@@ -100,8 +105,35 @@ def train_one_lora(cfg: dict, project_root: Path) -> dict:
             lora_dropout=cfg["lora"]["dropout"],
             target_modules=cfg["lora"]["target_modules"],
             use_gradient_checkpointing="unsloth",
-            random_state=cfg["seeds"]["train"],
+            random_state=init_seed,
         )
+
+    # Continue from a parent adapter (Part C): copy its A and B into the new
+    # LoRA before the first step.
+    if cfg["lora"].get("init_from"):
+        from safetensors.torch import load_file
+        parent = load_file(str(Path(cfg["lora"]["init_from"]) / "adapter_model.safetensors"))
+        parent = {k.replace(".default.weight", ".weight"): v for k, v in parent.items()}
+        n_copied = 0
+        with torch.no_grad():
+            for name, param in model.named_parameters():
+                key = name.replace(".default.weight", ".weight")
+                if ("lora_A" in key or "lora_B" in key) and key in parent:
+                    param.copy_(parent[key].to(param.dtype))
+                    n_copied += 1
+        if n_copied == 0:
+            raise RuntimeError("init_from matched no LoRA tensors")
+        print(f"[train:{task_name}] initialised {n_copied} LoRA tensors from "
+              f"{cfg['lora']['init_from']}", flush=True)
+
+    # Scale A_0 (Part K): applied before the A_0 snapshot below.
+    if cfg["lora"].get("init_scale") not in (None, 1, 1.0):
+        c = float(cfg["lora"]["init_scale"])
+        with torch.no_grad():
+            for name, param in model.named_parameters():
+                if "lora_A" in name:
+                    param.mul_(c)
+        print(f"[train:{task_name}] scaled A_0 by {c}", flush=True)
 
     # Snapshot the LoRA A factors BEFORE any optimiser step, for the drift
     # measurement registered in notes/prereg_drift_2026-08-16.md. Off by
@@ -194,11 +226,28 @@ def train_one_lora(cfg: dict, project_root: Path) -> dict:
     # which crashes if tokenizer is None. Loading from a local path
     # (as we are here) doesn't set the implicit tokenizer slot that the
     # HF-repo path sets, so we must pass it explicitly.
+    # Separate learning rates for A and B (Part K: A-lr x4; LoRA+ ratio 16).
+    # Same AdamW defaults as optim=adamw_torch; the scheduler is still built by
+    # the trainer on this optimizer.
+    optimizers = (None, None)
+    mult_A = float(cfg["train"].get("lr_A_mult", 1.0))
+    mult_B = float(cfg["train"].get("lr_B_mult", 1.0))
+    if (mult_A, mult_B) != (1.0, 1.0):
+        lr = float(cfg["train"]["lr"])
+        pA = [p_ for n_, p_ in model.named_parameters() if p_.requires_grad and "lora_A" in n_]
+        pB = [p_ for n_, p_ in model.named_parameters() if p_.requires_grad and "lora_A" not in n_]
+        opt = torch.optim.AdamW([{"params": pA, "lr": lr * mult_A},
+                                 {"params": pB, "lr": lr * mult_B}],
+                                lr=lr, weight_decay=sft_cfg.weight_decay)
+        optimizers = (opt, None)
+        print(f"[train:{task_name}] lr A {lr*mult_A:g}, lr B {lr*mult_B:g}", flush=True)
+
     trainer = SFTTrainer(
         model=model,
         train_dataset=ds_train,
         args=sft_cfg,
         processing_class=tokenizer,
+        optimizers=optimizers,
     )
 
     print(f"[train:{task_name}] training starts; {cfg['train']['epochs']}ep "
@@ -221,7 +270,7 @@ def train_one_lora(cfg: dict, project_root: Path) -> dict:
 
     # In-process NLL eval on this LoRA over its own held-out (sanity check).
     print(f"[train:{task_name}] running NLL eval on held-out (n={len(eval_data)})", flush=True)
-    if not lora_init:
+    if not (lora_init or use_dora):
         FastLanguageModel.for_inference(model)
     nll_tau = _compute_nll(model, tokenizer, eval_data, cfg["train"]["max_seq_length"])
     print(f"[train:{task_name}] NLL_tau on held-out = {nll_tau:.4f}", flush=True)
