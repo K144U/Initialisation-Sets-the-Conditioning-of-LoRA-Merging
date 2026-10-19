@@ -1,0 +1,16 @@
+{
+ "cohort": "shared2",
+ "method": "wudi_pub",
+ "accs": {
+  "SUN397": 0.2255,
+  "Cars": 0.284,
+  "RESISC45": 0.302,
+  "EuroSAT": 0.163,
+  "SVHN": 0.796,
+  "GTSRB": 0.5955,
+  "MNIST": 0.925,
+  "DTD": 0.4675531914893617
+ },
+ "mean": 0.46981914893617027,
+ "worst": 0.163
+}

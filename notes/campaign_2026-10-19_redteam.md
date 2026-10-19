@@ -115,3 +115,15 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   walltime kill resumes instead of ending its manifest.
 - Contention: all 8 GPUs at 95-100% utilisation (35 running jobs on the
   node); NLL cells with a cold nll_tau take 70-95 min, warm ones ~15-40 min.
+- 2026-10-19 ~20:15, **vision (Experiment 4) analysed, all cells present:
+  branch 1, V1 to V6 all hold.** Mean 8-task accuracy, shared vs independent
+  (d = indep - shared, gate in brackets): adapter-only RegMean at 1e-6 0.044
+  vs 0.369 (d +0.326 [0.019]); the best grid lambda (0.1) repairs it, 0.735
+  vs 0.747; task arithmetic 0.742 vs 0.739 and TIES 0.721 vs 0.711, both 90%
+  intervals inside +-0.02; activation RegMean 0.768 vs 0.770 and TSV-M 0.654
+  vs 0.670, both d <= gate; WUDI closed form collapses like RegMean (0.045
+  vs 0.369, d +0.324). **Not predicted:** WUDI as published satisfies V6
+  (d <= gate) only because d is large and negative, -0.096 (gate 0.033):
+  shared cohorts merge better (0.454 vs 0.358). Reported as an unregistered
+  observation, not as support. Summary: results/phase3/campaign_2026-10/
+  vision_summary.json.

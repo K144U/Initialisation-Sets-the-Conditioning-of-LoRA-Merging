@@ -1,0 +1,16 @@
+{
+ "cohort": "indep3",
+ "method": "wudi_cf",
+ "accs": {
+  "SUN397": 0.1305,
+  "Cars": 0.0805,
+  "RESISC45": 0.2695,
+  "EuroSAT": 0.2085,
+  "SVHN": 0.7305,
+  "GTSRB": 0.477,
+  "MNIST": 0.9425,
+  "DTD": 0.25
+ },
+ "mean": 0.386125,
+ "worst": 0.0805
+}

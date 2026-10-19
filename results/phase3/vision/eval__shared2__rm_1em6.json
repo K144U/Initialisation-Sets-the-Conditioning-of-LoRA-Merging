@@ -1,0 +1,16 @@
+{
+ "cohort": "shared2",
+ "method": "rm_1em6",
+ "accs": {
+  "SUN397": 0.003,
+  "Cars": 0.0035,
+  "RESISC45": 0.0155,
+  "EuroSAT": 0.0515,
+  "SVHN": 0.096,
+  "GTSRB": 0.0335,
+  "MNIST": 0.093,
+  "DTD": 0.025
+ },
+ "mean": 0.040125,
+ "worst": 0.003
+}
