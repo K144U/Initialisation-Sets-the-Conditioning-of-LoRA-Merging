@@ -151,3 +151,20 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   regimes_after.sh (11874, held afterany on it) generates and runs the 17
   regime evaluation cells and the geometry on the cluster, replacing the
   local watcher. Second-level successors for the other long manifests.
+- 2026-10-21 04:20 (second local power cut; cluster jobs unaffected). Lambda
+  selection complete 48/48; heterogeneity 81/84, WUDI 85/168, untruncated
+  51/112, regime adapters 25/60, all-task 0/144 (runs last, as registered).
+- **Regime training starved for 17 h** (last adapter 2026-10-20 11:38; reg0c,
+  11853, ran 13.7 h with no cell). Every other job relaunches the moment its
+  cell ends, while a job that found no card backs off 10 min, so it almost
+  never wins one; the trainings also need 40 + 10 GB, more than gpu0 has free.
+  Orchestrator change (scheduling only, no cell's procedure changes): a job
+  whose state file is listed in logs/orch_priority watches the claim files
+  instead of backing off and takes a released card if it has need + headroom,
+  moving to a freer unclaimed card if there is one (the same freest-card rule
+  pick_gpu applies). Listed: state_reg_0.json, state_regev_0.json. reg0c,
+  idle, was deleted so its successor 11873 started on the new code; 11856 and
+  11857 were held for those 10 s so they did not take the slot. Added 11906
+  (third reg link) and 11907 (untLQ second link); regev resubmitted as 11908
+  behind 11906 (11874 deleted), so it no longer exits for want of adapters if
+  training outlasts one more walltime.

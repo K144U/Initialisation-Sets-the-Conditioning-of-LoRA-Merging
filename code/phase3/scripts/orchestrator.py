@@ -123,6 +123,25 @@ def release(gpu) -> None:
         pass
 
 
+# 2026-10-21: a job whose ORCH_STATE is listed in this file (one name per line)
+# does not sleep out the backoff when no card is free. It watches the claim
+# files instead and takes a card the moment another of our jobs releases one,
+# keeping it only if the card has need + HEADROOM_GB free. Every other job
+# relaunches straight after its cell finishes, so a job that backs off for
+# 10 min almost never gets a card (the regime trainings got none for 17 h).
+# The file is read at every wait, so priorities change without a resubmit.
+PRIORITY_FILE = ROOT / "logs" / "orch_priority"
+WATCH_POLL_S = 0.25
+WATCH_RETRY_S = 60
+
+
+def is_priority() -> bool:
+    try:
+        return STATE.name in PRIORITY_FILE.read_text().split()
+    except OSError:
+        return False
+
+
 def free_gb(gpu: int) -> float:
     if protected_user_on(gpu):
         return 0.0
@@ -178,6 +197,36 @@ class Orchestrator:
             return None
         return best
 
+    def watch_gpu(self, need: float, seconds: float):
+        """Priority jobs: claim a card as soon as its claim file goes away (the
+        releasing job's own next pick runs nvidia-smi on every free card
+        first), keep it if it has need + HEADROOM_GB free, else release it
+        and leave that card alone for WATCH_RETRY_S. If another unclaimed card
+        is freer by then, it moves there, as pick_gpu would have chosen.
+        None after `seconds`."""
+        tried = {}
+        end = time.time() + seconds
+        while time.time() < end:
+            for g in self.candidates:
+                if time.time() - tried.get(g, 0.0) < WATCH_RETRY_S:
+                    continue
+                if claimed_by_other(g) or not claim(g):
+                    continue
+                f = free_gb(g)
+                if f < need + HEADROOM_GB:
+                    release(g)
+                    tried[g] = time.time()
+                    continue
+                for h in self.candidates:
+                    if h != g and not claimed_by_other(h):
+                        fh = free_gb(h)
+                        if fh > f and claim(h):
+                            release(g)
+                            g, f = h, fh
+                return g
+            time.sleep(WATCH_POLL_S)
+        return None
+
     def worker(self, gpu):
         while True:
             try:
@@ -191,6 +240,7 @@ class Orchestrator:
                 continue
             need = float(cell.get("min_free_gb", 30))
             ok = False
+            prio = self.dynamic and is_priority()
             for _ in range(VRAM_POLL_TRIES):
                 if self.dynamic:
                     gpu = self.pick_gpu(need)
@@ -200,13 +250,18 @@ class Orchestrator:
                 elif free_gb(gpu) >= need:
                     ok = True
                     break
+                if prio:
+                    gpu = self.watch_gpu(need, BACKOFF_S)
+                    ok = gpu is not None
+                    break
                 time.sleep(60)
             if not ok:
                 print(f"[gpu{gpu}] {name}: <{need}GB free, requeue + backoff",
                       flush=True)
                 self.q.put(cell)
                 self.write_state()
-                time.sleep(BACKOFF_S)
+                if not prio:       # a priority job has just waited BACKOFF_S
+                    time.sleep(BACKOFF_S)
                 continue
             with self.lock:
                 self.running[name] = gpu
