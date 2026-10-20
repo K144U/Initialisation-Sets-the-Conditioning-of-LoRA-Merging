@@ -127,3 +127,27 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   shared cohorts merge better (0.454 vs 0.358). Reported as an unregistered
   observation, not as support. Summary: results/phase3/campaign_2026-10/
   vision_summary.json.
+- 2026-10-20 ~06:20 (local power cut overnight; cluster jobs unaffected, the
+  local regime watcher died). Overnight: heterogeneity 26/84, lambda
+  selection 12/48, WUDI 14/168, untruncated 19/112, regime adapters 18/60.
+- **Every downstream (accuracy) cell failed** (36 untruncated Llama/Qwen,
+  19 Mistral WUDI). Cause: the Unsloth loader takes the base model from the
+  adapter's adapter_config.json, and the restaged adapters still named the
+  emptied /home/sanjay.g/.../models path; NLL cells use loader: plain, which
+  takes the base from the config, so they were unaffected. No downstream cell
+  had completed, so nothing mixes. fix_adapter_base_paths.py rewrote that one
+  field in 410 adapter configs to the same model under rdmerge_v2/models
+  (the restage gate verified those weights), originals kept as
+  adapter_config.json.sanjay_orig. The orchestrator rebuilds its queue from
+  done-files at start, so each job's successor retries the failed cells.
+- **Deviation, disclosed:** a sanity check of the factored WUDI code printed
+  worst-task excess for the 14 finished WUDI cells (of 168), which the
+  no-partial-reads rule forbids. The intent was the merge diagnostics only
+  (loss ratio: Adam and closed form both lower the loss, closed-form
+  off-range mass ~1e-15 as it must be). Nothing in the protocol or analysis
+  is changed in response; the WUDI analyzer runs on the full set as
+  registered.
+- Regime training needs ~36 h more; a third chained job (11873) added, and
+  regimes_after.sh (11874, held afterany on it) generates and runs the 17
+  regime evaluation cells and the geometry on the cluster, replacing the
+  local watcher. Second-level successors for the other long manifests.
