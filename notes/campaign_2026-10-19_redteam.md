@@ -168,3 +168,14 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   (third reg link) and 11907 (untLQ second link); regev resubmitted as 11908
   behind 11906 (11874 deleted), so it no longer exits for want of adapters if
   training outlasts one more walltime.
+- **Lambda selection (all 48 cells): branch 3 for both rules.** GCV: L1 holds
+  on 1 of 4 bases (Mistral), L2 to L4 on none; seed1 shared excess 1.130 /
+  8.658 / 0.215 / 0.451 (Llama / Mistral / Qwen / Yi) against 0.292 / 10.165 /
+  0.150 / 0.218 at lambda 1e-6 and oracle 0.114 / 0.050 / 0.011 / 0.023.
+  Median selected lambda ~1e-4 on shared cohorts, the grid floor 1e-8 on
+  independent ones. L-curve: L1 on 1 of 4 (Llama), nothing else; its median
+  selected lambda is 1.26e-8 on every base and arm, i.e. at the lower edge of
+  the registered grid, so the registered corner estimator found no interior
+  corner. Reported as registered: classical data-free parameter choice does
+  not set the ridge either. No stage 2. Summary:
+  results/phase3/campaign_2026-10/lambda_selection_summary.json.
