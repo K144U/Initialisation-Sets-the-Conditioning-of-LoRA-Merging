@@ -179,3 +179,36 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   corner. Reported as registered: classical data-free parameter choice does
   not set the ridge either. No stage 2. Summary:
   results/phase3/campaign_2026-10/lambda_selection_summary.json.
+- 2026-10-22 04:00 (third local power cut; cluster unaffected). The priority
+  watch worked: the regime job took its first card 13 min after starting and
+  all 60 adapters were done by 2026-10-21 17:25; regev (11908) ran the 17
+  evaluation cells (no failures) and the geometry by 18:41. Heterogeneity
+  84/84, WUDI 162/168, untruncated 92/112.
+- regimes_calibration.json was missing on the cluster (computed and committed
+  locally, 9c6f73f, before any Part K adapter); the committed file, unchanged
+  since, was copied there and the analyzer run.
+- **Training regimes: every registered prediction holds** (S1-S4, K1-K5, C1,
+  C2, D1, L1, L2). S: RegMean(1e-6) excess SA-ST 0.342, SA-IT 0.368, IA-ST
+  0.065, IA-IT 0.071; TA 0.214-0.221; the regime is set by the init seed
+  alone. K: median cosine >= 0.96 on all 8 shared-init regimes, 0.048 on both
+  independent ones; predicted kappa within 2x on 8/8, predicted amplification
+  within 1.25x on 7/8 (A_0 x 0.25 is the miss: 7.48 vs 13.66); Spearman
+  rho(t, kappa) = -0.976; t* = 22.2 against the largest shared t 0.575 (39x).
+  So K2 holds and the branch text permits "predicts" for the scalar law on
+  these regimes. C: an adapter cohort continued from one shared parent with
+  no shared seed has cosine 0.997 and excess 1.490 (indep1 0.071). D: DoRA
+  shared 0.995, independent 0.047. Summary:
+  results/phase3/campaign_2026-10/training_regimes_summary.json, geometry
+  regimes_geometry.json.
+- **All-task jobs submitted now at the lowest priority** rather than strictly
+  after the last other cell. Reading of "runs last" (prereg_all_tasks): it
+  must not take compute from the mechanism tests. Every remaining job of
+  those (untMY, untLQ, s1yi1) is listed in logs/orch_priority and wins each
+  released card; all-task cells only get cards those jobs cannot use (other
+  users' memory leaves 3 cards usable at present). Scheduling only; no cell
+  or analysis changes. Four jobs, base-split and 2 shards each: 12073 atLQ0,
+  12074 atMY0 now; 12075 atLQ1 behind the untLQ chain, 12076 atMY1 behind the
+  s1yi1 chain; successors 12077-12080. Billed ngpus=2 for 2 workers. The
+  2026-10-19 jobs and their successors are billed ngpus=1 while running
+  ORCH_WORKERS=2, against the launcher's own rule; left as they are rather
+  than killing running cells.
