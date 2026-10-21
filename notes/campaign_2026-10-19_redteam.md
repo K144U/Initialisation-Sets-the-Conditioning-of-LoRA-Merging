@@ -212,3 +212,29 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   2026-10-19 jobs and their successors are billed ngpus=1 while running
   ORCH_WORKERS=2, against the launcher's own rule; left as they are rather
   than killing running cells.
+- **Heterogeneity (all 84 cells): G1 fails, G2 holds, G3 fails, G4 fails;
+  M-a, M-b, M-c hold.**
+  Part G branch reached: "G1 fails -> the gauge is not the cause; the public
+  failures stay unexplained and the paper says so." P_gauge moves RegMean(1e-6)
+  by ratio 1.04 / 1.02 (Llama / Qwen), d +0.0025 / +0.0006 against gate
+  0.005; P_canon 1.00 / 1.00 (G2). G3 fails on P_scale: a 4x larger update on
+  one adapter multiplies RegMean's excess by 3.88 / 5.27 while task
+  arithmetic's falls to 0.26 / 0.29 of unperturbed, so scale mismatch is
+  solver-specific on separated cohorts (P_rank 0.99 / 0.99 vs TA 1.00 / 1.01;
+  P_module 1.95 / 0.77 vs TA 1.17 / 1.06). G4 fails in the wrong direction:
+  median A-norm spread 1.02 among the 16 public cohorts where RegMean failed,
+  1.49 among the 2 where it did not. Not registered as a branch of its own:
+  the G3 scale result is reported as an observation.
+  Part M branch reached: "M-a holds -> the audit's statistic changes from the
+  median to the maximum pairwise cosine (or the count of collapsed pairs),
+  Algorithm 1 and its cutoffs are restated, and the 45-cohort prevalence is
+  re-read under the new statistic." M1 (one collapsed pair of six): median
+  cosine 0.047-0.053 on all four bases (audit says separated), max pair
+  0.993-0.996, RegMean(1e-6) excess 1.945 / 10.47 / 0.446 / 0.735 against
+  indep1 0.071 / 0.155 / 0.026 / 0.121 (Llama / Mistral / Qwen / Yi), kappa
+  1735-5292 against ~1.5. Summary:
+  results/phase3/campaign_2026-10/heterogeneity_summary.json.
+- Prevalence re-read (the M branch's mandated step): reread_prevalence_maxpair.py
+  recomputes all 45 scored public cohorts from the same lora_A range reads,
+  reproducing the stored median as a check, and reports max pair cosine and
+  collapsed-pair counts. Running locally (CPU, lora_A only).
