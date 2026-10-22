@@ -260,3 +260,23 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   results/phase3/campaign_2026-10/wudi_summary.json.
 - Third generation of all-task successors queued (12089-12092, afterany
   12077-12080) so a walltime kill late on Oct 24 does not stop the manifest.
+- **Prevalence re-read under the maximum pairwise cosine (Part M branch step),
+  2026-10-22.** 40 of the 45 scored cohorts are still readable; 5 are not,
+  because 11 of their adapters now return HTTP 401 on the Hub (deleted or made
+  private since the audit): kmerakeb, ceselder (Qwen3-8B pair), vaghawan,
+  TieuDaoChanNhan, Misalignment-Empirics (stored COLLAPSED, SEPARATED x4).
+  On the 40: the stored median reproduces (max abs error 2.9e-3, chandra1976
+  0.130 vs 0.133, same status); collapsed under the median 16 (40.0%), under
+  the max pair 17 (42.5%); 17 cohorts have at least one collapsed pair. Two
+  statuses change, both upward: LASR-Callum SEPARATED -> COLLAPSED (median
+  0.064, max pair 0.998, 4 of 10 pairs collapsed) and predibase SEPARATED ->
+  INTERMEDIATE (0.440 -> 0.717). No collapsed cohort leaves the class. On all
+  45, with the unreadable five at their stored status: 17/45 (37.8%) becomes
+  18/45 (40.0%) if TieuDaoChanNhan (n = 4, median 0.100) has no collapsed pair,
+  which can no longer be checked; vaghawan (median 0.948) can only stay
+  collapsed. Rerun note: the second run found 6 lorahub .bin files truncated by
+  the first run's kill (partial downloads at 04:53) and marked lorahub
+  unreadable; those 6 files were deleted and re-fetched, lorahub 196/196 then
+  read (19110/19110 pairs collapsed). Summary:
+  results/phase3/campaign_2026-10/prevalence_maxpair.json; script
+  code/phase3/scripts/reread_prevalence_maxpair.py.
