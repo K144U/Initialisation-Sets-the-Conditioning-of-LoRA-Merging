@@ -238,3 +238,25 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   recomputes all 45 scored public cohorts from the same lora_A range reads,
   reproducing the stored median as a check, and reports max pair cosine and
   collapsed-pair counts. Running locally (CPU, lora_A only).
+- First prevalence re-read run (2026-10-22 04:06) was stopped by the local
+  harness for low system memory after 310 of 350 adapters were fetched: the
+  script held every adapter's lora_A (16.5 GB so far) in memory at once. Fixed
+  to keep only a fetched flag and load each cohort back from the cache; no
+  measured value changes. Rerun 2026-10-22 ~09:00 from the cache.
+- **WUDI (all 168 cells, analyzed 2026-10-22 08:57 IST): W1 holds, W2 fails,
+  W3 fails, W4 fails, W5 holds, W6 fails. Branch 2: "W2 fails (the published
+  procedure is exposed). The collapse breaks a published data-free method as
+  its authors run it. This becomes the paper's lead result in the abstract and
+  introduction."** Shared/indep worst-task excess ratio for wudi_pub (the
+  authors' early-stopped Adam) 14.86 / 47.60 / 6.30 / 4.69 (Llama / Mistral /
+  Qwen / Yi), every one past its gate; wudi_cf (closed form) 30.71 / 65.12 /
+  7.83 / 5.29. W3 fails: shared-arm tail fraction for wudi_cf is 0.028-0.174,
+  not >= 0.5, so the registered mediator is not what separates the arms.
+  W4 fails: wudi_3k is not strictly between pub and cf on >= 3 bases (it
+  exceeds cf on Qwen, and on Yi it sits below pub). Accuracy: wudi_pub harms
+  GSM8K on 4/4 bases (shared 0.034 / 0.001 / 0.479 / 0.205 vs indep 0.695 /
+  0.251 / 0.619 / 0.717) and HumanEval on 3/4 (Qwen within gate), so W6
+  fails; wudi_cf harms GSM8K on 4/4 (W5). Summary:
+  results/phase3/campaign_2026-10/wudi_summary.json.
+- Third generation of all-task successors queued (12089-12092, afterany
+  12077-12080) so a walltime kill late on Oct 24 does not stop the manifest.
