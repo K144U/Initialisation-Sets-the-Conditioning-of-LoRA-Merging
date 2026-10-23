@@ -1,0 +1,154 @@
+{
+ "rules": "notes/prereg_untruncated_2026-10-19.md",
+ "H1": {
+  "llama31_8b/task_arithmetic": {
+   "shared": 0.015876109785280257,
+   "indep": 0.19269996464108455
+  },
+  "mistral_7b/task_arithmetic": {
+   "shared": 0.014898035499137105,
+   "indep": 0.2505874229831134
+  },
+  "qwen25_7b/task_arithmetic": {
+   "shared": 0.013667780374630257,
+   "indep": 0.1572871028507331
+  },
+  "yi15_9b/task_arithmetic": {
+   "shared": 0.013276973091090516,
+   "indep": 0.12401763436401854
+  },
+  "task_arithmetic": 4,
+  "llama31_8b/ties": {
+   "shared": 0.2943609534971128,
+   "indep": 0.37421683518913956
+  },
+  "mistral_7b/ties": {
+   "shared": 0.3213641632537664,
+   "indep": 0.42495335854192356
+  },
+  "qwen25_7b/ties": {
+   "shared": 0.27283934183951813,
+   "indep": 0.33870660678106684
+  },
+  "yi15_9b/ties": {
+   "shared": 0.24036207806106638,
+   "indep": 0.29132682159871687
+  },
+  "ties": 4,
+  "llama31_8b/dare": {
+   "shared": 0.7675883303876297,
+   "indep": 0.8306489436843839
+  },
+  "mistral_7b/dare": {
+   "shared": 0.7793717476376537,
+   "indep": 0.8426420007147698
+  },
+  "qwen25_7b/dare": {
+   "shared": 0.749076209147381,
+   "indep": 0.8191701619781485
+  },
+  "yi15_9b/dare": {
+   "shared": 0.7709879263015372,
+   "indep": 0.8160325417688452
+  },
+  "dare": 4,
+  "llama31_8b/tvq_b2": {
+   "shared": 0.31749604694792455,
+   "indep": 0.4747259528333771
+  },
+  "mistral_7b/tvq_b2": {
+   "shared": 0.33646448383765976,
+   "indep": 0.514980913451294
+  },
+  "qwen25_7b/tvq_b2": {
+   "shared": 0.28175732055341496,
+   "indep": 0.4440516700934989
+  },
+  "yi15_9b/tvq_b2": {
+   "shared": 0.29798236089960356,
+   "indep": 0.42370707637474725
+  },
+  "tvq_b2": 4,
+  "llama31_8b/knots_ties": {
+   "shared": 0.01936271621534279,
+   "indep": 0.1999637485229909
+  },
+  "mistral_7b/knots_ties": {
+   "shared": 0.017441093888101226,
+   "indep": 0.25465938965560914
+  },
+  "qwen25_7b/knots_ties": {
+   "shared": 0.019048179520463126,
+   "indep": 0.1627305941746322
+  },
+  "yi15_9b/knots_ties": {
+   "shared": 0.015381385212091961,
+   "indep": 0.12656250919276482
+  },
+  "knots_ties": 4
+ },
+ "H2": {
+  "task_arithmetic/humaneval": {
+   "d_trunc": -0.018800813008130086,
+   "d_untrunc": -0.014735772357723578,
+   "halved": false
+  },
+  "dare/humaneval": {
+   "d_trunc": -0.01575203252032522,
+   "d_untrunc": -0.01880081300813012,
+   "halved": false
+  },
+  "ties/gsm8k": {
+   "d_trunc": -0.012333333333333335,
+   "d_untrunc": -0.021666666666666723,
+   "halved": false
+  }
+ },
+ "H3_untruncated_nll": {
+  "llama31_8b/task_arithmetic/seed1": 0.2111677977125751,
+  "llama31_8b/task_arithmetic/indep1": 0.21319829856236566,
+  "llama31_8b/ties/seed1": 0.14954461238179517,
+  "llama31_8b/ties/indep1": 0.12935866057993645,
+  "llama31_8b/dare/seed1": 0.21180467274646209,
+  "llama31_8b/dare/indep1": 0.21274077894588722,
+  "llama31_8b/tvq_b2/seed1": 0.09614314956487069,
+  "llama31_8b/tvq_b2/indep1": 0.09518256886957283,
+  "llama31_8b/knots_ties/seed1": 0.18608139419061243,
+  "llama31_8b/knots_ties/indep1": 0.18565128908565948,
+  "mistral_7b/task_arithmetic/seed1": 0.11847764019254997,
+  "mistral_7b/task_arithmetic/indep1": 0.12412080865961334,
+  "mistral_7b/ties/seed1": 0.04808432961192283,
+  "mistral_7b/ties/indep1": 0.04862989217458258,
+  "mistral_7b/dare/seed1": 0.11927867388399876,
+  "mistral_7b/dare/indep1": 0.1269558333918545,
+  "mistral_7b/tvq_b2/seed1": 0.04519713072148113,
+  "mistral_7b/tvq_b2/indep1": 0.04927337990947367,
+  "mistral_7b/knots_ties/seed1": 0.06279461857176155,
+  "mistral_7b/knots_ties/indep1": 0.05502066245672915,
+  "qwen25_7b/task_arithmetic/seed1": 0.09705979261438225,
+  "qwen25_7b/task_arithmetic/indep1": 0.10104262570462585,
+  "qwen25_7b/ties/seed1": 0.012583712322650875,
+  "qwen25_7b/ties/indep1": 0.013662974609777612,
+  "qwen25_7b/dare/seed1": 0.09695825529474134,
+  "qwen25_7b/dare/indep1": 0.10052873303898235,
+  "qwen25_7b/tvq_b2/seed1": 0.018114276484175185,
+  "qwen25_7b/tvq_b2/indep1": 0.015548332937093567,
+  "qwen25_7b/knots_ties/seed1": 0.03872621824476291,
+  "qwen25_7b/knots_ties/indep1": 0.02681961828033863,
+  "yi15_9b/task_arithmetic/seed1": 0.07128840977487,
+  "yi15_9b/task_arithmetic/indep1": 0.0770461171829841,
+  "yi15_9b/ties/seed1": 0.04412990747582557,
+  "yi15_9b/ties/indep1": 0.0488925043555174,
+  "yi15_9b/dare/seed1": 0.07060801277458667,
+  "yi15_9b/dare/indep1": 0.07608272937471988,
+  "yi15_9b/tvq_b2/seed1": 0.04994919206933246,
+  "yi15_9b/tvq_b2/indep1": 0.04763347412158847,
+  "yi15_9b/knots_ties/seed1": 0.026154245598892067,
+  "yi15_9b/knots_ties/indep1": 0.036925942358994934
+ },
+ "verdict": {
+  "H1": true,
+  "H2": false
+ },
+ "branch": 2
+}

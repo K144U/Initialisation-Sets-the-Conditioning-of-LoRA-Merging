@@ -280,3 +280,19 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   read (19110/19110 pairs collapsed). Summary:
   results/phase3/campaign_2026-10/prevalence_maxpair.json; script
   code/phase3/scripts/reread_prevalence_maxpair.py.
+- **Untruncated heuristics (all 112 cells, analyzed 2026-10-23 06:30 IST):
+  H1 holds, H2 fails. Branch 2: "Truncation loses more on the independent arm
+  but does not explain the lean; the paper says truncation was tested and
+  excluded."** H1: the fraction of the merged update discarded by rank-16
+  truncation is larger on the independent arm for every method on 4/4 bases
+  (task arithmetic 0.012-0.016 shared vs 0.124-0.251 indep; TIES 0.24-0.32 vs
+  0.29-0.42). H2: the lean (indep - shared) does not halve on any of the three
+  pairs: task arithmetic / HumanEval -0.0188 -> -0.0147, DARE / HumanEval
+  -0.0158 -> -0.0188, TIES / GSM8K -0.0123 -> -0.0217 (0 of 3, needed 2).
+  H3 (descriptive) in the summary:
+  results/phase3/campaign_2026-10/untruncated_summary.json.
+- 2026-10-23 06:30: with every other experiment finished, the four all-task
+  states were added to logs/orch_priority (scheduling only; the memory gate is
+  unchanged). Shard-0 jobs hit walltime at ~04:00 and successors 12077/12078
+  took over; atLQ1 and its successors exited with their shard done. Remaining
+  then: 30 of 144 all-task cells (Mistral 8, Qwen 4, Yi 18).
