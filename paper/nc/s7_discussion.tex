@@ -1,0 +1,54 @@
+\paragraph{What to do in practice.} The results reduce to three cases.
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
+\item If the merge averages or sparsifies the updates, or is a solver whose
+  matrix is built from data, the initialisation does not matter and no action
+  is needed.
+\item If the merge solves against a matrix built from the adapters alone, run
+  Algorithm~\ref{alg:audit} first. On a collapsed cohort, add an isotropic
+  ridge, start near $\lambda = 0.01$ and sweep it; do not rely on RegMean's
+  shipped $\alpha$.
+\item If several tasks are fine-tuned with Unsloth or LLaMA-Factory at default
+  settings, or with PiSSA, OLoRA or MiLoRA initialisation, the adapters are
+  collapsed. Setting a different seed per task avoids it for the first two and
+  not for the last three. Designs that share $A$ deliberately, such as
+  HydraLoRA or federated LoRA with a frozen or aggregated $A$, are collapsed by
+  construction.
+\end{itemize}
+
+\paragraph{Predictions that failed.} Six registered predictions did not hold.
+TSV-M was not exposed (\S\ref{subsec:results}). Solver failures on public
+cohorts were not specific to the collapse, and a data-free ridge rule did worse
+than a fixed start (\S\ref{subsec:against}). The heuristics' slight lean
+towards the shared arm persisted at three cohorts per arm
+(\S\ref{subsec:results}). RegMean with activation Grams produced solutions
+$2.2$ to $6.5$ times the mean task update rather than at most three, equally on
+both arms, because the activation Grams are themselves badly conditioned
+($10^{4}$ to $10^{7}$) whatever the initialisation. The retrained translation
+adapter improved but did not become the best adapter at translation.
+
+\paragraph{Relation to the earlier version.} The preprint this paper
+supersedes~\citep{pathak2026rd} reported that our closed-form encoder had the
+lowest worst-task loss of ten methods on all four bases. That advantage came
+from the shared initialisation of its cohorts: on independent cohorts the
+encoder beats the best baseline on no base. It also reported that worst-task
+NLL tracks the downstream ranking of methods. With five or six methods that
+correlation cannot be measured reliably, and on HumanEval its sign is wrong,
+which is why every accuracy claim here is measured in accuracy.
+
+\paragraph{Limitations.} The controlled experiments use four base models of 7
+to 9 billion parameters and four tasks, one of which did not train properly,
+so the merged models contain one weak member; the task-count and rank sweep is
+on one base. Larger models, other architectures and other adapter types are
+untested. The value of $\kappa(\bar H)$ depends on the projector curvature
+model, while the principal cosines, which carry the audit, are independent of
+it. The theory is a
+leading-order expansion verified numerically, not a bound. Training and
+evaluation data overlap on two tasks ($13$ to $16\%$ for instruction following
+and $9$ to $12\%$ for code), so absolute scores are optimistic; every
+comparison here is between the two initialisation arms on the same data, and
+on the disjoint subset the ordering of methods is unchanged in $19$ of $20$
+cases. The library reading is of pinned versions, and defaults can change.
+Finally, the public-cohort merges show that adapter-built solvers fail often on
+released adapters for reasons we have not identified; those failures should
+not be attributed to the collapse, and such solvers should not be used on
+public adapters without checking the result.

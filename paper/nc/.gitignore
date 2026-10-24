@@ -1,0 +1,5 @@
+# Kept out of git: regenerable data for make_figures.py (142 MB), the
+# downloaded Elsevier CAS bundle, and figure previews.
+data/
+NCTemplate/
+figures/preview/

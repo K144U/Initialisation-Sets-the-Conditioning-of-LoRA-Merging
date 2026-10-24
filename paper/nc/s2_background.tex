@@ -1,0 +1,72 @@
+\paragraph{LoRA and its initialisation.} A LoRA adapter replaces a weight
+update by $\Delta W = BA$ with $B \in \R^{m\times r}$, $A \in \R^{r\times d}$
+and $r \ll \min(m, d)$~\citep{hu2022lora}. In the reference implementation and
+in PEFT, $B$ starts at zero and $A$ is drawn from a Kaiming-uniform
+distribution using the global random generator. The two factors play different
+roles: $A$ mostly selects input features and $B$ produces the output, and a
+random untrained $A$ performs almost as well as a trained
+one~\citep{zhu2024asymmetry}. Several designs share $A$ on purpose.
+HydraLoRA~\citep{tian2024hydralora} uses one $A$ for several $B$ heads, and
+federated variants freeze $A$ (FFA-LoRA~\citep{sun2024ffalora}) or aggregate
+only $A$ (FedSA-LoRA~\citep{guo2025fedsalora}) to make aggregation exact.
+Other initialisations reach a shared $A$ without a shared seed:
+PiSSA~\citep{meng2024pissa}, OLoRA~\citep{buyukakyuz2024olora} and
+MiLoRA~\citep{wang2025milora} compute $A$ from the base weight, so every task
+fine-tuned from one base with the same modules and rank starts from the same
+$A$. CorDA~\citep{yang2024corda} orients its decomposition by task data, and
+LoRA-FA~\citep{zhang2023lorafa} freezes a random $A$, so the first starts each
+task differently and the second is shared only when the seed is. This
+literature has not examined what such cohorts do to a merge.
+
+\paragraph{Merging methods, by what they compute.} It helps to sort merging
+methods by the operation they apply to the adapters. \emph{Averaging and
+sparsifying} methods form a weighted combination of the task updates: task
+arithmetic~\citep{ilharco2023task}, TIES~\citep{yadav2023ties},
+DARE~\citep{yu2024dare}, DELLA~\citep{della2024} and the quantised
+TVQ~\citep{kim2025tvq}. \emph{Subspace} methods act on the singular structure
+of the updates: KnOTS~\citep{stoica2025knots} aligns them in a shared basis
+and TSV-M~\citep{gargiulo2025tsv} whitens their stacked singular vectors.
+\emph{Solvers} find the merged weight as the solution of a linear system.
+RegMean~\citep{jin2023regmean} solves a least-squares problem in per-task
+input-activation Gram matrices, MaTS~\citep{tam2024mats} solves a system in a
+Fisher surrogate by conjugate gradient, and RegMean++~\citep{regmeanpp2025}
+and LoRM~\citep{lorm2024} extend the closed form. Fisher
+merging~\citep{matena2022fisher} weights each parameter by a diagonal Fisher
+estimate. For this paper, the decisive property of a solver is where its
+matrix comes from: from data, as in RegMean and MaTS, or from the adapters'
+own factors, as in the data-free form of RegMean that replaces each activation
+Gram by $A_t^\top A_t$.
+
+\paragraph{Analyses of merging.} Weight
+disentanglement~\citep{ortizjimenez2023disentanglement} identifies the
+low-rank curvature structure of LoRA fine-tunes that the quantities below
+adopt. Cao et al.~\citep{cao2026collapse} report that parameter-space conflict metrics
+predict little about when merging fails, while representational
+incompatibility between tasks predicts a great deal, and they prove a limit
+for convex merges. Our results agree where the two overlap: we also find that
+parameter-space geometry does not affect averaging-type merges
+(\S\ref{sec:merging}). We add that one parameter-space quantity does predict
+the behaviour of solvers built from the adapters, which are not convex
+combinations of the fine-tuned models. A large empirical
+study~\citep{systematic2025merging} finds that only task arithmetic reliably
+produces constructive interference across four model families; that result
+concerns which methods work on average, and ours concerns a property of the
+cohort that decides one class of them.
+
+\paragraph{Notation.} A cohort has $T$ adapters $\{(A_t, B_t)\}$ of rank $r$ on
+a common base. The input subspace of adapter $t$ in a layer is the row space
+$V_t = \range(A_t^\top) \subset \R^d$, and $P_t$ is the orthogonal projector
+onto it. We measure overlap between task subspaces by the cosines of the
+principal angles between each pair $V_i, V_j$, and report their median over
+pairs and over a sample of layers. Following the weight-disentanglement
+model, the operator a solver must invert is
+\begin{equation}\label{eq:hbar}
+  \bar H = \frac1T \sum_{t=1}^T P_t,
+\end{equation}
+and the exact interpolator, the minimum-norm update that reproduces every task
+update on its own subspace, is $\tauH = \bar D\,\bar H^{+}$ with
+$\bar D = \tfrac1T\sum_t \Delta W_t$ and $(\cdot)^+$ the pseudoinverse. We
+report the condition number $\kappa(\bar H)$, the ratio of its largest to its
+smallest nonzero eigenvalue, and the \emph{amplification}
+$\|\tauH\| / \|\bar D\|$, how much larger the exact interpolator is than the
+mean update. Both are computed from the adapter weights alone.

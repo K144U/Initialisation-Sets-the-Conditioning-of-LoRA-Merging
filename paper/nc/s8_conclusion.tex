@@ -1,0 +1,17 @@
+Whether the adapters of a LoRA cohort share their initial $A$ is fixed before
+training starts, is decided by a seed or a library default, and is almost never
+reported. It changes the cohort's geometry by orders of magnitude: shared
+starts leave the task subspaces nearly collinear, and a first-order theory in
+the adapters' displacement predicts the resulting conditioning of the merge
+operator to within $0.11\%$. The collapsed regime is common, in our own
+pipelines, in two popular fine-tuning stacks at their defaults, in PiSSA-style
+initialisations whatever the seed, and in $17$ of $45$ public cohorts. Its
+consequences for merging are specific: averaging, sparsifying and data-built
+merges are unaffected, while solvers built from the adapters' own factors fail
+and need a ridge that the shipped default does not supply. A one-minute audit
+of the adapter files tells which case a cohort is in.
+
+\paragraph{Code and data availability.} The code, configurations, per-cell
+results, pre-registration documents and the commit history that orders them
+are public at \url{\repourl}, including the audit script
+(\texttt{measure\_\allowbreak subspace\_\allowbreak geometry.py}).

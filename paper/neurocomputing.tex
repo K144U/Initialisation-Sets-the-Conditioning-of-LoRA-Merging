@@ -1,0 +1,155 @@
+% Neurocomputing (Elsevier) build root on the Elsevier CAS class (cas-sc,
+% single column), 2026-10-06. The SHORT paper: a separate body in nc/, written
+% for this submission. It does not input main.tex, which stays the long version.
+% The earlier elsarticle root is kept in nc/legacy_elsarticle_root.tex.
+%
+% Class files come from the CAS bundle the authors downloaded into
+% nc/NCTemplate/els-cas-templates/ (v2.4); nc/build.sh puts that directory on
+% TEXINPUTS. For a source upload, copy cas-sc.cls and cas-common.sty next to
+% this file. For the two-column look, swap cas-sc for cas-dc and make the
+% full-width figures figure* environments.
+%
+% Decisions behind it are recorded in notes and memory: the venue (free,
+% subscription route), the title (the user's choice), and leaving the
+% rate-distortion material out entirely (the user's choice).
+%
+% Neurocomputing asks for: abstract <= 250 words, 3-5 highlights of about 85
+% characters (also uploaded separately: nc/highlights_upload.txt), keywords,
+% numbered references in square brackets, and a <= 100-word biography plus a
+% passport-type photograph for every author (nc/bios.tex, once supplied).
+%
+% Build from paper/: bash nc/build.sh (pdflatex, bibtex, pdflatex x2).
+%
+% The xcolor option must be passed before the class: cas-sc loads xcolor and
+% colortbl itself, and a later [table] request would option-clash.
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[a4paper,fleqn]{cas-sc}
+
+% Numbered citations in square brackets, ordered by first appearance: the
+% Neurocomputing reference style.
+\usepackage[numbers,sort&compress]{natbib}
+
+\input{preamble}
+
+% pdfLaTeX, so microtype's protrusion and expansion are available. xurl lets
+% the long, hyphen-heavy repository URL break at any character.
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage{tabularx}
+
+% The CAS footer reads "Page n of N", with N written by the class at the end of
+% the document but before the last page is shipped out, so it came out one
+% short ("Page 17 of 16"). Flush every page first and record the last real
+% page number; this hook runs after the class's own and its value wins.
+\makeatletter
+\AtEndDocument{\clearpage
+  \immediate\write\@auxout{\string\csxdef{lastpage}{\the\numexpr\value{page}-1\relax}}}
+\makeatother
+
+\begin{document}
+\let\WriteBookmarks\relax
+
+% Six full-width multi-panel figures: allow taller top floats and fuller float
+% pages, or they all drift to the end of the document. Set after
+% \begin{document} because the CAS class applies its own float parameters at
+% the start of the document, which overrode these when they sat in the
+% preamble.
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{2}
+\setcounter{totalnumber}{3}
+
+\shorttitle{When LoRA adapters share an initialisation}
+\shortauthors{S. Pathak et al.}
+
+\title[mode=title]{When LoRA Adapters Share an Initialisation: Subspace
+Collapse and Its Consequences for Merging}
+
+\author[1]{Sankalp Pathak}[orcid=0009-0006-5666-8271]
+\cormark[1]
+\ead{pathaksankalp04@gmail.com}
+\credit{Conceptualization, Methodology, Software, Investigation, Formal
+analysis, Data curation, Writing -- original draft}
+
+\affiliation[1]{organization={Department of Computer Science and Engineering,
+    Jaypee University of Engineering and Technology},
+  city={Guna},
+  state={Madhya Pradesh},
+  country={India}}
+
+\author[1]{Sanjay Garg}[orcid=0000-0002-2279-9373]
+\ead{gargsv@gmail.com}
+\credit{Supervision, Writing -- review and editing}
+
+\author[1]{Piyush Kumar Singh}
+\ead{Piyushsingh5629@gmail.com}
+\credit{Validation, Visualization, Writing -- review and editing}
+
+\cortext[1]{Corresponding author}
+
+% CAS writes the abstract body to \jobname.abs verbatim, and its optional
+% title argument, when left out, swallows the first command of the body: a
+% bare \input{nc/abstract} reached the file as "{nc/abstract}" and printed
+% that literally. Giving the optional argument explicitly keeps the \input
+% intact, so nc/abstract.tex stays the single source (nc/check.py counts it).
+\begin{abstract}[\abstractname]
+\input{nc/abstract}
+\end{abstract}
+
+\begin{highlights}
+\input{nc/highlights}
+\end{highlights}
+
+\begin{keywords}
+LoRA \sep model merging \sep parameter-efficient fine-tuning \sep
+initialisation \sep conditioning \sep pre-registration
+\end{keywords}
+
+\maketitle
+
+\section{Introduction}\label{sec:intro}
+\input{nc/s1_intro}
+
+\section{Background}\label{sec:background}
+\input{nc/s2_background}
+
+\section{Shared initialisation collapses the task subspaces}\label{sec:collapse}
+\input{nc/s3_collapse}
+
+\section{A first-order theory of the collapse}\label{sec:theory}
+\input{nc/s4_theory}
+
+\section{Where the collapse occurs}\label{sec:prevalence}
+\input{nc/s5_prevalence}
+
+\section{Which merges the collapse affects}\label{sec:merging}
+\input{nc/s6_merging}
+
+\section{Discussion and limitations}\label{sec:discussion}
+\input{nc/s7_discussion}
+
+\section{Conclusion}\label{sec:conclusion}
+\input{nc/s8_conclusion}
+
+% CRediT roles come from the \credit tags in the front matter.
+\printcredits
+
+\input{nc/declarations}
+
+\bibliographystyle{elsarticle-num-names}
+\bibliography{references}
+
+\appendix
+\section{Derivation of the first-order theory}\label{app:theory}
+\input{nc/app_theory}
+
+\section{Pre-registration and commit trail}\label{app:prereg}
+\input{nc/app_prereg}
+
+% Author biographies with photographs, required by Neurocomputing. Created
+% once the three bios and photos arrive; see nc/author_bios.md.
+\IfFileExists{nc/bios.tex}{\input{nc/bios}}{}
+
+\end{document}

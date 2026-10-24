@@ -1,0 +1,62 @@
+This appendix derives Proposition~\ref{prop:drift}. Throughout, $W_0$ is an
+orthonormal basis of the row space of $A_0$, $P_\perp = I - W_0W_0^\top$, and
+the tilts $X_t$ of \eqref{eq:tilt} satisfy $W_0^\top X_t = 0$.
+
+\paragraph{Projectors.} The columns of $W_0 + X_t$ span $V_t$ and have Gram
+matrix $I + X_t^\top X_t$, so exactly
+\[
+  P_t = (W_0 + X_t)\,(I + X_t^\top X_t)^{-1}\,(W_0 + X_t)^\top .
+\]
+In the orthogonal decomposition $\R^d = \operatorname{col}(W_0) \oplus V_0^\perp$,
+with $C_t = (I + X_t^\top X_t)^{-1} = I - X_t^\top X_t + O(\|X_t\|^4)$, the
+operator $\bar H = \frac1T\sum_t P_t$ has the block form
+$\bigl(\begin{smallmatrix} H_{00} & H_{10}^\top \\ H_{10} & H_{11}
+\end{smallmatrix}\bigr)$ with
+\begin{align*}
+  H_{00} &= \tfrac1T\textstyle\sum_t C_t = I - O(\|X\|^2), \\
+  H_{10} &= \tfrac1T\textstyle\sum_t X_t C_t = \bar X + O(\|X\|^3), \\
+  H_{11} &= \tfrac1T\textstyle\sum_t X_t C_t X_t^\top
+          = \tfrac1T\textstyle\sum_t X_t X_t^\top + O(\|X\|^4).
+\end{align*}
+
+\paragraph{Eigenvalues.} The top-left block is $I - O(\|X\|^2)$, which
+accounts for $r$ eigenvalues near $1$. The remaining nonzero eigenvalues are,
+to leading order, those of the Schur complement on $V_0^\perp$,
+\begin{align*}
+  S &= \tfrac1T\textstyle\sum_t X_tX_t^\top - \bar X\bar X^\top + O(\|X\|^4) \\
+    &= \tfrac1T\textstyle\sum_t (X_t - \bar X)(X_t - \bar X)^\top + O(\|X\|^4)
+     = \Sigma_X + O(\|X\|^4),
+\end{align*}
+whose rank is at most $(T-1)r$ because the centred tilts sum to zero. With
+$Tr \le d$ and the tilts in general position this rank is attained, so
+$\bar H$ has $Tr$ nonzero eigenvalues, $r$ near $1$ and $(T-1)r$ equal to those
+of $\Sigma_X = \tfrac1T YY^\top$ to leading order, and
+$\kappa(\bar H) \approx 1/\lambda^{+}_{\min}(\Sigma_X) = T/\sigma_{\min}(Y)^2$.
+
+\paragraph{The interpolator.} Each update lies in its own row space,
+$D_t = D_tP_t$, so the exact interpolator $\tauH = \bar D \bar H^{+}$ is the
+minimum-norm $w$ in $\range(\bar H)$ with $w\,(W_0 + X_t) = D_t(W_0 + X_t)
+= M_t$ for every $t$. Writing $w = aW_0^\top + b$ with $b = wP_\perp$, the
+conditions read $a + bX_t = M_t$. Averaging gives $a = \bar M - b\bar X$;
+subtracting the average gives $b\,(X_t - \bar X) = M_t - \bar M$ for all $t$,
+that is $bY = [M_1 - \bar M, \dots, M_T - \bar M]$, whose minimum-norm solution
+in the span of the tilts is $b = [M_t - \bar M]_t\,Y^{+}$. Minimising
+$\|a\|^2 + \|b\|^2$ jointly couples $a$ and $b$ through $\bar X$; dropping that
+coupling is the only approximation in item~2 and costs a relative
+$O(\|\bar X\|)$, which vanishes for the consensus choice of $W_0$ used in the
+reference-free test.
+
+\paragraph{Scaling.} Under $E_t \mapsto sE_t$ the tilts scale as
+$X_t \mapsto sX_t + O(s^2)$, so $\Sigma_X \mapsto s^2\Sigma_X$ and
+$\kappa \propto s^{-2}$. The differences $M_t - \bar M$ are dominated by the
+differences between the $B_t$, which do not scale with $s$, so
+$\|b\| \propto s^{-1}$. Since $\|b\|$ dominates $\|\tauH\|$ in the collapsed
+regime and $\|\bar D\|$ is $O(1)$ in $s$, the amplification scales as
+$s^{-1}$.
+
+\paragraph{Numerical checks beyond the registered ones.} On synthetic cohorts
+($d = 512$, $r = 16$, $T = 4$) with isotropic and with low-rank anisotropic
+displacements, the formulas match the exact quantities to within $0.3\%$. The
+anisotropic case reproduces $\kappa \sim 10^{5}$ to $10^{6}$ at the same
+$\varepsilon$ that gives $\kappa \sim 5\times10^{2}$ in the isotropic case,
+which is the mechanism behind the second consequence in \S\ref{sec:theory}.

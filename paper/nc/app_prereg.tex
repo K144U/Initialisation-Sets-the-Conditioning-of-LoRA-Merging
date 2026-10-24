@@ -1,0 +1,59 @@
+Every empirical claim in this paper is governed by a registration document
+committed to version control before the compute it governs was run. Each
+document states the predictions, the decision rule, and the consequence text
+for every possible outcome, including the outcomes that would cost us a claim.
+Thresholds were never moved after data were seen, and analyzers refuse to
+report until every cell they need exists.
+
+The documents are in the directory \texttt{paper/prereg/} of the public
+repository, at \url{\repourl}. Table~\ref{tab:commits} gives, for each registration this
+paper relies on, the commit that fixed its rules, the commit that added the
+generator or implementation, and the commit that added the result. A reader
+can check any row with
+\begin{center}
+\texttt{git merge-base -{}-is-ancestor <rules> <result>}
+\end{center}
+which exits zero exactly when the rules commit precedes the result. The hashes
+are those of the public repository, whose history is filtered to remove
+private correspondence and large build artifacts; filtering rewrites hashes
+but not the order of commits, which is what the check depends on. Hashes cited
+inside the registration documents themselves are those of our working
+repository at the time and do not resolve publicly; we leave them unedited,
+since an unedited document is the point.
+
+\begin{table}[pos=h]
+\centering
+\small
+\caption{Commit trail for the registrations behind this paper, in the public
+repository's hash space.}
+\label{tab:commits}
+\begin{tabular}{p{5.2cm}llp{2.2cm}l}
+\toprule
+registration & section & rules & generator & result \\
+\midrule
+drift of $A$ across training & \S\ref{subsec:why} & \texttt{8544b36} & \texttt{0c8770b} & \texttt{5e01813} \\
+replication on independent cohorts & \S\ref{subsec:results} & \texttt{9b3f57e} & --- & \texttt{4328446} \\
+conditioning and the ridge & \S\ref{subsec:results} & \texttt{dc0a1f1} & \texttt{ac4499f}, \texttt{25d4d47} & \texttt{efa1d2d} \\
+untruncated merges & \S\ref{subsec:results} & \texttt{876fcb6} & \texttt{e4043b4} & \texttt{63bdf0c} \\
+shared arm at three cohorts & \S\ref{subsec:results} & \texttt{3b9db2f} & \texttt{7c25aa1} & \texttt{0a4afaf} \\
+public-cohort prevalence & \S\ref{subsec:public} & \texttt{335a4f6} & \texttt{0b6eb40} & \texttt{0a4afaf} \\
+downstream accuracy & \S\ref{subsec:results} & \texttt{a56b31e} & \texttt{321a808} & \texttt{0a4afaf} \\
+\addlinespace
+first-order theory & \S\ref{sec:theory} & \texttt{b0c01a5} & \texttt{222e30b} & \texttt{58d987d} \\
+RegMean with data, and adapter-only & \S\ref{subsec:results} & \texttt{a50ab11} & \texttt{b93b76f} & \texttt{400f499} \\
+\quad amendment (Gram correction) & \S\ref{subsec:results} & \texttt{bf971af} & \texttt{bddcad9}, \texttt{383e8e3} & \texttt{58d987d} \\
+heuristics equivalence & \S\ref{subsec:results} & \texttt{0265f64} & \texttt{bf80ff8} & \texttt{400f499} \\
+TSV-M, MaTS, diagonal Fisher & \S\ref{subsec:results} & \texttt{c4f2e28} & \texttt{64741e5} & \texttt{58d987d} \\
+task count, rank, PiSSA, translation & \S\ref{subsec:tr} & \texttt{67ec001} & \texttt{61ec804}, \texttt{dd952d5} & \texttt{58d987d} \\
+public-cohort merges & \S\ref{subsec:against} & \texttt{1be9d9d} & \texttt{383e8e3}, \texttt{6dcd988} & \texttt{58d987d} \\
+data-free ridge rule & \S\ref{subsec:against} & \texttt{d733f81} & \texttt{6dcd988}, \texttt{dd952d5} & \texttt{58d987d} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The amendment row records one error. Adapter-only RegMean was described
+as using the Gram $\sum_t A_t^\top A_t$, but a missing hook made every earlier
+run fall back to $\sum_t \Delta_t^\top\Delta_t$. We found this, registered an
+amendment before any affected cell ran, fixed the hook and re-ran the results
+under their original rules; both registered predictions still hold, and every
+adapter-only RegMean number in this paper uses the described Gram.

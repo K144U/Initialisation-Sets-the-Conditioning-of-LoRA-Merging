@@ -1,0 +1,119 @@
+% LEGACY: the elsarticle root used before 2026-10-06, kept for reference only.
+% The live root is paper/neurocomputing.tex on the Elsevier CAS class (cas-sc).
+% Neurocomputing (Elsevier) build root, 2026-10-06. The SHORT paper: a
+% separate body in nc/, written for this submission. It does not input
+% main.tex, which stays the long version (the infofus/jair/tmlr roots) and is
+% not edited by this build.
+%
+% Decisions behind it are recorded in notes and memory: the venue (free,
+% subscription route), the title (the user's choice), and leaving the
+% rate-distortion material out entirely (the user's choice; it lives in the
+% long version and the Zenodo preprint).
+%
+% Neurocomputing asks for: abstract <= 250 words, 3-5 highlights of about 85
+% characters, keywords, and a <= 100-word biography plus a passport-type
+% photograph for EVERY author, submitted as separate files (nc/author_bios.md).
+%
+% Build from paper/:  pdflatex neurocomputing && bibtex neurocomputing &&
+% pdflatex neurocomputing && pdflatex neurocomputing
+% (nc/build.sh does exactly that). Figures: python nc/make_figures.py.
+%
+% The xcolor option must be passed before the class for the same reason as in
+% every other root: a later [table] request option-clashes silently and
+% \cellcolor goes undefined.
+\PassOptionsToPackage{table}{xcolor}
+% Numbered citations in square brackets, ordered by first appearance: the
+% Neurocomputing reference style. (At first submission any consistent style is
+% accepted under Elsevier's "Your Paper Your Way"; matching the journal's own
+% style anyway saves a step at proof.)
+\documentclass[preprint,12pt,number,sort&compress]{elsarticle}
+
+\journal{Neurocomputing}
+
+\input{preamble}
+
+% pdfLaTeX only, so microtype's protrusion and expansion are both available
+% (the preamble's note against microtype concerns tectonic/XeTeX). xurl lets
+% the repository URL, which is long and hyphen-heavy, break at any character.
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage{tabularx}
+
+% Six full-width multi-panel figures: the default float fractions push them
+% all to the end of the document, so allow taller top floats and fuller
+% float pages.
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.75}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{When LoRA Adapters Share an Initialisation: Subspace Collapse and Its
+Consequences for Merging}
+
+\author[jiet]{Sankalp Pathak\corref{cor1}}
+\ead{pathaksankalp04@gmail.com}
+\author[jiet]{Sanjay Garg}
+\ead{gargsv@gmail.com}
+\author[jiet]{Piyush Kumar Singh}
+\ead{Piyushsingh5629@gmail.com}
+\cortext[cor1]{Corresponding author.}
+\affiliation[jiet]{organization={Department of Computer Science and Engineering,
+    Jaypee University of Engineering and Technology},
+  city={Guna}, state={Madhya Pradesh}, country={India}}
+
+\begin{abstract}
+\input{nc/abstract}
+\end{abstract}
+
+\begin{highlights}
+\input{nc/highlights}
+\end{highlights}
+
+\begin{keyword}
+LoRA \sep model merging \sep parameter-efficient fine-tuning \sep
+initialisation \sep conditioning \sep pre-registration
+\end{keyword}
+
+\end{frontmatter}
+
+\section{Introduction}\label{sec:intro}
+\input{nc/s1_intro}
+
+\section{Background}\label{sec:background}
+\input{nc/s2_background}
+
+\section{Shared initialisation collapses the task subspaces}\label{sec:collapse}
+\input{nc/s3_collapse}
+
+\section{A first-order theory of the collapse}\label{sec:theory}
+\input{nc/s4_theory}
+
+\section{Where the collapse occurs}\label{sec:prevalence}
+\input{nc/s5_prevalence}
+
+\section{Which merges the collapse affects}\label{sec:merging}
+\input{nc/s6_merging}
+
+\section{Discussion and limitations}\label{sec:discussion}
+\input{nc/s7_discussion}
+
+\section{Conclusion}\label{sec:conclusion}
+\input{nc/s8_conclusion}
+
+\input{nc/declarations}
+
+\bibliographystyle{elsarticle-num}
+\bibliography{references}
+
+\appendix
+\section{Derivation of the first-order theory}\label{app:theory}
+\input{nc/app_theory}
+
+\section{Pre-registration and commit trail}\label{app:prereg}
+\input{nc/app_prereg}
+
+\end{document}

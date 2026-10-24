@@ -1,0 +1,22 @@
+% Neurocomputing: single paragraph, at most 250 words. Every number appears
+% in the body. Count with nc/check.py, which also checks the highlights.
+Low-rank adapters (LoRA) fine-tuned from one base model are routinely merged
+into a single model. We show that a detail almost never reported, whether the
+adapters of a cohort started from one random draw of the LoRA $A$ factor or
+from independent draws, changes the cohort's geometry by orders of magnitude.
+With a shared draw, which one training seed or the defaults of Unsloth and
+LLaMA-Factory arrange, the adapters' task subspaces collapse onto nearly the
+same directions: their median principal cosine is 0.99, against 0.05 for
+independent draws, on four base models at every task count and rank tested. PiSSA initialisation collapses a cohort whatever
+the seed. A first-order theory in the adapters' displacement from their
+shared start predicts the consequence: the condition number of the merge
+operator grows as the inverse square of the displacement and the exact
+interpolator as its inverse, matching 21 measured cases to within 0.11\%. The
+collapse is common: 17 of 45 public LoRA cohorts, sampled under a
+pre-registered frame, are in it. Its effect on merging is narrow. Averaging
+and sparsifying methods, and solvers whose matrix is built from data, are
+unaffected. Merges that solve a linear system built from the adapters' own
+factors fail, down to zero accuracy on GSM8K and HumanEval; a ridge term
+recovers most of the loss, and RegMean's shipped regulariser is too weak to.
+The regime can be read from the adapter files in about a CPU minute. Every
+test was pre-registered.
