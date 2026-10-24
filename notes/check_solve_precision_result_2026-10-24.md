@@ -141,3 +141,31 @@ For the paper: report the registered rebuild (0.245 vs 0.249; 0.121
 independent), the instability with this spread, and that it was measured only
 on the cohort the rule flagged. RegMean at 1e-6 is float32-stable on every
 case (rel_trunc max 9.7e-3).
+
+## Seed sweep on the other three bases (unregistered, descriptive), written before its cells
+
+Asked for by the user on 2026-10-25. Every float32 value the paper gives for
+the encoder at lambda 0 on a shared cohort is one draw of the default random
+stream. On Llama, Mistral and Qwen the rule passed on the median (5.2e-3,
+3.3e-3, 8.8e-3), but single modules there differ between float32 and float64
+by up to 8.1e-2, 6.29e-1 and 3.20e-1 (Yi: 4.84e-1), so those values may
+scatter as Yi's do.
+
+Cells (6): for each of llama31_8b, mistral_7b and qwen25_7b, the published
+cell `eval_ridge_cond/<base>__rd_l0__seed1.json` with `rng_seed` 1 and 2
+added, float32 and production truncation, everything else unchanged; named
+`<base>__rd_l0_rerun_s<k>__seed1` in `eval_precision_f64/`. Same nll_tau as
+the published cells: `nll_tau_cache_v2/<base>__seed1.json`, whose nll_tau
+equals each published cell's to every digit (checked 2026-10-25). Not
+included: float64 rebuilds of these bases (the rule did not call for them)
+and exact-truncation draws.
+
+What is reported, whatever it shows: per base, the three draws (published,
+s1, s2) of worst and average excess, their range, and whether every draw of
+the shared cohort is worse than that base's independent float32 cell (Llama
+0.0713, Mistral 0.1504, Qwen 0.0256, all float32-stable to below 1e-4 on
+every module). Reading fixed now: if a base's range reaches its
+shared-minus-independent gap, the paper says that on that base the direction
+does not survive the random stream; otherwise it gives the range as the
+float32 scatter on that base. The paper's sentence that the spread was
+measured on the Yi cohort only is replaced by the four-base result.
