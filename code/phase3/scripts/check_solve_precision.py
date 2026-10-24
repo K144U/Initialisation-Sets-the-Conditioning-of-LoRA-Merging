@@ -153,39 +153,56 @@ def deff32(v, names):
     return d
 
 
-def trunc32(W, r):
+def trunc_prod(W, r):
+    """Production's rank-r realisation (randomised SVD, q = r, 4 power iterations)."""
     torch.manual_seed(0)
     A, B = svd_truncate_to_rank(W, r)
     return B.double() @ A.double()
 
 
-def trunc64(W, r):
-    U, S, V = torch.svd_lowrank(W, q=r + 16, niter=8)
+def trunc_exact(W, r):
+    """Exact rank-r truncation in float64. Oversampled to q = r + 64, which covers the
+    whole rank-64 range of a four-adapter merge; checked per case against the full SVD
+    ('trunc_check')."""
+    torch.manual_seed(0)
+    U, S, V = torch.svd_lowrank(W.double(), q=min(r + 64, *W.shape), niter=8)
     return (U[:, :r] * S[:r]) @ V[:, :r].T
+
+
+def trunc_full(W, r):
+    U, S, Vh = torch.linalg.svd(W.double(), full_matrices=False)
+    return (U[:, :r] * S[:r]) @ Vh[:r]
 
 
 def rel(a, b):
     return float((a - b).norm() / b.norm())
 
 
-def compare(v, names, W32, W64):
+def compare(v, names, W32, W64, check=False):
+    """rel_trunc and amp* use exact truncations (the decision rule); prod_gap and
+    amp_prod describe production's randomised truncation of the float32 W."""
     ta = {L: sum(factors64(v, n, L)[1] @ factors64(v, n, L)[0] for n in names) / len(names)
           for L in v.layer_names()}
     rows = {}
     for L in v.layer_names():
         r = v.layer_topology[L][2]
-        t32, t64 = trunc32(W32[L], r), trunc64(W64[L], r)
+        e32, e64, p32 = trunc_exact(W32[L], r), trunc_exact(W64[L], r), trunc_prod(W32[L], r)
         n_ta = float(ta[L].norm())
-        rows[L] = {"rel_pre": rel(W32[L].double(), W64[L]), "rel_trunc": rel(t32, t64),
-                   "amp32": float(t32.norm()) / n_ta, "amp64": float(t64.norm()) / n_ta}
+        rows[L] = {"rel_pre": rel(W32[L].double(), W64[L]), "rel_trunc": rel(e32, e64),
+                   "amp32": float(e32.norm()) / n_ta, "amp64": float(e64.norm()) / n_ta,
+                   "prod_gap": rel(p32, e32), "amp_prod": float(p32.norm()) / n_ta}
+        if check:
+            rows[L]["trunc_check"] = max(rel(e32, trunc_full(W32[L], r)),
+                                         rel(e64, trunc_full(W64[L], r)))
     return rows
 
 
 def summarise(rows, extra=None):
     out = {}
-    for k in ("rel_pre", "rel_trunc", "amp32", "amp64"):
-        xs = [r[k] for r in rows.values()]
-        out[k] = {"median": st.median(xs), "max": max(xs)}
+    for k in ("rel_pre", "rel_trunc", "amp32", "amp64", "prod_gap", "amp_prod", "trunc_check"):
+        xs = [r[k] for r in rows.values() if k in r]
+        if xs:
+            out[k] = {"median": st.median(xs), "max": max(xs)}
     if extra:
         out.update(extra)
     return out
@@ -226,15 +243,15 @@ def main() -> int:
             names = [n for n, _ in sp]
             v = load_view(sp)
             rows_rm, rows_en, d32, d64 = {}, {}, {}, {}
-            for L in v.layer_names():
-                s = sub(v, L)
+            for i, L in enumerate(v.layer_names()):
+                s, check = sub(v, L), i < 4                # full-SVD check on the first layer
                 rows_rm.update(compare(s, names,
                                        production(s, names, rm.merge_regmean, ridge_lambda=RM_LAMBDA),
-                                       regmean64(s, names, RM_LAMBDA)))
+                                       regmean64(s, names, RM_LAMBDA), check))
                 W64, d = encoder64(s, names)
                 rows_en.update(compare(s, names,
                                        production(s, names, rde.merge_rd_encoder, bits=32,
-                                                  ridge_lambda=0.0, realize="rank_r"), W64))
+                                                  ridge_lambda=0.0, realize="rank_r"), W64, check))
                 d64.update(d)
                 d32.update(deff32(s, names))
             res[key] = {
@@ -252,7 +269,9 @@ def main() -> int:
                 x = s[m]
                 print(f"   {m:13s} rel_trunc median {x['rel_trunc']['median']:.2e} max {x['rel_trunc']['max']:.2e}"
                       f"  rel_pre median {x['rel_pre']['median']:.2e}"
-                      f"  amp32 {x['amp32']['median']:.3f} amp64 {x['amp64']['median']:.3f}", flush=True)
+                      f"  amp32 {x['amp32']['median']:.3f} amp64 {x['amp64']['median']:.3f}"
+                      f"  prod_gap median {x['prod_gap']['median']:.2e}"
+                      f"  trunc_check max {x['trunc_check']['max']:.1e}", flush=True)
     return 0
 
 

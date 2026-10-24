@@ -314,3 +314,26 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   Yi 0.533 vs 0.487), and the translation adapter alone is below base on chrF
   on three bases (59.2 vs 60.6, 55.9 vs 57.1, 55.2 vs 56.6; Yi 56.6 vs 43.8).
   Summary: results/phase3/campaign_2026-10/all_tasks_summary.json.
+- **Solve precision check (professor B1), 2026-10-24.** Rule committed first
+  (notes/check_solve_precision_2026-10-24.md, b82b81e), script d204175. The
+  first run is void as a test of the rule: its `rel_trunc` compared
+  production's truncation of the float32 W against an oversampled randomised
+  truncation of the float64 W, not "exact rank-16 truncation of each" as the
+  rule says. Seen before stopping it (3 of 8 cases): rel_pre medians 2.4e-3 to
+  2.6e-2, amp32 vs amp64 within 1.2%, rel_trunc 0.15 to 0.38. The indep1
+  encoder case gave it away: rel_pre 1.5e-6 but rel_trunc 0.15, so that
+  number measured the truncation algorithm, not precision. Fix (script only,
+  rule and threshold unchanged): exact truncation of both (float64, q = r + 64,
+  checked against the full SVD on the first layer of every case), with
+  production's truncation kept as a separate descriptive number, `prod_gap`.
+  One-layer probe after the fix (indep1 encoder, Llama and Qwen layer 0):
+  rel_trunc 1.7e-6 to 4.6e-6, trunc_check <= 1.1e-14. Run 1's partial output
+  is kept outside the repo as a record; the rerun is the one the rule reads.
+- **Methods finding from the same probe (not part of the rule):** production's
+  rank-r realisation, `svd_truncate_to_rank`, is a randomised SVD with q = r
+  (no oversampling) and 4 power iterations. On the probed modules it differs
+  from the exact rank-16 truncation by 11% to 18% in Frobenius norm
+  (`prod_gap`). Every truncated merge in the paper went through it. The norms
+  agree (amp within ~1%), so the amplification results are unaffected; the
+  untruncated experiment already shows the heuristics' conclusions do not
+  depend on truncation. The paper must state the realisation as it is.
