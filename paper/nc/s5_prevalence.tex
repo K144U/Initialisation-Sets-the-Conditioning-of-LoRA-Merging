@@ -58,8 +58,9 @@ who fine-tunes several tasks without changing the seed obtains a collapsed
 cohort. TRL's \texttt{SFTTrainer} builds the PEFT model before it seeds, so its
 behaviour depends on the calling script, and we found no seeding before
 adapter creation in axolotl. Without any seed the regime does not arise by
-accident, since fresh processes start the generator differently. This is a
-reading of source code, not a measurement.
+accident, since fresh processes start the generator differently. We also
+measured both stacks at their defaults (\S\ref{subsec:routes}): each gives
+identical initial $A$ across tasks and runs.
 
 \subsection{Prevalence in public adapters}\label{subsec:public}
 
