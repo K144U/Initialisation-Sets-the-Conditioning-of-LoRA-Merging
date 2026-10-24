@@ -44,7 +44,7 @@ import os
 
 import torch
 
-from ._adapter_utils import svd_truncate_to_rank
+from ._adapter_utils import REALIZE, svd_truncate_to_rank
 from .tests._fake_model import FakeLoraLayer, FakePeftModel
 
 
@@ -74,14 +74,41 @@ def _layer_seed(seed: int, layer: str) -> int:
     return int.from_bytes(digest[:4], "little")
 
 
-def _right_basis(delta: torch.Tensor, r: int) -> torch.Tensor:
-    """Top-r right-singular basis of delta (in_dim x r), fp32."""
-    d = delta.to(torch.float32)
+def _right_basis(delta: torch.Tensor, r: int,
+                 dtype: torch.dtype = torch.float32) -> torch.Tensor:
+    """Top-r right-singular basis of delta (in_dim x r), fp32 unless dtype says."""
+    d = delta.to(dtype)
     if min(d.shape) > 256 and r < min(d.shape) // 4:
         _, _, v = torch.svd_lowrank(d, q=min(r + 8, min(d.shape)), niter=4)
         return v[:, :r]
     _, _, vh = torch.linalg.svd(d, full_matrices=False)
     return vh[:r, :].T
+
+
+def _right_basis_factors(A: torch.Tensor, B: torch.Tensor) -> torch.Tensor:
+    """Exact right-singular basis of B @ A (rank r) from the factors, in their dtype."""
+    Qa, Ra = torch.linalg.qr(A.T)
+    Qb, Rb = torch.linalg.qr(B)
+    _, _, Vh = torch.linalg.svd(Rb @ Ra.T)
+    return Qa @ Vh.T
+
+
+def _exact_truncate_factored(C: torch.Tensor, Q: torch.Tensor,
+                             r: int) -> tuple[torch.Tensor, torch.Tensor]:
+    """Exact rank-r truncation of W = C Q^T (C: out x k, Q: in x k), in float64.
+
+    W has rank at most k, so its SVD comes from the small matrix C R^T, where
+    Q = Qo R; no randomised SVD and no (out x in) decomposition. Returns
+    (A, B) as svd_truncate_to_rank does, zero-padded if k < r."""
+    C, Q = C.to(torch.float64), Q.to(torch.float64)
+    Qo, R = torch.linalg.qr(Q)
+    U, S, Vh = torch.linalg.svd(C @ R.T, full_matrices=False)
+    k = min(r, S.numel())
+    A = torch.zeros(r, Q.shape[0], dtype=torch.float64, device=Q.device)
+    B = torch.zeros(C.shape[0], r, dtype=torch.float64, device=C.device)
+    A[:k] = Vh[:k] @ Qo.T
+    B[:, :k] = U[:, :k] * S[:k]
+    return A, B
 
 
 def _quantize_rotated(eta: torch.Tensor, bits: float, c: float,
@@ -125,6 +152,8 @@ def merge_rd_encoder(
     h_t_mode: str = "projector",
     fisher_data: dict | None = None,
     renorm: str | None = None,
+    solve_dtype: str = "float32",
+    truncation: str = "randomized",
     **_kwargs,
 ) -> None:
     """The paper's encoder as a registry merge method. bits >= 32 = no
@@ -165,12 +194,27 @@ def merge_rd_encoder(
             win is really about scale it should vanish under renorm.
             Applied before SVD truncation, and to the rank_deff factors too
             (scaling eta scales W* by the same factor).
+    solve_dtype, truncation (notes/check_solve_precision_2026-10-24.md):
+      "float32" / "randomized" (defaults) are the production merge.
+      solve_dtype="float64" builds the bases from the adapter factors exactly
+      and solves in float64; truncation="exact" realises W* at rank r by an
+      exact SVD of its factored form instead of the randomised one in
+      svd_truncate_to_rank. Projector mode only.
     full_rank_patch (v2) is RETIRED: mutating base weights does not
     propagate coherently through unsloth-patched forward paths (measured
     +10 nats, 2026-06-12); kept only for the fake-model unit test."""
     assert len(adapter_names) == len(weights)
     if h_t_mode not in ("projector", "fisher_diag"):
         raise ValueError(f"unknown h_t_mode {h_t_mode!r}")
+    if solve_dtype not in ("float32", "float64"):
+        raise ValueError(f"unknown solve_dtype {solve_dtype!r}")
+    if truncation not in ("randomized", "exact"):
+        raise ValueError(f"unknown truncation {truncation!r}")
+    f64 = solve_dtype == "float64"
+    if f64 or truncation == "exact":
+        assert h_t_mode == "projector" and realize == "rank_r" and not full_rank_patch, \
+            "solve_dtype/truncation options cover the projector rank_r merge only"
+    dt = torch.float64 if f64 else torch.float32
     if h_t_mode == "fisher_diag":
         if fisher_data is None:
             raise ValueError("h_t_mode='fisher_diag' requires fisher_data")
@@ -188,8 +232,12 @@ def merge_rd_encoder(
     diag: dict[str, dict] = {}
     for layer in model.layer_names():
         _, in_dim, r = model.layer_topology[layer]
-        deltas = [model.get_delta(ad, layer).to(torch.float32)
-                  for ad in adapter_names]
+        factors = ([model.get_layer(ad, layer) for ad in adapter_names]
+                   if f64 and hasattr(model, "get_layer") else None)
+        if factors is not None:
+            deltas = [f.scaling * (f.B.to(dt) @ f.A.to(dt)) for f in factors]
+        else:
+            deltas = [model.get_delta(ad, layer).to(dt) for ad in adapter_names]
 
         if h_t_mode == "fisher_diag":
             # H_t = diag(d_t), Hbar = diag(d_bar) with d_bar = sum_t w_t d_t.
@@ -208,7 +256,10 @@ def merge_rd_encoder(
             # spectral diag analog: condition number of denom
             denom_cond = float(denom.max() / denom.min().clamp_min(1e-30))
         else:
-            bases = [_right_basis(d, r) for d in deltas]
+            if factors is not None:
+                bases = [_right_basis_factors(f.A.to(dt), f.B.to(dt)) for f in factors]
+            else:
+                bases = [_right_basis(d, r, dt) for d in deltas]
             M_w = torch.cat([math.sqrt(wt) * V for wt, V in zip(w, bases)], dim=1)
             G = M_w.T @ M_w                                      # (Tr x Tr)
             S, U = torch.linalg.eigh(G)
@@ -244,8 +295,14 @@ def merge_rd_encoder(
                 if h_t_mode == "projector":
                     eta = eta * renorm_factor   # keeps the rank_deff factors consistent
 
-        A_new, B_new = svd_truncate_to_rank(W_star, r)
-        truncated = B_new.to(torch.float32) @ A_new.to(torch.float32)
+        if truncation == "exact":
+            if REALIZE["untruncated"]:
+                raise ValueError("truncation='exact' conflicts with an untruncated cell")
+            A_new, B_new = _exact_truncate_factored(eta @ torch.diag(S_eff.rsqrt()), Q, r)
+        else:
+            A_new, B_new = svd_truncate_to_rank(W_star, r)
+        A_new, B_new = A_new.to(torch.float32), B_new.to(torch.float32)
+        truncated = B_new.to(W_star.dtype) @ A_new.to(W_star.dtype)
         total = float((W_star ** 2).sum())
         kept = float((truncated ** 2).sum())
         diag[layer] = {
@@ -280,6 +337,7 @@ def merge_rd_encoder(
     deffs = [v["d_eff"] for v in diag.values()]
     conds = [v["denom_cond"] for v in diag.values()]
     print(f"[rd_encoder] h_t_mode={h_t_mode} bits={bits} "
+          f"solve_dtype={solve_dtype} truncation={truncation} "
           f"ridge_lambda={ridge_lambda} layers={len(diag)} "
           f"d_eff min/max={min(deffs)}/{max(deffs)} "
           f"trunc_mass mean={sum(fracs)/len(fracs):.4f} "
