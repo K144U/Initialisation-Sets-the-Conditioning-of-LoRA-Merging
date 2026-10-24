@@ -7,6 +7,9 @@ plus two unregistered controls.
   rd_l0_rerun     control: the production configuration unchanged
   rd_l0_f32exact  control: float32 solve, exact truncation
 
+  --seeds: the unregistered follow-up of the same note, float32 with
+  production and with exact truncation at rng_seed 1 and 2.
+
 Template: the published cell eval_ridge_cond/yi15_9b__rd_l0__seed1.json.
 """
 from __future__ import annotations
@@ -24,11 +27,20 @@ ARMS = {
 }
 
 
+SEED_ARMS = {
+    f"rd_l0_{t}_s{k}": {**extra, "rng_seed": k}
+    for t, extra in (("rerun", {}), ("f32exact", {"truncation": "exact"}))
+    for k in (1, 2)
+}
+
+
 def main() -> int:
+    seeds = "--seeds" in sys.argv[1:]
+    arms = SEED_ARMS if seeds else ARMS
     m = Manifest()
     t = template(RES / "eval_ridge_cond" / f"{BASE}__rd_l0__{COHORT}.json")
     assert t["method"] == "rd_encoder" and float(t["method_kwargs"]["ridge_lambda"]) == 0.0
-    for tag, extra in ARMS.items():
+    for tag, extra in arms.items():
         name = f"{BASE}__{tag}__{COHORT}"
         cfg = {k: v for k, v in t.items() if k != "output_path"}
         cfg.update(method_kwargs={**t["method_kwargs"], **extra},
@@ -37,7 +49,10 @@ def main() -> int:
         for k in INVARIANT:
             assert cfg.get(k) == t.get(k), (name, k)
         m.add(name, cfg, OUT_DIR, "run_eval_cell.py", min_free=40.0)
-    m.write("precision_f64_manifest.json", expect=3)
+    if seeds:
+        m.write("precision_seeds_manifest.json", expect=4)
+    else:
+        m.write("precision_f64_manifest.json", expect=3)
     return 0
 
 

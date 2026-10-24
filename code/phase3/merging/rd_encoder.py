@@ -154,6 +154,7 @@ def merge_rd_encoder(
     renorm: str | None = None,
     solve_dtype: str = "float32",
     truncation: str = "randomized",
+    rng_seed: int | None = None,
     **_kwargs,
 ) -> None:
     """The paper's encoder as a registry merge method. bits >= 32 = no
@@ -200,6 +201,8 @@ def merge_rd_encoder(
       and solves in float64; truncation="exact" realises W* at rank r by an
       exact SVD of its factored form instead of the randomised one in
       svd_truncate_to_rank. Projector mode only.
+    rng_seed: if set, seeds the global generator before the merge, so the
+      randomised SVDs draw a chosen stream (default None leaves it alone).
     full_rank_patch (v2) is RETIRED: mutating base weights does not
     propagate coherently through unsloth-patched forward paths (measured
     +10 nats, 2026-06-12); kept only for the fake-model unit test."""
@@ -215,6 +218,8 @@ def merge_rd_encoder(
         assert h_t_mode == "projector" and realize == "rank_r" and not full_rank_patch, \
             "solve_dtype/truncation options cover the projector rank_r merge only"
     dt = torch.float64 if f64 else torch.float32
+    if rng_seed is not None:
+        torch.manual_seed(int(rng_seed))
     if h_t_mode == "fisher_diag":
         if fisher_data is None:
             raise ValueError("h_t_mode='fisher_diag' requires fisher_data")

@@ -374,3 +374,20 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   6 (hallisky, lorahub, adamkarvonen, DataAttributionEval, nvidia,
   agentic-moral-alignment), versions/stages/checkpoints/ablations 12.
   results/phase3/campaign_2026-10/collapsed_cohort_classes.json (+ metadata).
+- **Professor B1, run 2 (valid), 2026-10-24: the rule lands in its second
+  branch.** Fifteen of sixteen (base, arm, method) medians of rel_trunc are
+  below 1e-2; Yi shared encoder at lambda 0 is 1.09e-2 and fails (Qwen shared
+  encoder 8.79e-3 is the next highest). Every float64/float32 amplification
+  ratio is within 0.1% of 1. Production's randomised truncation (q = r, 4
+  power iterations) is a median 30-38% from the exact rank-r truncation on the
+  shared arm and 12-20% on the independent arm (prod_gap); the amplification
+  it gives is within about 1% of the exact one. Result and rebuild plan:
+  notes/check_solve_precision_result_2026-10-24.md (8b72999), before any cell;
+  summary results/phase3/campaign_2026-10/solve_precision.json. Rebuild
+  (51bebb5): encoder kwargs solve_dtype=float64, truncation=exact (defaults
+  unchanged, unit tests pass, matches the check's float64 reference to 3.6e-8),
+  one registered cell yi15_9b__rd_l0_f64__seed1 and two unregistered controls
+  (rd_l0_rerun, rd_l0_f32exact), PBS 12608-12610. Local finding: on Yi seed1
+  layer 0 two float32 encoder merges differing only in torch seed differ by
+  14% (k) and 49% (v) before truncation, as much as either differs from
+  float64; layer 31, 0.3%.

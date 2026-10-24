@@ -77,3 +77,40 @@ and 49% (v_proj) before truncation, about as much as each differs from float64
 (12% and 55%). On layer 31 both differences are 0.3%. The median over modules
 is the 1.09e-2 above. This is a property of the unregularised float32 solve on
 the collapsed operator and is reported with the rebuild.
+
+## Rebuild results (2026-10-24, PBS 12608-12610)
+
+Worst-task excess (nats), same nll_tau in all four (checked equal):
+
+| merge | gsm8k | alpaca | magicoder | translation | worst | avg |
+|---|---|---|---|---|---|---|
+| float32, published cell (Aug) | 0.0858 | 0.2490 | 0.1249 | 0.1973 | 0.2490 | 0.1643 |
+| float32, rerun (control) | 0.0847 | 0.2489 | 0.1223 | 0.1782 | 0.2489 | 0.1585 |
+| **float64, exact truncation (registered)** | 0.0805 | 0.2448 | 0.1148 | 0.1452 | **0.2448** | 0.1463 |
+| float32, exact truncation (control) | 0.2850 | 0.7201 | 0.8365 | 0.7846 | 0.8365 | 0.6565 |
+
+The independent cohort's float32 cell is 0.1209, so shared over independent
+is 2.06 in float32 and 2.02 in float64. The registered rebuild reproduces the
+float32 merge's damage to 0.004 nats: rounding is not what makes this merge
+fail.
+
+The f32exact control does not do what it was designed to do. It changes the
+truncation, and with it the random stream: production's randomised truncation
+draws from the global generator after each layer, so removing it shifts the
+random state of every later layer's randomised basis computation, which on
+this cohort moves the float32 W by up to tens of percent on the worst modules
+(local finding above). The control therefore differs from the rerun in two
+things at once and cannot attribute its 0.837 to truncation. What it does show
+is that a float32 realisation of this merge can land far from 0.249.
+
+## Follow-up (unregistered, descriptive), written before its cells
+
+To separate the two, the encoder gets an `rng_seed` kwarg (default None, no
+change) that seeds the global generator at the start of the merge. Four cells
+on the same template: float32 with production truncation at rng_seed 1 and 2,
+and float32 with exact truncation at rng_seed 1 and 2. If the float32 values
+scatter across seeds under both truncations, the float32 encoder at lambda 0
+on this cohort is unstable and the paper says so, with the float64 value as
+the reference; if exact truncation is high under every seed and production
+truncation low, the difference is the truncation algorithm. Either way it is
+reported as a follow-up that was not registered.
