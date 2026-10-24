@@ -172,7 +172,7 @@ $T = 2, 4, 8$, and with the rank, $5.6\times10^{3}$, $1.1\times10^{4}$ and
 $4.1\times10^{4}$ at $r = 8, 16, 64$, while on the independent arm the
 amplification stays at the orthogonal value $T$ ($1.99$, $4.00$, $7.91$).
 
-Nor can a practitioner train their way out. We registered seven changes to
+No change to training that we tried leaves the regime. We registered seven changes to
 training on a shared-initialisation cohort of Llama-3.1-8B, each chosen to move
 $A$ further or less far: the learning rate divided or multiplied by $3$, one or
 four epochs instead of two, $A$'s learning rate multiplied by $4$, LoRA+ at
@@ -180,7 +180,8 @@ its recommended ratio of $16$ between the learning rates of $B$ and $A$, and
 $A$'s initial value scaled by $0.25$. Every one stays collapsed, at median
 cosine $0.956$ to $0.999$, and the independent counterparts of the two changes
 expected to move $A$ furthest stay at $0.047$ and $0.048$. \S\ref{sec:theory} uses these
-cohorts to test the theory out of sample.
+cohorts to test the theory out of sample, and reports one of them, a smaller
+initial $A$, that stays collapsed but lowers the damage to a solver.
 
 A shared seed is not the only route into the regime. PiSSA~\citep{meng2024pissa}
 initialises $A$ from the principal singular vectors of the base weight, which

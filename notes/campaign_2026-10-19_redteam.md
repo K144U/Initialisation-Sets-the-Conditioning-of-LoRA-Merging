@@ -351,3 +351,13 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   heur_tost_summary.json (cluster, 2026-09-28) copied into the repo for this;
   script code/phase3/scripts/heuristics_cohort_permutation.py, result
   results/phase3/campaign_2026-10/heuristics_cohort_permutation.json.
+- **Correction to the training-regimes entry above (2026-10-24, while
+  writing section 4).** "t* = 22.2 against the largest shared t 0.575 (39x)"
+  is wrong: the largest tilt among the eight shared Part K cohorts is 0.826
+  (A_0 x 0.25), and the analyzer's K4 uses that maximum, so the margin is
+  22.2 / 0.826 = 27x. K4 (>= 3x) holds either way; no verdict changes. Also
+  recorded for the paper (descriptive, not registered): RegMean(1e-6) excess
+  on the A_0 x 0.25 cohort is 0.022 nats, below indep1's 0.071, while lr x 3
+  at the same kappa (1.2e3) gives 0.340; other Part K excesses: lr x 1/3
+  0.718, 1 epoch 0.531, 4 epochs 0.411, LoRA+ 0.344; K5 pairs lr x 3 0.340 vs
+  0.057, A-lr x 4 0.376 vs 0.073 (read from eval_regimes on the cluster).
