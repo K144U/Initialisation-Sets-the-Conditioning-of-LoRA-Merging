@@ -169,3 +169,29 @@ shared-minus-independent gap, the paper says that on that base the direction
 does not survive the random stream; otherwise it gives the range as the
 float32 scatter on that base. The paper's sentence that the spread was
 measured on the Yi cohort only is replaced by the four-base result.
+
+## Seed sweep results (2026-10-25, PBS 12634-12639)
+
+`code/phase3/scripts/summarize_precision_sweep.py`; nll_tau and rng_seed
+asserted per cell. Worst-task excess (nats), float32, production truncation,
+shared cohort seed1:
+
+| base | default (published) | rng_seed 1 | rng_seed 2 | range | independent | gap (min draw - indep) | range / gap |
+|---|---|---|---|---|---|---|---|
+| Llama | 0.3081 | 0.3326 | 0.3196 | 0.0245 | 0.0713 | 0.2368 | 0.10 |
+| Mistral | 9.7799 | 9.8584 | 9.8081 | 0.0785 | 0.1504 | 9.6295 | 0.008 |
+| Qwen | 0.1973 | 0.1927 | 0.2194 | 0.0268 | 0.0256 | 0.1670 | 0.16 |
+| Yi (above) | 0.2490 | 0.2164 | 0.2794 | 0.0630 | 0.1209 | 0.0955 | 0.66 |
+
+Average excess: Llama 0.2157 / 0.2328 / 0.2301; Mistral 9.4499 / 9.2457 /
+9.0354; Qwen 0.1190 / 0.1284 / 0.1378; Yi 0.1643 / 0.1404 / 0.1621.
+
+Reading, as fixed before the cells: on no base does the range reach the
+shared-minus-independent gap, and in all twelve draws the shared cohort is
+worse than the independent one (shared over independent 4.3 to 4.7 on Llama,
+65 on Mistral, 7.5 to 8.6 on Qwen, 1.8 to 2.3 on Yi). The paper gives the
+ranges as the float32 scatter of the unregularised encoder on each base and
+drops "measured on this cohort only". Yi is the least stable base in both
+absolute and relative terms. On Mistral the worst task is stable to 0.8% but
+single tasks move by up to 1.2 nats (alpaca 9.15 vs 7.94), all of them near
+9 nats where the merged model has collapsed.

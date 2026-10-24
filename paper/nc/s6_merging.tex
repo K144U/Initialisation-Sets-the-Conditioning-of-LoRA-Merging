@@ -308,10 +308,15 @@ solve amplifies its rounding, so float32 merges that differ only in the random
 seed reach worst-task excesses of $0.22$ to $0.28$ nats on this cohort, and
 $0.26$ to $0.84$ when the truncation to rank $r$ is exact. All of them lie
 above the independent cohort, whose float32 merge agrees with float64 to
-$3\times10^{-6}$. The float32 values we report for the unregularised encoder on
-shared cohorts are single draws of this kind: their direction does not depend
-on the draw, but their size does, and we measured the spread on this cohort
-only. Adapter-only RegMean agrees with float64 to within $1\%$ on every module.
+$3\times10^{-6}$. Three draws on a shared cohort of each other base, under the
+same seeds, span $0.31$ to $0.33$ nats on Llama, $9.78$ to $9.86$ on Mistral and
+$0.19$ to $0.22$ on Qwen. On every base each draw lies above the independent
+cohort, and the spread is smaller than the gap to it, most narrowly on Yi
+($0.063$ against $0.095$). The float32 values we report for the unregularised
+encoder on shared cohorts are single draws of this kind: their direction does
+not depend on the draw, but their size moves by $0.02$ to $0.08$ nats, which we
+measured on one shared cohort per base. Adapter-only RegMean agrees with
+float64 to within $1\%$ on every module.
 
 Every merge in this paper is cut to rank $r$ by a randomised SVD that computes
 $r$ vectors with four power iterations and no oversampling. On the merges of
