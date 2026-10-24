@@ -296,3 +296,21 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   unchanged). Shard-0 jobs hit walltime at ~04:00 and successors 12077/12078
   took over; atLQ1 and its successors exited with their shard done. Remaining
   then: 30 of 144 all-task cells (Mistral 8, Qwen 4, Yi 18).
+- 2026-10-24: all-task complete (144/144, no failures; every job and
+  successor exited). With it every registered cell of the campaign exists.
+- **All-task accuracy (analyzed 2026-10-24 16:58 IST): T1 holds on WMT chrF,
+  fails on IFEval; T2 holds on both. Branch 3 on IFEval: "The collapse is
+  reported as invisible on that task, with the adapter's own reference row
+  beside it."** Translation behaves as branch 1 (the claims extend to it).
+  T1, encoder lambda* minus lambda = 0 on seed1: chrF +13.9 / +55.1 / +2.9 /
+  +6.5 points (Llama / Mistral / Qwen / Yi; gate 2.0 on all), IFEval strict
+  +0.080 / +0.333 / +0.043 / +0.040 (gates 0.081 / 0.068 / 0.081 / 0.078), so
+  1 of 4; Llama misses its gate by 0.001 and is counted as a miss, as
+  registered. T2, shared minus indep: chrF |d| <= 1.07 (gate 2.0) and IFEval
+  |d| <= 0.057 (gates 0.073-0.082) for task arithmetic and TIES on 4/4 bases;
+  one cohort per arm, so a null at the gate's resolution. Reference rows
+  (descriptive): the instruction adapter alone does not beat the base model on
+  IFEval (Llama 0.627 vs 0.703, Mistral 0.463 vs 0.467, Qwen 0.607 vs 0.717,
+  Yi 0.533 vs 0.487), and the translation adapter alone is below base on chrF
+  on three bases (59.2 vs 60.6, 55.9 vs 57.1, 55.2 vs 56.6; Yi 56.6 vs 43.8).
+  Summary: results/phase3/campaign_2026-10/all_tasks_summary.json.
