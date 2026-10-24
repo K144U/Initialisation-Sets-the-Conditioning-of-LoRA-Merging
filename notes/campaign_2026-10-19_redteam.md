@@ -337,3 +337,17 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   agree (amp within ~1%), so the amplification results are unaffected; the
   untruncated experiment already shows the heuristics' conclusions do not
   depend on truncation. The paper must state the realisation as it is.
+- **Professor B4, heuristics lean with the cohort as unit (post hoc, not
+  registered), 2026-10-24.** The registered sign test (29 of 38, p = 0.0017)
+  treats the 40 method x benchmark x base cells as independent although each
+  base's ten cells share its six cohorts and the eval sets. Exact cohort-level
+  permutation (arm labels permuted over each base's six cohorts, the same
+  relabeling for all ten cells of the base, 20^4 relabelings): mean lean 0.74
+  points toward the shared arm, two-sided p = 0.0073; per-base means all favour
+  shared (Llama 1.04, Mistral 0.42, Qwen 1.09, Yi 0.41 points), none alone
+  significant (per-base p >= 0.1, the floor with 3 + 3 cohorts). TIES on Llama
+  at HumanEval: shared 6.5 points higher, past the 5-point margin as a single
+  cell, while the pooled TIES / HumanEval mean (-0.7, SE 0.9) is equivalent.
+  heur_tost_summary.json (cluster, 2026-09-28) copied into the repo for this;
+  script code/phase3/scripts/heuristics_cohort_permutation.py, result
+  results/phase3/campaign_2026-10/heuristics_cohort_permutation.json.

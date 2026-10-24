@@ -1,0 +1,19 @@
+{
+ "note": "post hoc (professor B4); cohort-level exact permutation, 20^4 relabelings",
+ "n_cells": 40,
+ "mean_d": -0.007407317073170739,
+ "per_base_mean_d": {
+  "llama31_8b": -0.010434146341463424,
+  "mistral_7b": -0.00415447154471546,
+  "qwen25_7b": -0.010917073170731734,
+  "yi15_9b": -0.004123577235772338
+ },
+ "p_two_sided": 0.007325,
+ "p_one_sided_shared_better": 0.0036625,
+ "per_base_p_two_sided": {
+  "llama31_8b": 0.1,
+  "mistral_7b": 0.5,
+  "qwen25_7b": 0.2,
+  "yi15_9b": 0.6
+ }
+}
