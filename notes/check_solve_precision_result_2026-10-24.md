@@ -114,3 +114,30 @@ on this cohort is unstable and the paper says so, with the float64 value as
 the reference; if exact truncation is high under every seed and production
 truncation low, the difference is the truncation algorithm. Either way it is
 reported as a follow-up that was not registered.
+
+## Follow-up results (PBS 12611-12614)
+
+| float32 encoder, Yi seed1, lambda 0 | stream | worst | avg |
+|---|---|---|---|
+| production truncation | default (Aug and rerun) | 0.2490 / 0.2489 | 0.1643 / 0.1585 |
+| production truncation | rng_seed 1 | 0.2164 | 0.1404 |
+| production truncation | rng_seed 2 | 0.2794 | 0.1621 |
+| exact truncation | default | 0.8365 | 0.6565 |
+| exact truncation | rng_seed 1 | 0.3887 | 0.2830 |
+| exact truncation | rng_seed 2 | 0.2604 | 0.1625 |
+| float64, exact truncation (deterministic) | none | 0.2448 | 0.1463 |
+
+Reading: the float32 values scatter with the random stream under both
+truncations, so the f32exact control's 0.837 is the unstable float32 solve,
+not the truncation algorithm as such; exact truncation widens the scatter
+(0.26 to 0.84) relative to production truncation (0.22 to 0.28), which is
+consistent with it keeping the largest components of the rounding noise
+exactly. The float64 value lies inside the production-truncation spread. In
+all seven float32 realisations the shared cohort is worse than the
+independent one (0.121, float32-stable to 2e-6), so the direction the paper
+relies on does not depend on the realisation; the size of a single float32
+value does, by about +-0.03 nats here under the truncation every merge uses.
+For the paper: report the registered rebuild (0.245 vs 0.249; 0.121
+independent), the instability with this spread, and that it was measured only
+on the cohort the rule flagged. RegMean at 1e-6 is float32-stable on every
+case (rel_trunc max 9.7e-3).

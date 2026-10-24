@@ -391,3 +391,11 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   layer 0 two float32 encoder merges differing only in torch seed differ by
   14% (k) and 49% (v) before truncation, as much as either differs from
   float64; layer 31, 0.3%.
+- **B1 rebuild and follow-up results, 2026-10-24.** Registered float64
+  rebuild of Yi seed1 encoder lambda 0: worst-task excess 0.245 against 0.249
+  float32 (rerun 0.249), independent 0.121; shared/indep 2.02 vs 2.06.
+  Unregistered: float32 scatters with the random stream, 0.216 / 0.249 / 0.279
+  under production truncation and 0.260 / 0.389 / 0.837 under exact
+  truncation; all seven above the independent 0.121. Details and the reading
+  in notes/check_solve_precision_result_2026-10-24.md; cells in
+  results/phase3/eval_precision_f64/.
