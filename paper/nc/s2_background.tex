@@ -30,12 +30,45 @@ and TSV-M~\citep{gargiulo2025tsv} whitens their stacked singular vectors.
 RegMean~\citep{jin2023regmean} solves a least-squares problem in per-task
 input-activation Gram matrices, MaTS~\citep{tam2024mats} solves a system in a
 Fisher surrogate by conjugate gradient, and RegMean++~\citep{regmeanpp2025}
-and LoRM~\citep{lorm2024} extend the closed form. Fisher
+and LoRM~\citep{lorm2024} extend the closed form.
+WUDI-Merging~\citep{cheng2025wudi} needs no data: it uses the rows of each
+task update as surrogate inputs for that task, so its least-squares matrix is
+$\sum_t \Delta W_t^\top \Delta W_t / \|\Delta W_t\|_F^2$, built from the
+updates themselves, and its authors minimise the objective with a few hundred
+gradient steps instead of solving the system. Fisher
 merging~\citep{matena2022fisher} weights each parameter by a diagonal Fisher
 estimate. For this paper, the decisive property of a solver is where its
-matrix comes from: from data, as in RegMean and MaTS, or from the adapters'
-own factors, as in the data-free form of RegMean that replaces each activation
-Gram by $A_t^\top A_t$.
+matrix comes from: from data, as in RegMean and MaTS, or from the adapters
+themselves, as in WUDI and in the data-free form of RegMean that replaces each
+activation Gram by $A_t^\top A_t$.
+
+\paragraph{Shared initialisation in weight-space merging.} For full models, a
+shared starting point is what makes weight averaging work. Two copies of a
+network trained from the same weights with different SGD noise end in minima
+joined by a segment of low loss, once training is past an early
+point~\citep{frankle2020lmc}. Models fine-tuned from one pre-trained
+checkpoint stay in one basin~\citep{neyshabur2020transfer}, which is why
+averaging them, as model soups do~\citep{wortsman2022soups}, improves accuracy
+instead of destroying it. Models trained from different initialisations must
+first be aligned, and Git Re-Basin~\citep{ainsworth2023rebasin} aligns them by
+permuting hidden units. The adapters of a LoRA cohort share their base model by
+construction, so for them this question is settled. The shared starting point
+we study is a second one, the random draw of $A$, and it acts on the two kinds
+of merge differently: it is harmless to averaging, consistent with this
+literature, but it collapses the subspaces that a solver has to tell apart. No
+alignment undoes it. Replacing $A_t$ by $QA_t$ and $B_t$ by $B_tQ^{-1}$, of
+which a permutation of the rank dimension is a special case, leaves every row
+space unchanged (\S\ref{sec:prevalence}). Two LoRA methods treat overlap
+between adapters as the obstacle to merging. LoRI~\citep{zhang2025lori}
+freezes each task's $A$ as an independent random matrix, so that the adapters
+are approximately orthogonal, and argues that this limits interference when
+they are merged; the argument assumes that the draws are independent, which a
+shared seed violates without any visible sign. ZipLoRA~\citep{shah2024ziplora}
+observes that highly aligned columns of two LoRA updates merge poorly and
+learns per-column coefficients that reduce the alignment. The overlap a shared
+draw creates lies in the input subspaces and is close to total, and in our
+experiments it leaves averaging intact and breaks the merges that solve
+against it.
 
 \paragraph{Analyses of merging.} Weight
 disentanglement~\citep{ortizjimenez2023disentanglement} identifies the
@@ -70,3 +103,27 @@ report the condition number $\kappa(\bar H)$, the ratio of its largest to its
 smallest nonzero eigenvalue, and the \emph{amplification}
 $\|\tauH\| / \|\bar D\|$, how much larger the exact interpolator is than the
 mean update. Both are computed from the adapter weights alone.
+
+\paragraph{Ill-conditioned and ill-posed.} The exact interpolator asks for one
+update that reproduces each task's update on that task's subspace. If the
+subspaces coincide, this cannot be done unless the tasks agree, since tasks
+that ask for different outputs on the same inputs cannot all be satisfied; the
+pseudoinverse then returns their least-squares compromise, the mean update
+$\bar D$. A collapsed cohort lies close to that case, because its subspaces
+differ only by small tilts that training added to a common start. An
+interpolator exists, but it reproduces the tasks by acting along the tilts,
+and under a uniform rescaling of the tilts its size relative to $\bar D$
+scales inversely with them (\S\ref{sec:theory}). As the tilts shrink it
+therefore grows without bound, while at coincidence it is $\bar D$: the
+solution does not depend continuously on the adapters at that point, so the
+problem is ill-posed there in the sense of Hadamard~\citep{engl1996regularization}.
+A collapsed cohort is a small perturbation of this ill-posed problem, which is
+why $\kappa(\bar H)$ is large, and the distinction decides what helps. Solving
+more accurately does not, because the large solution is what the problem asks
+for, not an error in computing it; in float64 our encoder's solution is as
+large as in float32, and the merge rebuilt from it fails as before
+(\S\ref{sec:merging}). What helps is asking a different question. The
+mean update, which averaging methods form without inverting anything, is the
+least-squares answer at the limit a collapsed cohort approaches, and a ridge,
+the standard treatment of ill-posed problems~\citep{engl1996regularization},
+damps the tilt directions in which the solution is unstable.
