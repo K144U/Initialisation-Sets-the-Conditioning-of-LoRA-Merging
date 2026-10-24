@@ -1,0 +1,127 @@
+{
+ "note": "Professor B3. Descriptive reading of public metadata, not registered. Route: the most specific evidence of how the members came to share A. Members: 'tasks' if they are adapters for distinct tasks or objectives one might merge, 'versions' if versions, stages, checkpoints or data ablations of one model. No non-random initialisation and no frozen or shared-by-design A was found in any readable config.",
+ "source": "collapsed_cohort_metadata.json (code/phase3/scripts/collapsed_cohort_metadata.py)",
+ "cohorts": [
+  {
+   "namespace": "ceselder",
+   "evidence": "card: second adapter is 'DPO on top of Best v3'",
+   "route": "derived (card)",
+   "members": "versions"
+  },
+  {
+   "namespace": "vaghawan",
+   "evidence": "names: '-best' and '-last' of the same runs; Unsloth tag",
+   "route": "checkpoints (name)",
+   "members": "versions"
+  },
+  {
+   "namespace": "Satya-Sri",
+   "evidence": "names: 'stage1_adapter' and 'sft_adapter'; Unsloth tag",
+   "route": "stages (name)",
+   "members": "versions"
+  },
+  {
+   "namespace": "Tevatron",
+   "evidence": "names: 'OmniEmbed-v0.1' and 'OmniEmbed-v0.1-multivent', identical cards",
+   "route": "variant (name)",
+   "members": "versions"
+  },
+  {
+   "namespace": "Journey9ni",
+   "evidence": "names: '-lora' and '-lora-vstibench'",
+   "route": "variant (name)",
+   "members": "versions"
+  },
+  {
+   "namespace": "LASR-Callum",
+   "evidence": "card: 'same seed, same hyperparameters' for a pair; data-mixture ablations",
+   "route": "seed (card)",
+   "members": "versions"
+  },
+  {
+   "namespace": "NAMAA-Space",
+   "evidence": "Unsloth + TRL tags; OCR model versions 0.1 and 0.2.2.1",
+   "route": "library (tag)",
+   "members": "versions"
+  },
+  {
+   "namespace": "EhtishamAhmed",
+   "evidence": "Unsloth + TRL tags; two data splits of one banking-FAQ task",
+   "route": "library (tag)",
+   "members": "versions"
+  },
+  {
+   "namespace": "ewinregirgojr",
+   "evidence": "Unsloth tags on 3 of 4; tool-use v1-v3 and a stock-analyst adapter",
+   "route": "library (tag)",
+   "members": "versions"
+  },
+  {
+   "namespace": "McGill-NLP",
+   "evidence": "LLM2Vec supervised and unsupervised SimCSE, both after the same MNTP stage",
+   "route": "same project",
+   "members": "versions"
+  },
+  {
+   "namespace": "Jazhyc",
+   "evidence": "ten versions of one judge adapter (v2 to v8)",
+   "route": "same project",
+   "members": "versions"
+  },
+  {
+   "namespace": "berencarkci",
+   "evidence": "names: 'va-sft' and 'va-sft-v5'",
+   "route": "same project",
+   "members": "versions"
+  },
+  {
+   "namespace": "hallisky",
+   "evidence": "sixteen writing-style adapters (formality, voice, sarcasm, ...)",
+   "route": "same project",
+   "members": "tasks"
+  },
+  {
+   "namespace": "lorahub",
+   "evidence": "196 FLAN-task adapters released for composition",
+   "route": "same project",
+   "members": "tasks"
+  },
+  {
+   "namespace": "adamkarvonen",
+   "evidence": "22 adapters: taboo words, PersonaQA, LatentQA",
+   "route": "same project",
+   "members": "tasks"
+  },
+  {
+   "namespace": "DataAttributionEval",
+   "evidence": "three datasets (XSTest variants, counterfactual)",
+   "route": "same project",
+   "members": "tasks"
+  },
+  {
+   "namespace": "nvidia",
+   "evidence": "Aegis safety policies: defensive and permissive",
+   "route": "same project",
+   "members": "tasks"
+  },
+  {
+   "namespace": "agentic-moral-alignment",
+   "evidence": "three GRPO game environments, same setup",
+   "route": "same project",
+   "members": "tasks"
+  }
+ ],
+ "route_counts": {
+  "derived (card)": 1,
+  "checkpoints (name)": 1,
+  "stages (name)": 1,
+  "variant (name)": 2,
+  "seed (card)": 1,
+  "library (tag)": 3,
+  "same project": 9
+ },
+ "members_counts": {
+  "tasks": 6,
+  "versions": 12
+ }
+}

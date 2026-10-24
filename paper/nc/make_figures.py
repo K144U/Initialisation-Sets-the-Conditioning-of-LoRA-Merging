@@ -273,7 +273,7 @@ def fig2_theory(G):
     e.set_ylim(0.998, 1.002)
     e.ticklabel_format(axis="y", useOffset=False)
     e.set_ylabel(r"predicted / exact $\kappa(\bar H)$")
-    title(e, "21 configurations, all within 0.11%")
+    title(e, "21 configurations, all within 0.10%")
     lab(e, "d")
     fig.tight_layout(h_pad=1.6, w_pad=1.6)
     save(fig, "fig2_theory")

@@ -14,20 +14,41 @@ and are used unchanged throughout.
 \begin{algorithmic}[1]
 \Require adapters $\{A_t\}_{t=1}^{T}$ on a common base; a sample of layers
   $\mathcal{L}$; thresholds $c_{\mathrm{hi}} = 0.9$, $c_{\mathrm{lo}} = 0.5$
-\State $C \gets \emptyset$
-\For{each layer $\ell \in \mathcal{L}$}
-  \State $V_t \gets \mathrm{orth}\bigl(A_t^{(\ell)\top}\bigr)$ for each $t$
-    \Comment{orthonormal basis of the row space}
-  \For{each pair $i < j$}
-    \State $C \gets C \cup \operatorname{svals}\bigl(V_i^{\top} V_j\bigr)$
+\For{each pair $i < j$}
+  \For{each layer $\ell \in \mathcal{L}$}
+    \State $V_t \gets \mathrm{orth}\bigl(A_t^{(\ell)\top}\bigr)$ for $t \in \{i, j\}$
+      \Comment{orthonormal basis of the row space}
+    \State $c_{ij}^{(\ell)} \gets \operatorname{median}\,
+      \operatorname{svals}\bigl(V_i^{\top} V_j\bigr)$
       \Comment{cosines of the principal angles}
   \EndFor
+  \State $c_{ij} \gets \operatorname{median}_{\ell}\, c_{ij}^{(\ell)}$
 \EndFor
-\State $\bar c \gets \operatorname{median}(C)$
-\State \Return \textsc{collapsed} if $\bar c > c_{\mathrm{hi}}$,
-  \textsc{separated} if $\bar c < c_{\mathrm{lo}}$, else \textsc{indeterminate}
+\State $c^\star \gets \max_{i<j} c_{ij}$;\quad
+  $n_{\mathrm{c}} \gets \#\{(i,j) : c_{ij} > c_{\mathrm{hi}}\}$
+\State \Return \textsc{collapsed} if $c^\star > c_{\mathrm{hi}}$,
+  \textsc{separated} if $c^\star < c_{\mathrm{lo}}$, else
+  \textsc{indeterminate}; and $n_{\mathrm{c}}$
 \end{algorithmic}
 \end{algorithm}
+
+\paragraph{Why the most similar pair.} The first version of the audit, the one
+under which the public cohorts were sampled and first scored, pooled every
+principal cosine of every pair and took the median. A registered experiment
+showed that this misses a partial collapse. We built, on each base, a cohort
+of four adapters in which only one pair of the six shares an initialisation:
+the GSM8K and code adapters of a shared cohort with the instruction and
+translation adapters of an independent one. The pooled median is $0.047$ to
+$0.053$, so the old audit calls the cohort separated, while the collapsed pair
+sits at $0.993$ to $0.996$. One pair is enough to break a solver: adapter-only
+RegMean at $\lambda = 10^{-6}$ leaves a worst-task excess of $1.9$, $10.5$,
+$0.45$ and $0.74$ nats on Llama, Mistral, Qwen and Yi, against $0.071$,
+$0.155$, $0.026$ and $0.121$ on the fully independent cohort, and
+$\kappa(\bar H)$ is $1.7\times10^{3}$ to $5.3\times10^{3}$ against $1.5$. The
+registered consequence was to change the statistic to the maximum over pairs,
+keep the thresholds, and re-read the public cohorts, which
+\S\ref{subsec:public} reports. The audit also returns the number of collapsed
+pairs, which says how much of a cohort is affected.
 
 A cohort cannot be repaired by editing its $A$ factors while keeping each
 adapter's behaviour. Replacing $A_t$ by $QA_t$ for an invertible $Q$ preserves
@@ -79,7 +100,9 @@ reach the registered $50$ cohorts; five could not be scored, leaving $45$.
 \includegraphics[width=\textwidth]{nc/figures/fig3_prevalence.pdf}
 \caption{The $45$ public LoRA cohorts, sampled by a frame registered before
 any download. Horizontal axis: median principal cosine between the cohort's
-task subspaces, with the audit thresholds dotted and its histogram on top.
+task subspaces, the audit statistic at the time of sampling, with the
+thresholds dotted and its histogram on top; the maximum pairwise cosine of
+Algorithm~\ref{alg:audit} moves two cohorts upwards (text).
 Vertical axis: relative distance between the cohorts' $A$ factors, which is
 $\sqrt 2$ for two independent random draws. Two cohorts whose members differ in
 rank have no distance and appear only in the histogram. Open markers are our
@@ -88,10 +111,11 @@ paper among $22$ checked that releases LoRA cohorts.}
 \label{fig:prevalence}
 \end{figure}
 
-Seventeen of the $45$ cohorts, $37.8\%$, are collapsed; the registered
-prediction was $20\%$. The distribution is bimodal rather than a continuum cut
-by a threshold (Figure~\ref{fig:prevalence}): $27$ cohorts are separated, with
-median cosine $0.076$, and only one falls between the thresholds, at $0.868$.
+Under the pooled median, the statistic registered at the time, $17$ of the $45$
+cohorts, $37.8\%$, are collapsed; the registered prediction was $20\%$. The
+distribution is bimodal rather than a continuum cut by a threshold
+(Figure~\ref{fig:prevalence}): $27$ cohorts are separated, with median cosine
+$0.076$, and only one falls between the thresholds, at $0.868$.
 An unplanned check supports the measurement. If two adapters draw $A$
 independently and $A$ moves little, then
 $\|A_i - A_j\|_F \approx \sqrt2\,\|A_i\|_F$. The separated cohorts give a
@@ -101,6 +125,40 @@ $1.7\%$, to $0.760$ (Figure~\ref{fig:prevalence}, vertical axis). One separated
 cohort sits at only $0.29$, the single point this check does not explain. Our
 own cohorts and the three released with KnOTS (below) fall inside the two
 public clusters.
+
+We re-read the cohorts under the maximum pairwise cosine about two months
+after the original download. Five could no longer be read, because eleven of
+their adapters had been deleted or made private; for the other $40$ the pooled
+median reproduces the stored value to within $0.003$. Two statuses change,
+both upwards. In one cohort of five adapters the pooled median is $0.064$ but
+four of its ten pairs are collapsed, at up to $0.998$, so it moves from
+separated to collapsed. Another moves from separated to indeterminate ($0.440$
+to $0.717$). No collapsed cohort leaves the class. Counting the five
+unreadable cohorts at their stored status, $18$ of the $45$, $40.0\%$, are
+collapsed under the audit as it now stands. One unreadable cohort of four
+adapters had a pooled median of $0.100$ and could hide a collapsed pair, so the
+count is $18$ or $19$.
+
+\paragraph{What the collapsed cohorts are.} The sampling frame groups adapters
+by publisher and base model, and a group is not necessarily a set of tasks
+anyone would merge. We read the names, model cards, tags and configurations of
+the $18$ collapsed cohorts. By the most specific evidence each offers of how
+its members came to share $A$: in one, the card states that one adapter was
+trained on top of the other; in one, the card states that the runs used the
+same seed; four are checkpoints, stages or variants of one run by their names;
+three carry the tags of Unsloth, which seeds by default
+(\S\ref{subsec:libraries}); and nine are sibling adapters of one project with
+nothing recorded about seeds. No readable configuration uses a non-random
+initialisation, and none shares or freezes $A$ by design. By what the members
+are, six cohorts hold adapters for distinct tasks or objectives that one might
+merge. They include LoRAHub's $196$ FLAN-task adapters~\citep{huang2024lorahub},
+released to be composed, and sixteen writing-style adapters. The other twelve
+are versions, stages, checkpoints or data ablations of one model, for which a
+collapse is expected and merging is rarely the point. The $40\%$ is therefore
+the prevalence of the regime among public cohorts as the frame defines them,
+not among cohorts built for merging. Six collapsed cohorts of distinct tasks,
+one of them built for composition, is enough to show that the regime is not
+confined to our own experiments. This reading is ours and was not registered.
 
 The cohorts that merging papers evaluate on are harder to sample. We checked the
 $22$ merging papers we cite in order, intending to audit the first two that

@@ -361,3 +361,16 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   at the same kappa (1.2e3) gives 0.340; other Part K excesses: lr x 1/3
   0.718, 1 epoch 0.531, 4 epochs 0.411, LoRA+ 0.344; K5 pairs lr x 3 0.340 vs
   0.057, A-lr x 4 0.376 vs 0.073 (read from eval_regimes on the cluster).
+- **Professor B3, the 18 collapsed public cohorts classified (descriptive, not
+  registered), 2026-10-24.** Hub metadata (names, cards, tags, configs; no
+  weights) fetched by collapsed_cohort_metadata.py for the 17 readable
+  max-pair-collapsed cohorts and vaghawan (unreadable, stored COLLAPSED; the
+  earlier note naming kmerakeb as the unreadable collapsed one was wrong,
+  kmerakeb was stored SEPARATED). Route by most specific evidence: derived per
+  card 1 (ceselder, DPO on top of SFT), same seed per card 1 (LASR-Callum),
+  checkpoints/stages/variants by name 4 (vaghawan, Satya-Sri, Tevatron,
+  Journey9ni), Unsloth tags 3, same project with nothing recorded 9. No
+  non-random init, no frozen or shared-by-design A. Members: distinct tasks
+  6 (hallisky, lorahub, adamkarvonen, DataAttributionEval, nvidia,
+  agentic-moral-alignment), versions/stages/checkpoints/ablations 12.
+  results/phase3/campaign_2026-10/collapsed_cohort_classes.json (+ metadata).
