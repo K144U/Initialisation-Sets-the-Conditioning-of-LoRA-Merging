@@ -399,3 +399,10 @@ excess and every nll_tau entry to 0.002 nats (check_restage.py).
   truncation; all seven above the independent 0.121. Details and the reading
   in notes/check_solve_precision_result_2026-10-24.md; cells in
   results/phase3/eval_precision_f64/.
+- **B1 seed sweep on Llama, Mistral, Qwen, 2026-10-25** (user request,
+  unregistered, plan committed before the cells in 6dd9d7f). Float32 encoder
+  at lambda 0, shared seed1 cohort, rng_seed 1 and 2 beside the published
+  draw: worst-task excess Llama 0.308 / 0.333 / 0.320, Mistral 9.780 / 9.858
+  / 9.808, Qwen 0.197 / 0.193 / 0.219 (Yi 0.249 / 0.216 / 0.279). All twelve
+  draws above the independent cohort; range / gap 0.10, 0.008, 0.16, 0.66.
+  PBS 12634-12639; results 57dc66c; section 6 now gives the four-base spread.
