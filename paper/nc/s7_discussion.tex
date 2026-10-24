@@ -3,28 +3,78 @@
 \item If the merge averages or sparsifies the updates, or is a solver whose
   matrix is built from data, the initialisation does not matter and no action
   is needed.
-\item If the merge solves against a matrix built from the adapters alone, run
-  Algorithm~\ref{alg:audit} first. On a collapsed cohort, add an isotropic
-  ridge, start near $\lambda = 0.01$ and sweep it; do not rely on RegMean's
-  shipped $\alpha$.
+\item If the merge solves a least-squares problem whose matrix is built from
+  the adapters alone, as adapter-only RegMean, WUDI-Merging and our encoder
+  do, run Algorithm~\ref{alg:audit} first. On a separated cohort these merges
+  behave as intended. On a collapsed one, add an isotropic ridge to the
+  closed-form solvers, start near $\lambda = 0.01$ and sweep it on held-out
+  data, and do not rely on RegMean's shipped $\alpha$. We did not test a
+  repair for WUDI as published; running it ten times longer makes it worse or
+  no better (Table~\ref{tab:wudi}), so on a collapsed cohort we would use one
+  of the unaffected merges instead.
 \item If several tasks are fine-tuned with Unsloth or LLaMA-Factory at default
-  settings, or with PiSSA, OLoRA or MiLoRA initialisation, the adapters are
-  collapsed. Setting a different seed per task avoids it for the first two and
-  not for the last three. Designs that share $A$ deliberately, such as
+  settings, or each from one existing adapter, the adapters are collapsed; so
+  is a PiSSA cohort whatever its seeds, and OLoRA and MiLoRA start every task
+  from the same $A$ in the same way. A different seed per task avoids the first
+  case and not the others. Designs that share $A$ deliberately, such as
   HydraLoRA or federated LoRA with a frozen or aggregated $A$, are collapsed by
   construction.
 \end{itemize}
+The audit is worth running even though a ridge repairs most of the damage. A
+sweep needs held-out data and one merge per value of $\lambda$, and none of the
+three data-free rules we tested sets $\lambda$ well (\S\ref{subsec:lambda}). A
+user who has no data for the tasks, or who runs a method at its defaults, meets
+the zeros of Table~\ref{tab:wudi} and Figure~\ref{fig:exposure} with no
+warning. The audit needs only the $A$ factors and a CPU minute, and it says
+before any merge whether the choice of method matters at all.
 
-\paragraph{Predictions that failed.} Six registered predictions did not hold.
-TSV-M was not exposed (\S\ref{subsec:results}). Solver failures on public
-cohorts were not specific to the collapse, and a data-free ridge rule did worse
-than a fixed start (\S\ref{subsec:against}). The heuristics' slight lean
-towards the shared arm persisted at three cohorts per arm
-(\S\ref{subsec:results}). RegMean with activation Grams produced solutions
+\paragraph{Predictions that failed.} Each registered prediction that did not
+hold is reported where it arises. Grouped by what they cost, they are these.
+Four changed what this paper claims. Published WUDI was predicted to be
+protected by its early-stopped optimiser, and it is not, in NLL or in accuracy;
+this is the lead result (\S\ref{subsec:wudi}). TSV-M was predicted to be
+exposed and is not, so the rule is stated for least-squares merges alone
+(\S\ref{subsec:results}). The collapse was predicted to be visible on all four
+tasks and is invisible on IFEval, where the instruction adapter has little
+skill to lose (\S\ref{subsec:beyond}). Solver failures on public cohorts were
+predicted to be specific to the collapse and are not (\S\ref{subsec:against}).
+
+Six were explanations that did not survive. The closed form of WUDI does not
+concentrate its energy in the ill-conditioned directions, and the 3000-step arm
+does not lie between the other two on two of the four bases
+(\S\ref{subsec:wudi}). The heuristics' slight lean towards the shared arm did
+not vanish at three cohorts per arm, and merging without truncation did not
+halve it (\S\ref{subsec:results}). Neither the factorisation freedom of LoRA
+nor the spread of adapter norms explains the public failures
+(\S\ref{subsec:against}).
+
+Three were tools. A rule that sets the ridge by a target condition number did
+worse than a fixed $\lambda = 0.01$, and generalised cross-validation and the
+L-curve each repaired the collapse on at most one base of four
+(\S\ref{subsec:lambda}).
+
+Three more concern details. A fourfold scale mismatch between adapters was
+predicted not to be specific to solvers, and it multiplies the solver's excess
+by $3.9$ and $5.3$ while lowering that of task arithmetic
+(\S\ref{subsec:against}). RegMean with activation Grams produced solutions
 $2.2$ to $6.5$ times the mean task update rather than at most three, equally on
 both arms, because the activation Grams are themselves badly conditioned
 ($10^{4}$ to $10^{7}$) whatever the initialisation. The retrained translation
 adapter improved but did not become the best adapter at translation.
+
+\paragraph{What we cannot explain.} Three observations have no tested
+explanation. On CLIP ViT-B/32, published WUDI merges shared cohorts
+\emph{better} than independent ones, $0.454$ against $0.358$, the opposite of
+its behaviour on language models (\S\ref{subsec:beyond}); the description we
+give in \S\ref{subsec:wudi}, in which Adam's steps leave the row space on a
+collapsed cohort, does not account for it. Scaling the initial $A$ by $0.25$
+leaves a cohort collapsed, yet adapter-only RegMean then does less damage than
+on the independent arm ($0.022$ against $0.071$ nats), at the same
+$\kappa(\bar H)$ as a cohort where it does a great deal (\S\ref{sec:theory}).
+That points at the amplification rather than the condition number as what a
+solver responds to, but it rests on two cohorts. And the heuristics' lean of
+$0.7$ points towards the shared arm, like the solver failures on public
+cohorts, survives every explanation we tested.
 
 \paragraph{Relation to the earlier version.} The preprint this paper
 supersedes~\citep{pathak2026rd} reported that our closed-form encoder had the
@@ -37,18 +87,25 @@ which is why every accuracy claim here is measured in accuracy.
 
 \paragraph{Limitations.} The controlled experiments use four base models of 7
 to 9 billion parameters and four tasks, one of which did not train properly,
-so the merged models contain one weak member; the task-count and rank sweep is
-on one base. Larger models, other architectures and other adapter types are
-untested. The value of $\kappa(\bar H)$ depends on the projector curvature
-model, while the principal cosines, which carry the audit, are independent of
-it. The theory is a
-leading-order expansion verified numerically, not a bound. Training and
-evaluation data overlap on two tasks ($13$ to $16\%$ for instruction following
-and $9$ to $12\%$ for code), so absolute scores are optimistic; every
-comparison here is between the two initialisation arms on the same data, and
-on the disjoint subset the ordering of methods is unchanged in $19$ of $20$
-cases. The library reading is of pinned versions, and defaults can change.
-Finally, the public-cohort merges show that adapter-built solvers fail often on
-released adapters for reasons we have not identified; those failures should
-not be attributed to the collapse, and such solvers should not be used on
-public adapters without checking the result.
+so the merged models contain one weak member. The seed ablation, the
+task-count and rank sweep and the out-of-sample test of the scalar law are on
+one base; the vision replication is one model; DoRA was measured in geometry
+only. Larger models, other architectures and other adapter types are untested.
+The value of $\kappa(\bar H)$ depends on the projector curvature model, while
+the principal cosines, which carry the audit, are independent of it. The
+theory is a leading-order expansion verified numerically, not a bound. The
+float32 values we report for the unregularised encoder on shared cohorts are
+single draws, which move by $0.02$ to $0.08$ nats between draws
+(\S\ref{sec:merging}). The tests on translation and IFEval use one cohort per
+arm, so their nulls are at the resolution of the gate. Training and evaluation
+data overlap on two tasks ($13$ to $16\%$ for instruction following and $9$ to
+$12\%$ for code), so absolute scores are optimistic; every comparison here is
+between the two initialisation arms on the same data, and on the disjoint
+subset the ordering of methods is unchanged in $19$ of $20$ cases. The library
+reading is of pinned versions, and defaults can change. The prevalence of
+$40\%$ is among public cohorts as the sampling frame defines them, and most of
+the collapsed ones are versions of one model rather than tasks one would merge
+(\S\ref{subsec:public}). Finally, adapter-built solvers fail often on released
+adapters for reasons we have not identified; those failures should not be
+attributed to the collapse, and such solvers should not be used on public
+adapters without checking the result.

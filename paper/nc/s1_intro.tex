@@ -4,11 +4,13 @@ several of them back into a single set of weights. Many merging methods now
 exist: task arithmetic~\citep{ilharco2023task}, sign election
 (TIES)~\citep{yadav2023ties}, stochastic sparsification
 (DARE)~\citep{yu2024dare}, subspace alignment (KnOTS)~\citep{stoica2025knots},
-whitening (TSV-M)~\citep{gargiulo2025tsv}, and least-squares solvers in the
-RegMean line~\citep{jin2023regmean,tam2024mats}. They are compared mostly by
-benchmark averages, and the comparisons are unstable: a method that works on
-one set of adapters can fail on another, with no way to tell in advance which
-case applies.
+whitening (TSV-M)~\citep{gargiulo2025tsv}, least-squares solvers in the
+RegMean line~\citep{jin2023regmean,tam2024mats}, and data-free methods such as
+WUDI-Merging~\citep{cheng2025wudi}, which solves a least-squares problem built
+from the task updates themselves. They are compared mostly by benchmark
+averages, and the comparisons are unstable: a method that works on one set of
+adapters can fail on another, with no way to tell in advance which case
+applies.
 
 This paper studies one property of an adapter set that is fixed before
 training starts and is almost never reported. LoRA writes each update as $BA$,
@@ -21,56 +23,86 @@ the natural choice when the seed is meant to make runs reproducible, therefore
 gives every adapter of a cohort nearly the same input subspace, whatever its
 task.
 
+The consequence we lead with concerns a published method. WUDI-Merging needs
+no data, and its authors minimise its objective with an early-stopped
+optimiser rather than solving the system, which we expected to act as an
+implicit regulariser and registered as protective. It is not. Run exactly as
+its authors run it, WUDI leaves a worst-task loss excess $4.7$ to $47.6$ times
+larger on cohorts with a shared $A$ than on cohorts with independent ones, on
+all four base models we tested. On GSM8K the shared cohorts score $0.034$
+against $0.695$ on Llama-3.1-8B, and on HumanEval they score zero on two of the
+four bases. We had written in advance that this outcome, if it occurred, would
+become the lead result. It belongs to a class that we can name precisely. On
+language models, a shared $A$ breaks every merge we tested that solves a
+least-squares problem, in closed form or by gradient descent, whose matrix is
+built from the adapters alone, and no other.
+
 We make four contributions.
 
 \begin{enumerate}[leftmargin=*,itemsep=2pt,topsep=3pt]
 \item \textbf{The collapse, measured.} On four base models with 7 to 9 billion
 parameters, sharing the initial $A$ moves the median principal cosine between
-task subspaces from $0.05$ to $0.99$. The effect holds at every task count
-($T = 2, 4, 8$) and rank ($r = 8, 16, 64$) we tested, and PiSSA
-initialisation~\citep{meng2024pissa} produces it even with independent seeds
+task subspaces from about $0.05$ to above $0.99$. A registered ablation shows
+that the seed in force when the adapters are created decides the regime by
+itself, and the data order and dropout do not. The collapse holds at every
+task count and rank we tested and under every one of seven changes to
+training. It also arises without a shared seed, from PiSSA
+initialisation~\citep{meng2024pissa} and from training every task on from one
+existing adapter, and it holds for DoRA and for adapters on CLIP ViT-B/32
 (\S\ref{sec:collapse}).
 \item \textbf{A first-order theory of its conditioning.} Treating each
 adapter's $A$ as a small displacement of the shared start, we derive that the
-condition number of the operator a merge must invert grows as the inverse
-square of the displacement, and the norm of the exact interpolator as its
-inverse. The predictions match the exact values in all 21 configurations we
-measured to within $0.11\%$ (\S\ref{sec:theory}).
+condition number of the operator a solver inverts grows as the inverse square
+of the displacement, and the norm of the exact interpolator as its inverse. The
+predicted condition number matches the exact value within $0.10\%$ in all $21$
+configurations we measured. A scalar law derived from it, fixed on four
+cohorts, predicts the condition number of eight cohorts trained afterwards,
+seven of them under changed training, within a factor of $2$ on all eight
+(\S\ref{sec:theory}).
 \item \textbf{Where it occurs.} At their default settings, Unsloth and
 LLaMA-Factory seed the random generator before creating the adapter, so every
 run on a base model with the same target modules and rank receives the same
-initial $A$. Under a sampling frame
-fixed before any download, $17$ of $45$ public LoRA cohorts on HuggingFace are
-collapsed. The regime can be read from the adapter files in about a CPU
-minute, with no data and no forward pass (\S\ref{sec:prevalence}).
-\item \textbf{Which merges it affects.} We tested eleven merging methods, nine
-of them published methods we did not build. Averaging and sparsifying
-heuristics are equivalent across the two regimes within $3$ accuracy points on
+initial $A$; we read this in their source and measured it. An audit that reads
+only the $A$ factors finds the regime in about a CPU minute, with no data and
+no forward pass. Under a sampling frame fixed before any download, it finds
+$18$ of $45$ public LoRA cohorts on HuggingFace collapsed, among them a cohort
+released with a merging paper (\S\ref{sec:prevalence}).
+\item \textbf{Which merges it affects.} We tested twelve merging methods, ten
+of them published methods we did not build, and compared each with itself
+across the two regimes in NLL and in accuracy. Averaging and sparsifying
+heuristics are equivalent across the regimes within $3$ accuracy points on
 GSM8K and $5$ on HumanEval. Solvers whose matrix is built from data (RegMean
 with activation Grams, MaTS) or is diagonal (Fisher merging) are unaffected,
-and whitening (TSV-M), which we predicted would be exposed, shows no
-consistent effect.
-What the collapse breaks is a solver whose matrix is built from the adapters'
-own factors: the data-free form of RegMean loses most of its GSM8K accuracy,
-and scores zero on both benchmarks on Mistral-7B. A ridge term recovers most
-of that loss, and RegMean's shipped regulariser is too weak to recover it
+and whitening (TSV-M), which we predicted would be exposed, is not. Three
+solvers built from the adapters fail: published WUDI, a data-free form of
+RegMean that scores zero on both benchmarks on Mistral-7B, and the closed-form
+encoder of our earlier work. A ridge recovers most of the loss on three of
+four bases, RegMean's shipped regulariser is too weak to, and recomputing the
+solvers in float64 shows that rounding error is not the cause. On CLIP
+ViT-B/32 every method we ran behaves as on language models except published
+WUDI,
+which merges shared cohorts better there, an outcome we cannot explain
 (\S\ref{sec:merging}).
 \end{enumerate}
 
 A practitioner who merges with an averaging, sparsifying or data-built method
-loses nothing to a shared initialisation. One
-who merges with a solver built from the adapters alone should run the audit
-first, and on a collapsed cohort should add a ridge and sweep it. One who
-fine-tunes several tasks with Unsloth or LLaMA-Factory at default settings
-should know that the adapters are collapsed.
+loses nothing to a shared initialisation. One who merges with a solver built
+from the adapters alone should run the audit first, because a ridge cannot be
+set without held-out data, and on a collapsed cohort should either regularise
+and sweep on such data or use an unaffected merge. One who fine-tunes several
+tasks with Unsloth or LLaMA-Factory at default settings should know that the
+adapters are collapsed.
 
-\paragraph{How the evidence was produced.} Every empirical claim in this paper
-was pre-registered: the prediction, the decision rule and the consequence of
-each outcome were committed to version control before the compute they govern
-was run. The repository is public (\S\ref{sec:conclusion}), and the ordering
-can be checked with \texttt{git} (Appendix~\ref{app:prereg}). Several
-predictions failed; each is reported in its section, and \S\ref{sec:discussion}
-lists them. An earlier version of this work, organised around a rate-distortion
-bound, is public as a preprint~\citep{pathak2026rd}. The present paper
-supersedes it, and \S\ref{sec:discussion} notes the two claims of that version
-it does not repeat.
+\paragraph{How the evidence was produced.} Every confirmatory test in this
+paper was pre-registered: the prediction, the decision rule and the
+consequence of each outcome were committed to version control before the
+compute they govern was run. The repository is public (\S\ref{sec:conclusion}),
+and the ordering can be checked with \texttt{git} (Appendix~\ref{app:prereg}).
+The collapse itself was found after the fact, in an audit of the code behind
+an earlier version of this work, organised around a rate-distortion bound and
+public as a preprint~\citep{pathak2026rd}; every test of it since was
+registered first. Analyses we added after seeing a result are labelled as such
+where they appear. Many predictions failed, among them the one that WUDI's
+optimiser would protect it; each is reported in its section, and
+\S\ref{sec:discussion} collects them and notes the two claims of the earlier
+version that this paper does not repeat.

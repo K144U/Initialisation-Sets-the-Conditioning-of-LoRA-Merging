@@ -1,7 +1,7 @@
 Highlights
 
+- A published data-free merge, WUDI, breaks when LoRA adapters share an initialisation
 - One shared LoRA initialisation collapses the task subspaces of a cohort
 - Unsloth and LLaMA-Factory defaults produce collapsed cohorts
-- A first-order theory predicts the collapse's conditioning within 0.11%
-- Averaging and data-built merges are unaffected; adapter-built solvers break
-- A CPU-minute audit finds it in 17 of 45 public LoRA cohorts
+- Averaging is unaffected; solvers built from the adapters themselves break
+- A CPU-minute audit finds the collapse in 18 of 45 public LoRA cohorts
