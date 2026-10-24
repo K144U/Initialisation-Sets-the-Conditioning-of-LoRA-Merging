@@ -289,6 +289,38 @@ needed does not track the conditioning, while the amount it buys does; the
 selected $\lambda$ is identical across the two arms on three of four bases for
 the encoder and on two for adapter-only RegMean.
 
+\paragraph{Numerical precision and truncation.} Both solvers run in float32,
+and at $\lambda = 10^{-6}$ and $\lambda = 0$ their systems are badly
+conditioned, so the failure could in principle be rounding error. We
+registered a check before running it: for each base, arm and solver, recompute
+the merge in float64 from the same adapter factors and compare the two after
+exact truncation to rank $r$. Precision would be excluded if the median
+difference over modules stayed below $1\%$ and the ratio of shared to
+independent amplification changed by less than a factor of $2$. The ratios
+agree within $0.1\%$ in every case, and $15$ of the $16$ medians are below
+$1\%$, at most $0.9\%$. The encoder on the shared Yi cohort is at $1.09\%$ and
+fails, so, as registered, we rebuilt that merge in float64 and evaluated it
+again. Its worst-task excess is $0.245$ nats against $0.249$ in float32, and
+$0.121$ on the independent cohort: rounding does not cause the failure. Runs
+we added afterwards show that the float32 merge is unstable instead. The
+encoder's per-task bases come from a randomised SVD, and the unregularised
+solve amplifies its rounding, so float32 merges that differ only in the random
+seed reach worst-task excesses of $0.22$ to $0.28$ nats on this cohort, and
+$0.26$ to $0.84$ when the truncation to rank $r$ is exact. All of them lie
+above the independent cohort, whose float32 merge agrees with float64 to
+$3\times10^{-6}$. The float32 values we report for the unregularised encoder on
+shared cohorts are single draws of this kind: their direction does not depend
+on the draw, but their size does, and we measured the spread on this cohort
+only. Adapter-only RegMean agrees with float64 to within $1\%$ on every module.
+
+Every merge in this paper is cut to rank $r$ by a randomised SVD that computes
+$r$ vectors with four power iterations and no oversampling. On the merges of
+the two solvers it keeps $98.8$ to $99.9\%$ of the norm of the exact
+truncation but not its directions: it is a median $30$ to $38\%$ from the exact
+rank-$r$ truncation in relative Frobenius norm on the shared arm, and $12$ to
+$20\%$ on the independent arm. Both arms are cut the same way, and the
+encoder's failure survives with this step removed, as above.
+
 \subsection{Why RegMean's shipped regulariser does not fix it}\label{subsec:default}
 
 RegMean scales the off-diagonal entries of each Gram by $\alpha$, default
