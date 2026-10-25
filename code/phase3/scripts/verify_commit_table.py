@@ -9,7 +9,11 @@ leaves it pointing at commits that do not exist or do not stand in the claimed
 order.
 
 Usage:
-  python code/phase3/scripts/verify_commit_table.py CLONE_OF_BUNDLE
+  python code/phase3/scripts/verify_commit_table.py CLONE_OF_BUNDLE [APPENDIX]
+
+APPENDIX defaults to the JAIR version's paper/sections/app_prereg.tex. For the
+current manuscript pass paper/nc/app_prereg.tex, whose table has a section
+column (label & section & rules & generator & result); both layouts are read.
 """
 from __future__ import annotations
 
@@ -29,6 +33,22 @@ ROW = re.compile(
 HASH = re.compile(r"\\texttt\{([0-9a-f]{7,40})\}")
 
 
+def rows_with_section(table_text: str) -> list[tuple[str, str, str, str]]:
+    """Rows of the five-column layout, one per line, as (label, rules, mid,
+    result). A row with several generators or results keeps the first rules
+    hash and checks it against the first result."""
+    rows = []
+    for line in table_text.splitlines():
+        cells = [c.strip() for c in line.split("&")]
+        if len(cells) != 5 or not HASH.search(line):
+            continue
+        rules, results = HASH.findall(cells[2]), HASH.findall(cells[4])
+        if rules and results:
+            label = cells[0].replace("\\quad", "").strip()
+            rows.append((label, rules[0], cells[3], results[0]))
+    return rows
+
+
 def sh(clone: str, *a: str) -> tuple[int, str]:
     p = subprocess.run(["git", "-C", clone, *a], capture_output=True, text=True)
     return p.returncode, p.stdout.strip()
@@ -36,7 +56,8 @@ def sh(clone: str, *a: str) -> tuple[int, str]:
 
 def main() -> int:
     clone = sys.argv[1]
-    text = PAPER.read_text(encoding="utf-8")
+    paper = Path(sys.argv[2]).resolve() if len(sys.argv) > 2 else PAPER
+    text = paper.read_text(encoding="utf-8")
 
     bad = 0
     # The paper's claim is narrower than "every hash in the appendix resolves".
@@ -68,8 +89,8 @@ def main() -> int:
     print("\n=== hashes cited in prose, outside the tables ===")
     prose_bad = 0
     prose_seen = 0
-    for path in sorted(PAPER.parent.glob("*.tex")):
-        if path.name == PAPER.name:
+    for path in sorted(paper.parent.glob("*.tex")):
+        if path.name == paper.name:
             continue
         for h in sorted(set(HASH.findall(path.read_text(encoding="utf-8")))):
             prose_seen += 1
@@ -82,7 +103,7 @@ def main() -> int:
     print(f"  {prose_seen - prose_bad}/{prose_seen} resolve")
 
     print("\n=== ancestry, rules -> result, as the caption instructs ===")
-    rows = ROW.findall(table_text)
+    rows = ROW.findall(table_text) or rows_with_section(table_text)
     for label, rules, _mid, result in rows:
         label = " ".join(label.split())[:44]
         rc, _ = sh(clone, "merge-base", "--is-ancestor", rules, result)
