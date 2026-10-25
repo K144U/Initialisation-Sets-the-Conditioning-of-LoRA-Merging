@@ -77,7 +77,7 @@ with activation Grams, MaTS) or is diagonal (Fisher merging) are unaffected,
 and whitening (TSV-M), which we predicted would be exposed, is not. Three
 solvers built from the adapters fail: published WUDI, a data-free form of
 RegMean that scores zero on both benchmarks on Mistral-7B, and the closed-form
-encoder of our earlier work. A ridge recovers most of the loss on three of
+encoder of our earlier preprint. A ridge recovers most of the loss on three of
 four bases, RegMean's shipped regulariser is too weak to, and recomputing the
 solvers in float64 shows that rounding error is not the cause. On CLIP
 ViT-B/32 every method we ran behaves as on language models except published
@@ -100,9 +100,9 @@ consequence of each outcome were committed to version control before the
 compute they govern was run. The repository is public (\S\ref{sec:conclusion}),
 and the ordering can be checked with \texttt{git} (Appendix~\ref{app:prereg}).
 The collapse itself was found after the fact, in an audit of the code behind
-an earlier version of this work, organised around a rate-distortion bound and
-public as a preprint~\citep{pathak2026rd}; every test of it since was
-registered first. Analyses we added after seeing a result are labelled as such
-where they appear. Many predictions failed, among them the one that WUDI's
-optimiser would protect it; \S\ref{sec:discussion} collects them and notes the
-two claims of the earlier version that this paper does not repeat.
+our earlier preprint~\citep{pathak2026rd}, which proposed a merge derived from
+a rate-distortion bound; every test of it since was registered first. Analyses
+we added after seeing a result are labelled as such where they appear. Many
+predictions failed, among them the one that WUDI's optimiser would protect it;
+\S\ref{sec:discussion} collects them and notes two claims of our earlier
+preprint that do not hold.

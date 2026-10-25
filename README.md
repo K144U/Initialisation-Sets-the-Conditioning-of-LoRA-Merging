@@ -325,12 +325,16 @@ or DOI yet.
 }
 ```
 
-An earlier and now **superseded** version of this work is public as a preprint,
+Our earlier preprint,
 [10.5281/zenodo.21238820](https://doi.org/10.5281/zenodo.21238820), titled *A
-Rate-Distortion Function for Model Merging*. It predates the pre-registered
-replication reported here and still presents as headline results two claims the
-current manuscript does not make. Please cite the entry above instead; where
-the two documents disagree, the current manuscript is the one that holds.
+Rate-Distortion Function for Model Merging*, proposed the closed-form encoder
+that the current manuscript tests as one of its merges. It predates the
+pre-registered experiments reported here, and two of its claims do not hold up
+in them: that its encoder has the lowest worst-task loss of the methods it
+compared, an advantage that came from the shared initialisation of its cohorts,
+and that worst-task NLL tracks the downstream ranking of methods. The current
+manuscript does not use its rate-distortion bound. For the results in this
+repository, please cite the entry above.
 
 ## License
 

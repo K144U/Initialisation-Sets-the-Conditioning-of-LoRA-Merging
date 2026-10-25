@@ -66,9 +66,9 @@ preferred-citation:
     'Initialisation Sets the Conditioning of LoRA Merging', was submitted to
     the Journal of Artificial Intelligence Research and is kept in JAIR/."
 
-# Listed so that anyone who finds the earlier version first is told it is
-# superseded, rather than citing it and attributing to this work two claims it
-# withdraws.
+# Listed so that anyone who finds the earlier preprint first knows how it
+# relates to this work, and does not attribute to it two claims that do not
+# hold up.
 references:
   - type: article
     title: "A Rate-Distortion Function for Model Merging"
@@ -79,9 +79,10 @@ references:
         given-names: "Sanjay"
     year: 2026
     doi: "10.5281/zenodo.21238820"
-    notes: "Superseded earlier version of this work, posted as a preprint. It
-      presents as headline results two claims the manuscript above does not
-      make: that the rate-distortion bound is the contribution, and that the
-      authors' encoder attains the lowest worst-task loss on all four bases at
-      default hyperparameters. Where the two documents disagree, the manuscript
-      above is current."
+    notes: "Our earlier preprint. It proposed the closed-form encoder that the
+      manuscript above tests as one of its merges. Two of its claims do not
+      hold up in the manuscript's pre-registered experiments: that the encoder
+      has the lowest worst-task loss of the methods it compared (an advantage
+      that came from the shared initialisation of its cohorts), and that
+      worst-task NLL tracks the downstream ranking of methods. The manuscript
+      does not use its rate-distortion bound."
