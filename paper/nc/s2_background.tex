@@ -7,16 +7,20 @@ roles: $A$ mostly selects input features and $B$ produces the output, and a
 random untrained $A$ performs almost as well as a trained
 one~\citep{zhu2024asymmetry}. Several designs share $A$ on purpose.
 HydraLoRA~\citep{tian2024hydralora} uses one $A$ for several $B$ heads, and
-federated variants freeze $A$ (FFA-LoRA~\citep{sun2024ffalora}) or aggregate
-only $A$ (FedSA-LoRA~\citep{guo2025fedsalora}) to make aggregation exact.
+federated variants freeze $A$, which makes aggregation exact
+(FFA-LoRA~\citep{sun2024ffalora}), or share only $A$ across clients, on the
+grounds that it carries the general part of what is learned
+(FedSA-LoRA~\citep{guo2025fedsalora}).
 Other initialisations reach a shared $A$ without a shared seed:
 PiSSA~\citep{meng2024pissa}, OLoRA~\citep{buyukakyuz2024olora} and
 MiLoRA~\citep{wang2025milora} compute $A$ from the base weight, so every task
 fine-tuned from one base with the same modules and rank starts from the same
-$A$. CorDA~\citep{yang2024corda} orients its decomposition by task data, and
-LoRA-FA~\citep{zhang2023lorafa} freezes a random $A$, so the first starts each
-task differently and the second is shared only when the seed is. This
-literature has not examined what such cohorts do to a merge.
+$A$. CorDA~\citep{yang2024corda} orients its decomposition by sampled data:
+by the task's own data in one mode, which starts each task differently, and by
+question-answering samples in another, which, with the same samples, gives
+every task the same start. LoRA-FA~\citep{zhang2023lorafa} freezes a random $A$, which is
+shared only when the seed is. This literature has not examined what such
+cohorts do to a merge.
 
 \paragraph{Merging methods, by what they compute.} It helps to sort merging
 methods by the operation they apply to the adapters. \emph{Averaging and
@@ -24,8 +28,10 @@ sparsifying} methods form a weighted combination of the task updates: task
 arithmetic~\citep{ilharco2023task}, TIES~\citep{yadav2023ties},
 DARE~\citep{yu2024dare}, DELLA~\citep{della2024} and the quantised
 TVQ~\citep{kim2025tvq}. \emph{Subspace} methods act on the singular structure
-of the updates: KnOTS~\citep{stoica2025knots} aligns them in a shared basis
-and TSV-M~\citep{gargiulo2025tsv} whitens their stacked singular vectors.
+of the updates. KnOTS~\citep{stoica2025knots} aligns them in a shared basis
+and then combines them with an averaging or sparsifying rule (we use its TIES
+variant), so it inverts nothing and we group it with those methods;
+TSV-M~\citep{gargiulo2025tsv} whitens their stacked singular vectors.
 \emph{Solvers} find the merged weight as the solution of a linear system.
 RegMean~\citep{jin2023regmean} solves a least-squares problem in per-task
 input-activation Gram matrices, MaTS~\citep{tam2024mats} solves a system in a
@@ -39,8 +45,8 @@ gradient steps instead of solving the system. Fisher
 merging~\citep{matena2022fisher} weights each parameter by a diagonal Fisher
 estimate. For this paper, the decisive property of a solver is where its
 matrix comes from: from data, as in RegMean and MaTS, or from the adapters
-themselves, as in WUDI and in the data-free form of RegMean that replaces each
-activation Gram by $A_t^\top A_t$.
+themselves, as in WUDI and in a data-free form of RegMean, which we construct,
+that replaces each activation Gram by $A_t^\top A_t$.
 
 \paragraph{Shared initialisation in weight-space merging.} For full models, a
 shared starting point is what makes weight averaging work. Two copies of a
@@ -71,28 +77,31 @@ experiments it leaves averaging intact and breaks the merges that solve
 against it.
 
 \paragraph{Analyses of merging.} Weight
-disentanglement~\citep{ortizjimenez2023disentanglement} identifies the
-low-rank curvature structure of LoRA fine-tunes that the quantities below
-adopt. Cao et al.~\citep{cao2026collapse} report that parameter-space conflict metrics
+disentanglement~\citep{ortizjimenez2023disentanglement} explains when task
+arithmetic works: distinct directions in weight space should govern separate,
+localised regions of function space. The operator we define below is a simple
+model in that spirit for LoRA, in which each adapter acts only through its own
+input subspace. Cao et al.~\citep{cao2026collapse} report that parameter-space conflict metrics
 predict little about when merging fails, while representational
 incompatibility between tasks predicts a great deal, and they prove a limit
 for convex merges. Our results agree where the two overlap: we also find that
 parameter-space geometry does not affect averaging-type merges
 (\S\ref{sec:merging}). We add that one parameter-space quantity does predict
 the behaviour of solvers built from the adapters, which are not convex
-combinations of the fine-tuned models. A large empirical
-study~\citep{systematic2025merging} finds that only task arithmetic reliably
-produces constructive interference across four model families; that result
-concerns which methods work on average, and ours concerns a property of the
-cohort that decides one class of them.
+combinations of the fine-tuned models. A systematic study of merging
+heterogeneous fine-tuned checkpoints~\citep{systematic2025merging} finds that
+only task arithmetic reliably improves on the base model, on four open-weight
+language models; that result concerns which methods work on average, and ours
+concerns a property of the cohort that decides one class of them.
 
 \paragraph{Notation.} A cohort has $T$ adapters $\{(A_t, B_t)\}$ of rank $r$ on
 a common base. The input subspace of adapter $t$ in a layer is the row space
 $V_t = \range(A_t^\top) \subset \R^d$, and $P_t$ is the orthogonal projector
 onto it. We measure overlap between task subspaces by the cosines of the
 principal angles between each pair $V_i, V_j$, and report their median over
-pairs and over a sample of layers. Following the weight-disentanglement
-model, the operator a solver must invert is
+pairs and over a sample of layers. We model the curvature a solver sees in a
+layer by the projectors onto the adapters' input subspaces, so the operator it
+must invert is
 \begin{equation}\label{eq:hbar}
   \bar H = \frac1T \sum_{t=1}^T P_t,
 \end{equation}
@@ -108,15 +117,18 @@ mean update. Both are computed from the adapter weights alone.
 update that reproduces each task's update on that task's subspace. If the
 subspaces coincide, this cannot be done unless the tasks agree, since tasks
 that ask for different outputs on the same inputs cannot all be satisfied; the
-pseudoinverse then returns their least-squares compromise, the mean update
-$\bar D$. A collapsed cohort lies close to that case, because its subspaces
+pseudoinverse then returns their least-squares compromise. With every $P_t$
+equal to one projector $P$, $\bar H = P$ and $\tauH = \bar D P = \bar D$, the
+mean update. A collapsed cohort lies close to that case, because its subspaces
 differ only by small tilts that training added to a common start. An
-interpolator exists, but it reproduces the tasks by acting along the tilts,
-and under a uniform rescaling of the tilts its size relative to $\bar D$
-scales inversely with them (\S\ref{sec:theory}). As the tilts shrink it
-therefore grows without bound, while at coincidence it is $\bar D$: the
-solution does not depend continuously on the adapters at that point, so the
-problem is ill-posed there in the sense of Hadamard~\citep{engl1996regularization}.
+interpolator exists, but where the tasks' updates differ it reproduces them
+through the differences between the tilts, and to leading order its size
+relative to $\bar D$ scales inversely with the tilts under a uniform rescaling
+(\S\ref{sec:theory}, where we measured this law for rescalings from $0.05$ to
+$1$). Carried to vanishing tilts, it grows without bound, while at coincidence
+it is $\bar D$: the solution does not depend continuously on the adapters at
+that point, so the problem is ill-posed there in the sense of
+Hadamard~\citep{engl1996regularization}.
 A collapsed cohort is a small perturbation of this ill-posed problem, which is
 why $\kappa(\bar H)$ is large, and the distinction decides what helps. Solving
 more accurately does not, because the large solution is what the problem asks
@@ -126,4 +138,5 @@ large as in float32, and the merge rebuilt from it fails as before
 mean update, which averaging methods form without inverting anything, is the
 least-squares answer at the limit a collapsed cohort approaches, and a ridge,
 the standard treatment of ill-posed problems~\citep{engl1996regularization},
-damps the tilt directions in which the solution is unstable.
+damps the directions in which the tilts differ, where the solution is
+unstable.

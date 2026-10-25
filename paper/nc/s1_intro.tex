@@ -44,7 +44,7 @@ We make four contributions.
 parameters, sharing the initial $A$ moves the median principal cosine between
 task subspaces from about $0.05$ to above $0.99$. A registered ablation shows
 that the seed in force when the adapters are created decides the regime by
-itself, and the data order and dropout do not. The collapse holds at every
+itself, and the dropout masks do not. The collapse holds at every
 task count and rank we tested and under every one of seven changes to
 training. It also arises without a shared seed, from PiSSA
 initialisation~\citep{meng2024pissa} and from training every task on from one
@@ -65,11 +65,12 @@ run on a base model with the same target modules and rank receives the same
 initial $A$; we read this in their source and measured it. An audit that reads
 only the $A$ factors finds the regime in about a CPU minute, with no data and
 no forward pass. Under a sampling frame fixed before any download, it finds
-$18$ of $45$ public LoRA cohorts on HuggingFace collapsed, among them a cohort
-released with a merging paper (\S\ref{sec:prevalence}).
+at least $18$ of $45$ public LoRA cohorts on HuggingFace collapsed, and a
+cohort released with a merging paper, audited separately, is collapsed too
+(\S\ref{sec:prevalence}).
 \item \textbf{Which merges it affects.} We tested twelve merging methods, ten
 of them published methods we did not build, and compared each with itself
-across the two regimes in NLL and in accuracy. Averaging and sparsifying
+across the two regimes in NLL and, for all but one, in accuracy. Averaging and sparsifying
 heuristics are equivalent across the regimes within $3$ accuracy points on
 GSM8K and $5$ on HumanEval. Solvers whose matrix is built from data (RegMean
 with activation Grams, MaTS) or is diagonal (Fisher merging) are unaffected,
@@ -103,6 +104,5 @@ an earlier version of this work, organised around a rate-distortion bound and
 public as a preprint~\citep{pathak2026rd}; every test of it since was
 registered first. Analyses we added after seeing a result are labelled as such
 where they appear. Many predictions failed, among them the one that WUDI's
-optimiser would protect it; each is reported in its section, and
-\S\ref{sec:discussion} collects them and notes the two claims of the earlier
-version that this paper does not repeat.
+optimiser would protect it; \S\ref{sec:discussion} collects them and notes the
+two claims of the earlier version that this paper does not repeat.

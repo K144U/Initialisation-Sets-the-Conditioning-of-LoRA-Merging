@@ -1,0 +1,59 @@
+Every value below is read from the configuration files, the saved training
+arguments or the code in the public repository; the per-cell configurations,
+including every seed, are in \texttt{code/phase3/configs/}.
+
+\paragraph{Training.} All adapters on all four bases share one recipe. LoRA
+rank $16$, $\alpha = 32$ (scaling $2$), dropout $0.05$, on the query, key,
+value and output projections, with PEFT's default initialisation ($B = 0$, $A$
+Kaiming-uniform). Each task uses $7{,}500$ training examples ($7{,}473$, the
+whole training split, for GSM8K) from \texttt{openai/gsm8k},
+\texttt{yahma/alpaca-cleaned}, \texttt{ise-uiuc/Magicoder-OSS-Instruct-75K} and
+\texttt{wmt/wmt19} (de-en); the translation data were streamed and taken in
+corpus order, the defect of \S\ref{subsec:setup}. Training runs two epochs
+($468$ to $470$ steps) with batch size $8$ and gradient accumulation $4$,
+learning rate $5\times10^{-5}$ with linear warm-up over $3\%$ of the steps and
+linear decay, AdamW with weight decay $0.01$, gradient clipping at $1.0$,
+maximum length $2048$ and bf16 mixed precision. Software: Unsloth 2026.5.2,
+transformers 5.5.0, PEFT 0.19.1 and PyTorch 2.10 on NVIDIA A100 80\,GB GPUs.
+Shared cohorts use seed $1$, $2$ or $3$ for every task. The independent
+cohorts use seeds $101$ to $104$, $201$ to $204$ and $301$ to $304$, one per
+task in the order GSM8K, Alpaca, Magicoder, WMT19. The data sampler's seed was
+$3407$ in every run.
+
+\paragraph{Geometry.} Principal cosines and $\kappa(\bar H)$ are computed on
+eight LoRA modules per cohort, every eighth entry of the alphabetically sorted
+list of $A$ factors. The sort makes the choice uneven: on Llama-3.1-8B and
+Mistral-7B it is the key projection of layers $0$, $2$, $6$, $12$, $16$, $23$,
+$27$ and $30$; on Qwen2.5-7B it mixes key and query projections across layers
+$0$ to $24$; on Yi-1.5-9B it is the key projection of layers $0$ to $47$.
+
+\paragraph{Merging.} Every merge weights the four tasks equally, and no merge
+coefficient was tuned. TIES keeps the top $20\%$ of each update by magnitude;
+DARE keeps a random $20\%$ and rescales by $5$; TVQ quantises to $2$ bits; KnOTS
+is its TIES variant at the same density (its linear variant is algebraically
+task arithmetic). RegMean with activation Grams uses $\alpha = 0.9$ and $256$
+examples per task. TSV-M uses $\alpha = 1$. Diagonal Fisher weights each
+coordinate by its squared update. WUDI is run as in \S\ref{subsec:wudi}.
+Adapter-only RegMean and our encoder are swept over
+$\lambda \in \{10^{-6}\ \text{or}\ 0, 0.01, 0.03, 0.05, 0.13, 0.30, 1.00\}$,
+and $\lambda^\star$ is the value with the lowest worst-task excess on the
+evaluation sets below. Both solvers run in float32, and every merged update is
+cut to rank $r$ by a randomised SVD (\S\ref{subsec:results}).
+
+\paragraph{Evaluation.} NLL is measured on $1{,}000$ examples per task at
+maximum length $1024$: GSM8K test problems, held-out rows of the Alpaca and
+Magicoder training splits (which overlap the adapters' training data, see
+\S\ref{sec:discussion}), and WMT19 validation pairs. One deviation: the $20$
+heuristic NLL cells of the third shared cohort used a different evaluation seed,
+and so a different sample of evaluation examples, from all other cells; every
+excess is computed within its cell, so each comparison is paired, but that
+cohort is scored on a different sample. All generation is greedy. GSM8K
+accuracy is exact match on $500$ test problems fixed by a seeded shuffle,
+prompted zero-shot with up to $256$ new tokens. HumanEval is pass@1 on all
+$164$ problems with up to $512$ new tokens, each completion run against its
+tests with a five-second limit. WMT19 is chrF on $500$ validation pairs,
+and IFEval is strict prompt-level accuracy on $300$ of its $541$ prompts with
+the official verifiers. On public cohorts, which ship no data, each adapter's
+greedy completions (up to $128$ tokens) on $100$ Alpaca instructions serve as
+its targets, and a solver counts as failing when its worst-task excess is at
+least twice that of task arithmetic.

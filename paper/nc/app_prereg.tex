@@ -1,25 +1,33 @@
-Every empirical claim in this paper is governed by a registration document
+Every confirmatory test in this paper is governed by a registration document
 committed to version control before the compute it governs was run. Each
 document states the predictions, the decision rule, and the consequence text
 for every possible outcome, including the outcomes that would cost us a claim.
 Thresholds were never moved after data were seen, and analyzers refuse to
-report until every cell they need exists.
+report until every cell they need exists. Analyses that were not registered,
+such as the seed follow-ups of the precision check, are labelled as such in
+the text; their plans were committed before their cells ran.
 
-The documents are in the directory \texttt{paper/prereg/} of the public
-repository, at \url{\repourl}. Table~\ref{tab:commits} gives, for each registration this
-paper relies on, the commit that fixed its rules, the commit that added the
-generator or implementation, and the commit that added the result. A reader
-can check any row with
+The registration documents are the files \texttt{notes/prereg\_*.md} of the
+public repository, at \url{\repourl}; the August ones are also in
+\texttt{paper/prereg/}. The precision check's rule and result,
+\texttt{notes/check\_solve\_precision\_2026-10-24.md} and its
+\texttt{\_result} companion, are reachable at the commits in its row.
+Table~\ref{tab:commits} gives, for each registration this paper relies on, the
+commit that fixed its rules, the commit that added the generator or
+implementation, and the commit that added the result. A reader can check any
+row with
 \begin{center}
 \texttt{git merge-base -{}-is-ancestor <rules> <result>}
 \end{center}
 which exits zero exactly when the rules commit precedes the result. The hashes
 are those of the public repository, whose history is filtered to remove
-private correspondence and large build artifacts; filtering rewrites hashes
-but not the order of commits, which is what the check depends on. Hashes cited
-inside the registration documents themselves are those of our working
-repository at the time and do not resolve publicly; we leave them unedited,
-since an unedited document is the point.
+private correspondence and large build artifacts and to replace the names of
+our compute account and host wherever they occur; that replacement changes
+one line in each of the October registrations and no number. Filtering
+rewrites hashes but not the order of commits, which is what the check depends
+on. Hashes cited inside the registration documents themselves are those of
+our working repository at the time and do not resolve publicly; we leave them
+unedited, since an unedited document is the point.
 
 \begin{table}[pos=h]
 \centering
@@ -34,7 +42,7 @@ registration & section & rules & generator & result \\
 drift of $A$ across training & \S\ref{subsec:why} & \texttt{8544b36} & \texttt{0c8770b} & \texttt{5e01813} \\
 replication on independent cohorts & \S\ref{subsec:results} & \texttt{9b3f57e} & --- & \texttt{4328446} \\
 conditioning and the ridge & \S\ref{subsec:results} & \texttt{dc0a1f1} & \texttt{ac4499f}, \texttt{25d4d47} & \texttt{efa1d2d} \\
-untruncated merges & \S\ref{subsec:results} & \texttt{876fcb6} & \texttt{e4043b4} & \texttt{63bdf0c} \\
+untruncated merges (encoder) & \S\ref{subsec:results} & \texttt{876fcb6} & \texttt{e4043b4} & \texttt{63bdf0c} \\
 shared arm at three cohorts & \S\ref{subsec:results} & \texttt{3b9db2f} & \texttt{7c25aa1} & \texttt{0a4afaf} \\
 public-cohort prevalence & \S\ref{subsec:public} & \texttt{335a4f6} & \texttt{0b6eb40} & \texttt{0a4afaf} \\
 downstream accuracy & \S\ref{subsec:results} & \texttt{a56b31e} & \texttt{321a808} & \texttt{0a4afaf} \\
@@ -46,7 +54,19 @@ heuristics equivalence & \S\ref{subsec:results} & \texttt{0265f64} & \texttt{bf8
 TSV-M, MaTS, diagonal Fisher & \S\ref{subsec:results} & \texttt{c4f2e28} & \texttt{64741e5} & \texttt{58d987d} \\
 task count, rank, PiSSA, translation & \S\ref{subsec:tr} & \texttt{67ec001} & \texttt{61ec804}, \texttt{dd952d5} & \texttt{58d987d} \\
 public-cohort merges & \S\ref{subsec:against} & \texttt{1be9d9d} & \texttt{383e8e3}, \texttt{6dcd988} & \texttt{58d987d} \\
-data-free ridge rule & \S\ref{subsec:against} & \texttt{d733f81} & \texttt{6dcd988}, \texttt{dd952d5} & \texttt{58d987d} \\
+data-free ridge rule & \S\ref{subsec:lambda} & \texttt{d733f81} & \texttt{6dcd988}, \texttt{dd952d5} & \texttt{58d987d} \\
+\addlinespace
+WUDI-Merging & \S\ref{subsec:wudi} & \texttt{fff1699} & \texttt{0a2b64e}, \texttt{db8c994} & \texttt{c55e5d9} \\
+ridge selection (GCV, L-curve) & \S\ref{subsec:lambda} & \texttt{fff1699} & \texttt{0a2b64e} & \texttt{9f3d827} \\
+seed ablation, training regimes, routes & \S\ref{subsec:seeds}, \S\ref{sec:theory} & \texttt{fff1699} & \texttt{61b2dca} & \texttt{fe3bb6a} \\
+\quad amendment (calibration) & \S\ref{sec:theory} & \texttt{50e490a} & \texttt{9fc0e5a} & \texttt{fe3bb6a} \\
+vision (CLIP ViT-B/32) & \S\ref{subsec:beyond} & \texttt{fff1699} & \texttt{61b2dca} & \texttt{651edb5} \\
+heterogeneity, partial collapse & \S\ref{subsec:audit}, \S\ref{subsec:against} & \texttt{fff1699} & \texttt{33c6f7c} & \texttt{1debb3f} \\
+\quad prevalence re-read & \S\ref{subsec:public} & \texttt{fff1699} & \texttt{d11375d} & \texttt{d11375d} \\
+truncation and the heuristics' lean & \S\ref{subsec:results} & \texttt{fff1699} & \texttt{33c6f7c} & \texttt{b1066d9} \\
+all four tasks & \S\ref{subsec:beyond} & \texttt{fff1699} & \texttt{76353d5} & \texttt{3672064} \\
+solve precision (float64) & \S\ref{subsec:results} & \texttt{9830e06} & \texttt{98ea4cc}, \texttt{dc65838} & \texttt{4e109e2} \\
+\quad rebuild of the failing merge & \S\ref{subsec:results} & \texttt{4e109e2} & \texttt{dff786a} & \texttt{c07aeba} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -57,3 +77,18 @@ run fall back to $\sum_t \Delta_t^\top\Delta_t$. We found this, registered an
 amendment before any affected cell ran, fixed the hook and re-ran the results
 under their original rules; both registered predictions still hold, and every
 adapter-only RegMean number in this paper uses the described Gram.
+
+Three rows of the October block need a word. The seven October registrations
+share one rules commit, made before any of their code. The calibration
+amendment changed how the constants of the scalar law were to be computed
+before they were computed, and the constants were committed before any of the
+cohorts they predict existed. The WUDI generator was corrected once, to
+evaluate the registered loss from the adapter factors rather than densely,
+before any WUDI cell finished, as the campaign log records; the two forms agree
+in value and gradient. The
+prevalence re-read adds its script and its result in one commit, after the
+rules that required it. In the precision row the second generator commit fixes
+a first run that compared two different truncation algorithms; that run was
+void, and the result comes from the corrected one. The rebuild row's rules
+commit is the precision result itself, which wrote the rebuild plan before any
+rebuild cell was generated.

@@ -15,9 +15,9 @@ than on independent cohorts, and on GSM8K it scores 0.03 against 0.70 on
 Llama-3.1-8B. A data-free form of RegMean and our closed-form encoder fail as
 well. All three solve a least-squares problem built from the adapters alone.
 Averaging and sparsifying merges, and solvers built from data, are unaffected.
-A ridge recovers most of the loss on three of four bases, and RegMean's shipped
-regulariser is too weak to. A first-order theory accounts for the conditioning
+A ridge of 0.01 recovers most of the lost accuracy on three of four bases, and
+RegMean's shipped regulariser is too weak to. A first-order theory accounts for the conditioning
 within 0.10\% and predicts it on eight cohorts trained after it was fixed. An
-audit that reads the adapter files in a CPU minute finds the collapse in 18 of
-45 public LoRA cohorts. Every confirmatory test was pre-registered, and the
+audit that reads the adapter files in a CPU minute finds the collapse in at
+least 18 of 45 public LoRA cohorts. Every confirmatory test was pre-registered, and the
 predictions that failed are reported.

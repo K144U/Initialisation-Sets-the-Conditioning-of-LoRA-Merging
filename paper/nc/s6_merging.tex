@@ -2,7 +2,7 @@ A collapsed cohort makes $\bar H$ badly conditioned. Whether that matters
 depends on whether a merge ever solves against a matrix that inherits it. This
 section tests that on twelve methods, ten of them published methods we did not
 build. It compares every method with itself across the two regimes and reports
-both NLL and downstream accuracy. It then repeats the central comparisons on a
+NLL for every method and downstream accuracy for all but one. It then repeats the central comparisons on a
 vision model and on the two tasks not yet scored, and asks whether the ridge
 can be set without data.
 
@@ -151,8 +151,10 @@ concentrating in those directions.
 \caption{Which merges the collapse reaches. Each method is compared with itself
 on shared and independent cohorts, three per arm on four bases. NLL is the
 ratio of worst-task excess, shared over independent, over the four bases.
-Accuracy is GSM8K exact match and HumanEval pass@1. The prediction was
-registered before any of the methods we did not build was run.}
+Accuracy is GSM8K exact match and HumanEval pass@1; for MaTS it uses one cohort
+per arm. KnOTS is its TIES variant, and diagonal Fisher uses the squared update
+as a data-free proxy for the Fisher. The prediction was registered before any
+of the methods we did not build was run.}
 \label{tab:exposure}
 \setlength{\tabcolsep}{3.5pt}
 \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.5cm}
@@ -171,7 +173,7 @@ RegMean, activation Grams & data & immune & $0.99$ to $1.14$
   & equal in 8 of 8 cells \\
 MaTS & data (Fisher) & immune & $0.93$ to $0.99$
   & equal in 7 of 8; 1 favours shared \\
-diagonal Fisher & data, diagonal & immune & $0.96$ to $1.08$ & not run \\
+diagonal Fisher & task updates, diagonal & immune & $0.96$ to $1.08$ & not run \\
 \addlinespace
 TSV-M (whitening) & task updates & exposed & $0.81$ to $1.19$, mixed sign
   & no cell past the gate \\
@@ -238,11 +240,13 @@ ill-conditioned directions, so the lean is not the solver mechanism either,
 and we have no tested explanation for it. In practice, a heuristic merge loses
 nothing to a shared initialisation.
 
-\paragraph{Solvers built from data are unaffected.} RegMean with real
-activation Grams at its published setting, MaTS with its blockwise Fisher
-solved by conjugate gradient, and diagonal Fisher merging were run on all
-three cohorts of both arms on all four bases. The three immunity predictions
-hold. RegMean shows no effect on any base in either unit and is the most
+\paragraph{Solvers built from data, and a diagonal one, are unaffected.}
+RegMean with real activation Grams at its published setting, MaTS with its
+blockwise Fisher solved by conjugate gradient, and diagonal Fisher merging were
+run on all three cohorts of both arms on all four bases. Our diagonal Fisher
+weights each coordinate by its squared update, a data-free proxy, so its matrix
+comes from the task updates; being diagonal, it cannot see overlap between
+subspaces. The three immunity predictions hold. RegMean shows no effect on any base in either unit and is the most
 accurate merge in our experiments on every base; its accuracy on the two arms
 agrees within $1.3$ points in all eight base-by-benchmark cells. MaTS shows no
 NLL effect, and in accuracy one cell (Mistral, GSM8K) favours the shared arm.
@@ -308,7 +312,7 @@ solve amplifies its rounding, so float32 merges that differ only in the random
 seed reach worst-task excesses of $0.22$ to $0.28$ nats on this cohort, and
 $0.26$ to $0.84$ when the truncation to rank $r$ is exact. All of them lie
 above the independent cohort, whose float32 merge agrees with float64 to
-$3\times10^{-6}$. Three draws on a shared cohort of each other base, under the
+$2\times10^{-6}$ in the median over modules. Three draws on a shared cohort of each other base, under the
 same seeds, span $0.31$ to $0.33$ nats on Llama, $9.78$ to $9.86$ on Mistral and
 $0.19$ to $0.22$ on Qwen. On every base each draw lies above the independent
 cohort, and the spread is smaller than the gap to it, most narrowly on Yi
@@ -329,12 +333,13 @@ encoder's failure survives with this step removed, as above.
 \subsection{Why RegMean's shipped regulariser does not fix it}\label{subsec:default}
 
 RegMean scales the off-diagonal entries of each Gram by $\alpha$, default
-$0.9$, which is equivalent to adding $(1-\alpha)\operatorname{diag}(G)$: a
+$0.9$, which, up to an overall factor of $\alpha$ that cancels in the solve,
+is equivalent to adding $\frac{1-\alpha}{\alpha}\operatorname{diag}(G)$: a
 shrinkage whose size is set by the scale of the data, not by the conditioning.
 It was designed for activation Grams, and we apply it here outside that use.
-On the adapter Grams it is equivalent to an isotropic ridge of
-$5.2\times10^{-4}$ to $6.1\times10^{-4}$, the same on both arms to three
-significant figures (Figure~\ref{fig:ridge}, bottom row). On the independent
+On the adapter Grams it has the average size of an isotropic ridge of
+$5.8\times10^{-4}$ to $6.8\times10^{-4}$, the same on both arms to within
+$0.5\%$ (Figure~\ref{fig:ridge}, bottom row). On the independent
 arm that dose leaves a condition number of $1.2\times10^{3}$ to
 $1.4\times10^{3}$. On the shared arm it leaves $6.6\times10^{3}$ to
 $9.1\times10^{3}$, where $\lambda = 0.01$ brings the same layers to about
@@ -352,7 +357,7 @@ NLL excess; circles mark the selected $\lambda^\star$, and the point at
 $\lambda = 10^{-6}$ is not joined to the rest because no grid point lies
 between. \textbf{Bottom:} condition number of the adapter Gram. Stars mark
 RegMean's shipped $\alpha = 0.9$, placed at the isotropic ridge of the same
-average size, $(1-\alpha)$ times the mean diagonal of the Gram (dotted). That
+average size, $(1-\alpha)/\alpha$ times the mean diagonal of the Gram (dotted). That
 size is the same on both arms, and on the shared arm it leaves a higher
 condition number than an isotropic ridge of that size would.}
 \label{fig:ridge}
@@ -407,16 +412,26 @@ A ridge repairs both solvers built from the adapter factors on most bases,
 but the amount needed does not track the conditioning. We tested three data-free rules for choosing it, and all three
 failed. The first sets $\lambda$ to bring the adapter Gram to a target
 condition number, chosen in advance and evaluated only on unseen cohorts. It
-was worse than a fixed $\lambda = 0.01$ on every collapsed cohort tested.
+was worse than a fixed $\lambda = 0.01$ on every collapsed cohort tested. On
+separated cohorts it met its registered criterion of doing no harm on $4$ of
+$6$, the two misses being cohorts where it did better than the minimal ridge,
+and on collapsed public cohorts it brought the solver within $1.5$ times task
+arithmetic's excess on $2$ of $6$, against a registered $80\%$. The fixed
+$\lambda = 0.01$, registered to do the same on at least $80\%$ of collapsed
+public cohorts, did so on $1$ of $6$.
 Adapter-only RegMean is a ridge regression whose samples and targets can both
 be read off the adapter files, so the classical parameter-choice rules apply as
 they stand, and we registered generalised cross-validation (GCV) and the
-L-curve. Neither repaired the collapse on more than one base of four. GCV
+L-curve. Neither repaired the collapse on more than one base of four, and
+neither passed any of its three other registered criteria (no worse than
+$\lambda = 0.01$, near the best of the sweep, no harm on separated cohorts);
+GCV raised the independent cohort's excess on Llama from $0.07$ to $0.19$. GCV
 chose $\lambda$ near $10^{-4}$ on shared cohorts and left the worst-task
 excess at $1.13$, $8.66$, $0.22$ and $0.45$, against $0.11$, $0.05$, $0.01$
 and $0.02$ at the best $\lambda$ of the sweep. On Llama, Qwen and Yi that is
-worse than the minimal ridge. The L-curve found no interior corner and returned
-the bottom of its grid on every cohort. A data-free way to set the ridge
+worse than the minimal ridge. The L-curve found no interior corner: on every
+base and arm its median choice was $1.3\times10^{-8}$, at the lower edge of a
+grid that starts at $10^{-8}$. A data-free way to set the ridge
 remains open. We recommend starting at $0.01$ and sweeping on held-out data.
 
 \subsection{Public cohorts}\label{subsec:against}

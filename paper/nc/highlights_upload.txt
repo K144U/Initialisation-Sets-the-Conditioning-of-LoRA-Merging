@@ -4,4 +4,4 @@ Highlights
 - One shared LoRA initialisation collapses the task subspaces of a cohort
 - Unsloth and LLaMA-Factory defaults produce collapsed cohorts
 - Averaging is unaffected; solvers built from the adapters themselves break
-- A CPU-minute audit finds the collapse in 18 of 45 public LoRA cohorts
+- A CPU-minute audit finds the collapse in at least 18 of 45 public LoRA cohorts

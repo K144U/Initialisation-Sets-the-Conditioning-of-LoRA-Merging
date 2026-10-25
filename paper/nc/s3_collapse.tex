@@ -1,7 +1,8 @@
 \subsection{Experimental setup}\label{subsec:setup}
 
 We fine-tune LoRA adapters of rank $r = 16$ on four base models,
-Llama-3.1-8B-Instruct, Mistral-7B-v0.3, Qwen2.5-7B-Instruct and Yi-1.5-9B-Chat,
+Llama-3.1-8B-Instruct, Mistral-7B-Instruct-v0.3, Qwen2.5-7B-Instruct and
+Yi-1.5-9B-Chat,
 for four unrelated tasks: grade-school mathematics (GSM8K), instruction
 following (Alpaca), code generation (Magicoder) and English-to-German
 translation (WMT19). Each base has two kinds of cohort. In a \emph{shared}
@@ -9,12 +10,15 @@ cohort all four task configurations carry one global seed, so all four
 adapters are created from the same random state; we train three such cohorts
 with seeds 1, 2 and 3. In an \emph{independent} cohort each task has its own
 seed; we train three of these as well. The seed enters training in three
-places: the random state when the adapter is created, the order of the data
-and the dropout masks, and the split of the data. The two arms differ in all
-three, and \S\ref{subsec:seeds} separates them.
+places: the random state when the adapter is created, the dropout masks, and
+the subset of training examples drawn for the task. The data sampler's own
+seed was fixed at $3407$ in every run, so the order in which a given subset is
+visited did not vary. The two arms differ in all three, and
+\S\ref{subsec:seeds} separates them. Appendix~\ref{app:details} lists the
+training, merging and evaluation settings.
 
-Three of the four adapters improve on the base model by $10$ to $70\%$ on their
-own task. The translation adapter did not learn its task: a data-loading defect
+Three of the four adapters lower the base model's NLL on their own task by
+$10$ to $70\%$. The translation adapter did not learn its task: a data-loading defect
 trained it on
 an unshuffled, single-domain prefix of its corpus, and on every base and in
 both arms it is beaten at translation by the base model or by another adapter. Both arms
@@ -57,9 +61,10 @@ by where the adapters started and not by anything training does.
 \centering
 \small
 \caption{The seed ablation on Llama-3.1-8B. The initialisation seed sets the
-random state when the adapters are created; the trainer seed sets the data
-order and dropout. ``Shared'' means one seed for all four tasks, ``own'' one
-per task. The data split is the same in all four cohorts. Excess is the
+random state when the adapters are created; the trainer seed sets the dropout
+masks (the data order was fixed in every run). ``Shared'' means one seed for
+all four tasks, ``own'' one per task. The data split is the same in all four
+cohorts. $\kappa(\bar H)$ is the median over the eight sampled layers. Excess is the
 worst-task NLL excess of adapter-only RegMean at $\lambda = 10^{-6}$ and of
 task arithmetic.}
 \label{tab:seeds}
@@ -86,9 +91,11 @@ two created from separate seeds are separated whether or not they share one,
 at $0.047$ and $1.55$. Adapter-only RegMean follows the initialisation seed:
 its excess is $0.34$ to $0.37$ nats on the shared-initialisation cohorts and
 $0.07$ on the others. Task arithmetic does not move, at $0.214$ to $0.221$ on
-all four. All four registered predictions hold. The data order and dropout,
-and with them anything training does differently across tasks, do not decide
-the regime; the initial $A$ does.
+all four. All four registered predictions hold. We registered the trainer seed
+as setting the data order as well, but the sampler's seed turned out to be
+fixed in every run, so the ablation varies dropout and not the order of the
+data. Dropout does not decide the regime, and neither does the training data,
+which differs across the four tasks of every cohort; the initial $A$ does.
 
 \subsection{The geometry of the two regimes}\label{subsec:geometry}
 
@@ -114,6 +121,8 @@ in (d) mark the audit thresholds of \S\ref{subsec:audit}.}
 \small
 \caption{The two regimes at $T = 4$, $r = 16$. The independent arm is the
 first of three independent cohorts; the other two agree to three decimals.
+$\kappa(\bar H)$ is the mean over the eight sampled layers; the median, which
+we report elsewhere, is lower (Llama-3.1-8B shared: $1.15\times10^{4}$).
 Amplification is the norm of the exact interpolator over that of the mean task
 update; $T = 4$ is its value for exactly orthogonal subspaces.}
 \label{tab:regimes}
@@ -146,11 +155,13 @@ $16$ dimensions. On the independent arm all $64$ lie between $0.88$ and
 $1.13$.
 
 The subspaces are near-collinear, not collinear. Four rank-$16$ subspaces in
-dimension $d = 4096$ remain linearly independent unless they coincide exactly,
+dimension $d = 3584$ to $4096$ remain linearly independent unless they coincide
+exactly,
 so an exact interpolator exists in both regimes. The regimes differ in how
 large it is and how sensitive it is to the adapters
-(\S\ref{sec:background}). On the shared arm $\kappa(\bar H)$ is $1.8\times10^{4}$
-to $8.3\times10^{4}$, against $1.5$ to $1.6$ on the independent arm, and the
+(\S\ref{sec:background}). On the shared arm $\kappa(\bar H)$ averages
+$1.8\times10^{4}$ to $8.3\times10^{4}$ over the sampled layers, against $1.5$
+to $1.6$ on the independent arm, and the
 exact interpolator is $43$ to $64$ times larger than the mean task update,
 against $4.0$. That last value is $T$, the amplification for exactly orthogonal
 subspaces, which the independent arm reproduces to within $1.1\%$. The

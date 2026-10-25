@@ -413,9 +413,13 @@ def fig5_ridge():
             # so joining these three points is an honest interpolation.
             bot.loglog(ls_, [v[f"cond_ridge{x:g}_median"] for x in ls_], color=sty["color"],
                        marker=sty["marker"], ls=sty["ls"], ms=3.5, lw=1.0)
-            bot.plot([v["alpha_equiv_ridge_median"]], [v["alpha_cond_median"]], marker="*",
+            # The stored value is (1 - alpha) * mean diag(G). alpha G + (1 - alpha)
+            # diag(G) = alpha (G + (1 - alpha)/alpha diag(G)) and the overall alpha
+            # cancels in the solve, so the equivalent ridge is that value / alpha.
+            a_eq_coh = v["alpha_equiv_ridge_median"] / rpd["alpha"]
+            bot.plot([a_eq_coh], [v["alpha_cond_median"]], marker="*",
                      ms=8, color=sty["color"], mec=INK, mew=0.4, ls="none")
-        a_eq = rpd["bases"][b]["shared"]["alpha_equiv_ridge_median"]
+        a_eq = rpd["bases"][b]["shared"]["alpha_equiv_ridge_median"] / rpd["alpha"]
         for ax in (top, bot):
             ax.axvline(a_eq, color=INK2, lw=0.6, ls=":")
             ax.set_xlim(4e-7, 2.5)
