@@ -155,6 +155,7 @@ echo "[2/5] drop private paths and build artifacts, scrub the other submission"
   --path "tmlr_submission/paper.pdf" \
   --path "JAIR/overleaf_jair.zip" \
   --path "JAIR/COVER_LETTER.md" \
+  --path "paper/nc/cover_letter.md" \
   --path "HANDOFF_2026-08-16.md" \
   --replace-text "$WORK/rules.txt" \
   --replace-message "$WORK/msgrules.txt" \
@@ -180,7 +181,7 @@ gone=0
 for p in "SentEmail" "final review" "handoff_2026-05-25_review_to_garg.md" \
          "handoff_to_garg_2026-06-13.md" "notes/garg_message_2026-06-14.md" \
          "notes/garg_message_2026-06-23.md" "POST_ACCEPTANCE_TODO.md" \
-         "JAIR/COVER_LETTER.md" "HANDOFF_2026-08-16.md"; do
+         "JAIR/COVER_LETTER.md" "paper/nc/cover_letter.md" "HANDOFF_2026-08-16.md"; do
   if git log --all --oneline -- "$p" | grep -q .; then
     echo "  LEAK: $p still reachable in history" >&2; gone=1
   fi
@@ -326,7 +327,7 @@ else
   export GIT_AUTHOR_DATE="2026-09-05T12:00:00+05:30"
   export GIT_COMMITTER_DATE="2026-09-05T12:00:00+05:30"
   commit="$(git commit-tree "$new_tree" -p main -F - <<'CMSG'
-Keep only what the JAIR submission rests on
+Keep only what the manuscript rests on
 
 This repository exists so that a reviewer can check one claim: that every
 pre-registration was committed before the compute it governs. Everything
@@ -337,12 +338,12 @@ documents, the prompt templates, CLAUDE.md, the superseded TMLR submission
 package, the early theorem drafts, and a figure directory that paper/figures/
 already duplicates.
 
-What remains is paper/, JAIR/, code/, results/, the twelve pre-registrations
-in notes/, and the files that describe and license them.
+What remains is paper/, JAIR/, code/, results/, the pre-registrations in
+notes/, and the files that describe and license them.
 
 The history underneath is untouched, and that is deliberate. Removing these
 files from every commit would have changed every commit hash, and the paper's
-appendix pins thirty-nine of them by hash. They all still resolve, and so do
+appendix pins dozens of them by hash. They all still resolve, and so do
 the ancestry checks the paper tells a reviewer to run. The cost is that
 someone who checks out an old commit still finds these files there. That is
 the correct trade for a repository whose entire value is that its history has
